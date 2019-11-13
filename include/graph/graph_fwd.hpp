@@ -144,164 +144,164 @@ using in_edge_size_t = typename G::in_edge_size_type;
 // common graph functions
 //
 template <typename T>
-auto value(T& gve) -> decltype(get_user_value(gve));
+constexpr auto value(T& gve) -> decltype(get_user_value(gve)) noexcept;
 
 //
 // vertex Functions
 //
 
 template <graph_c G>
-auto vertex_key(vertex_t<G>& u) -> vertex_key_t<G>&;
+constexpr auto vertex_key(vertex_t<G>& u) noexcept -> vertex_key_t<G>&;
 
 template <graph_c G>
-auto out_edges(G& g, vertex_t<G>& u) -> out_edge_range_t<G>;
+constexpr auto out_edges(G& g, vertex_t<G>& u) noexcept -> out_edge_range_t<G>;
 
 template <graph_c G>
-auto out_size(G& g, vertex_t<G>& u) -> out_edge_size_t<G>;
+constexpr auto out_size(G& g, vertex_t<G>& u) noexcept -> out_edge_size_t<G>;
 
 template <graph_c G>
-auto out_degree(G& g, vertex_t<G>& u) -> out_edge_size_t<G>;
+constexpr auto out_degree(G& g, vertex_t<G>& u) noexcept -> out_edge_size_t<G>;
 
 template <graph_c G>
-void clear_out_edges(G& g, vertex_t<G>& u);
+constexpr void clear_out_edges(G& g, vertex_t<G>& u);
 
 template <graph_c G>
-auto in_edges(G& g, vertex_t<G>& u) -> in_edge_range_t<G>;
+constexpr auto in_edges(G& g, vertex_t<G>& u) noexcept -> in_edge_range_t<G>;
 
 template <graph_c G>
-auto in_size(G& g, vertex_t<G>& u) -> in_edge_size_t<G>;
+constexpr auto in_size(G& g, vertex_t<G>& u) noexcept -> in_edge_size_t<G>;
 
 template <graph_c G>
-auto in_degree(G& g, vertex_t<G>& u) -> in_edge_size_t<G>;
+constexpr auto in_degree(G& g, vertex_t<G>& u) noexcept -> in_edge_size_t<G>;
 
 template <graph_c G>
-void clear_in_edges(G& g, vertex_t<G>& u);
+constexpr void clear_in_edges(G& g, vertex_t<G>& u);
 
 template <graph_c G>
-auto create_vertex(G& g) -> pair<vertex_iterator_t<G>, bool>;
+constexpr auto create_vertex(G& g) -> pair<vertex_iterator_t<G>, bool>;
 
 template <graph_c G>
-auto create_vertex(G& g, vertex_value_t<G>&) -> pair<vertex_iterator_t<G>, bool>;
+constexpr auto create_vertex(G& g, vertex_value_t<G>&) -> pair<vertex_iterator_t<G>, bool>;
 
 template <graph_c G>
-auto create_vertex(G& g, vertex_value_t<G> &&) -> pair<vertex_iterator_t<G>, bool>;
+constexpr auto create_vertex(G& g, vertex_value_t<G> &&) -> pair<vertex_iterator_t<G>, bool>;
 
 template <graph_c G>
-void erase_vertices(G& g, vertex_range_t<G>&);
+constexpr void erase_vertices(G& g, vertex_range_t<G>&);
 
 template <graph_c G>
-void erase_vertex(G& g, vertex_iterator_t<G>&);
+constexpr void erase_vertex(G& g, vertex_iterator_t<G>&);
 
 template <graph_c G>
-void erase_vertex(G& g, vertex_key_t<G>&);
+constexpr void erase_vertex(G& g, vertex_key_t<G>&);
 
 template <graph_c G>
-void clear_vertex(G& g, vertex_iterator_t<G>&);
+constexpr void clear_vertex(G& g, vertex_iterator_t<G>&);
 
 template <graph_c G>
-auto find_vertex(G& g, vertex_key_t<G>&) -> vertex_iterator_t<G>;
+constexpr auto find_vertex(G& g, vertex_key_t<G>&) noexcept -> vertex_iterator_t<G>;
 
 //
 // edge Functions
 //
 template <graph_c G>
-auto out_vertex(G& g, edge_iterator_t<G>) -> vertex_iterator_t<G>;
+constexpr auto out_vertex(G& g, edge_iterator_t<G>) noexcept -> vertex_iterator_t<G>;
 
 template <graph_c G>
-auto out_vertex(G& g, out_edge_iterator_t<G>) -> vertex_iterator_t<G>;
+constexpr auto out_vertex(G& g, out_edge_iterator_t<G>) noexcept -> vertex_iterator_t<G>;
 
 template <graph_c G>
-auto out_vertex(G& g, in_edge_iterator_t<G>) -> vertex_iterator_t<G>;
+constexpr auto out_vertex(G& g, in_edge_iterator_t<G>) noexcept -> vertex_iterator_t<G>;
 
 template <graph_c G>
-auto in_vertex(G& g, edge_iterator_t<G>) -> vertex_iterator_t<G>;
+constexpr auto in_vertex(G& g, edge_iterator_t<G>) noexcept -> vertex_iterator_t<G>;
 
 template <graph_c G>
-auto in_vertex(G& g, out_edge_iterator_t<G>) -> vertex_iterator_t<G>;
+constexpr auto in_vertex(G& g, out_edge_iterator_t<G>) noexcept -> vertex_iterator_t<G>;
 
 template <graph_c G>
-auto in_vertex(G& g, in_edge_iterator_t<G>) -> vertex_iterator_t<G>;
+constexpr auto in_vertex(G& g, in_edge_iterator_t<G>) noexcept -> vertex_iterator_t<G>;
 
 template <graph_c G>
-auto create_edge(G& g, vertex_iterator_t<G>, vertex_iterator_t<G>);
+constexpr auto create_edge(G& g, vertex_iterator_t<G>, vertex_iterator_t<G>);
 
 template <graph_c G>
-auto create_edge(G& g, vertex_iterator_t<G>, vertex_iterator_t<G>, edge_value_t<G>&);
+constexpr auto create_edge(G& g, vertex_iterator_t<G>, vertex_iterator_t<G>, edge_value_t<G>&);
 
 template <graph_c G>
-auto create_edge(G& g, vertex_iterator_t<G>, vertex_iterator_t<G>, edge_value_t<G>&&);
+constexpr auto create_edge(G& g, vertex_iterator_t<G>, vertex_iterator_t<G>, edge_value_t<G>&&);
 
 template <graph_c G>
-auto create_edge(G& g, vertex_key_t<G>&, vertex_key_t<G>&);
+constexpr auto create_edge(G& g, vertex_key_t<G>&, vertex_key_t<G>&);
 
 template <graph_c G>
-auto create_edge(G& g, vertex_key_t<G>&, vertex_key_t<G>&, edge_value_t<G>&);
+constexpr auto create_edge(G& g, vertex_key_t<G>&, vertex_key_t<G>&, edge_value_t<G>&);
 
 template <graph_c G>
-auto create_edge(G& g, vertex_key_t<G>&, vertex_key_t<G>&, edge_value_t<G>&&);
+constexpr auto create_edge(G& g, vertex_key_t<G>&, vertex_key_t<G>&, edge_value_t<G>&&);
 
 template <graph_c G>
-void erase_edges(G& g, edge_range_t<G>);
+constexpr void erase_edges(G& g, edge_range_t<G>);
 
 template <graph_c G>
-void erase_edges(G& g, out_edge_range_t<G>);
+constexpr void erase_edges(G& g, out_edge_range_t<G>);
 
 template <graph_c G>
-void erase_edges(G& g, in_edge_range_t<G>);
+constexpr void erase_edges(G& g, in_edge_range_t<G>);
 
 template <graph_c G>
-void erase_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v);
+constexpr void erase_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v);
 
 template <graph_c G>
-void erase_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey);
+constexpr void erase_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey);
 
 template <graph_c G>
-void erase_edge(G& g, edge_iterator_t<G> uv);
+constexpr void erase_edge(G& g, edge_iterator_t<G> uv);
 
 template <graph_c G>
-void erase_edge(G& g, out_edge_iterator_t<G> uv);
+constexpr void erase_edge(G& g, out_edge_iterator_t<G> uv);
 
 template <graph_c G>
-void erase_edge(G& g, in_edge_iterator_t<G> uv);
+constexpr void erase_edge(G& g, in_edge_iterator_t<G> uv);
 
 template <graph_c G>
-auto find_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v) -> edge_iterator_t<G>;
+constexpr auto find_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v) noexcept -> edge_iterator_t<G>;
 
 template <graph_c G>
-auto find_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) -> edge_iterator_t<G>;
+constexpr auto find_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) noexcept -> edge_iterator_t<G>;
 
 template <graph_c G>
-auto find_out_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v) -> out_edge_iterator_t<G>;
+constexpr auto find_out_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v) noexcept -> out_edge_iterator_t<G>;
 
 template <graph_c G>
-auto find_out_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) -> out_edge_iterator_t<G>;
+constexpr auto find_out_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) noexcept -> out_edge_iterator_t<G>;
 
 template <graph_c G>
-auto find_in_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v) -> in_edge_iterator_t<G>;
+constexpr auto find_in_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v) noexcept -> in_edge_iterator_t<G>;
 
 template <graph_c G>
-auto find_in_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) -> in_edge_iterator_t<G>;
+constexpr auto find_in_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) noexcept -> in_edge_iterator_t<G>;
 
 //
 // graph Functions
 //
 template <graph_c G>
-auto vertices(G& g) -> vertex_range_t<G>;
+constexpr auto vertices(G& g) noexcept -> vertex_range_t<G>;
 
 template <graph_c G>
-auto vertices_size(G& g) -> vertex_size_t<G>;
+constexpr auto vertices_size(G& g) noexcept -> vertex_size_t<G>;
 
 template <graph_c G>
-auto edges(G& g) -> edge_range_t<G>;
+constexpr auto edges(G& g) noexcept -> edge_range_t<G>;
 
 template <graph_c G>
-auto edges_size(G& g) -> edge_size_t<G>;
+constexpr auto edges_size(G& g) noexcept -> edge_size_t<G>;
 
 template <graph_c G>
-void clear(G& g);
+constexpr void clear(G& g);
 
 template <graph_c G>
-void swap(G& a, G& b);
+constexpr void swap(G& a, G& b);
 
 //
 // graph construction
