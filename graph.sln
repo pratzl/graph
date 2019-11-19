@@ -1,9 +1,65 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29503.13
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{1E9129B6-5FA2-441B-9459-868F080BED3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{357F34C0-AD47-44F9-886D-B9B57C82C9DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{C528C0F5-3ED0-4C8B-A623-9639CF1BE4BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{42245303-B7DB-4C12-9926-11E7580C3C14}"
+	ProjectSection(SolutionItems) = preProject
+		include\graph\graph_fwd.hpp = include\graph\graph_fwd.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iterators", "iterators", "{6F31AFF7-259A-4B3C-9559-4D756D2B09B7}"
+	ProjectSection(SolutionItems) = preProject
+		include\graph\iterators\bfs_edge_range.hpp = include\graph\iterators\bfs_edge_range.hpp
+		include\graph\iterators\bfs_range.hpp = include\graph\iterators\bfs_range.hpp
+		include\graph\iterators\dfs_range.hpp = include\graph\iterators\dfs_range.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithms", "algorithms", "{1B39F91E-48A8-4D17-8DEE-C694CE374A6D}"
+	ProjectSection(SolutionItems) = preProject
+		include\graph\algorithms\boykov_kolmogorov.hpp = include\graph\algorithms\boykov_kolmogorov.hpp
+		include\graph\algorithms\boykov_kolmogorov2.hpp = include\graph\algorithms\boykov_kolmogorov2.hpp
+		include\graph\algorithms\boykov_kolmogorov3.hpp = include\graph\algorithms\boykov_kolmogorov3.hpp
+		include\graph\algorithms\connected_component.hpp = include\graph\algorithms\connected_component.hpp
+		include\graph\algorithms\dag_based_mis.hpp = include\graph\algorithms\dag_based_mis.hpp
+		include\graph\algorithms\degree.hpp = include\graph\algorithms\degree.hpp
+		include\graph\algorithms\dijkstra.hpp = include\graph\algorithms\dijkstra.hpp
+		include\graph\algorithms\jones_plassmann_coloring.hpp = include\graph\algorithms\jones_plassmann_coloring.hpp
+		include\graph\algorithms\k_core.hpp = include\graph\algorithms\k_core.hpp
+		include\graph\algorithms\max_flow.hpp = include\graph\algorithms\max_flow.hpp
+		include\graph\algorithms\mis.hpp = include\graph\algorithms\mis.hpp
+		include\graph\algorithms\page_rank.hpp = include\graph\algorithms\page_rank.hpp
+		include\graph\algorithms\spanning_tree.hpp = include\graph\algorithms\spanning_tree.hpp
+		include\graph\algorithms\spMatspMat.hpp = include\graph\algorithms\spMatspMat.hpp
+		include\graph\algorithms\triangle_count.hpp = include\graph\algorithms\triangle_count.hpp
+		include\graph\algorithms\utils.hpp = include\graph\algorithms\utils.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adaptors", "adaptors", "{80652490-1FD3-4DA4-8986-2EA29FB1F441}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aolos", "aolos", "{AE465A07-5923-4E7B-93C3-5AD66F368530}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\aolos\aolos.hpp = adaptors\aolos\aolos.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aos", "aos", "{DD9E040D-797B-4D11-B5C1-68DE01448603}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\aos\aos.hpp = adaptors\aos\aos.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compressed", "compressed", "{53B58A6B-FE2E-474B-AFB8-1AFEFCA64A8E}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\compressed\compressed.hpp = adaptors\compressed\compressed.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vovos", "vovos", "{4F27C44C-9C57-4F85-9821-7ABDB3719ABC}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\vovos\vovos.hpp = adaptors\vovos\vovos.hpp
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,19 +69,28 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Debug|x64.ActiveCfg = Debug|x64
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Debug|x64.Build.0 = Debug|x64
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Debug|x86.ActiveCfg = Debug|Win32
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Debug|x86.Build.0 = Debug|Win32
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Release|x64.ActiveCfg = Release|x64
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Release|x64.Build.0 = Release|x64
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Release|x86.ActiveCfg = Release|Win32
-		{1E9129B6-5FA2-441B-9459-868F080BED3B}.Release|x86.Build.0 = Release|Win32
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Debug|x64.ActiveCfg = Debug|x64
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Debug|x64.Build.0 = Debug|x64
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Debug|x86.ActiveCfg = Debug|Win32
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Debug|x86.Build.0 = Debug|Win32
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Release|x64.ActiveCfg = Release|x64
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Release|x64.Build.0 = Release|x64
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Release|x86.ActiveCfg = Release|Win32
+		{357F34C0-AD47-44F9-886D-B9B57C82C9DE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{42245303-B7DB-4C12-9926-11E7580C3C14} = {C528C0F5-3ED0-4C8B-A623-9639CF1BE4BF}
+		{6F31AFF7-259A-4B3C-9559-4D756D2B09B7} = {42245303-B7DB-4C12-9926-11E7580C3C14}
+		{1B39F91E-48A8-4D17-8DEE-C694CE374A6D} = {42245303-B7DB-4C12-9926-11E7580C3C14}
+		{AE465A07-5923-4E7B-93C3-5AD66F368530} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
+		{DD9E040D-797B-4D11-B5C1-68DE01448603} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
+		{53B58A6B-FE2E-474B-AFB8-1AFEFCA64A8E} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
+		{4F27C44C-9C57-4F85-9821-7ABDB3719ABC} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3711AC66-FC73-4A49-8F13-CB2C6D9ED726}
+		SolutionGuid = {3DE43A65-513E-4C25-82B5-0373B806D033}
 	EndGlobalSection
 EndGlobal
