@@ -41,6 +41,18 @@
     <ClCompile Include="aos_test.cpp" />
     <ClCompile Include="bfs_test_0.cpp" />
     <ClCompile Include="bk.cpp" />
+    <ClCompile Include="compressed_test.cpp" />
+    <ClCompile Include="connected_component_test.cpp" />
+    <ClCompile Include="edge_list_test.cpp" />
+    <ClCompile Include="edge_list_test_1.cpp" />
+    <ClCompile Include="jp_coloring_test.cpp" />
+    <ClCompile Include="kcore_test.cpp" />
+    <ClCompile Include="max_flow_test.cpp" />
+    <ClCompile Include="mis_test.cpp" />
+    <ClCompile Include="mmio_test.cpp" />
+    <ClCompile Include="new_dfs_test.cpp" />
+    <ClCompile Include="page_rank_test.cpp" />
+    <ClCompile Include="spanning_tree_test.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
