@@ -17,7 +17,7 @@
 #include <vector>
 
 
-enum three_colors { black, white, grey };
+enum three_colors : int8_t { black, white, grey };
 
 template<typename Graph, typename Stack = std::stack<vertex_index_t>>
 class dfs_range {

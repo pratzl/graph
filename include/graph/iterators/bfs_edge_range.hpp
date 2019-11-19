@@ -18,7 +18,7 @@
 // class bfs_edge_range<Graph<Attributes...>> {
 
 
-enum three_colors { black, white, grey };
+enum three_colors : int8_t { black, white, grey };
 
 //****************************************************************************
 // This range used by dijkstra
