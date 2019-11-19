@@ -37,6 +37,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adjacency_test.cpp" />
+    <ClCompile Include="aolos_test.cpp" />
+    <ClCompile Include="aos_test.cpp" />
+    <ClCompile Include="bfs_test_0.cpp" />
+    <ClCompile Include="bk.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
