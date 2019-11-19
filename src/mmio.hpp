@@ -17,7 +17,7 @@
 #include "edge_list.hpp"
 #include "graph_base.hpp"
 
-void mm_fill(std::istream& inputStream, edge_list<directed>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
+inline void mm_fill(std::istream& inputStream, edge_list<directed>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
   A.reserve((file_symmetry ? 2 : 1) * nNonzeros);
   A.open_for_push_back();
   for (size_t i = 0; i < nNonzeros; ++i) {
@@ -62,7 +62,8 @@ void mm_fill(std::istream& inputStream, edge_list<directed, T>& A, size_t nNonze
   A.close_for_push_back();
 }
 
-void mm_fill(std::istream& inputStream, edge_list<undirected>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
+inline void
+mm_fill(std::istream& inputStream, edge_list<undirected>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
   assert(file_symmetry);
   A.reserve(nNonzeros);
 
