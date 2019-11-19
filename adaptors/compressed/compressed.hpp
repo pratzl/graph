@@ -138,7 +138,7 @@ public:
       return;
     
     indices_[N_] = indices_[N_-1];
-    std::exclusive_scan(indices_.begin(), indices_.end()-1, indices_.begin(), 0);
+    std::exclusive_scan(indices_.begin(), indices_.end()-1, indices_.begin(), static_cast<size_t>(0));
     indices_[N_] += indices_[N_-1];
     assert(indices_[N_] == to_be_indexed_.size());
     

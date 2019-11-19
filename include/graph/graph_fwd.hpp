@@ -144,7 +144,7 @@ using in_edge_size_t = typename G::in_edge_size_type;
 // common graph functions
 //
 template <typename T>
-constexpr auto value(T& gve) -> decltype(get_user_value(gve)) noexcept;
+constexpr auto value(T& gve) noexcept -> decltype(get_user_value(gve));
 
 //
 // vertex Functions
