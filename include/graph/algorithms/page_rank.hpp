@@ -13,8 +13,8 @@
 #include <tuple>
 #include <vector>
 
-#include <algorithms/degree.hpp>
-#include <algorithms/utils.hpp>
+#include <graph/algorithms/degree.hpp>
+#include <graph/algorithms/utils.hpp>
 #include <compressed.hpp>
 #include <edge_list.hpp>
 #include <spmv_range.hpp>

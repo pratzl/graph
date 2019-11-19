@@ -15,8 +15,8 @@
 #include "compressed.hpp"
 #include "mmio.hpp"
 #include "util.hpp"
-#include "algorithms/mis.hpp"
-#include "algorithms/dag_based_mis.hpp"
+#include "graph/algorithms/mis.hpp"
+#include "graph/algorithms/dag_based_mis.hpp"
 #include "common/test_header.hpp"
 
 typedef compressed_sparse<0> csr_graph;

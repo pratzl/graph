@@ -9,7 +9,7 @@
 //
 #pragma once
 
-#include "bfs_range.hpp"
+#include "graph/iterators/bfs_range.hpp"
 
 /*BFS-based connected component algorithm*/
 

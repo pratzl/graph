@@ -13,7 +13,7 @@
 
 #include "common/abstract_test.hpp"
 #include "aos.hpp"
-#include "bfs_range.hpp"
+#include "graph/iterators/bfs_range.hpp"
 
 //****************************************************************************
 template <typename EdgeListT>

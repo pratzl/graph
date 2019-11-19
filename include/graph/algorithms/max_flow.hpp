@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <reverse.hpp>
 #include <util.hpp>
-#include <filtered_bfs_range.hpp>
+#include <graph/iterators/filtered_bfs_range.hpp>
 #include <util.hpp>
 static int DEFAULT_MAX = 1000;
 enum class default_dict {capacity_idx = 1, flow_idx = 2};

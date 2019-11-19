@@ -22,8 +22,8 @@
 
 #include "timer.hpp"
 #include "util.hpp"
-#include <algorithms/page_rank.hpp>
-#include <algorithms/degree.hpp>
+#include <graph/algorithms/page_rank.hpp>
+#include <graph/algorithms/degree.hpp>
 #include "common/abstract_test.hpp"
 
 size_t const NUM_NODES = 34;

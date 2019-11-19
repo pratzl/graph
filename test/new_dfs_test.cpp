@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <compressed.hpp>
 #include <edge_list.hpp>
-#include <new_dfs_range.hpp>
+#include <graph/iterators/new_dfs_range.hpp>
 #include <mmio.hpp>
 #include <vector>
 

@@ -19,7 +19,7 @@
 #include "compressed.hpp"
 #include "mmio.hpp"
 #include "util.hpp"
-#include "algorithms/connected_component.hpp"
+#include "graph/algorithms/connected_component.hpp"
 #include "common/test_header.hpp"
 
 

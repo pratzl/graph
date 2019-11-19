@@ -17,7 +17,7 @@
 #include "compressed.hpp"
 #include "mmio.hpp"
 #include "util.hpp"
-#include "algorithms/jones_plassmann_coloring.hpp"
+#include "graph/algorithms/jones_plassmann_coloring.hpp"
 #include "common/test_header.hpp"
 
 typedef compressed_sparse<0> csr_graph;

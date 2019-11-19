@@ -13,7 +13,7 @@
 #include <edge_list.hpp>
 #include <mmio.hpp>
 #include <vector>
-#include <algorithms/boykov_kolmogorov.hpp>
+#include <graph/algorithms/boykov_kolmogorov.hpp>
 #include "common/test_header.hpp"
 
 TEST(boykov_kolmogorov_max_flow, bkmf) {

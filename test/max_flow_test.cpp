@@ -9,10 +9,10 @@
 //
 
 #include <algorithm>
-#include <algorithms/max_flow.hpp>
+#include <graph/algorithms/max_flow.hpp>
 #include <compressed.hpp>
 #include <edge_list.hpp>
-#include <filtered_bfs_range.hpp>
+#include <graph/iterators/filtered_bfs_range.hpp>
 #include <mmio.hpp>
 #include <reverse.hpp>
 #include <vector>

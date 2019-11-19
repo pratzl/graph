@@ -1,6 +1,6 @@
 #include <edge_list.hpp>
 #include <mmio.hpp>
-#include <algorithms/spanning_tree.hpp>
+#include <graph/algorithms/spanning_tree.hpp>
 #include "common/test_header.hpp"
 
 
