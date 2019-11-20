@@ -24,7 +24,7 @@ TEST(vector_of_vectors, vov) {
     vov<double> B(5);
     B.push_back(3, 1, 4.159);
     vov<double,std::complex<float>> C(5);
-    C.push_back(3, 1, 4.159, {86.7, 5.309});
+    C.push_back(3, 1, 4.159, {86.7f, 5.309f});
   }
   /*SECTION("iterate")*/ {
     vov<double> A(5);

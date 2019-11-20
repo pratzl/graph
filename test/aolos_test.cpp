@@ -23,6 +23,6 @@ TEST(adjacency_list, adj_list) {
     adj_list<double> B(5);
     B.push_back(3, 1, 4.159);
     adj_list<double,std::complex<float>> C(5);
-    C.push_back(3, 1, 4.159, {86.7, 5.309});
+    C.push_back(3, 1, 4.159, {86.7f, 5.309f});
   }
 }
