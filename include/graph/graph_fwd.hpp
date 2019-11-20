@@ -1,3 +1,4 @@
+// graph_fwd.hpp - definitions from P1709Rx
 #pragma once
 #include <concepts>
 #include <type_traits>
@@ -139,6 +140,7 @@ using in_edge_sentinal_t = typename G::in_edge_sentinal;
 
 template <graph_c G>
 using in_edge_size_t = typename G::in_edge_size_type;
+
 
 //
 // common graph functions
@@ -302,9 +304,5 @@ constexpr void clear(G& g);
 
 template <graph_c G>
 constexpr void swap(G& a, G& b);
-
-//
-// graph construction
-//
 
 } // namespace std::graph

@@ -9,7 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{C528
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{42245303-B7DB-4C12-9926-11E7580C3C14}"
 	ProjectSection(SolutionItems) = preProject
+		include\graph\adjlist_fwd_vl.hpp = include\graph\adjlist_fwd_vl.hpp
+		include\graph\graph.hpp = include\graph\graph.hpp
 		include\graph\graph_fwd.hpp = include\graph\graph_fwd.hpp
+		include\graph\graph_utility.hpp = include\graph\graph_utility.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iterators", "iterators", "{6F31AFF7-259A-4B3C-9559-4D756D2B09B7}"
