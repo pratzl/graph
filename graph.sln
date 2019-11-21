@@ -66,32 +66,59 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vovos", "vovos", "{4F27C44C
 		adaptors\vovos\vovos.hpp = adaptors\vovos\vovos.hpp
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adj_list", "adj_list", "{CC1D30AD-D91F-410A-AEC9-EB63987B9596}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\adj_list\adj_list.hpp = adaptors\adj_list\adj_list.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{30D6BDB3-EEA7-4A5B-9EB2-34439E9D3FA8}"
-	ProjectSection(SolutionItems) = preProject
-		src\dag_range.hpp = src\dag_range.hpp
-		src\disjoint_set.hpp = src\disjoint_set.hpp
-		src\edge_list.hpp = src\edge_list.hpp
-		src\graph_base.hpp = src\graph_base.hpp
-		src\mmio.hpp = src\mmio.hpp
-		src\neighbor_range.hpp = src\neighbor_range.hpp
-		src\plain_range.hpp = src\plain_range.hpp
-		src\random_range.hpp = src\random_range.hpp
-		src\reverse.hpp = src\reverse.hpp
-		src\spmv_range.hpp = src\spmv_range.hpp
-		src\timer.hpp = src\timer.hpp
-		src\util.hpp = src\util.hpp
-		src\util_par.hpp = src\util_par.hpp
-		src\vovos.hpp = src\vovos.hpp
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{59FC2CF8-6CB3-456B-BA96-761CAE23308C}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17_src", "bgl17_src", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\bgl17_src\dag_range.hpp = adaptors\bgl17_src\dag_range.hpp
+		adaptors\bgl17_src\disjoint_set.hpp = adaptors\bgl17_src\disjoint_set.hpp
+		adaptors\bgl17_src\edge_list.hpp = adaptors\bgl17_src\edge_list.hpp
+		adaptors\bgl17_src\graph_base.hpp = adaptors\bgl17_src\graph_base.hpp
+		adaptors\bgl17_src\mmio.hpp = adaptors\bgl17_src\mmio.hpp
+		adaptors\bgl17_src\neighbor_range.hpp = adaptors\bgl17_src\neighbor_range.hpp
+		adaptors\bgl17_src\plain_range.hpp = adaptors\bgl17_src\plain_range.hpp
+		adaptors\bgl17_src\random_range.hpp = adaptors\bgl17_src\random_range.hpp
+		adaptors\bgl17_src\reverse.hpp = adaptors\bgl17_src\reverse.hpp
+		adaptors\bgl17_src\spmv_range.hpp = adaptors\bgl17_src\spmv_range.hpp
+		adaptors\bgl17_src\timer.hpp = adaptors\bgl17_src\timer.hpp
+		adaptors\bgl17_src\util.hpp = adaptors\bgl17_src\util.hpp
+		adaptors\bgl17_src\util_par.hpp = adaptors\bgl17_src\util_par.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "attic", "attic", "{8FBEBA4F-9797-4A0B-B6E9-C4BFDFF6FFB3}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\bgl17_src\attic\compressed.hpp = adaptors\bgl17_src\attic\compressed.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backlog", "backlog", "{C48C4310-BE33-49F4-96F3-61ADC3D66F8B}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\bgl17_src\backlog\adj.hpp = adaptors\bgl17_src\backlog\adj.hpp
+		adaptors\bgl17_src\backlog\dimacs_io.hpp = adaptors\bgl17_src\backlog\dimacs_io.hpp
+		adaptors\bgl17_src\backlog\vov.hpp = adaptors\bgl17_src\backlog\vov.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "checkpoint", "checkpoint", "{5A8B09F6-FCE2-4179-99D2-E456DE30221A}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\bgl17_src\checkpoint\adj.hpp = adaptors\bgl17_src\checkpoint\adj.hpp
+		adaptors\bgl17_src\checkpoint\aos.hpp = adaptors\bgl17_src\checkpoint\aos.hpp
+		adaptors\bgl17_src\checkpoint\attributed.hpp = adaptors\bgl17_src\checkpoint\attributed.hpp
+		adaptors\bgl17_src\checkpoint\compressed.hpp = adaptors\bgl17_src\checkpoint\compressed.hpp
+		adaptors\bgl17_src\checkpoint\dimacs_io.hpp = adaptors\bgl17_src\checkpoint\dimacs_io.hpp
+		adaptors\bgl17_src\checkpoint\graph_base.hpp = adaptors\bgl17_src\checkpoint\graph_base.hpp
+		adaptors\bgl17_src\checkpoint\mmio.hpp = adaptors\bgl17_src\checkpoint\mmio.hpp
+		adaptors\bgl17_src\checkpoint\timer.hpp = adaptors\bgl17_src\checkpoint\timer.hpp
+		adaptors\bgl17_src\checkpoint\util.hpp = adaptors\bgl17_src\checkpoint\util.hpp
+		adaptors\bgl17_src\checkpoint\var_compressed.hpp = adaptors\bgl17_src\checkpoint\var_compressed.hpp
+		adaptors\bgl17_src\checkpoint\vov.hpp = adaptors\bgl17_src\checkpoint\vov.hpp
+		adaptors\bgl17_src\checkpoint\vtuple.cpp = adaptors\bgl17_src\checkpoint\vtuple.cpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{8410FEC4-523E-46AF-AE02-8BF9D0DAF647}"
+	ProjectSection(SolutionItems) = preProject
+		adaptors\bgl17_src\detail\numeric.hpp = adaptors\bgl17_src\detail\numeric.hpp
 	EndProjectSection
 EndProject
 Global
@@ -122,7 +149,11 @@ Global
 		{DD9E040D-797B-4D11-B5C1-68DE01448603} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
 		{53B58A6B-FE2E-474B-AFB8-1AFEFCA64A8E} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
 		{4F27C44C-9C57-4F85-9821-7ABDB3719ABC} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
-		{CC1D30AD-D91F-410A-AEC9-EB63987B9596} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
+		{D1335215-222B-4795-82DF-CCE1673DA9D3} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
+		{8FBEBA4F-9797-4A0B-B6E9-C4BFDFF6FFB3} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
+		{C48C4310-BE33-49F4-96F3-61ADC3D66F8B} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
+		{5A8B09F6-FCE2-4179-99D2-E456DE30221A} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
+		{8410FEC4-523E-46AF-AE02-8BF9D0DAF647} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3DE43A65-513E-4C25-82B5-0373B806D033}

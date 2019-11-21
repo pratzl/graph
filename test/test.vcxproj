@@ -82,7 +82,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17_src;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -101,7 +101,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17_src;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -119,7 +119,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17_src;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,7 +139,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17_src;D:\dev\graph\adaptors\aolos;D:\dev\graph\adaptors\aos;D:\dev\graph\adaptors\compressed;D:\dev\graph\adaptors\vovos;D:\dev\graph\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
