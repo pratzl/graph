@@ -44,7 +44,6 @@
     <ClCompile Include="compressed_test.cpp" />
     <ClCompile Include="connected_component_test.cpp" />
     <ClCompile Include="edge_list_test.cpp" />
-    <ClCompile Include="edge_list_test_1.cpp" />
     <ClCompile Include="jp_coloring_test.cpp" />
     <ClCompile Include="kcore_test.cpp" />
     <ClCompile Include="max_flow_test.cpp" />
