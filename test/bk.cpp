@@ -16,6 +16,8 @@
 #include <graph/algorithms/boykov_kolmogorov.hpp>
 #include "common/test_header.hpp"
 
+using namespace bgl17;
+
 TEST(boykov_kolmogorov_max_flow, bkmf) {
   
     

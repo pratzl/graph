@@ -19,6 +19,8 @@
 
 #include "common/test_header.hpp"
 
+using namespace bgl17;
+
 TEST(max_flow, mf) {
   size_t source = 0, sink = 7;
 

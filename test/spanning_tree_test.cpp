@@ -3,6 +3,7 @@
 #include <graph/algorithms/spanning_tree.hpp>
 #include "common/test_header.hpp"
 
+using namespace bgl17;
 
 TEST( max_min_weight_spanning_tree, mst ) {
   auto aos_a = read_mm<undirected, double>("../data/msttest.mtx");

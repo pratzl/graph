@@ -11,6 +11,8 @@
 #include "common/test_header.hpp"
 #include "compressed.hpp"
 
+using namespace bgl17;
+
 // TODO: Need to add proper catch asserts to verify results
 
 TEST(constructing_graphs_using_mmio, mmio) {

@@ -12,6 +12,8 @@
 #include "common/test_header.hpp"
 #include <iterator>
 
+using namespace bgl17;
+
 template<size_t pos, typename Iterator>
 void test_assignment(Iterator iter, size_t index = 0) {
   typename std::iterator_traits<Iterator>::reference tuple = index ? *iter : iter[index];

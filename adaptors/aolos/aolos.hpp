@@ -13,7 +13,8 @@
 #include <tuple>
 #include <vector>
 
-template<typename... Attributes>
+namespace bgl17 {
+template <typename... Attributes>
 class array_of_list_of_structs {
 
 public:
@@ -36,10 +37,12 @@ private:
   std::vector<std::forward_list<std::tuple<Attributes...>>> storage_;
 };
 
-template<typename... Attributes>
+template <typename... Attributes>
 class adj_list : public array_of_list_of_structs<size_t, Attributes...> {
 public:
   adj_list(size_t N) : array_of_list_of_structs<size_t, Attributes...>(N) {}
 };
+
+} // namespace bgl17
 
 #endif    // __AOLOS_HPP

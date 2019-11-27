@@ -15,6 +15,8 @@
 #include "aos.hpp"
 #include "graph/iterators/bfs_range.hpp"
 
+using namespace bgl17;
+
 //****************************************************************************
 template <typename EdgeListT>
 bool validate(EdgeListT                 &aos,

@@ -12,7 +12,9 @@
 #pragma once
 
 #include "plain_range.hpp"
-#include "dag_range.hpp"
+#include "../iterators/dag_range.hpp"
+
+using namespace bgl17;
 
 // #define PRINT_DEBUG 1
 

@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iterators", "iterators", "{
 	ProjectSection(SolutionItems) = preProject
 		include\graph\iterators\bfs_edge_range.hpp = include\graph\iterators\bfs_edge_range.hpp
 		include\graph\iterators\bfs_range.hpp = include\graph\iterators\bfs_range.hpp
+		include\graph\iterators\dag_range.hpp = include\graph\iterators\dag_range.hpp
 		include\graph\iterators\dfs_range.hpp = include\graph\iterators\dfs_range.hpp
 		include\graph\iterators\filtered_bfs_range.hpp = include\graph\iterators\filtered_bfs_range.hpp
 		include\graph\iterators\new_dfs_range.hpp = include\graph\iterators\new_dfs_range.hpp
@@ -73,7 +74,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17_src", "bgl17_src", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
 	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17_src\dag_range.hpp = adaptors\bgl17_src\dag_range.hpp
 		adaptors\bgl17_src\disjoint_set.hpp = adaptors\bgl17_src\disjoint_set.hpp
 		adaptors\bgl17_src\edge_list.hpp = adaptors\bgl17_src\edge_list.hpp
 		adaptors\bgl17_src\graph_base.hpp = adaptors\bgl17_src\graph_base.hpp

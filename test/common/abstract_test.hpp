@@ -5,6 +5,8 @@
 #include "compressed.hpp"
 #include "mmio.hpp"
 
+using namespace bgl17;
+
 typedef compressed_sparse<0, directed> directed_csr_graph_t;
 class test_util {
 public:

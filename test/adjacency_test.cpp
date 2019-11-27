@@ -20,13 +20,13 @@
 TEST(adjacency, adjacency_test) {
   size_t n_vtx = 5;
 
-  edge_list<undirected, int> A_list(n_vtx);
+  bgl17::edge_list<bgl17::undirected, int> A_list(n_vtx);
   A_list.push_back(0,1,1);
   A_list.push_back(1,2,2);
   A_list.push_back(2,3,3);
   A_list.push_back(3,4,4);
   
-  adjacency<0, int> A(A_list);
+  bgl17::adjacency<0, int> A(A_list);
   
   bfs_edge_range ranges(A, 0);
   for (auto ite = ranges.begin(); ite!= ranges.end(); ++ite) {

@@ -13,6 +13,8 @@
 
 #include "common/test_header.hpp"
 
+using namespace bgl17;
+
 TEST(edge_list, edge_list) {
 
   size_t N = 1024;

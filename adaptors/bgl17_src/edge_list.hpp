@@ -16,17 +16,21 @@
 #include "graph_base.hpp"
 #include "plain_range.hpp"
 
-template<int idx, directedness sym, typename... Attributes>
+namespace bgl17 {
+
+template <int idx, directedness sym, typename... Attributes>
 class compressed_sparse;
 
-template<int idx, typename... Attributes>
+template <int idx, typename... Attributes>
 class adjacency;
 
-template<int idx, succession cessor, typename... Attributes>
+template <int idx, succession cessor, typename... Attributes>
 class packed;
 
-template<directedness edge_directedness = undirected, typename... Attributes>
-class edge_list : public graph_base, public array_of_structs<size_t, size_t, Attributes...> {
+template <directedness edge_directedness = undirected, typename... Attributes>
+class edge_list
+      : public graph_base
+      , public array_of_structs<size_t, size_t, Attributes...> {
 
   using element = std::tuple<size_t, size_t, Attributes...>;
   using base    = array_of_structs<size_t, size_t, Attributes...>;
@@ -55,20 +59,20 @@ public:
 
   void push_back(size_t i, size_t j, Attributes... attrs) { base::push_back(i, j, attrs...); }
   void push_back(element& elem) { base::push_back(elem); }
-  
-  template<int idx>
+
+  template <int idx>
   void sort_by() {
     std::sort(base::storage_.begin(), base::storage_.end(),
               [](const element& a, const element& b) -> bool { return (std::get<idx>(a) < std::get<idx>(b)); });
   }
 
-  template<int idx>
+  template <int idx>
   void stable_sort_by() {
     std::stable_sort(base::storage_.begin(), base::storage_.end(),
                      [](const element& a, const element& b) -> bool { return (std::get<idx>(a) < std::get<idx>(b)); });
   }
 
-  template<int idx, directedness sym>
+  template <int idx, directedness sym>
   void fill(compressed_sparse<idx, sym, Attributes...>& cs) {
     stable_sort_by<idx>();
     cs.open_for_push_back();
@@ -80,7 +84,7 @@ public:
     cs.close_for_push_back();
   }
 
-  template<int idx, succession cessor>
+  template <int idx, succession cessor>
   void fill(packed<idx, cessor, Attributes...>& cs) {
     triangularize<idx, cessor>();
     sort_by<(idx + 1) % 2>();
@@ -93,7 +97,7 @@ public:
     cs.close_for_push_back();
   }
 
-  template<int idx>
+  template <int idx>
   void fill(adjacency<idx, Attributes...>& cs) {
     if constexpr (edge_directedness == directed) {
       stable_sort_by<idx>();
@@ -126,7 +130,7 @@ public:
 
   size_t size() { return lim[0]; }
 
-  template<int idx, succession cessor = predecessor>
+  template <int idx, succession cessor = predecessor>
   void triangularize() {
     if constexpr ((idx == 0 && cessor == predecessor) || (idx == 1 && cessor == successor)) {
       for (auto& f : base::storage_) {
@@ -143,5 +147,7 @@ public:
     }
   }
 };
+
+} // namespace bgl17
 
 #endif    // __EDGE_LIST_HPP

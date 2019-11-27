@@ -14,10 +14,12 @@
 #include <iostream>
 #include <sstream>
 
+namespace bgl17 {
 #include "edge_list.hpp"
 #include "graph_base.hpp"
 
-inline void mm_fill(std::istream& inputStream, edge_list<directed>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
+inline void
+mm_fill(std::istream& inputStream, edge_list<directed>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
   A.reserve((file_symmetry ? 2 : 1) * nNonzeros);
   A.open_for_push_back();
   for (size_t i = 0; i < nNonzeros; ++i) {
@@ -36,7 +38,7 @@ inline void mm_fill(std::istream& inputStream, edge_list<directed>& A, size_t nN
   A.close_for_push_back();
 }
 
-template<typename T>
+template <typename T>
 void mm_fill(std::istream& inputStream, edge_list<directed, T>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
 
   A.reserve((file_symmetry ? 2 : 1) * nNonzeros);
@@ -81,8 +83,9 @@ mm_fill(std::istream& inputStream, edge_list<undirected>& A, size_t nNonzeros, b
   A.close_for_push_back();
 }
 
-template<typename T>
-void mm_fill(std::istream& inputStream, edge_list<undirected, T>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
+template <typename T>
+void mm_fill(
+      std::istream& inputStream, edge_list<undirected, T>& A, size_t nNonzeros, bool file_symmetry, bool pattern) {
   assert(file_symmetry);
   A.reserve(nNonzeros);
   A.open_for_push_back();
@@ -101,7 +104,7 @@ void mm_fill(std::istream& inputStream, edge_list<undirected, T>& A, size_t nNon
   A.close_for_push_back();
 }
 
-template<directedness sym, typename... Attributes>
+template <directedness sym, typename... Attributes>
 edge_list<sym, Attributes...> read_mm(std::istream& inputStream) {
   std::string              string_input;
   bool                     file_symmetry = false;
@@ -127,7 +130,8 @@ edge_list<sym, Attributes...> read_mm(std::istream& inputStream) {
   }
 
   while (std::getline(inputStream, string_input)) {
-    if (string_input[0] != '%') break;
+    if (string_input[0] != '%')
+      break;
   }
   size_t n0, n1, nNonzeros;
   std::stringstream(string_input) >> n0 >> n1 >> nNonzeros;
@@ -140,7 +144,7 @@ edge_list<sym, Attributes...> read_mm(std::istream& inputStream) {
   return A;
 }
 
-template<directedness sym, typename... Attributes>
+template <directedness sym, typename... Attributes>
 edge_list<sym, Attributes...> read_mm(const std::string& filename) {
   std::ifstream inputFile(filename);
 
@@ -149,9 +153,11 @@ edge_list<sym, Attributes...> read_mm(const std::string& filename) {
   return A;
 }
 
-template<size_t w_idx, directedness sym, typename... Attributes>
-void aos_stream(std::ofstream& outputStream, edge_list<sym, Attributes...> A, const std::string& file_symmetry,
-                std::string& w_type) {
+template <size_t w_idx, directedness sym, typename... Attributes>
+void aos_stream(std::ofstream&                outputStream,
+                edge_list<sym, Attributes...> A,
+                const std::string&            file_symmetry,
+                std::string&                  w_type) {
   outputStream << "%%MatrixMarket matrix coordinate " << w_type << " " << file_symmetry << "\n%%\n";
 
   outputStream << A.size() << " " << A.size() << " ";
@@ -168,15 +174,18 @@ void aos_stream(std::ofstream& outputStream, edge_list<sym, Attributes...> A, co
     outputStream << std::endl;
     if (file_symmetry == "general" && sym == directedness::undirected) {
       outputStream << std::get<1>(element) + 1 << " " << std::get<0>(element) + 1 << " ";
-      if (w_idx != 0) outputStream << std::get<w_idx>(element);
+      if (w_idx != 0)
+        outputStream << std::get<w_idx>(element);
 
       outputStream << std::endl;
     }
   }
 }
 
-template<size_t w_idx = 0, typename idxtype = void, directedness sym, typename... Attributes>
-void write_mm(const std::string& filename, edge_list<sym, Attributes...> A, const std::string& file_symmetry = "general") {
+template <size_t w_idx = 0, typename idxtype = void, directedness sym, typename... Attributes>
+void write_mm(const std::string&            filename,
+              edge_list<sym, Attributes...> A,
+              const std::string&            file_symmetry = "general") {
   if (file_symmetry == "symmetric" && sym == directedness::directed) {
     std::cerr << "cannot save directed matrix as symmetric matrix market" << std::endl;
   }
@@ -191,9 +200,11 @@ void write_mm(const std::string& filename, edge_list<sym, Attributes...> A, cons
   aos_stream<w_idx>(outputStream, A, file_symmetry, w_type);
 }
 
-template<size_t w_idx, int idx, typename... Attributes>
-void adjacency_stream(std::ofstream& outputStream, adjacency<idx, Attributes...> A, const std::string& file_symmetry,
-                      std::string& w_type) {
+template <size_t w_idx, int idx, typename... Attributes>
+void adjacency_stream(std::ofstream&                outputStream,
+                      adjacency<idx, Attributes...> A,
+                      const std::string&            file_symmetry,
+                      std::string&                  w_type) {
   outputStream << "%%MatrixMarket matrix coordinate " << w_type << " " << file_symmetry << "\n%%\n";
 
   outputStream << A.size() << " " << A.size() << " "
@@ -203,14 +214,17 @@ void adjacency_stream(std::ofstream& outputStream, adjacency<idx, Attributes...>
   for (auto first = A.begin(); first != A.end(); ++first) {
     for (auto v = (*first).begin(); v != (*first).end(); ++v) {
       outputStream << first - A.begin() + (1 - idx) << " " << std::get<0>(*v) + (1 - idx);
-      if (w_idx != 0) outputStream << " " << std::get<w_idx>(*v);
+      if (w_idx != 0)
+        outputStream << " " << std::get<w_idx>(*v);
       outputStream << std::endl;
     }
   }
 }
 
-template<size_t w_idx = 0, typename idxtype = void, int idx, typename... Attributes>
-void write_mm(const std::string& filename, adjacency<idx, Attributes...> A, const std::string& file_symmetry = "general") {
+template <size_t w_idx = 0, typename idxtype = void, int idx, typename... Attributes>
+void write_mm(const std::string&            filename,
+              adjacency<idx, Attributes...> A,
+              const std::string&            file_symmetry = "general") {
   /*if (file_symmetry == "symmetric" && sym == directedness::directed) {
     std::cerr << "cannot save directed matrix as symmetric matrix market" << std::endl;
   }*/
@@ -224,5 +238,7 @@ void write_mm(const std::string& filename, adjacency<idx, Attributes...> A, cons
   std::ofstream outputStream(filename);
   adjacency_stream<w_idx>(outputStream, A, file_symmetry, w_type);
 }
+
+} // namespace bgl17
 
 #endif    // __MMIO_HPP

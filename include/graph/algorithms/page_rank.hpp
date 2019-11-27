@@ -19,6 +19,8 @@
 #include <edge_list.hpp>
 #include <spmv_range.hpp>
 
+using namespace bgl17;
+
 //****************************************************************************
 template<typename GraphT, typename RealT = double>
 void page_rank_range_for(GraphT& graph, std::vector<RealT>& page_rank, RealT damping_factor = 0.85, RealT threshold = 1.e-5,

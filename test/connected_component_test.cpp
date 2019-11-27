@@ -22,6 +22,7 @@
 #include "graph/algorithms/connected_component.hpp"
 #include "common/test_header.hpp"
 
+using namespace bgl17;
 
 typedef compressed_sparse<0> csr_graph;
 

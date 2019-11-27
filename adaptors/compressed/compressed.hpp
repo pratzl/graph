@@ -11,15 +11,17 @@
 #include <iostream>
 #include <numeric>
 #if defined(NEED_EXCLUSIVE_SCAN)
-#include "detail/numeric.hpp"
+#  include "detail/numeric.hpp"
 #endif
 #include <tuple>
 #include <vector>
 
-template<directedness edge_directedness, typename... Attributes>
+namespace bgl17 {
+
+template <directedness edge_directedness, typename... Attributes>
 class edge_list;
 
-template<typename... Attributes>
+template <typename... Attributes>
 class indexed_struct_of_arrays {
 
 public:
@@ -28,14 +30,16 @@ public:
 public:
   class sub_view {
   public:
-    sub_view(typename struct_of_arrays<Attributes...>::iterator _begin, typename struct_of_arrays<Attributes...>::iterator _end)
-        : v_begin(_begin), v_end(_end) {}
+    sub_view(typename struct_of_arrays<Attributes...>::iterator _begin,
+             typename struct_of_arrays<Attributes...>::iterator _end)
+          : v_begin(_begin), v_end(_end) {}
 
     typedef typename struct_of_arrays<Attributes...>::iterator iterator;
 
-    auto begin() { return v_begin; }
-    auto end() { return v_end; }
-    size_t size() {return v_end - v_begin;}
+    auto   begin() { return v_begin; }
+    auto   end() { return v_end; }
+    size_t size() { return v_end - v_begin; }
+
   private:
     typename struct_of_arrays<Attributes...>::iterator v_begin;
     typename struct_of_arrays<Attributes...>::iterator v_end;
@@ -51,7 +55,7 @@ public:
 
   public:
     outer_iterator(std::vector<size_t>& _indices, struct_of_arrays<Attributes...>& _indexed, size_t _index)
-        : index(_index), indices_(_indices), indexed_(_indexed) {}
+          : index(_index), indices_(_indices), indexed_(_indexed) {}
 
     auto& operator=(const outer_iterator& b) {
       index    = b.index;
@@ -103,9 +107,8 @@ public:
     typedef value_type* pointer;
     typedef value_type& reference;
 
-    auto get_index() {
-      return index;
-    }
+    auto get_index() { return index; }
+
   private:
     size_t                           index;
     std::vector<size_t>&             indices_;
@@ -122,26 +125,26 @@ public:
   size_t size() const { return indices_.size() - 1; }
 
 public:
-  void open_for_push_back() { 
+  void open_for_push_back() {
     assert(to_be_indexed_.size() == 0);
     //If we decide to allow reopen for pushback, this will undo exclusive_scan
     /*if(to_be_indexed_.size() != 0) {
       std::adjacent_difference(indices_.begin()+1, indices_.end(), indices_.begin());
       indices_[N_]=0;
       }*/
-    
-    is_open = true; 
+
+    is_open = true;
   }
 
   void close_for_push_back() {
-    if(to_be_indexed_.size() == 0)
+    if (to_be_indexed_.size() == 0)
       return;
-    
-    indices_[N_] = indices_[N_-1];
-    std::exclusive_scan(indices_.begin(), indices_.end()-1, indices_.begin(), static_cast<size_t>(0));
-    indices_[N_] += indices_[N_-1];
+
+    indices_[N_] = indices_[N_ - 1];
+    std::exclusive_scan(indices_.begin(), indices_.end() - 1, indices_.begin(), static_cast<size_t>(0));
+    indices_[N_] += indices_[N_ - 1];
     assert(indices_[N_] == to_be_indexed_.size());
-    
+
     is_open = false;
   }
 
@@ -151,8 +154,8 @@ public:
   }
 
   void push_at(size_t i, const Attributes&... attrs) {
-    size_t j = indices_[i]++;
-    to_be_indexed_[j] = std::tuple<Attributes...>(attrs...) ;
+    size_t j          = indices_[i]++;
+    to_be_indexed_[j] = std::tuple<Attributes...>(attrs...);
   }
 
   void stream(const std::string& msg = "") {
@@ -186,21 +189,27 @@ private:
  * @date 2018-08-22
  */
 
-template<int idx, directedness sym = undirected, typename... Attributes>
+template <int idx, directedness sym = undirected, typename... Attributes>
 class compressed_sparse : public indexed_struct_of_arrays<size_t, Attributes...> {
 public:
   compressed_sparse(size_t N) : indexed_struct_of_arrays<size_t, Attributes...>(N) {}
-  compressed_sparse(edge_list<sym, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) { A.fill(*this); }
+  compressed_sparse(edge_list<sym, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) {
+    A.fill(*this);
+  }
 
   //  size_t size() const { return indexed_struct_of_arrays<size_t, Attributes...>::size(); }
 };
 
-template<int idx, typename... Attributes>
+template <int idx, typename... Attributes>
 class adjacency : public indexed_struct_of_arrays<size_t, Attributes...> {
 public:
   adjacency(size_t N) : indexed_struct_of_arrays<size_t, Attributes...>(N) {}
-  adjacency(edge_list<directed, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) { A.fill(*this); }
-  adjacency(edge_list<undirected, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) { A.fill(*this); }
+  adjacency(edge_list<directed, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) {
+    A.fill(*this);
+  }
+  adjacency(edge_list<undirected, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) {
+    A.fill(*this);
+  }
 
   //  size_t size() const { return indexed_struct_of_arrays<size_t, Attributes...>::size(); }
 
@@ -236,16 +245,19 @@ public:
     return A_transpose;
   }
 #endif
-
 };
 
-template<int idx, succession cessor, typename... Attributes>
+template <int idx, succession cessor, typename... Attributes>
 class packed : public indexed_struct_of_arrays<size_t, Attributes...> {
 public:
   packed(size_t N) : indexed_struct_of_arrays<size_t, Attributes...>(N) {}
-  packed(edge_list<undirected, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) { A.fill(*this); }
+  packed(edge_list<undirected, Attributes...>& A) : indexed_struct_of_arrays<size_t, Attributes...>(A.size()) {
+    A.fill(*this);
+  }
 
   //  size_t size() const { return indexed_struct_of_arrays<size_t, Attributes...>::size(); }
 };
 
-#endif    // __COMPRESSED_HPP
+} // namespace bgl17
+
+#endif // __COMPRESSED_HPP

@@ -13,6 +13,8 @@
 #include "common/test_header.hpp"
 #include <complex>
 
+using namespace bgl17;
+
 TEST(vector_of_vector_of_structures, vector_of_vector_of_structs) {
   /*SECTION("construct")*/ { vector_of_vector_of_structs A(5); }
 }

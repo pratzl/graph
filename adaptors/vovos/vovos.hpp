@@ -13,26 +13,26 @@
 #include <vector>
 #include <tuple>
 
-template<typename... Attributes>
+namespace bgl17 {
+
+template <typename... Attributes>
 class vector_of_vector_of_structs {
 
 public:
-  vector_of_vector_of_structs(size_t N) : storage_(N) { }
+  vector_of_vector_of_structs(size_t N) : storage_(N) {}
 
-  using inner_iterator = typename std::forward_list<std::tuple<Attributes...>>::iterator;
+  using inner_iterator      = typename std::forward_list<std::tuple<Attributes...>>::iterator;
   using inner_container_ref = typename std::forward_list<std::tuple<Attributes...>>&;
-  using outer_iterator = typename std::vector<std::forward_list<std::tuple<Attributes...>>>::iterator;
+  using outer_iterator      = typename std::vector<std::forward_list<std::tuple<Attributes...>>>::iterator;
 
   auto begin() { return storage_.begin(); }
-  auto end()   { return storage_.end(); }
+  auto end() { return storage_.end(); }
   auto begin() const { return storage_.begin(); }
-  auto end()   const { return storage_.end(); }
+  auto end() const { return storage_.end(); }
 
   void open_for_push_back() {}
   void close_for_push_back() {}
-  void push_back(size_t i, Attributes... attrs) {
-    storage_[i].emplace_front(attrs...);
-  }
+  void push_back(size_t i, Attributes... attrs) { storage_[i].emplace_front(attrs...); }
 
   auto size() const { return storage_.size(); }
 
@@ -41,11 +41,12 @@ private:
 };
 
 
-template<typename... Attributes>
-class vov : public vector_of_vector_of_structs<size_t, Attributes...>{
+template <typename... Attributes>
+class vov : public vector_of_vector_of_structs<size_t, Attributes...> {
 public:
   vov(size_t N) : vector_of_vector_of_structs<size_t, Attributes...>(N) {}
 };
 
+} // namespace bgl17
 
 #endif    // __VOVOS_HPP

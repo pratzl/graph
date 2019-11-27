@@ -17,6 +17,8 @@
 
 #include "common/test_header.hpp"
 
+using namespace bgl17;
+
 TEST(New_Depth_First_Search, DFS) {
   size_t n_vtx = 15;
 

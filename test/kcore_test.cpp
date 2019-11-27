@@ -18,6 +18,8 @@
 
 #include "common/test_header.hpp"
 
+using namespace bgl17;
+
 TEST(k_core, k_core) {
   int k = 3;
 

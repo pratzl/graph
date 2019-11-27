@@ -17,6 +17,8 @@
 
 #include <iostream>
 
+using namespace bgl17;
+
 
 // data/karate.mtx:%%MatrixMarket matrix coordinate pattern symmetric
 // data/karate.mtx:%%MatrixMarket matrix coordinate pattern symmetric
