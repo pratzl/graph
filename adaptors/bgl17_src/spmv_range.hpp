@@ -10,7 +10,9 @@
 
 #pragma once
 
-template<typename Graph>
+namespace bgl17 {
+
+template <typename Graph>
 class spmv_range {
 public:
   spmv_range(Graph& g) : the_graph_(g) {}
@@ -22,29 +24,31 @@ public:
 
   class v_range_iterator {
   private:
-    spmv_range<Graph>&       the_range_;
+    spmv_range<Graph>&             the_range_;
     typename Graph::outer_iterator first, last;
     typename Graph::inner_iterator u_begin, u_end;
 
   public:
     v_range_iterator(spmv_range<Graph>& range, size_t offset = 0)
-        : the_range_{range}, first{the_range_.the_graph_.begin() + offset}, last{the_range_.the_graph_.end()} {
-            if (first != last) {
-              u_begin = (*first).begin(); 
-              u_end   = (*first).end();
-            }
-          }
+          : the_range_{range}, first{the_range_.the_graph_.begin() + offset}, last{the_range_.the_graph_.end()} {
+      if (first != last) {
+        u_begin = (*first).begin();
+        u_end   = (*first).end();
+      }
+    }
 
     v_range_iterator(const v_range_iterator& b)
-        : the_range_(b.the_range_), first(b.first), last(b.last), u_begin(b.u_begin), u_end(b.u_end) {}
+          : the_range_(b.the_range_), first(b.first), last(b.last), u_begin(b.u_begin), u_end(b.u_end) {}
 
     v_range_iterator& operator++() {
       ++u_begin;
       if (u_begin == u_end) {
         if (++first != last) {
-	      u_begin = (*first).begin();  // FIXME:  This was commented out -- why?  Might not need it for CSR -- but in general, we do
-        u_end   = (*first).end();
-	}
+          u_begin =
+                (*first)
+                      .begin(); // FIXME:  This was commented out -- why?  Might not need it for CSR -- but in general, we do
+          u_end = (*first).end();
+        }
       }
 
       return *this;
@@ -53,8 +57,8 @@ public:
     // auto operator*() { return std::tuple<vertex_index_t, vertex_index_t&&>(last - first, std::get<0>(*u_begin)); }
 
     auto operator*() {
-      return std::tuple<typename std::iterator_traits<typename Graph::outer_iterator>::difference_type, vertex_index_t, double&>
-        (first - the_range_.the_graph_.begin(), std::get<0>(*u_begin), std::get<1>(*u_begin));
+      return std::tuple<typename std::iterator_traits<typename Graph::outer_iterator>::difference_type, vertex_index_t,
+                        double&>(first - the_range_.the_graph_.begin(), std::get<0>(*u_begin), std::get<1>(*u_begin));
     }
 
     auto operator==(const v_range_iterator& b) const { return first == b.first; }
@@ -89,3 +93,5 @@ public:
 private:
   Graph& the_graph_;
 };
+
+} // namespace bgl17

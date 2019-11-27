@@ -32,7 +32,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithms", "algorithms", 
 		include\graph\algorithms\boykov_kolmogorov3.hpp = include\graph\algorithms\boykov_kolmogorov3.hpp
 		include\graph\algorithms\connected_component.hpp = include\graph\algorithms\connected_component.hpp
 		include\graph\algorithms\dag_based_mis.hpp = include\graph\algorithms\dag_based_mis.hpp
-		include\graph\algorithms\degree.hpp = include\graph\algorithms\degree.hpp
 		include\graph\algorithms\dijkstra.hpp = include\graph\algorithms\dijkstra.hpp
 		include\graph\algorithms\jones_plassmann_coloring.hpp = include\graph\algorithms\jones_plassmann_coloring.hpp
 		include\graph\algorithms\k_core.hpp = include\graph\algorithms\k_core.hpp
@@ -74,6 +73,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17_src", "bgl17_src", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
 	ProjectSection(SolutionItems) = preProject
+		adaptors\bgl17_src\degree.hpp = adaptors\bgl17_src\degree.hpp
 		adaptors\bgl17_src\disjoint_set.hpp = adaptors\bgl17_src\disjoint_set.hpp
 		adaptors\bgl17_src\edge_list.hpp = adaptors\bgl17_src\edge_list.hpp
 		adaptors\bgl17_src\graph_base.hpp = adaptors\bgl17_src\graph_base.hpp

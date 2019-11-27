@@ -15,7 +15,9 @@
 #include <queue>
 #include <vector>
 
-template<typename Graph>
+namespace bgl17 {
+
+template <typename Graph>
 class neighbor_range {
 public:
   neighbor_range(Graph& g) : the_graph_(g) {}
@@ -29,13 +31,18 @@ public:
 
   public:
     edge_range_iterator(neighbor_range<Graph>& range)
-        : the_range_(range), first(the_range_.the_graph_.begin()), last(the_range_.the_graph_.end()), G(first),
-          u_begin((*first).begin()), u_end((*first).end()) {}
+          : the_range_(range)
+          , first(the_range_.the_graph_.begin())
+          , last(the_range_.the_graph_.end())
+          , G(first)
+          , u_begin((*first).begin())
+          , u_end((*first).end()) {}
 
     edge_range_iterator& operator++() {
       ++u_begin;
       while (u_begin == u_end) {
-        if (++first == last) break;
+        if (++first == last)
+          break;
         u_begin = (*first).begin();
         u_end   = (*first).end();
       }
@@ -64,5 +71,7 @@ public:
 private:
   Graph& the_graph_;
 };
+
+} // namespace bgl17
 
 #endif    // __NEIGHBOR_RANGE_HPP

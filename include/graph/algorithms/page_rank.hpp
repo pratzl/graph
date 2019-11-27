@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-#include <graph/algorithms/degree.hpp>
+#include <degree.hpp>
 #include <graph/algorithms/utils.hpp>
 #include <compressed.hpp>
 #include <edge_list.hpp>

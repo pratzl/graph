@@ -13,9 +13,11 @@
 #include <spmv_range.hpp>
 #include <vector>
 
+namespace bgl17 {
+
 //****************************************************************************
-template<typename GraphT, typename RealT = double>
-std::vector<RealT> in_degree(GraphT& graph)    //const &graph)
+template <typename GraphT, typename RealT = double>
+std::vector<RealT> in_degree(GraphT& graph) //const &graph)
 {
   std::vector<RealT> in_degree(graph.size());
 
@@ -27,8 +29,8 @@ std::vector<RealT> in_degree(GraphT& graph)    //const &graph)
 }
 
 //****************************************************************************
-template<typename GraphT, typename RealT = double>
-std::vector<RealT> out_degree(GraphT& graph)    //const &graph)
+template <typename GraphT, typename RealT = double>
+std::vector<RealT> out_degree(GraphT& graph) //const &graph)
 {
   std::vector<RealT> out_degree(graph.size());
 
@@ -38,3 +40,5 @@ std::vector<RealT> out_degree(GraphT& graph)    //const &graph)
 
   return out_degree;
 }
+
+} // namespace bgl17
