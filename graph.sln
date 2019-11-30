@@ -46,79 +46,64 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithms", "algorithms", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adaptors", "adaptors", "{80652490-1FD3-4DA4-8986-2EA29FB1F441}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aolos", "aolos", "{AE465A07-5923-4E7B-93C3-5AD66F368530}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\aolos\aolos.hpp = adaptors\aolos\aolos.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aos", "aos", "{DD9E040D-797B-4D11-B5C1-68DE01448603}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\aos\aos.hpp = adaptors\aos\aos.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compressed", "compressed", "{53B58A6B-FE2E-474B-AFB8-1AFEFCA64A8E}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\compressed\compressed.hpp = adaptors\compressed\compressed.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vovos", "vovos", "{4F27C44C-9C57-4F85-9821-7ABDB3719ABC}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\vovos\vovos.hpp = adaptors\vovos\vovos.hpp
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{59FC2CF8-6CB3-456B-BA96-761CAE23308C}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17_src", "bgl17_src", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17", "bgl17", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
 	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17_src\degree.hpp = adaptors\bgl17_src\degree.hpp
-		adaptors\bgl17_src\disjoint_set.hpp = adaptors\bgl17_src\disjoint_set.hpp
-		adaptors\bgl17_src\edge_list.hpp = adaptors\bgl17_src\edge_list.hpp
-		adaptors\bgl17_src\graph_base.hpp = adaptors\bgl17_src\graph_base.hpp
-		adaptors\bgl17_src\mmio.hpp = adaptors\bgl17_src\mmio.hpp
-		adaptors\bgl17_src\neighbor_range.hpp = adaptors\bgl17_src\neighbor_range.hpp
-		adaptors\bgl17_src\plain_range.hpp = adaptors\bgl17_src\plain_range.hpp
-		adaptors\bgl17_src\random_range.hpp = adaptors\bgl17_src\random_range.hpp
-		adaptors\bgl17_src\reverse.hpp = adaptors\bgl17_src\reverse.hpp
-		adaptors\bgl17_src\spmv_range.hpp = adaptors\bgl17_src\spmv_range.hpp
-		adaptors\bgl17_src\timer.hpp = adaptors\bgl17_src\timer.hpp
-		adaptors\bgl17_src\util.hpp = adaptors\bgl17_src\util.hpp
-		adaptors\bgl17_src\util_par.hpp = adaptors\bgl17_src\util_par.hpp
+		adaptors\bgl17\aolos.hpp = adaptors\bgl17\aolos.hpp
+		adaptors\bgl17\aos.hpp = adaptors\bgl17\aos.hpp
+		adaptors\bgl17\bgl17_graph.hpp = adaptors\bgl17\bgl17_graph.hpp
+		adaptors\bgl17\compressed.hpp = adaptors\bgl17\compressed.hpp
+		adaptors\bgl17\degree.hpp = adaptors\bgl17\degree.hpp
+		adaptors\bgl17\disjoint_set.hpp = adaptors\bgl17\disjoint_set.hpp
+		adaptors\bgl17\edge_list.hpp = adaptors\bgl17\edge_list.hpp
+		adaptors\bgl17\graph_base.hpp = adaptors\bgl17\graph_base.hpp
+		adaptors\bgl17\mmio.hpp = adaptors\bgl17\mmio.hpp
+		adaptors\bgl17\neighbor_range.hpp = adaptors\bgl17\neighbor_range.hpp
+		adaptors\bgl17\plain_range.hpp = adaptors\bgl17\plain_range.hpp
+		adaptors\bgl17\random_range.hpp = adaptors\bgl17\random_range.hpp
+		adaptors\bgl17\reverse.hpp = adaptors\bgl17\reverse.hpp
+		adaptors\bgl17\spmv_range.hpp = adaptors\bgl17\spmv_range.hpp
+		adaptors\bgl17\timer.hpp = adaptors\bgl17\timer.hpp
+		adaptors\bgl17\util.hpp = adaptors\bgl17\util.hpp
+		adaptors\bgl17\util_par.hpp = adaptors\bgl17\util_par.hpp
+		adaptors\bgl17\vovos.hpp = adaptors\bgl17\vovos.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "attic", "attic", "{8FBEBA4F-9797-4A0B-B6E9-C4BFDFF6FFB3}"
 	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17_src\attic\compressed.hpp = adaptors\bgl17_src\attic\compressed.hpp
+		adaptors\bgl17\attic\compressed.hpp = adaptors\bgl17\attic\compressed.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backlog", "backlog", "{C48C4310-BE33-49F4-96F3-61ADC3D66F8B}"
 	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17_src\backlog\adj.hpp = adaptors\bgl17_src\backlog\adj.hpp
-		adaptors\bgl17_src\backlog\dimacs_io.hpp = adaptors\bgl17_src\backlog\dimacs_io.hpp
-		adaptors\bgl17_src\backlog\vov.hpp = adaptors\bgl17_src\backlog\vov.hpp
+		adaptors\bgl17\backlog\adj.hpp = adaptors\bgl17\backlog\adj.hpp
+		adaptors\bgl17\backlog\dimacs_io.hpp = adaptors\bgl17\backlog\dimacs_io.hpp
+		adaptors\bgl17\backlog\vov.hpp = adaptors\bgl17\backlog\vov.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "checkpoint", "checkpoint", "{5A8B09F6-FCE2-4179-99D2-E456DE30221A}"
 	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17_src\checkpoint\adj.hpp = adaptors\bgl17_src\checkpoint\adj.hpp
-		adaptors\bgl17_src\checkpoint\aos.hpp = adaptors\bgl17_src\checkpoint\aos.hpp
-		adaptors\bgl17_src\checkpoint\attributed.hpp = adaptors\bgl17_src\checkpoint\attributed.hpp
-		adaptors\bgl17_src\checkpoint\compressed.hpp = adaptors\bgl17_src\checkpoint\compressed.hpp
-		adaptors\bgl17_src\checkpoint\dimacs_io.hpp = adaptors\bgl17_src\checkpoint\dimacs_io.hpp
-		adaptors\bgl17_src\checkpoint\graph_base.hpp = adaptors\bgl17_src\checkpoint\graph_base.hpp
-		adaptors\bgl17_src\checkpoint\mmio.hpp = adaptors\bgl17_src\checkpoint\mmio.hpp
-		adaptors\bgl17_src\checkpoint\timer.hpp = adaptors\bgl17_src\checkpoint\timer.hpp
-		adaptors\bgl17_src\checkpoint\util.hpp = adaptors\bgl17_src\checkpoint\util.hpp
-		adaptors\bgl17_src\checkpoint\var_compressed.hpp = adaptors\bgl17_src\checkpoint\var_compressed.hpp
-		adaptors\bgl17_src\checkpoint\vov.hpp = adaptors\bgl17_src\checkpoint\vov.hpp
-		adaptors\bgl17_src\checkpoint\vtuple.cpp = adaptors\bgl17_src\checkpoint\vtuple.cpp
+		adaptors\bgl17\checkpoint\adj.hpp = adaptors\bgl17\checkpoint\adj.hpp
+		adaptors\bgl17\checkpoint\aos.hpp = adaptors\bgl17\checkpoint\aos.hpp
+		adaptors\bgl17\checkpoint\attributed.hpp = adaptors\bgl17\checkpoint\attributed.hpp
+		adaptors\bgl17\checkpoint\compressed.hpp = adaptors\bgl17\checkpoint\compressed.hpp
+		adaptors\bgl17\checkpoint\dimacs_io.hpp = adaptors\bgl17\checkpoint\dimacs_io.hpp
+		adaptors\bgl17\checkpoint\graph_base.hpp = adaptors\bgl17\checkpoint\graph_base.hpp
+		adaptors\bgl17\checkpoint\mmio.hpp = adaptors\bgl17\checkpoint\mmio.hpp
+		adaptors\bgl17\checkpoint\timer.hpp = adaptors\bgl17\checkpoint\timer.hpp
+		adaptors\bgl17\checkpoint\util.hpp = adaptors\bgl17\checkpoint\util.hpp
+		adaptors\bgl17\checkpoint\var_compressed.hpp = adaptors\bgl17\checkpoint\var_compressed.hpp
+		adaptors\bgl17\checkpoint\vov.hpp = adaptors\bgl17\checkpoint\vov.hpp
+		adaptors\bgl17\checkpoint\vtuple.cpp = adaptors\bgl17\checkpoint\vtuple.cpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{8410FEC4-523E-46AF-AE02-8BF9D0DAF647}"
 	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17_src\detail\numeric.hpp = adaptors\bgl17_src\detail\numeric.hpp
+		adaptors\bgl17\detail\numeric.hpp = adaptors\bgl17\detail\numeric.hpp
 	EndProjectSection
 EndProject
 Global
@@ -145,10 +130,6 @@ Global
 		{42245303-B7DB-4C12-9926-11E7580C3C14} = {C528C0F5-3ED0-4C8B-A623-9639CF1BE4BF}
 		{6F31AFF7-259A-4B3C-9559-4D756D2B09B7} = {42245303-B7DB-4C12-9926-11E7580C3C14}
 		{1B39F91E-48A8-4D17-8DEE-C694CE374A6D} = {42245303-B7DB-4C12-9926-11E7580C3C14}
-		{AE465A07-5923-4E7B-93C3-5AD66F368530} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
-		{DD9E040D-797B-4D11-B5C1-68DE01448603} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
-		{53B58A6B-FE2E-474B-AFB8-1AFEFCA64A8E} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
-		{4F27C44C-9C57-4F85-9821-7ABDB3719ABC} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
 		{D1335215-222B-4795-82DF-CCE1673DA9D3} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
 		{8FBEBA4F-9797-4A0B-B6E9-C4BFDFF6FFB3} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
 		{C48C4310-BE33-49F4-96F3-61ADC3D66F8B} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
