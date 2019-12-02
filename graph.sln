@@ -6,10 +6,12 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{357F34C0-AD47-44F9-886D-B9B57C82C9DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{C528C0F5-3ED0-4C8B-A623-9639CF1BE4BF}"
+	ProjectSection(SolutionItems) = preProject
+		include\graph\compressed_adj_array.hpp = include\graph\compressed_adj_array.hpp
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{42245303-B7DB-4C12-9926-11E7580C3C14}"
 	ProjectSection(SolutionItems) = preProject
-		include\graph\adjlist_fwd_vl.hpp = include\graph\adjlist_fwd_vl.hpp
 		include\graph\graph.hpp = include\graph\graph.hpp
 		include\graph\graph_fwd.hpp = include\graph\graph_fwd.hpp
 		include\graph\graph_utility.hpp = include\graph\graph_utility.hpp
@@ -55,7 +57,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17", "bgl17", "{D1335215
 	ProjectSection(SolutionItems) = preProject
 		adaptors\bgl17\aolos.hpp = adaptors\bgl17\aolos.hpp
 		adaptors\bgl17\aos.hpp = adaptors\bgl17\aos.hpp
-		adaptors\bgl17\bgl17_graph.hpp = adaptors\bgl17\bgl17_graph.hpp
 		adaptors\bgl17\compressed.hpp = adaptors\bgl17\compressed.hpp
 		adaptors\bgl17\degree.hpp = adaptors\bgl17\degree.hpp
 		adaptors\bgl17\disjoint_set.hpp = adaptors\bgl17\disjoint_set.hpp
@@ -106,6 +107,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{8410FE
 		adaptors\bgl17\detail\numeric.hpp = adaptors\bgl17\detail\numeric.hpp
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{18AF61EA-6F9E-4555-8AEE-C462598E4330}"
+	ProjectSection(SolutionItems) = preProject
+		include\graph\detail\compressed_adj_array_impl.hpp = include\graph\detail\compressed_adj_array_impl.hpp
+		include\graph\detail\graph_fwd_impl.hpp = include\graph\detail\graph_fwd_impl.hpp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -135,6 +142,7 @@ Global
 		{C48C4310-BE33-49F4-96F3-61ADC3D66F8B} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
 		{5A8B09F6-FCE2-4179-99D2-E456DE30221A} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
 		{8410FEC4-523E-46AF-AE02-8BF9D0DAF647} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
+		{18AF61EA-6F9E-4555-8AEE-C462598E4330} = {42245303-B7DB-4C12-9926-11E7580C3C14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3DE43A65-513E-4C25-82B5-0373B806D033}
