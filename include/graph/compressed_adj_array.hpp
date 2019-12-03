@@ -136,9 +136,42 @@ private:
   edge_index first_edge_ = numeric_limits<edge_index>::max();
 };
 
-///-------------------------------------------------------------------------------------
-/// caa_graph definitions
+/// A simple semi-mutable graph emphasizing performance and space.
 ///
+/// caa_graph is a compressed adjacency array graph with the following characteristics:
+///		1.	a forward-only directed graph
+///		2.	user-defined value types for vertices, edges and the graph.
+///		3.	iterating over vertices occurs in O(V) and over edges in O(E) time.
+///		4.	minimum vertex size is sizeof(size_t) when empty_value is used for the value type
+///		5.	minimum edge size is sizeof(size_t) when empty_value is used for the value type
+///		6.	vertices and edges are stored in separate vectors (2 total).
+///		7.	After the graph is constructed, vertices and edges cannot be added or removed.
+///			Properties may be modified.
+///
+/// The time to construct the graph is O(V) + 2*O(E). The edges are scanned twice, the first
+/// time to identify the largest vertex index referenced (so the internal vertex vector is
+/// allocated only once), and the second time to build the internal edges vector.
+///
+/// When constructing the caa_graph, vertices are identified by their index in the vertex
+/// container passed. Edges refer to their in/out vertices using the vertex index. If more
+/// vertices are referred to in the edges container in the constructor, then the internal
+/// vertex vector will be sized to accomodate the largest vertex index used by the edges.
+///
+/// constructors accept a variety of containers, depending on the template parameters.
+/// vertices accept containers with 2 template parameters, like vector<T,A> and deque<T,A>
+/// Different constructors exist to accomoate edges in different container types, also based
+/// on the number of template parameters. This accomodates both common std containers and
+/// non-std containers.
+///
+/// Constructors are the only public functions that should be used directly. Use the
+/// templatized graph free functions to work with the graph otherwise. While public member functions
+/// (besides constructors) may work, there is no guarantee they will work on all implementations.
+///
+/// @tparam VV Vertex Value type. default = empty_value.
+/// @tparam EV Edge Value type. default = empty_value.
+/// @tparam GV Graph Value type. default = empty_value.
+/// @tparam A  Allocator. default = std::allocator
+//
 template <typename VV, typename EV, typename GV, typename A>
 class caa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
@@ -203,82 +236,190 @@ public:
   // unordered_map and unordered_set are not supported because edges must be ordered by the first vertex_key (src).
   //
 
-  // constructors taking vertices
-  template <template <class, class> class VCont,
-            class VV2,
-            class A2> // container must be ordered by edge_key_type.first; for vector, deque
+  /// Constructor that takes only vertex values to create the graph.
+  ///
+  /// @tparam VCont<VV2,A2>
+  ///             The container that holds the vertex values. Allows vector and deque, but could also allow
+  ///             other containers with the same number of template parameters.
+  /// @tparam VV2 The value type used for constructing the vertex's value. The graph's VV type must accept VV2
+  ///             in its constructor.
+  /// @tparam A2  The allocator type used for VCont.
+  ///
+  /// @param vcont The container of vertex values.
+  ///
+  template <template <class, class> class VCont, class VV2, class A2>
   caa_graph(VCont<VV2, A2> const& vcont, allocator_type alloc = allocator_type())
         : caa_graph(vcont, vector<edge_key_type, A2>(), alloc) {}
 
-  // constructors taking edges
-  template <
-        template <class, class>
-        class ECont,
-        class
-        A3> // econt must be ordered by edge_key_type.first; for VCont={vector, deque, ...}, ECont={vector, deque, ...}
+  /// Constructor that takes only edge keys to create the graph.
+  ///
+  /// @tparam ECont<edge_key_type,A3>
+  ///             The container that holds the edges. Allows vector and deque, but could also allow
+  ///             other containers with the same number of template parameters. Edge values are assigned
+  ///			  their default value.
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param econt A container of edge_key_type. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
+  template <template <class, class> class ECont, class A3>
   caa_graph(ECont<edge_key_type, A3> const& econt, allocator_type alloc = allocator_type())
         : caa_graph(vector<vertex_user_value_type, A3>(), econt, alloc) {}
 
-  template <
-        template <class, class>
-        class ECont,
-        class A3> // econt must be ordered by edge_key_type.first; for VCont={vector, deque, ...}, ECont={vector, deque}
+  /// Constructor that takes only edge key+values to create the graph.
+  ///
+  /// @tparam ECont<edge_value_type,A3>
+  ///             The container that holds the edges. Allows vector and deque, but could also allow
+  ///             other containers with the same number of template parameters.
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param econt A container of edge_value_type. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
+  template <template <class, class> class ECont, class A3>
   caa_graph(ECont<edge_value_type, A3> const& econt, allocator_type alloc = allocator_type())
         : caa_graph(vector<vertex_user_value_type, A3>(), econt, alloc) {}
 
-  template <template <class, class, class> class ECont,
-            class Cmp,
-            class A3> // econt must be ordered by edge_key_type.first; VCont={vector, deque, ...}, for ECont={set}
+  /// Constructor that takes only edge key+values to create the graph.
+  ///
+  /// @tparam ECont<edge_key_type,Cmp,A3>
+  ///             The container that holds the edges. Intended for std::set but could be used for any
+  ///             other non-std container with similar template parameters.
+  /// @tparam Cmp The comparator used for ECont (not used)
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param econt A container of edge_key_type. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
+  template <template <class, class, class> class ECont, class Cmp, class A3>
   caa_graph(ECont<edge_key_type, Cmp, A3> const& econt, allocator_type alloc = allocator_type())
         : caa_graph(vector<vertex_user_value_type, A3>(), econt, alloc) {}
 
-  template <template <class, class> class VCont,
-            template <class, class, class, class>
-            class ECont,
-            class Cmp,
-            class A2,
-            class A3> // econt must be ordered by edge_key_type.first; for VCont={vector, deque, ...}, ECont={map}
+  /// Constructor that takes edge key+values to create the graph.
+  ///
+  /// @tparam ECont<edge_key_type,edge_user_value_type,Cmp,A3>
+  ///             The container that holds the edges. Intended for std::map but could be used for any
+  ///             other non-std container with similar template parameters.
+  /// @tparam Cmp The comparator used for ECont (not used)
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param econt A container of pair<edge_key_type,edge_user_value_type>. The container must be ordered by
+  ///              edge_key_type::first (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
+  template <template <class, class, class, class> class ECont, class Cmp, class A2, class A3>
   caa_graph(ECont<edge_key_type, edge_user_value_type, Cmp, A3> const& econt, allocator_type alloc = allocator_type());
 
 
-  // constructors taking vertices and edges
-  template <
-        template <class, class>
-        class VCont,
-        template <class, class>
-        class ECont,
-        class VV2,
-        class A2,
-        class
-        A3> // econt must be ordered by edge_key_type.first; for VCont={vector, deque, ...}, ECont={vector, deque, ...}
+  /// Constructor that takes vertex values and edge keys to create the graph.
+  ///
+  /// @tparam VCont<VV2,A2>
+  ///             The container that holds the vertex values. Allows vector and deque, but could also allow
+  ///             other containers with the same number of template parameters.
+  /// @tparam VV2 The value type used for constructing the vertex's value. The graph's VV type must accept VV2
+  ///             in its constructor.
+  /// @tparam A2  The allocator type used for VCont.
+  ///
+  /// @tparam ECont<edge_key_type,A3>
+  ///             The container that holds the edges. Allows vector and deque, but could also allow
+  ///             other containers with the same number of template parameters. Edge values are assigned
+  ///			  their default value.
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param vcont The container of vertex values.
+  /// @param econt A container of edge_key_type. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
+  template <template <class, class> class VCont, template <class, class> class ECont, class VV2, class A2, class A3>
   caa_graph(VCont<VV2, A2> const&           vcont,
             ECont<edge_key_type, A3> const& econt,
             allocator_type                  alloc = allocator_type());
 
-  template <
-        template <class, class>
-        class VCont,
-        template <class, class>
-        class ECont,
-        class VV2,
-        class EV2,
-        class A2,
-        class A3> // econt must be ordered by edge_key_type.first; for VCont={vector, deque, ...}, ECont={vector, deque}
+  /// Constructor that takes vertex values and edge key+values to create the graph.
+  ///
+  /// @tparam VCont<VV2,A2>
+  ///             The container that holds the vertex values. Allows vector and deque, but could also allow
+  ///             other containers with the same number of template parameters.
+  /// @tparam VV2 The value type used for constructing the vertex's value. The graph's VV type must accept VV2
+  ///             in its constructor.
+  /// @tparam A2  The allocator type used for VCont.
+  ///
+  /// @tparam ECont<pair<edge_key_type, edge-value>,A3>
+  ///             The container that holds the edges. Intended for std::vector or std::deque but could be
+  ///			  used for any other container with similar template parameters.
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param vcont The container of vertex values.
+  /// @param econt A container of pair<edge_key_type, edge-value>. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
+  template <template <class, class> class VCont,
+            template <class, class>
+            class ECont,
+            class VV2,
+            class EV2,
+            class A2,
+            class A3>
   caa_graph(VCont<VV2, A2> const&                      vcont,
             ECont<pair<edge_key_type, EV2>, A3> const& econt,
             allocator_type                             alloc = allocator_type());
 
+  /// Constructor that takes vertex values and edge key+values to create the graph.
+  ///
+  /// @tparam VCont<VV2,A2>
+  ///             The container that holds the vertex values. Allows set, but could also allow
+  ///             other containers with the same number of template parameters.
+  /// @tparam VV2 The value type used for constructing the vertex's value. The graph's VV type must accept VV2
+  ///             in its constructor.
+  /// @tparam A2  The allocator type used for VCont.
+  ///
+  /// @tparam ECont<edge_key_type,Cmp,A3>
+  ///             The container that holds the edges. Intended for std::set but could be
+  ///			  used for any other container with similar template parameters.
+  /// @tparam Cmp The comparator used for ECont (only needed for ECont definition)
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param vcont The container of vertex values.
+  /// @param econt A container of pair<edge_key_type, edge-value>. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
   template <template <class, class> class VCont,
             template <class, class, class>
             class ECont,
             class VV2,
             class Cmp,
             class A2,
-            class A3> // econt must be ordered by edge_key_type.first; VCont={vector, deque, ...}, for ECont={set}
+            class A3>
   caa_graph(VCont<VV2, A2> const&                vcont,
             ECont<edge_key_type, Cmp, A3> const& econt,
             allocator_type                       alloc = allocator_type());
 
+  /// Constructor that takes vertex values and edge key+values to create the graph.
+  ///
+  /// @tparam VCont<VV2,A2>
+  ///             The container that holds the vertex values. Allows set, but could also allow
+  ///             other containers with the same number of template parameters.
+  /// @tparam VV2 The value type used for constructing the vertex's value. The graph's VV type must accept VV2
+  ///             in its constructor.
+  /// @tparam A2  The allocator type used for VCont.
+  ///
+  /// @tparam ECont<edge_key_type,edge-value,Cmp,A3>
+  ///             The container that holds the edge keys and values. Intended for std::map but could be
+  ///			  used for any other container with similar template parameters.
+  /// @tparam Cmp The comparator used for ECont (only needed for ECont definition)
+  /// @tparam A3  The allocator type used for ECont (only needed for ECont definition)
+  ///
+  /// @param vcont The container of vertex values.
+  /// @param econt A container of edge_key_type, edge-value. The container must be ordered by edge_key_type::first
+  ///			  (a domain_exception is thrown if it isn't).
+  /// @param alloc The allocator used for the internal vertex and edge vectors.
+  ///
   template <template <class, class> class VCont,
             template <class, class, class, class>
             class ECont,
@@ -286,7 +427,7 @@ public:
             class EV2,
             class Cmp,
             class A2,
-            class A3> // econt must be ordered by edge_key_type.first; for VCont={vector, deque, ...}, ECont={map}
+            class A3>
   caa_graph(VCont<VV2, A2> const&                     vcont,
             ECont<edge_key_type, EV2, Cmp, A3> const& econt,
             allocator_type                            alloc = allocator_type());
@@ -295,23 +436,28 @@ public:
   constexpr vertex_set&       vertices();
   constexpr vertex_set const& vertices() const;
 
-  void                  reserve_vertices(vertex_size_type);
-  void                  resize_vertices(vertex_size_type);
-  void                  resize_vertices(vertex_size_type, vertex_user_value_type const&);
+  constexpr edge_set&       edges();
+  constexpr edge_set const& edges() const;
+
   vertex_iterator       find_vertex(vertex_key_type const&);
   const_vertex_iterator find_vertex(vertex_key_type const&) const;
-  vertex_iterator       create_vertex();
-  vertex_iterator       create_vertex(vertex_user_value_type&&);
+
+protected:
+  void reserve_vertices(vertex_size_type);
+  void resize_vertices(vertex_size_type);
+  void resize_vertices(vertex_size_type, vertex_user_value_type const&);
+
+  vertex_iterator create_vertex();
+  vertex_iterator create_vertex(vertex_user_value_type&&);
 
   template <class VV2>
   vertex_iterator create_vertex(VV2 const&); // vertex_user_value_type must be constructable from VV2
 
-public:
-  constexpr edge_set&       edges();
-  constexpr edge_set const& edges() const;
-  void                      reserve_edges(edge_size_type);
-  edge_iterator             create_edge(vertex_key_type const&, vertex_key_type const&);
-  edge_iterator             create_edge(vertex_key_type const&, vertex_key_type const&, edge_user_value_type&&);
+protected:
+  void reserve_edges(edge_size_type);
+
+  edge_iterator create_edge(vertex_key_type const&, vertex_key_type const&);
+  edge_iterator create_edge(vertex_key_type const&, vertex_key_type const&, edge_user_value_type&&);
 
   template <class EV2>
   edge_iterator create_edge(vertex_key_type const&,
@@ -322,7 +468,8 @@ public:
   void clear();
 
 protected:
-  void throw_unordered_edges() const;
+  vertex_iterator finalize_out_edges(vertex_range);
+  void            throw_unordered_edges() const;
 
 private:
   vertex_set     vertices_;

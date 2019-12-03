@@ -110,20 +110,21 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&           vcont,
     vertex_iterator t = to_iterator(*this, vertices_[econt.begin()->first]);
     for (edge_key_type const& edge_key : econt) {
       vertex_iterator u = to_iterator(*this, vertices_[edge_key.first]);
-      if (u < t) {
-        assert(false); // container must be sorted by edge_key.first
-        throw domain_error("edges not ordered");
-      }
+      if (u < t)
+        throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      for (; t < u; ++t)
-        t->set_edge_begin(*this, edges_.end());
+      t = finalize_out_edges(::ranges::make_subrange(t,u));
 
       edge_iterator uv = create_edge(edge_key.first, edge_key.second);
       u->set_edge_begin(*this, uv);
     }
+
+    // assure begin edge is set for remaining vertices w/o edges
+    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
   }
 }
+
 
 template <typename VV, typename EV, typename GV, typename A>
 template <template <class, class> class VCont,
@@ -160,12 +161,14 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                      v
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      for (; t < u; ++t)
-        t->set_edge_begin(*this, edges_.end());
+      t = finalize_out_edges(::ranges::make_subrange(t, u));
 
       edge_iterator uv = create_edge(edge_key.first, edge_key.second);
       u->set_edge_begin(*this, uv);
     }
+
+    // assure begin edge is set for remaining vertices w/o edges
+    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
   }
 }
 
@@ -204,12 +207,14 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                vcont,
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      for (; t < u; ++t)
-        t->set_edge_begin(*this, edges_.end());
+      t = finalize_out_edges(::ranges::make_subrange(t, u));
 
       edge_iterator uv = create_edge(edge_key.first, edge_key.second);
       u->set_edge_begin(*this, uv);
     }
+
+    // assure begin edge is set for remaining vertices w/o edges
+    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
   }
 }
 
@@ -249,20 +254,24 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                     vc
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      for (; t < u; ++t)
-        t->set_edge_begin(*this, edges_.end());
+      t = finalize_out_edges(::ranges::make_subrange(t, u));
 
       edge_iterator uv = create_edge(edge_key.first, edge_key.second);
       u->set_edge_begin(*this, uv);
     }
+
+    // assure begin edge is set for remaining vertices w/o edges
+    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
   }
 }
 
 template <typename VV, typename EV, typename GV, typename A>
-void caa_graph<VV, EV, GV, A>::throw_unordered_edges() const {
-  assert(false); // container must be sorted by edge_key.first
-  throw domain_error("edges not ordered");
+typename caa_graph<VV, EV, GV, A>::vertex_iterator caa_graph<VV, EV, GV, A>::finalize_out_edges(vertex_range vr) {
+  for (auto& u : vr)
+    u.set_edge_begin(*this, edges_.end());
+  return ::ranges::end(vr);
 }
+
 
 
 template <typename VV, typename EV, typename GV, typename A>
@@ -373,6 +382,11 @@ void caa_graph<VV, EV, GV, A>::clear() {
   edges_.clear();
 }
 
+template <typename VV, typename EV, typename GV, typename A>
+void caa_graph<VV, EV, GV, A>::throw_unordered_edges() const {
+  assert(false); // container must be sorted by edge_key.first
+  throw domain_error("edges not ordered");
+}
 
 ///-------------------------------------------------------------------------------------
 /// caa_graph graph API
@@ -484,6 +498,7 @@ constexpr auto find_vertex(G<VV, EV, GV, A> const& g, vertex_key_t<G<VV, EV, GV,
   return g.find_vertex(key);
 }
 
+#if 0
 template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
 //requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
 constexpr auto create_vertex(G<VV, EV, GV, A>& g) -> pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool> {
@@ -503,6 +518,7 @@ constexpr auto create_vertex(G<VV, EV, GV, A>& g, vertex_value_t<G<VV, EV, GV, A
       -> pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool> {
   return pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_vertex(move(val)), true);
 }
+#endif
 
 //
 // API edge functions
@@ -600,6 +616,7 @@ constexpr auto find_edge(G<VV, EV, GV, A> const&               g,
   return find_out_edge(g, vertex(g, ukey), vertex(g, vkey));
 }
 
+#if 0
 template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
 //requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
 constexpr auto create_edge(G<VV, EV, GV, A>& g, vertex_t<G<VV, EV, GV, A>>& u, vertex_t<G<VV, EV, GV, A>>& v)
@@ -655,7 +672,7 @@ constexpr auto create_edge(G<VV, EV, GV, A>&                g,
       -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
   return pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_edge(ukey, vkey, move(val)), true);
 }
-
+#endif
 
 //
 // API graph functions
