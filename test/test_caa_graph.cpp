@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "graph/iterators/std_dfs_range.hpp"
 #include "graph/compressed_adj_array.hpp"
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
@@ -113,8 +114,8 @@ static vector<string> cities = unique_cities(routes); // cities is ordered
 
 TEST(TestCAAGraph, TestMinObjSize) {
   using G = std::graph::compressed_adjacency_array<>;
-  EXPECT_EQ(sizeof(G::edge_size_type), sizeof(G::vertex_type)); // edge size = 8 bytes
-  EXPECT_EQ(sizeof(G::vertex_size_type), sizeof(G::edge_type)); // vertex size = 8 bytes
+  EXPECT_EQ(sizeof(size_t), sizeof(G::vertex_type)); // edge size = 8 bytes
+  EXPECT_EQ(sizeof(size_t)*2, sizeof(G::edge_type));   // vertex size = 16 bytes
 }
 
 TEST(TestCAAGraph, TestEmptyGraph) {
@@ -126,10 +127,9 @@ TEST(TestCAAGraph, TestEmptyGraph) {
 }
 
 TEST(TestCAAGraph, TestGraphInit) {
-  //vector<Graph::edge_key_type>   edge_keys   = to_edge_keys(routes, cities);
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
-  EXPECT_EQ(cities.size(), vertices_size(g));
+  EXPECT_EQ(cities.size(), vertices_size(g));	
   EXPECT_EQ(edge_routes.size(), edges_size(g));
 
   // iterate thru vertices range
@@ -157,6 +157,60 @@ TEST(TestCAAGraph, TestGraphInit) {
     ++n;
   EXPECT_EQ(edge_routes.size(), n);
 
-  cout << "\nGermany Routes"
-       << "\n-------------------------------" << g << endl;
+  //cout << "\nGermany Routes"
+  //     << "\n-------------------------------" << g << endl;
+}
+
+TEST(TestCAAGraph, DFS) {
+#if 0
+  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
+  Graph                          g(cities, edge_routes);
+
+  std::graph::dfs_edge_range ranges(g, 7);
+  auto                       ite = ranges.begin();
+  for (; ite != ranges.end(); ++ite) {
+    auto u = std::get<0>(*ite);
+    auto v = std::get<1>(*ite);
+    auto w = std::get<2>(*ite);
+    if (u)
+      std::cout << "traverse " << v << " to " << w << std::endl;
+    else
+      std::cout << "view " << v << " to " << w << std::endl;
+  }
+
+//#if 0
+  size_t                         n_vtx = 15;
+
+  edge_list<undirected> A_list(n_vtx);
+  A_list.push_back(0, 1);
+  A_list.push_back(1, 2);
+  A_list.push_back(2, 3);
+  A_list.push_back(3, 4);
+  A_list.push_back(4, 5);
+  A_list.push_back(0, 6);
+  A_list.push_back(6, 7);
+  A_list.push_back(7, 8);
+  A_list.push_back(8, 9);
+  A_list.push_back(0, 10);
+  A_list.push_back(10, 11);
+  A_list.push_back(11, 12);
+  A_list.push_back(12, 13);
+  A_list.push_back(13, 14);
+  A_list.push_back(14, 11);
+
+  adjacency<0> A(A_list);
+
+  dfs_edge_range ranges(A, 7);
+
+  auto ite = ranges.begin();
+  for (; ite != ranges.end(); ++ite) {
+    auto u = std::get<0>(*ite);
+    auto v = std::get<1>(*ite);
+    auto w = std::get<2>(*ite);
+    if (u)
+      std::cout << "traverse " << v << " to " << w << std::endl;
+    else
+      std::cout << "view " << v << " to " << w << std::endl;
+  }
+#endif
 }

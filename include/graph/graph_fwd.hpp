@@ -10,12 +10,8 @@
 
    TODO
 	1.	Extend compressed_adj_array to support:
-		a.	in edges
-		b.	undirected edges
-		c.	useful constructors
-		d.	create_vertex & create_edge
-		e.	different container types for vertices & edges
-		f.	removing edges & vertices if it makes sense or container
+		a.	in edges?
+		d.	create_vertex & create_edge?
 	2.	Add algorithms
 	3.	Add reverse_graph (swap in/out edges)
 	4.	Add more flexible adj_array to support 

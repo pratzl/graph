@@ -65,17 +65,21 @@ public:
   caa_edge& operator=(caa_edge&) = default;
   caa_edge& operator=(caa_edge&&) = default;
 
-  caa_edge(vertex_set const& vertices, vertex_iterator out_vertex, vertex_iterator in_vertex);
+  caa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex);
   caa_edge(vertex_set const& vertices,
-           vertex_iterator   out_vertex,
            vertex_iterator   in_vertex,
+           vertex_iterator   out_vertex,
            edge_user_value_type const&);
-  caa_edge(vertex_set const& vertices, vertex_iterator out_vertex, vertex_iterator in_vertex, edge_user_value_type&);
+  caa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex, edge_user_value_type&&);
+
+  vertex_type&       in_vertex(graph_type&);
+  vertex_type const& in_vertex(graph_type const&) const;
 
   vertex_type&       out_vertex(graph_type&);
   vertex_type const& out_vertex(graph_type const&) const;
 
 private:
+  vertex_index in_vertex_;
   vertex_index out_vertex_;
 };
 
@@ -143,7 +147,7 @@ private:
 ///		2.	user-defined value types for vertices, edges and the graph.
 ///		3.	iterating over vertices occurs in O(V) and over edges in O(E) time.
 ///		4.	minimum vertex size is sizeof(size_t) when empty_value is used for the value type
-///		5.	minimum edge size is sizeof(size_t) when empty_value is used for the value type
+///		5.	minimum edge size is sizeof(size_t)*2 when empty_value is used for the value type
 ///		6.	vertices and edges are stored in separate vectors (2 total).
 ///		7.	After the graph is constructed, vertices and edges cannot be added or removed.
 ///			Properties may be modified.

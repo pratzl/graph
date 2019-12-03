@@ -8,18 +8,22 @@ namespace std::graph {
 /// caa_edge
 ///
 template <typename VV, typename EV, typename GV, typename A>
-caa_edge<VV, EV, GV, A>::caa_edge(vertex_set const& vertices, vertex_iterator out_vertex, vertex_iterator in_vertex)
-      : out_vertex_(out_vertex - vertices.begin()) {}
+caa_edge<VV, EV, GV, A>::caa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex)
+      : base_t(), in_vertex_(in_vertex - vertices.begin()), out_vertex_(out_vertex - vertices.begin()) {}
+
 template <typename VV, typename EV, typename GV, typename A>
 caa_edge<VV, EV, GV, A>::caa_edge(vertex_set const&           vertices,
-                                  vertex_iterator             out_vertex,
                                   vertex_iterator             in_vertex,
+                                  vertex_iterator             out_vertex,
                                   edge_user_value_type const& val)
-      : out_vertex_(out_vertex - vertices.begin()), base_t(val) {}
+      : base_t(val), in_vertex_(in_vertex - vertices.begin()), out_vertex_(out_vertex - vertices.begin()) {}
 
-//template <typename VV, typename EV, typename GV, typename A>
-//caa_edge<VV, EV, GV, A>::caa_edge(vertex_set const& vertices, vertex_iterator out_vertex, vertex_iterator in_vertex, edge_user_value_type&& val)
-//      : out_vertex_(out_vertex - vertices.begin()), base_t(move(val)) {}
+template <typename VV, typename EV, typename GV, typename A>
+caa_edge<VV, EV, GV, A>::caa_edge(vertex_set const&      vertices,
+                                  vertex_iterator        in_vertex,
+                                  vertex_iterator        out_vertex,
+                                  edge_user_value_type&& val)
+      : base_t(move(val)), in_vertex_(in_vertex - vertices.begin()), out_vertex_(out_vertex - vertices.begin()) {}
 
 template <typename VV, typename EV, typename GV, typename A>
 typename caa_edge<VV, EV, GV, A>::vertex_type& caa_edge<VV, EV, GV, A>::out_vertex(graph_type& g) {
@@ -114,7 +118,7 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&           vcont,
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_out_edges(::ranges::make_subrange(t,u));
+      t = finalize_out_edges(::ranges::make_subrange(t, u));
 
       edge_iterator uv = create_edge(edge_key.first, edge_key.second);
       u->set_edge_begin(*this, uv);
@@ -273,7 +277,6 @@ typename caa_graph<VV, EV, GV, A>::vertex_iterator caa_graph<VV, EV, GV, A>::fin
 }
 
 
-
 template <typename VV, typename EV, typename GV, typename A>
 constexpr typename caa_graph<VV, EV, GV, A>::vertex_set& caa_graph<VV, EV, GV, A>::vertices() {
   return vertices_;
@@ -353,7 +356,7 @@ typename caa_graph<VV, EV, GV, A>::edge_iterator caa_graph<VV, EV, GV, A>::creat
                                                                                        vertex_key_type const& to_key) {
   vertex_iterator from = find_vertex(from_key);
   vertex_iterator to   = find_vertex(to_key);
-  edges_.emplace_back(edge_type(vertices_, to, from));
+  edges_.emplace_back(edge_type(vertices_, from, to));
   return edges_.begin() + (edges_.size() - 1);
 }
 template <typename VV, typename EV, typename GV, typename A>
@@ -362,7 +365,7 @@ typename caa_graph<VV, EV, GV, A>::edge_iterator caa_graph<VV, EV, GV, A>::creat
                                                                                        edge_user_value_type&& val) {
   vertex_iterator from = find_vertex(from_key);
   vertex_iterator to   = find_vertex(to_key);
-  edges_.emplace_back(edge_type(vertices_, to, from, move(val)));
+  edges_.emplace_back(edge_type(vertices_, from, to, move(val)));
   return edges_.begin() + (edges_.size() - 1);
 }
 
@@ -372,7 +375,7 @@ typename caa_graph<VV, EV, GV, A>::edge_iterator
 caa_graph<VV, EV, GV, A>::create_edge(vertex_key_type const& from_key, vertex_key_type const& to_key, EV2 const& val) {
   vertex_iterator from = find_vertex(from_key);
   vertex_iterator to   = find_vertex(to_key);
-  edges_.emplace_back(edge_type(vertices_, to, from, val));
+  edges_.emplace_back(edge_type(vertices_, from, to, val));
   return edges_.begin() + (edges_.size() - 1);
 }
 
@@ -523,6 +526,19 @@ constexpr auto create_vertex(G<VV, EV, GV, A>& g, vertex_value_t<G<VV, EV, GV, A
 //
 // API edge functions
 //
+template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
+//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
+constexpr auto in_vertex(G<VV, EV, GV, A>& g, edge_t<G<VV, EV, GV, A>>& uv) noexcept -> vertex_t<G<VV, EV, GV, A>>& {
+  return uv.in_vertex(g);
+}
+
+template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
+//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
+constexpr auto in_vertex(G<VV, EV, GV, A> const& g, edge_t<G<VV, EV, GV, A>> const& uv) noexcept
+      -> vertex_t<G<VV, EV, GV, A>> const& {
+  return uv.in_vertex(g);
+}
+
 template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
 //requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
 constexpr auto out_vertex(G<VV, EV, GV, A>& g, edge_t<G<VV, EV, GV, A>>& uv) noexcept -> vertex_t<G<VV, EV, GV, A>>& {

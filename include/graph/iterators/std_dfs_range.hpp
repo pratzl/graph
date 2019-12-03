@@ -1,23 +1,27 @@
 //
-// This file is part of BGL17 (aka NWGraph aka GraphPack aka the Graph Standard Library)
-// (c) Pacific Northwest National Laboratory 2018
+// based on new_dfs_range.hpp from:
 //
-// Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
-// https://creativecommons.org/licenses/by-nc-sa/4.0/
+//	This file is part of BGL17 (aka NWGraph aka GraphPack aka the Graph Standard Library)
+//	(c) Pacific Northwest National Laboratory 2018
 //
-// Author: Andrew Lumsdaine
+//	Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
+//	https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+//	Author: Andrew Lumsdaine
 //
 
-#ifndef __DFS_RANGE_HPP
-#define __DFS_RANGE_HPP
+#ifndef GRAPH_DFS_RANGE_HPP
+#define GRAPH_DFS_RANGE_HPP
 
-#include "util.hpp"
+//#include "util.hpp"
 #include <cassert>
 #include <stack>
 #include <vector>
 
+namespace std::graph {
 
 enum three_colors : int8_t { black, white, grey };
+using vertex_index_t = size_t;
 
 template <typename Graph, typename Stack = std::stack<vertex_index_t>>
 class dfs_range {
@@ -130,10 +134,13 @@ public:
 
   class dfs_edge_range_iterator {
   private:
-    dfs_edge_range<Graph, Stack>&  the_range_;
-    typename Graph::outer_iterator G;
-    vertex_index_t                 v_;
-    typename Graph::inner_iterator u_begin, u_end;
+    //typename Graph::outer_iterator G;
+    //typename Graph::inner_iterator u_begin, u_end, u_parent;
+    typename Graph::vertex_iterator G;
+    typename Graph::edge_iterator   u_begin, u_end, u_parent;
+    dfs_edge_range<Graph, Stack>&   the_range_;
+    vertex_index_t                  v_;
+    bool                            has_parent_, back_edge_;
 
   public:
     dfs_edge_range_iterator(dfs_edge_range<Graph, Stack>& range)
@@ -141,52 +148,102 @@ public:
           , G(the_range_.the_graph_.begin())
           , v_(the_range_.Q_.top())
           , u_begin(G[v_].begin())
-          , u_end(G[v_].end()) {}
+          , u_end(G[v_].end())
+          , back_edge_(false) {}
 
     dfs_edge_range_iterator& operator++() {
       auto& Q      = the_range_.Q_;
       auto& colors = the_range_.colors_;
 
-      Q.push(v_);
-      colors[v_] = grey;
+      back_edge_ = false;
+      if (u_begin != u_end) {
+        if (colors[std::get<0>(*u_begin)] == white) {
+          Q.push(v_);
+          colors[v_] = grey;
 
-      v_      = std::get<0>(*u_begin);
-      u_begin = G[v_].begin();
-      u_end   = G[v_].end();
+          v_      = std::get<0>(*u_begin);
+          u_begin = G[v_].begin();
+          u_end   = G[v_].end();
 
-      // ++u_begin;
-      while (u_begin != u_end && colors[std::get<0>(*u_begin)] != white) {
-        ++u_begin;
-      }
+          while (std::get<0>(*u_begin) == Q.top()) {
+            has_parent_ = true;
+            u_parent    = u_begin;
+            ++u_begin;
+          }
+        } else {
 
-      while (u_begin == u_end) {
-        colors[v_] = black;
-        v_         = Q.top();
+          if (std::get<0>(*u_begin) == Q.top()) {
+            u_parent    = u_begin;
+            has_parent_ = true;
+          }
+          ++u_begin;
+          if (u_begin == u_end && !has_parent_) {
+            colors[v_]  = black;
+            v_          = Q.top();
+            has_parent_ = false;
+            Q.pop();
+            if (Q.empty())
+              return *this;
+          }
+
+          if (u_begin != u_end && std::get<0>(*u_begin) == Q.top()) {
+            u_parent    = u_begin;
+            has_parent_ = true;
+            ++u_begin;
+          }
+        }
+
+        if (u_begin == u_end) {
+          back_edge_ = true;
+        }
+      } else {
+        colors[v_]  = black;
+        v_          = Q.top();
+        has_parent_ = false;
         Q.pop();
         if (Q.empty())
-          break;
-
+          return *this;
 
         assert(colors[v_] == grey);
         u_begin = G[v_].begin();
         u_end   = G[v_].end();
 
-        while (u_begin != u_end && colors[std::get<0>(*u_begin)] != white) {
+        while (std::get<0>(*u_begin) == Q.top()) {
+          u_parent    = u_begin;
+          has_parent_ = true;
           ++u_begin;
         }
+      }
+      //Think this is just used to cleanly exit from root
+      //because root is pushed onto queue twice?
+      if (u_begin == u_end && !has_parent_) {
+        colors[v_]  = black;
+        v_          = Q.top();
+        has_parent_ = false;
+        Q.pop();
+        if (Q.empty())
+          return *this;
       }
 
       return *this;
     }
 
-    auto operator*() { return std::tuple_cat(std::make_tuple(v_), *u_begin); }
+    auto operator*() {
+      if (back_edge_) {
+        //return std::tuple_cat(std::make_tuple(true, v_), *u_parent);
+        return std::make_tuple(true, v_, *u_parent);
+      }
+      return std::tuple_cat(std::make_tuple(the_range_.colors_[std::get<0>(*u_begin)] == white, v_), *u_begin);
+    }
 
     class end_sentinel_type {
     public:
       end_sentinel_type() {}
     };
 
-    auto operator==(const end_sentinel_type&) const { return the_range_.empty(); }
+    //This is also a result of double pushing root node
+    auto operator==(const end_sentinel_type&) const { return u_begin == u_end && the_range_.Q_.size() == 1; }
+    //the_range_.empty(); }
     bool operator!=(const end_sentinel_type&) const { return !the_range_.empty(); }
   };
 
@@ -201,4 +258,6 @@ private:
   std::vector<three_colors> colors_;
 };
 
-#endif // __DFS_RANGE_HPP
+} // namespace std::graph
+
+#endif // GRAPH_DFS_RANGE_HPP
