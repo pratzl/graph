@@ -74,9 +74,11 @@ public:
 
   vertex_type&       in_vertex(graph_type&);
   vertex_type const& in_vertex(graph_type const&) const;
+  vertex_key_type    in_vertex_key() const;
 
   vertex_type&       out_vertex(graph_type&);
   vertex_type const& out_vertex(graph_type const&) const;
+  vertex_key_type    out_vertex_key() const;
 
 private:
   vertex_index in_vertex_;
@@ -135,6 +137,10 @@ public:
   vertex_edge_iterator       edge_begin(graph_type&);
   const_vertex_edge_iterator edge_begin(graph_type const&) const;
   const_vertex_edge_iterator edge_cbegin(graph_type const&) const;
+
+  vertex_edge_iterator       edge_end(graph_type&);
+  const_vertex_edge_iterator edge_end(graph_type const&) const;
+  const_vertex_edge_iterator edge_cend(graph_type const&) const;
 
 private:
   edge_index first_edge_ = numeric_limits<edge_index>::max();
@@ -213,6 +219,11 @@ public:
   using const_vertex_edge_range = const_edge_range;
   using out_edge_range          = edge_range;
   using const_out_edge_range    = const_edge_range;
+
+  using vertex_out_edge_iterator       = typename out_edge_range::iterator;
+  using const_vertex_out_edge_iterator = typename const_out_edge_range::iterator;
+  using vertex_edge_iterator       = vertex_out_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
 
 public:
   caa_graph() = default;
@@ -439,6 +450,14 @@ public:
 public:
   constexpr vertex_set&       vertices();
   constexpr vertex_set const& vertices() const;
+
+  constexpr vertex_iterator       begin();
+  constexpr const_vertex_iterator begin() const;
+  constexpr const_vertex_iterator cbegin() const;
+
+  constexpr vertex_iterator       end();
+  constexpr const_vertex_iterator end() const;
+  constexpr const_vertex_iterator cend() const;
 
   constexpr edge_set&       edges();
   constexpr edge_set const& edges() const;

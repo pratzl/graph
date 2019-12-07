@@ -14,6 +14,7 @@
 #define GRAPH_DFS_RANGE_HPP
 
 //#include "util.hpp"
+#include "../graph_fwd.hpp"
 #include <cassert>
 #include <stack>
 #include <vector>
@@ -21,13 +22,14 @@
 namespace std::graph {
 
 enum three_colors : int8_t { black, white, grey };
-using vertex_index_t = size_t;
+//using vertex_index_t = size_t;
 
-template <typename Graph, typename Stack = std::stack<vertex_index_t>>
+template <typename Graph, typename Stack = std::stack<vertex_key_t<Graph>>>
 class dfs_range {
 
 public:
-  dfs_range(Graph& graph, vertex_index_t seed = 0) : the_graph_(graph), colors_(graph.end() - graph.begin(), white) {
+  dfs_range(Graph& graph, vertex_key_t<Graph> seed = 0)
+        : the_graph_(graph), colors_(graph.end() - graph.begin(), white) {
     Q_.push(seed);
     colors_[seed] = grey;
 
@@ -41,7 +43,7 @@ public:
 
 private:
   template <typename GraphRange>
-  static void dfs_visit(const GraphRange& G, Stack& Q, std::vector<three_colors>& colors, vertex_index_t v) {
+  static void dfs_visit(const GraphRange& G, Stack& Q, std::vector<three_colors>& colors, vertex_key_t<Graph> v) {
     auto u     = G[v].begin();
     auto u_end = G[v].end();
 
@@ -101,8 +103,8 @@ public:
     bool operator!=(const end_sentinel_type&) const { return !the_range_.empty(); }
 
   private:
-    dfs_range<Graph>& the_range_;
-    vertex_index_t    cursor_;
+    dfs_range<Graph>&   the_range_;
+    vertex_key_t<Graph> cursor_;
   };
 
   typedef dfs_range_iterator iterator;
@@ -117,11 +119,11 @@ private:
 };
 
 
-template <typename Graph, typename Stack = std::stack<vertex_index_t>>
+template <typename Graph, typename Stack = std::stack<vertex_key_t<Graph>>>
 class dfs_edge_range {
 
 public:
-  dfs_edge_range(Graph& graph, vertex_index_t seed = 0)
+  dfs_edge_range(Graph& graph, vertex_key_t<Graph> seed = 0)
         : the_graph_(graph), colors_(graph.end() - graph.begin(), white) {
     Q_.push(seed);
     colors_[seed] = grey;
@@ -136,20 +138,31 @@ public:
   private:
     //typename Graph::outer_iterator G;
     //typename Graph::inner_iterator u_begin, u_end, u_parent;
-    typename Graph::vertex_iterator G;
-    typename Graph::edge_iterator   u_begin, u_end, u_parent;
-    dfs_edge_range<Graph, Stack>&   the_range_;
-    vertex_index_t                  v_;
-    bool                            has_parent_, back_edge_;
+    Graph&                        the_graph_;
+    vertex_iterator_t<Graph>      G;
+    vertex_edge_iterator_t<Graph> u_begin, u_end, u_parent;
+    dfs_edge_range<Graph, Stack>& the_range_;
+    vertex_key_t<Graph>           v_;
+    bool                          has_parent_, back_edge_;
 
   public:
     dfs_edge_range_iterator(dfs_edge_range<Graph, Stack>& range)
-          : the_range_(range)
-          , G(the_range_.the_graph_.begin())
+          : the_graph_(range.the_graph_)
+          , the_range_(range)
+          , G(::ranges::begin(vertices(the_graph_)))
           , v_(the_range_.Q_.top())
-          , u_begin(G[v_].begin())
-          , u_end(G[v_].end())
+          , u_begin(std::graph::begin(the_graph_,*G))
+          , u_end(std::graph::end(the_graph_, *G))
           , back_edge_(false) {}
+
+    vertex_key_t<Graph>           in_key(edge_t<Graph> const& uv) const { return in_vertex_key(the_graph_, uv); }
+
+    vertex_edge_iterator_t<Graph> get_u_begin(vertex_key_t<Graph> v) {
+      return ::std::graph::begin(the_graph_, *(G + v));
+    }
+    vertex_edge_iterator_t<Graph> get_u_end(vertex_key_t<Graph> v) {
+      return ::std::graph::end(the_graph_, *(G + v));
+    }
 
     dfs_edge_range_iterator& operator++() {
       auto& Q      = the_range_.Q_;
@@ -157,22 +170,22 @@ public:
 
       back_edge_ = false;
       if (u_begin != u_end) {
-        if (colors[std::get<0>(*u_begin)] == white) {
+        if (colors[in_key(*u_begin)] == white) {
           Q.push(v_);
           colors[v_] = grey;
 
-          v_      = std::get<0>(*u_begin);
-          u_begin = G[v_].begin();
-          u_end   = G[v_].end();
+          v_      = in_key(*u_begin);
+          u_begin = get_u_begin(v_);
+          u_end   = get_u_end(v_);
 
-          while (std::get<0>(*u_begin) == Q.top()) {
+          while (in_key(*u_begin) == Q.top()) {
             has_parent_ = true;
             u_parent    = u_begin;
             ++u_begin;
           }
         } else {
 
-          if (std::get<0>(*u_begin) == Q.top()) {
+          if (in_key(*u_begin) == Q.top()) {
             u_parent    = u_begin;
             has_parent_ = true;
           }
@@ -186,7 +199,7 @@ public:
               return *this;
           }
 
-          if (u_begin != u_end && std::get<0>(*u_begin) == Q.top()) {
+          if (u_begin != u_end && in_key(*u_begin) == Q.top()) {
             u_parent    = u_begin;
             has_parent_ = true;
             ++u_begin;
@@ -205,10 +218,10 @@ public:
           return *this;
 
         assert(colors[v_] == grey);
-        u_begin = G[v_].begin();
-        u_end   = G[v_].end();
+        u_begin = get_u_begin(v_);
+        u_end   = get_u_end(v_);
 
-        while (std::get<0>(*u_begin) == Q.top()) {
+        while (in_key(*u_begin) == Q.top()) {
           u_parent    = u_begin;
           has_parent_ = true;
           ++u_begin;
@@ -233,7 +246,8 @@ public:
         //return std::tuple_cat(std::make_tuple(true, v_), *u_parent);
         return std::make_tuple(true, v_, *u_parent);
       }
-      return std::tuple_cat(std::make_tuple(the_range_.colors_[std::get<0>(*u_begin)] == white, v_), *u_begin);
+      //return std::tuple_cat(std::make_tuple(the_range_.colors_[in_key(*u_begin)] == white, v_), *u_begin);
+      return std::make_tuple(the_range_.colors_[in_vertex_key(the_graph_, *u_begin)] == white, v_, *u_begin);
     }
 
     class end_sentinel_type {

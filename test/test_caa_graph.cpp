@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "graph/iterators/std_dfs_range.hpp"
 #include "graph/compressed_adj_array.hpp"
+#include "graph/iterators/std_dfs_range.hpp"
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>
@@ -114,8 +114,8 @@ static vector<string> cities = unique_cities(routes); // cities is ordered
 
 TEST(TestCAAGraph, TestMinObjSize) {
   using G = std::graph::compressed_adjacency_array<>;
-  EXPECT_EQ(sizeof(size_t), sizeof(G::vertex_type)); // edge size = 8 bytes
-  EXPECT_EQ(sizeof(size_t)*2, sizeof(G::edge_type));   // vertex size = 16 bytes
+  EXPECT_EQ(sizeof(size_t), sizeof(G::vertex_type));   // edge size = 8 bytes
+  EXPECT_EQ(sizeof(size_t) * 2, sizeof(G::edge_type)); // vertex size = 16 bytes
 }
 
 TEST(TestCAAGraph, TestEmptyGraph) {
@@ -129,7 +129,7 @@ TEST(TestCAAGraph, TestEmptyGraph) {
 TEST(TestCAAGraph, TestGraphInit) {
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
-  EXPECT_EQ(cities.size(), vertices_size(g));	
+  EXPECT_EQ(cities.size(), vertices_size(g));
   EXPECT_EQ(edge_routes.size(), edges_size(g));
 
   // iterate thru vertices range
@@ -161,8 +161,16 @@ TEST(TestCAAGraph, TestGraphInit) {
   //     << "\n-------------------------------" << g << endl;
 }
 
+#define ENABLE_CAA_DFS
+#ifdef ENABLE_CAA_DFS
+
+template<typename OStream>
+OStream& operator<<(OStream& os, Graph::edge_type const& uv) {
+  //os << value(uv);
+  return os;
+}
+
 TEST(TestCAAGraph, DFS) {
-#if 0
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
 
@@ -177,9 +185,12 @@ TEST(TestCAAGraph, DFS) {
     else
       std::cout << "view " << v << " to " << w << std::endl;
   }
+}
 
-//#if 0
-  size_t                         n_vtx = 15;
+#else  //!ENABLE_CAA_DFS
+TEST(TestCAAGraph, DFS) {
+  using namespace bgl17;
+  size_t n_vtx = 15;
 
   edge_list<undirected> A_list(n_vtx);
   A_list.push_back(0, 1);
@@ -212,5 +223,5 @@ TEST(TestCAAGraph, DFS) {
     else
       std::cout << "view " << v << " to " << w << std::endl;
   }
-#endif
 }
+#endif //ENABLE_CAA_DFS

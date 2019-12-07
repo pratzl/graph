@@ -209,6 +209,21 @@ template <graph_c G>
 constexpr auto edges(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_range_t<G>;
 
 template <graph_c G>
+constexpr auto begin(G& g, vertex_t<G>& u) noexcept -> vertex_edge_iterator_t<G>;
+template <graph_c G>
+constexpr auto begin(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+template <graph_c G>
+constexpr auto cbegin(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+
+template <graph_c G>
+constexpr auto end(G& g, vertex_t<G>& u) noexcept -> vertex_edge_iterator_t<G>;
+template <graph_c G>
+constexpr auto end(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+template <graph_c G>
+constexpr auto cend(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+
+
+template <graph_c G>
 constexpr auto edges_size(G& g, vertex_t<G>& u) noexcept -> vertex_edge_size_t<G>;
 
 template <graph_c G>
