@@ -4,6 +4,7 @@
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>
+#include <string>
 
 using std::vector;
 using std::string;
@@ -12,6 +13,8 @@ using std::numeric_limits;
 using std::pair;
 using std::cout;
 using std::endl;
+
+using std::graph::vertex;
 
 using vector_index = size_t;
 
@@ -24,6 +27,8 @@ using std::graph::empty_value;
 using std::graph::name_value;
 using std::graph::weight_value;
 using Graph = std::graph::compressed_adjacency_array<name_value, weight_value>;
+
+using std::graph::vertex_key;
 
 struct route {
   string from;
@@ -93,9 +98,9 @@ OStream& operator<<(OStream& os, Graph const& g) {
     auto ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
     for (auto& uv : edges(g, u)) {
-      auto& v    = out_vertex(g, uv);
-      auto  vkey = vertex_key(g, v);
-      os << "\n  --> [" << vkey << " " << v.name << "] " << uv.weight << "km";
+      auto v    = out_vertex(g, uv);
+      auto vkey = vertex_key(g, *v);
+      os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
     }
   }
   os << "\n";
@@ -132,6 +137,14 @@ TEST(TestCAAGraph, TestGraphInit) {
   EXPECT_EQ(cities.size(), vertices_size(g));
   EXPECT_EQ(edge_routes.size(), edges_size(g));
 
+  /*cout << endl << "Cities:" << endl;
+  for (auto& city : cities)
+    cout << "  " << (&city - cities.data()) << ". " << city << endl;
+
+  cout << endl << "Routes:" << endl;
+  for (auto& r : edge_routes)
+    cout << "  " << cities[r.first.first] << " --> " << cities[r.first.second] << " " << r.second.weight << "km" << endl;*/
+
   // iterate thru vertices range
   size_t nVertices = 0;
   size_t nEdges    = 0;
@@ -157,34 +170,40 @@ TEST(TestCAAGraph, TestGraphInit) {
     ++n;
   EXPECT_EQ(edge_routes.size(), n);
 
-  //cout << "\nGermany Routes"
-  //     << "\n-------------------------------" << g << endl;
+  cout << "\nGermany Routes"
+       << "\n-------------------------------" << g << endl;
 }
 
 #define ENABLE_CAA_DFS
 #ifdef ENABLE_CAA_DFS
 
-template<typename OStream>
-OStream& operator<<(OStream& os, Graph::edge_type const& uv) {
-  //os << value(uv);
-  return os;
-}
-
 TEST(TestCAAGraph, DFS) {
+  using std::graph::three_colors;
+
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
 
-  std::graph::dfs_edge_range ranges(g, 7);
+  using vrange = std::graph::dfs_vertex_range;
+  vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
+  for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
+    cout << string(u.depth()*2, ' ') << value(*u).name << endl;
+
+#  if 0
+  std::graph::dfs_edge_range ranges(g, 2);
   auto                       ite = ranges.begin();
   for (; ite != ranges.end(); ++ite) {
-    auto u = std::get<0>(*ite);
-    auto v = std::get<1>(*ite);
-    auto w = std::get<2>(*ite);
-    if (u)
-      std::cout << "traverse " << v << " to " << w << std::endl;
-    else
-      std::cout << "view " << v << " to " << w << std::endl;
+    bool                   u = (*ite).first_visit;
+    Graph::vertex_key_type v = (*ite).out_key;
+    Graph::edge_type&      w = (*ite).edge;
+    size_t                 d = (*ite).depth;
+
+    if (u) {
+      cout << string(d, ' ') << "traverse to " << value(vertex(g, w)).name << " " << value(w).weight << "km" << endl;
+    } else {
+      cout << string(d, ' ') << "view " << value(vertex(g, w)).name << endl;
+    }
   }
+#  endif
 }
 
 #else  //!ENABLE_CAA_DFS

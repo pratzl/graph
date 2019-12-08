@@ -4,10 +4,7 @@
 
 namespace std::graph {
 
-template <typename T>
-constexpr auto value(T& gve) noexcept -> decltype(user_value(gve)) {
-  return user_value(gve);
-}
+
 
 //
 // vertex Functions

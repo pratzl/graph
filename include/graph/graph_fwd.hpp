@@ -193,7 +193,9 @@ using in_edge_size_t = typename G::in_edge_size_type;
 // common graph functions
 //
 template <typename T>
-constexpr auto value(T& gve) noexcept -> decltype(user_value(gve));
+constexpr auto value(T& gve) noexcept -> decltype(user_value(gve)) {
+  return user_value(gve);
+}
 
 //
 // vertex Functions
@@ -293,19 +295,19 @@ constexpr auto find_vertex(G const& g, vertex_key_t<G> const&) noexcept -> const
 // edge Functions
 //
 template <graph_c G>
-constexpr auto vertex(G& g, edge_t<G>& uv) noexcept -> vertex_t<G>&;
+constexpr auto vertex(G& g, edge_t<G>& uv) noexcept -> vertex_iterator_t<G>&;
 template <graph_c G>
 constexpr auto vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_t<G> const&;
 
 template <graph_c G>
-constexpr auto out_vertex(G& g, edge_t<G>& uv) noexcept -> vertex_t<G>&;
+constexpr auto out_vertex(G& g, edge_t<G>& uv) noexcept -> vertex_iterator_t<G>&;
 template <graph_c G>
-constexpr auto out_vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_t<G> const&;
+constexpr auto out_vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_iterator_t<G> const&;
 
 template <graph_c G>
-constexpr auto in_vertex(G& g, edge_t<G>& uv) noexcept -> vertex_t<G>&;
+constexpr auto in_vertex(G& g, edge_t<G>& uv) noexcept -> vertex_iterator_t<G>&;
 template <graph_c G>
-constexpr auto in_vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_t<G> const&;
+constexpr auto in_vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_iterator_t<G> const&;
 
 template <graph_c G>
 constexpr auto create_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> pair<vertex_edge_iterator_t<G>, bool>;
@@ -400,6 +402,21 @@ constexpr auto vertices(G const& g) noexcept -> const_vertex_range_t<G>;
 
 template <graph_c G>
 constexpr auto vertices_size(G const& g) noexcept -> vertex_size_t<G>;
+
+template <graph_c G>
+constexpr auto begin(G& g) noexcept -> vertex_iterator_t<G>;
+template <graph_c G>
+constexpr auto begin(G const& g) noexcept -> const_vertex_iterator_t<G>;
+template <graph_c G>
+constexpr auto cbegin(G const& g) noexcept -> const_vertex_iterator_t<G>;
+
+template <graph_c G>
+constexpr auto end(G& g) noexcept -> vertex_iterator_t<G>;
+template <graph_c G>
+constexpr auto end(G const& g) noexcept -> const_vertex_iterator_t<G>;
+template <graph_c G>
+constexpr auto cend(G const& g) noexcept -> const_vertex_iterator_t<G>;
+
 
 template <graph_c G>
 void reserve_vertices(G& g, vertex_size_t<G>) {}

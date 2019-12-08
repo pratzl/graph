@@ -72,13 +72,13 @@ public:
            edge_user_value_type const&);
   caa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex, edge_user_value_type&&);
 
-  vertex_type&       in_vertex(graph_type&);
-  vertex_type const& in_vertex(graph_type const&) const;
-  vertex_key_type    in_vertex_key() const;
+  vertex_iterator       in_vertex(graph_type&);
+  const_vertex_iterator in_vertex(graph_type const&) const;
+  vertex_key_type       in_vertex_key() const;
 
-  vertex_type&       out_vertex(graph_type&);
-  vertex_type const& out_vertex(graph_type const&) const;
-  vertex_key_type    out_vertex_key() const;
+  vertex_iterator       out_vertex(graph_type&);
+  const_vertex_iterator out_vertex(graph_type const&) const;
+  vertex_key_type       out_vertex_key() const;
 
 private:
   vertex_index in_vertex_;
