@@ -22,10 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iterators", "iterators", "{
 		include\graph\iterators\bfs_edge_range.hpp = include\graph\iterators\bfs_edge_range.hpp
 		include\graph\iterators\bfs_range.hpp = include\graph\iterators\bfs_range.hpp
 		include\graph\iterators\dag_range.hpp = include\graph\iterators\dag_range.hpp
+		include\graph\iterators\dfs.hpp = include\graph\iterators\dfs.hpp
 		include\graph\iterators\dfs_range.hpp = include\graph\iterators\dfs_range.hpp
 		include\graph\iterators\filtered_bfs_range.hpp = include\graph\iterators\filtered_bfs_range.hpp
 		include\graph\iterators\new_dfs_range.hpp = include\graph\iterators\new_dfs_range.hpp
-		include\graph\iterators\std_dfs_range.hpp = include\graph\iterators\std_dfs_range.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithms", "algorithms", "{1B39F91E-48A8-4D17-8DEE-C694CE374A6D}"

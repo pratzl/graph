@@ -3,17 +3,41 @@
 //
 //	Author: J. Phillip Ratzloff
 //
+// breadth-first search graph algorithms for vertices and edges.
+//
+// The algorithms are designed to work with both directed & undirected graphs
+// by using general functions such as vertex() and edges() instead of out_vertex()
+// and out_edges().
+//
+// Assumes the graph structure remains stable during the duration of iteration.
+//
+// TODO
+//  1.  Add designation for forward range
+//  2.  Add concepts for requirements
+//      a.  integer vertex_key
+//      b.  vertices in contiguous space? (vertex or deque)
+//      c.  max vertex key is number of vertices
+//  3.  Test with const graph
+//  4.  Make more compatible with Ranges
+//  5.  Add range functions to create the range
+//
+// ISSUES / QUESTIONS
+//  1.  Range holds the state, not the iterator. is there a better design?
+//      a.  begin() returns current state of iteration (non-standard)
+//      b.  range is potentially heavy-weight, based on the number of vertices in the graph
+//          and the longest DFS path.
+//      c.  the current design could be useful for multi-threading, assuming the stack &
+//          visited members are guarded with locks.
+//
 
-#ifndef GRAPH_DFS_RANGE_HPP
-#define GRAPH_DFS_RANGE_HPP
+#ifndef GRAPH_DFS_HPP
+#define GRAPH_DFS_HPP
 
 #include "../graph_fwd.hpp"
-#include <cassert>
 #include <stack>
 #include <vector>
 
 namespace std::graph {
-
 
 /// depth-first search range for vertices, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
@@ -69,7 +93,7 @@ public:
     size_t depth() const { return dfs_->stack_.size(); }
 
   protected:
-    dfs_vertex_range* dfs_ = nullptr; // always non-null; allow default ctor
+    dfs_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     stack_elem        elem_;
   };
 
@@ -213,7 +237,7 @@ public:
     }
 
   protected:
-    dfs_edge_range* dfs_ = nullptr; // always non-null; allow default ctor
+    dfs_edge_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     stack_elem      elem_;
   };
 
@@ -300,4 +324,4 @@ private:
 
 } // namespace std::graph
 
-#endif // GRAPH_DFS_RANGE_HPP
+#endif // GRAPH_DFS_HPP
