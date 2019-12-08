@@ -14,8 +14,6 @@ using std::pair;
 using std::cout;
 using std::endl;
 
-using std::graph::vertex;
-
 using vector_index = size_t;
 
 struct route;
@@ -26,9 +24,16 @@ using Route2s = vector<route2>;
 using std::graph::empty_value;
 using std::graph::name_value;
 using std::graph::weight_value;
-using Graph = std::graph::compressed_adjacency_array<name_value, weight_value>;
+using Graph      = std::graph::compressed_adjacency_array<name_value, weight_value>;
+using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
+using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 
+// Bring functions into global namespace
 using std::graph::vertex_key;
+using std::graph::vertex;
+using std::graph::value;
+using std::graph::begin;
+using std::graph::end;
 
 struct route {
   string from;
@@ -172,75 +177,90 @@ TEST(TestCAAGraph, TestGraphInit) {
 
   cout << "\nGermany Routes"
        << "\n-------------------------------" << g << endl;
+
+  /* Output
+    Germany Routes
+    -------------------------------
+    [0] Augsburg
+      --> [6 Mnnchen] 84km
+    [1] Erfurt
+    [2] Frankfnrt
+      --> [5 Mannheim] 85km
+      --> [9 Wnrzburg] 217km
+      --> [4 Kassel] 173km
+    [3] Karlsruhe
+      --> [0 Augsburg] 250km
+    [4] Kassel
+      --> [6 Mnnchen] 502km
+    [5] Mannheim
+      --> [3 Karlsruhe] 80km
+    [6] Mnnchen
+    [7] Nnrnberg
+      --> [8 Stuttgart] 183km
+      --> [6 Mnnchen] 167km
+    [8] Stuttgart
+    [9] Wnrzburg
+      --> [1 Erfurt] 186km
+      --> [7 Nnrnberg] 103km
+  */
 }
 
-#define ENABLE_CAA_DFS
-#ifdef ENABLE_CAA_DFS
-
-TEST(TestCAAGraph, DFS) {
-  using std::graph::three_colors;
-
+TEST(TestCAAGraph, DFSVertex) {
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
 
   using vrange = std::graph::dfs_vertex_range;
   vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
-    cout << string(u.depth()*2, ' ') << value(*u).name << endl;
+    cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
 
-#  if 0
-  std::graph::dfs_edge_range ranges(g, 2);
-  auto                       ite = ranges.begin();
-  for (; ite != ranges.end(); ++ite) {
-    bool                   u = (*ite).first_visit;
-    Graph::vertex_key_type v = (*ite).out_key;
-    Graph::edge_type&      w = (*ite).edge;
-    size_t                 d = (*ite).depth;
+  /* Output:
+  Frankfnrt
+    Mannheim
+      Karlsruhe
+        Augsburg
+          Mnnchen
+    Wnrzburg
+      Erfurt
+      Nnrnberg
+        Stuttgart
+    Kassel
+  */
+}
 
-    if (u) {
-      cout << string(d, ' ') << "traverse to " << value(vertex(g, w)).name << " " << value(w).weight << "km" << endl;
+
+TEST(TestCAAGraph, DFSEdge) {
+  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
+  Graph                          g(cities, edge_routes);
+
+  using erange = std::graph::dfs_edge_range;
+  erange dfs_edge_rng(g, begin(g) + 2); // Frankfürt
+  for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
+    vtx_iter_t u     = uv.in_vertex();
+    vtx_key_t  u_key = vertex_key(g, *u);
+    if (uv.is_back_edge()) {
+      cout << string(uv.depth(), ' ') << "view " << value(*u).name << endl;
     } else {
-      cout << string(d, ' ') << "view " << value(vertex(g, w)).name << endl;
+      vtx_iter_t v = vertex(g, *uv);
+      cout << string(uv.depth(), ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
+           << value(*uv).weight << "km" << endl;
     }
   }
-#  endif
+
+  /* Output
+     travel Frankfnrt --> Mannheim 85km
+      travel Mannheim --> Karlsruhe 80km
+      travel Karlsruhe --> Augsburg 250km
+      travel Augsburg --> Mnnchen 84km
+      view Mnnchen
+     travel Frankfnrt --> Wnrzburg 217km
+      travel Wnrzburg --> Erfurt 186km
+       view Erfurt
+      travel Wnrzburg --> Nnrnberg 103km
+      travel Nnrnberg --> Stuttgart 183km
+       view Stuttgart
+      travel Nnrnberg --> Mnnchen 167km
+     travel Frankfnrt --> Kassel 173km
+     travel Kassel --> Mnnchen 502km
+  */
 }
-
-#else  //!ENABLE_CAA_DFS
-TEST(TestCAAGraph, DFS) {
-  using namespace bgl17;
-  size_t n_vtx = 15;
-
-  edge_list<undirected> A_list(n_vtx);
-  A_list.push_back(0, 1);
-  A_list.push_back(1, 2);
-  A_list.push_back(2, 3);
-  A_list.push_back(3, 4);
-  A_list.push_back(4, 5);
-  A_list.push_back(0, 6);
-  A_list.push_back(6, 7);
-  A_list.push_back(7, 8);
-  A_list.push_back(8, 9);
-  A_list.push_back(0, 10);
-  A_list.push_back(10, 11);
-  A_list.push_back(11, 12);
-  A_list.push_back(12, 13);
-  A_list.push_back(13, 14);
-  A_list.push_back(14, 11);
-
-  adjacency<0> A(A_list);
-
-  dfs_edge_range ranges(A, 7);
-
-  auto ite = ranges.begin();
-  for (; ite != ranges.end(); ++ite) {
-    auto u = std::get<0>(*ite);
-    auto v = std::get<1>(*ite);
-    auto w = std::get<2>(*ite);
-    if (u)
-      std::cout << "traverse " << v << " to " << w << std::endl;
-    else
-      std::cout << "view " << v << " to " << w << std::endl;
-  }
-}
-#endif //ENABLE_CAA_DFS
