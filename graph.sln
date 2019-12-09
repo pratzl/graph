@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{42245303
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "iterators", "iterators", "{6F31AFF7-259A-4B3C-9559-4D756D2B09B7}"
 	ProjectSection(SolutionItems) = preProject
+		include\graph\iterators\bfs.hpp = include\graph\iterators\bfs.hpp
 		include\graph\iterators\bfs_edge_range.hpp = include\graph\iterators\bfs_edge_range.hpp
 		include\graph\iterators\bfs_range.hpp = include\graph\iterators\bfs_range.hpp
 		include\graph\iterators\dag_range.hpp = include\graph\iterators\dag_range.hpp
