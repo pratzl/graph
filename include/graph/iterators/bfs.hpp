@@ -42,18 +42,24 @@ namespace std::graph {
 ///
 template <typename G, typename A = allocator<char>>
 class bfs_vertex_range {
+  enum three_colors : int8_t {
+    white, // undiscovered
+    grey,  // discovered, but not visited (in queue)
+    black  // visited
+  };
+
   struct queue_elem {
-    vertex_iterator_t<G>      u;
-    vertex_edge_iterator_t<G> uv;
+    vertex_iterator_t<G> u;
+    size_t               depth = 0;
   };
   using queue_alloc = typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
   using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph)) {
+  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph), white) {
     if (seed != std::graph::end(graph_)) {
-      queue_.push(queue_elem{seed, std::graph::begin(graph_, *seed)});
-      visited_[vertex_key(graph_, *seed)] = true;
+      queue_.push(queue_elem{seed, 0});
+      visited_[vertex_key(graph_, *seed)] = grey;
     }
   }
 
@@ -62,8 +68,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_vertex_range& bfs, bool end_iter = false)
-          : bfs_(&bfs), elem_{std::graph::end(bfs.graph_), vertex_edge_iterator_t<G>()} {
+    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{std::graph::end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -88,7 +93,7 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    size_t depth() const { return bfs_->queue_.size(); }
+    size_t depth() const { return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; }
 
   protected:
     bfs_vertex_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
@@ -137,36 +142,49 @@ public:
 
 protected:
   queue_elem advance() {
-    while (!queue_.empty()) {
-      auto [u, uv] = queue_.front();
+    if (!queue_.empty()) {
+      // get current vertex & add neighbors
+      // neighbor addition is deferred until we've visited the vertex so other
+      // vertices connected to the neighbor have already identified it, to keep 
+      // the queue smaller
+      auto [u, depth]       = queue_.front();
+      vertex_key_t<G> u_key = vertex_key(graph_, *u);
+      visited_[u_key]       = black;
+      push_neighbors(u, depth);
       queue_.pop();
 
-      // advance uv to next unvisited v vertex
-      vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
-      vertex_iterator_t<G>      v      = vertex_iterator_t<G>();
-      vertex_key_t<G>           v_key  = vertex_key_t<G>();
-      for (; uv != uv_end; ++uv) {
-        v     = vertex(graph_, *uv);
-        v_key = vertex_key(graph_, *v);
-        if (!visited_[v_key])
-          break;
-      }
+      while (!queue_.empty()) {
+        auto [u, depth]       = queue_.front();
+        vertex_key_t<G> u_key = vertex_key(graph_, *u);
 
-      if (uv != uv_end) {
-        queue_.push(queue_elem{u, uv});                               // remember next edge to resume on for u
-        vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
-        queue_.push(queue_elem{v, vw});                               // go level deaper in traversal
-        visited_[v_key] = true;
-        return queue_.front();
+        if (visited_[u_key] == grey)
+          return queue_.front(); // visit it
+
+        // already visited from diff neighbor?
+        // (will this condition ever occur?)
+        assert(visited_[u_key] == black);
+        queue_.pop();
       }
     }
-    return queue_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>()};
+    return queue_elem{std::graph::end(graph_), 0};
+  }
+
+  void push_neighbors(vertex_iterator_t<G> u, size_t depth) {
+    vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
+    for (vertex_edge_iterator_t<G> uv = std::graph::begin(graph_, *u); uv != uv_end; ++uv) {
+      vertex_iterator_t<G> v     = vertex(graph_, *uv);
+      vertex_key_t<G>      v_key = vertex_key(graph_, *v);
+      if (visited_[v_key] == white) {
+        queue_.push(queue_elem{v, depth + 1});
+        visited_[v_key] = grey;
+      }
+    }
   }
 
 private:
-  G&           graph_;
-  queue_type   queue_;
-  vector<bool> visited_;
+  G&                   graph_;
+  queue_type           queue_;
+  vector<three_colors> visited_;
 };
 
 
