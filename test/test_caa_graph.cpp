@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "graph/compressed_adj_array.hpp"
-#include "graph/iterators/std_dfs_range.hpp"
+#include "graph/iterators/dfs.hpp"
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>
@@ -214,7 +214,7 @@ TEST(TestCAAGraph, DFSVertex) {
   for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
 
-  /* Output:
+  /* Output: seed = Frankfnrt
   Frankfnrt
     Mannheim
       Karlsruhe
@@ -247,7 +247,7 @@ TEST(TestCAAGraph, DFSEdge) {
     }
   }
 
-  /* Output
+  /* Output: seed = Frankfnrt
      travel Frankfnrt --> Mannheim 85km
       travel Mannheim --> Karlsruhe 80km
       travel Karlsruhe --> Augsburg 250km

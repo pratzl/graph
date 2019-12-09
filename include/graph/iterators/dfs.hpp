@@ -3,7 +3,7 @@
 //
 //	Author: J. Phillip Ratzloff
 //
-// breadth-first search graph algorithms for vertices and edges.
+// depth-first search graph algorithms for vertices and edges.
 //
 // The algorithms are designed to work with both directed & undirected graphs
 // by using general functions such as vertex() and edges() instead of out_vertex()
@@ -30,12 +30,12 @@
 //          visited members are guarded with locks.
 //
 
-#ifndef GRAPH_DFS_HPP
-#define GRAPH_DFS_HPP
-
 #include "../graph_fwd.hpp"
 #include <stack>
 #include <vector>
+
+#ifndef GRAPH_DFS_HPP
+#  define GRAPH_DFS_HPP
 
 namespace std::graph {
 
