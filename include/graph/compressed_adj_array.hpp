@@ -1,3 +1,6 @@
+//
+//	Author: J. Phillip Ratzloff
+//
 #include "graph_utility.hpp"
 #include <vector>
 #include <range/v3/view/subrange.hpp>

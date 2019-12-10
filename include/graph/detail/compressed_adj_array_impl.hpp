@@ -1,3 +1,6 @@
+//
+//	Author: J. Phillip Ratzloff
+//
 #include <range/v3/algorithm/find_if.hpp>
 
 #ifndef COMPRESSED_ADJ_ARRAY_IMPL_HPP

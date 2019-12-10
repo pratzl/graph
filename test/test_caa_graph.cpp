@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "graph/compressed_adj_array.hpp"
-#include "graph/iterators/std_dfs_range.hpp"
+#include "graph/iterators/dfs.hpp"
+#include "graph/iterators/bfs.hpp"
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>
@@ -214,7 +215,7 @@ TEST(TestCAAGraph, DFSVertex) {
   for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
 
-  /* Output:
+  /* Output: seed = Frankfnrt
   Frankfnrt
     Mannheim
       Karlsruhe
@@ -247,7 +248,7 @@ TEST(TestCAAGraph, DFSEdge) {
     }
   }
 
-  /* Output
+  /* Output: seed = Frankfnrt
      travel Frankfnrt --> Mannheim 85km
       travel Mannheim --> Karlsruhe 80km
       travel Karlsruhe --> Augsburg 250km
@@ -264,3 +265,50 @@ TEST(TestCAAGraph, DFSEdge) {
      travel Kassel --> Mnnchen 502km
   */
 }
+
+TEST(TestCAAGraph, BFSVertex) {
+  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
+  Graph                          g(cities, edge_routes);
+
+  using vrange = std::graph::bfs_vertex_range;
+  vrange bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
+  for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
+    cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
+
+  /* Output: seed = Frankfnrt
+    Frankfnrt
+      Mannheim
+      Wnrzburg
+      Kassel
+        Karlsruhe
+        Erfurt
+        Nnrnberg
+        Mnnchen
+          Augsburg
+          Stuttgart
+  */
+}
+
+#ifdef _todo
+TEST(TestCAAGraph, BFSEdge) {
+  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
+  Graph                          g(cities, edge_routes);
+
+  using erange = std::graph::bfs_edge_range;
+  erange bfs_edge_rng(g, begin(g) + 2); // Frankfürt
+  for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
+    vtx_iter_t u     = uv.in_vertex();
+    vtx_key_t  u_key = vertex_key(g, *u);
+    if (uv.is_back_edge()) {
+      cout << string(uv.depth(), ' ') << "view " << value(*u).name << endl;
+    } else {
+      vtx_iter_t v = vertex(g, *uv);
+      cout << string(uv.depth(), ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
+           << value(*uv).weight << "km" << endl;
+    }
+  }
+
+  /* Output: seed = Frankfnrt
+  */
+}
+#endif //_todo
