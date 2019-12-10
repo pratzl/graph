@@ -1,6 +1,8 @@
 //
 //	Author: J. Phillip Ratzloff
 //
+// inspired by bfs_range.hpp from: BGL17
+//
 // breadth-first search graph algorithms for vertices and edges.
 //
 // The algorithms are designed to work with both directed & undirected graphs
@@ -145,7 +147,7 @@ protected:
     if (!queue_.empty()) {
       // get current vertex & add neighbors
       // neighbor addition is deferred until we've visited the vertex so other
-      // vertices connected to the neighbor have already identified it, to keep 
+      // vertices connected to the neighbor have already identified it, to keep
       // the queue smaller
       auto [u, depth]       = queue_.front();
       vertex_key_t<G> u_key = vertex_key(graph_, *u);
@@ -188,6 +190,7 @@ private:
 };
 
 
+#ifdef _todo
 /// breadth-first search range for edges, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
@@ -196,6 +199,7 @@ class bfs_edge_range {
   struct queue_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
+    size_t                    depth = 0;
   };
   using queue_alloc = typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
   using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
@@ -304,7 +308,7 @@ protected:
       if (resume)
         return queue_.front();
 
-      auto [u, uv] = queue_.front();
+      auto [u, uv, depth] = queue_.front();
 
       vertex_iterator_t<G>      v      = vertex(graph_, *uv);
       vertex_key_t<G>           v_key  = vertex_key(graph_, *v);
@@ -336,6 +340,7 @@ private:
   queue_type   queue_;
   vector<bool> visited_;
 };
+#endif //_todo
 
 } // namespace std::graph
 

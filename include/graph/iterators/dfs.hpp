@@ -1,7 +1,7 @@
 //
-// inspired by new_dfs_range.hpp from: BGL17
-//
 //	Author: J. Phillip Ratzloff
+//
+// inspired by new_dfs_range.hpp from: BGL17
 //
 // depth-first search graph algorithms for vertices and edges.
 //

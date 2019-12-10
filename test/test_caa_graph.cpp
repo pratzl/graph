@@ -276,10 +276,20 @@ TEST(TestCAAGraph, BFSVertex) {
     cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
 
   /* Output: seed = Frankfnrt
+    Frankfnrt
+      Mannheim
+      Wnrzburg
+      Kassel
+        Karlsruhe
+        Erfurt
+        Nnrnberg
+        Mnnchen
+          Augsburg
+          Stuttgart
   */
 }
 
-
+#ifdef _todo
 TEST(TestCAAGraph, BFSEdge) {
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
@@ -301,3 +311,4 @@ TEST(TestCAAGraph, BFSEdge) {
   /* Output: seed = Frankfnrt
   */
 }
+#endif //_todo
