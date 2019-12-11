@@ -213,7 +213,7 @@ TEST(TestCAAGraph, DFSVertex) {
   using vrange = std::graph::dfs_vertex_range;
   vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
-    cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
+    cout << string(u.depth() * 2, ' ') << u->name << endl;
 
   /* Output: seed = Frankfnrt
   Frankfnrt
@@ -226,6 +226,23 @@ TEST(TestCAAGraph, DFSVertex) {
       Nnrnberg
         Stuttgart
     Kassel
+  */
+
+  // a flat list when using range syntax (depth n/a on vertex)
+  cout << endl;
+  for (auto& u : vrange(g, begin(g) + 2)) // Frankfürt
+    cout << u.name << endl;
+  /* Output: seed = Frankfnrt
+  Frankfnrt
+  Mannheim
+  Karlsruhe
+  Augsburg
+  Mnnchen
+  Wnrzburg
+  Erfurt
+  Nnrnberg
+  Stuttgart
+  Kassel
   */
 }
 
@@ -240,11 +257,11 @@ TEST(TestCAAGraph, DFSEdge) {
     vtx_iter_t u     = uv.in_vertex();
     vtx_key_t  u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
-      cout << string(uv.depth() * 2, ' ') << "view " << value(*u).name << endl;
+      cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
       vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth() * 2, ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
-           << value(*uv).weight << "km" << endl;
+      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << u->name << " "
+           << uv->weight << "km" << endl;
     }
   }
 
@@ -273,7 +290,7 @@ TEST(TestCAAGraph, BFSVertex) {
   using vrange = std::graph::bfs_vertex_range;
   vrange bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
-    cout << string(u.depth() * 2, ' ') << value(*u).name << endl;
+    cout << string(u.depth() * 2, ' ') << u->name << endl;
 
   /* Output: seed = Frankfnrt
     Frankfnrt
@@ -299,11 +316,11 @@ TEST(TestCAAGraph, BFSEdge) {
     vtx_iter_t u     = uv.in_vertex();
     vtx_key_t  u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
-      cout << string(uv.depth() * 2, ' ') << "view " << value(*u).name << endl;
+      cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
       vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth() * 2, ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
-           << value(*uv).weight << "km" << endl;
+      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " "
+           << uv->weight << "km" << endl;
     }
   }
 
