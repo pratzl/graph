@@ -225,8 +225,8 @@ public:
 
   using vertex_out_edge_iterator       = typename out_edge_range::iterator;
   using const_vertex_out_edge_iterator = typename const_out_edge_range::iterator;
-  using vertex_edge_iterator       = vertex_out_edge_iterator;
-  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
+  using vertex_edge_iterator           = vertex_out_edge_iterator;
+  using const_vertex_edge_iterator     = const_vertex_out_edge_iterator;
 
 public:
   caa_graph() = default;
@@ -449,6 +449,21 @@ public:
   caa_graph(VCont<VV2, A2> const&                     vcont,
             ECont<edge_key_type, EV2, Cmp, A3> const& econt,
             allocator_type                            alloc = allocator_type());
+
+
+  template <typename VRng, typename VPropFnc, typename ERng, typename EKeyFnc, typename EPropFnc>
+  caa_graph(
+        VRng&     vrng,
+        ERng&     erng,
+        VPropFnc& vprop_fnc = [](typename VRng::value_type&) { return empty_value(); },
+        EKeyFnc&  ekey_fnc  = [](typename ERng::value_type&) { return edge_key_type(); },
+        EPropFnc& eprop_fnc = [](typename ERng::value_type&) { return empty_value(); });
+
+  template <typename ERng, typename EKeyFnc, typename EPropFnc>
+  caa_graph(
+        ERng&     erng,
+        EKeyFnc&  ekey_fnc  = [](typename ERng::value_type&) { return edge_key_type(); },
+        EPropFnc& eprop_fnc = [](typename ERng::value_type&) { return empty_value(); });
 
 public:
   constexpr vertex_set&       vertices();

@@ -1,6 +1,7 @@
 //#include <memory>
 //#include <range/v3/all.hpp>
 #include <concepts>
+#include <range/v3/range/concepts.hpp>
 #include <type_traits>
 
 /* NOTES
@@ -55,9 +56,6 @@ concept edge_c = true;
 template <typename T>
 concept arithmetic_c = is_arithmetic_v<T>;
 
-// for DFS, BFS & TopoSort iterators
-template <typename SI>
-concept search_iterator_c = forward_iterator<SI>&& depth(SI);
 
 //
 // type traits
@@ -445,6 +443,23 @@ void clear(G& g);
 template <graph_c G>
 constexpr void swap(G& a, G& b);
 #  endif
+
+
+// for DFS, BFS & TopoSort ranges
+template <typename G>
+concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) {
+  ::ranges::forward_range<G>;
+  //::ranges::forward_range<vertex_t<G>>; // vertex begin/end require graph parameter so it doesn't apply
+  ::ranges::forward_range<vertex_range_t<G>>;
+  ::ranges::forward_range<vertex_edge_iterator_t<G>>;
+  integral<vertex_key_t<G>>;
+  { vertices(g) } ->vertex_range_t<G>;
+  { edges(g, *u) } ->vertex_edge_range_t<G>;
+  { vertex(g, *uv) } ->vertex_iterator_t<G>;
+  { vertex_key(g,*u) } ->vertex_key_t<G>;
+};
+
+
 
 //
 // Common Property Values

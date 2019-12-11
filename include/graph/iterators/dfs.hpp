@@ -39,10 +39,11 @@
 
 namespace std::graph {
 
+
 /// depth-first search range for vertices, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
-template <typename G, typename A = allocator<char>>
+template <searchable_graph_c G, typename A = allocator<char>>
 class dfs_vertex_range {
   struct stack_elem {
     vertex_iterator_t<G>      u;
@@ -61,6 +62,11 @@ public:
 
   class const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+
+    using value_type = vertex_t<G>;
+    using reference  = const value_type&;
+
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
@@ -73,7 +79,7 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    vertex_t<G> const&         operator*() const { return *elem_.u; }
+    reference                  operator*() const { return *elem_.u; }
     const_vertex_iterator_t<G> operator->() const { return elem_.u; }
 
     const_iterator& operator++() {
@@ -99,6 +105,10 @@ public:
 
   class iterator : public const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+    using value_type        = vertex_t<G>;
+    using reference         = value_type&;
+
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
@@ -113,7 +123,7 @@ public:
       return *this;
     }
 
-    vertex_t<G>&         operator*() { return *this->elem_.u; }
+    reference            operator*() { return *this->elem_.u; }
     vertex_iterator_t<G> operator->() const { return this->elem_.u; }
 
     iterator& operator++() {
@@ -175,7 +185,7 @@ private:
 /// depth-first search range for edges, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
-template <typename G, typename A = allocator<char>>
+template <searchable_graph_c G, typename A = allocator<char>>
 class dfs_edge_range {
   struct stack_elem {
     vertex_iterator_t<G>      u;
@@ -194,6 +204,8 @@ public:
 
   class const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
@@ -243,6 +255,8 @@ public:
 
   class iterator : public const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}

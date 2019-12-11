@@ -42,7 +42,7 @@ namespace std::graph {
 /// breadth-first search range for vertices, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
-template <typename G, typename A = allocator<char>>
+template <searchable_graph_c G, typename A = allocator<char>>
 class bfs_vertex_range {
   enum three_colors : int8_t {
     white, // undiscovered
@@ -67,6 +67,8 @@ public:
 
   class const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
@@ -104,6 +106,8 @@ public:
 
   class iterator : public const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
@@ -194,7 +198,7 @@ private:
 /// breadth-first search range for edges, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
-template <typename G, typename A = allocator<char>>
+template <searchable_graph_c G, typename A = allocator<char>>
 class bfs_edge_range {
   enum three_colors : int8_t {
     white, // undiscovered
@@ -218,6 +222,10 @@ public:
 
   class const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+    using value_type        = vertex_t<G>;
+    using reference         = value_type const&;
+
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
@@ -230,7 +238,7 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    edge_t<G> const&                operator*() const { return *elem_.uv; }
+    reference                       operator*() const { return *elem_.uv; }
     const_vertex_edge_iterator_t<G> operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
@@ -267,6 +275,10 @@ public:
 
   class iterator : public const_iterator {
   public:
+    using iterator_category = forward_iterator_tag;
+    using value_type        = vertex_t<G>;
+    using reference         = value_type&;
+
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
