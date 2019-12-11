@@ -60,7 +60,7 @@ class bfs_vertex_range {
 public:
   bfs_vertex_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph), white) {
     if (seed != std::graph::end(graph_)) {
-      queue_.push(queue_elem{seed, 0});
+      queue_.push(queue_elem{seed, 1});
       visited_[vertex_key(graph_, *seed)] = grey;
     }
   }
@@ -152,7 +152,7 @@ protected:
       auto [u, depth]       = queue_.front();
       vertex_key_t<G> u_key = vertex_key(graph_, *u);
       visited_[u_key]       = black;
-      push_neighbors(u, depth);
+      push_neighbors(u, depth + 1);
       queue_.pop();
 
       while (!queue_.empty()) {
@@ -177,7 +177,7 @@ protected:
       vertex_iterator_t<G> v     = vertex(graph_, *uv);
       vertex_key_t<G>      v_key = vertex_key(graph_, *v);
       if (visited_[v_key] == white) {
-        queue_.push(queue_elem{v, depth + 1});
+        queue_.push(queue_elem{v, depth});
         visited_[v_key] = grey;
       }
     }
@@ -190,12 +190,18 @@ private:
 };
 
 
-#ifdef _todo
+//#ifdef _todo
 /// breadth-first search range for edges, given a single seed vertex.
 /// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
 template <typename G, typename A = allocator<char>>
 class bfs_edge_range {
+  enum three_colors : int8_t {
+    white, // undiscovered
+    grey,  // discovered, but not visited (in queue)
+    black  // visited
+  };
+
   struct queue_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
@@ -205,11 +211,9 @@ class bfs_edge_range {
   using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_edge_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph)) {
-    if (seed != std::graph::end(graph_)) {
-      queue_.push(queue_elem{seed, std::graph::begin(graph_, *seed)});
-      visited_[vertex_key(graph_, *seed)] = true;
-    }
+  bfs_edge_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph), white) {
+    if (seed != std::graph::end(graph_))
+      push_neighbors(seed, 1);
   }
 
   class const_iterator {
@@ -243,7 +247,7 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    size_t               depth() const { return bfs_->queue_.size(); }
+    size_t               depth() const { return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; }
     vertex_iterator_t<G> in_vertex() const { return elem_.u; }
     bool                 is_back_edge() const { return elem_.uv == std::graph::end(bfs_->graph_, *elem_.u); }
 
@@ -253,7 +257,7 @@ public:
 
       vertex_iterator_t<G> v     = vertex(bfs_->graph_, *elem_.uv);
       vertex_key_t<G>      v_key = vertex_key(graph_, *v);
-      return bfs_->visited_[v_key];
+      return bfs_->visited_[v_key] == black;
     }
 
   protected:
@@ -303,44 +307,49 @@ public:
 
 protected:
   queue_elem advance() {
-    bool resume = false;
-    while (!queue_.empty()) {
-      if (resume)
-        return queue_.front();
-
-      auto [u, uv, depth] = queue_.front();
-
-      vertex_iterator_t<G>      v      = vertex(graph_, *uv);
-      vertex_key_t<G>           v_key  = vertex_key(graph_, *v);
+    if (!queue_.empty()) {
+      // get current vertex
+      auto [u, uv, depth]              = queue_.front();
+      vertex_key_t<G>           u_key  = vertex_key(graph_, *u);
       vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
-
+      visited_[u_key]                  = black;
       queue_.pop();
-      resume = true;
 
-      // no more edges for u? (will occur if no [out] edges)
-      if (uv == uv_end)
-        continue;
-
-      // remember next edge to resume on for u
-      if (++uv != uv_end)
-        queue_.push(queue_elem{u, uv});
-
-      // visit v vertex if we haven't visited it yet
-      if (!visited_[v_key]) {
-        vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
-        queue_.push(queue_elem{v, vw});                               // go level deeper in traversal
-        visited_[v_key] = true;
+      // Add neighbors, if there are any.
+      // Neighbor addition is deferred until the edge has been visited to keep
+      // the queue smaller
+      if (uv != uv_end) {
+        vertex_iterator_t<G> v = vertex(graph_, *uv);
+        push_neighbors(v, depth + 1);
       }
+
+      if (!queue_.empty())
+        return queue_.front();
     }
     return queue_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>()};
   }
 
+  void push_neighbors(vertex_iterator_t<G> v, size_t depth) {
+    vertex_key_t<G>           v_key  = vertex_key(graph_, *v);
+    vertex_edge_iterator_t<G> vw_end = std::graph::end(graph_, *v);
+    if (visited_[v_key] != white) // already been here?
+      return;
+
+    if (std::graph::begin(graph_, *v) == vw_end) {
+      queue_.push(queue_elem{v, vw_end, depth}); // back edge
+    } else {
+      for (vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); vw != vw_end; ++vw)
+        queue_.push(queue_elem{v, vw, depth});
+    }
+    visited_[v_key] = grey;
+  }
+
 private:
-  G&           graph_;
-  queue_type   queue_;
-  vector<bool> visited_;
-};
-#endif //_todo
+  G&                   graph_;
+  queue_type           queue_;
+  vector<three_colors> visited_;
+}; // namespace std::graph
+//#endif //_todo
 
 } // namespace std::graph
 
