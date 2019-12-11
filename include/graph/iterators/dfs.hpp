@@ -305,7 +305,7 @@ protected:
       if (++uv != uv_end)
         stack_.push(stack_elem{u, uv});
 
-      // visit v vertex if we haven't visited it yet
+      // visit v vertex if it hasn't been visited yet
       if (!visited_[v_key]) {
         vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
         stack_.push(stack_elem{v, vw});                               // go level deeper in traversal

@@ -240,29 +240,29 @@ TEST(TestCAAGraph, DFSEdge) {
     vtx_iter_t u     = uv.in_vertex();
     vtx_key_t  u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
-      cout << string(uv.depth(), ' ') << "view " << value(*u).name << endl;
+      cout << string(uv.depth() * 2, ' ') << "view " << value(*u).name << endl;
     } else {
       vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth(), ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
+      cout << string(uv.depth() * 2, ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
            << value(*uv).weight << "km" << endl;
     }
   }
 
   /* Output: seed = Frankfnrt
-     travel Frankfnrt --> Mannheim 85km
-      travel Mannheim --> Karlsruhe 80km
-      travel Karlsruhe --> Augsburg 250km
-      travel Augsburg --> Mnnchen 84km
-      view Mnnchen
-     travel Frankfnrt --> Wnrzburg 217km
-      travel Wnrzburg --> Erfurt 186km
-       view Erfurt
-      travel Wnrzburg --> Nnrnberg 103km
-      travel Nnrnberg --> Stuttgart 183km
-       view Stuttgart
-      travel Nnrnberg --> Mnnchen 167km
-     travel Frankfnrt --> Kassel 173km
-     travel Kassel --> Mnnchen 502km
+      travel Frankfnrt --> Mannheim 85km
+        travel Mannheim --> Karlsruhe 80km
+        travel Karlsruhe --> Augsburg 250km
+        travel Augsburg --> Mnnchen 84km
+        view Mnnchen
+      travel Frankfnrt --> Wnrzburg 217km
+        travel Wnrzburg --> Erfurt 186km
+          view Erfurt
+        travel Wnrzburg --> Nnrnberg 103km
+        travel Nnrnberg --> Stuttgart 183km
+          view Stuttgart
+        travel Nnrnberg --> Mnnchen 167km
+      travel Frankfnrt --> Kassel 173km
+      travel Kassel --> Mnnchen 502km
   */
 }
 
@@ -289,7 +289,6 @@ TEST(TestCAAGraph, BFSVertex) {
   */
 }
 
-#ifdef _todo
 TEST(TestCAAGraph, BFSEdge) {
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
@@ -300,15 +299,28 @@ TEST(TestCAAGraph, BFSEdge) {
     vtx_iter_t u     = uv.in_vertex();
     vtx_key_t  u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
-      cout << string(uv.depth(), ' ') << "view " << value(*u).name << endl;
+      cout << string(uv.depth() * 2, ' ') << "view " << value(*u).name << endl;
     } else {
       vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth(), ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
+      cout << string(uv.depth() * 2, ' ') << "travel " << value(*u).name << " --> " << value(*v).name << " "
            << value(*uv).weight << "km" << endl;
     }
   }
 
   /* Output: seed = Frankfnrt
+      travel Frankfnrt --> Mannheim 85km
+      travel Frankfnrt --> Wnrzburg 217km
+      travel Frankfnrt --> Kassel 173km
+        travel Mannheim --> Karlsruhe 80km
+        travel Wnrzburg --> Erfurt 186km
+        travel Wnrzburg --> Nnrnberg 103km
+        travel Kassel --> Mnnchen 502km
+          travel Karlsruhe --> Augsburg 250km
+          view Erfurt
+          travel Nnrnberg --> Stuttgart 183km
+          travel Nnrnberg --> Mnnchen 167km
+          view Mnnchen
+            travel Augsburg --> Mnnchen 84km
+            view Stuttgart
   */
 }
-#endif //_todo
