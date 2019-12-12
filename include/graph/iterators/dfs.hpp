@@ -24,6 +24,8 @@
 //  3.  Test with const graph
 //  4.  Make more compatible with Ranges
 //  5.  Add range functions to create the range
+//  6.  [SG19] Check integer-based performance vs existing iterator-based performance
+//  7.  [SG19] Support graphs with non-consecutive integers
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?

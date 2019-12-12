@@ -24,6 +24,8 @@
 //  3.  Test with const graph
 //  4.  Make more compatible with Ranges
 //  5.  Add range functions to create the range
+//  6.  [SG19] Check integer-based performance vs existing iterator-based performance 
+//  7.  [SG19] Support graphs with non-consecutive integers
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?
@@ -32,6 +34,8 @@
 //          and the longest DFS path.
 //      c.  the current design could be useful for multi-threading, assuming the queue &
 //          visited members are guarded with locks.
+//  2.  Will BFS ranges will work with centrality, or is a visitor needed? Similar for 
+//      Weighted Betweeness. - Matt Galati
 //
 
 #include "../graph_fwd.hpp"

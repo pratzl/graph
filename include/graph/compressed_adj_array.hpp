@@ -20,30 +20,44 @@ namespace std::graph {
 /// An edge holds the index for its outgoing vertex in the vertices vector, plus any
 /// user-defined values.
 
-template <typename VV = empty_value, typename EV = empty_value, typename GV = empty_value, typename A = allocator<char>>
+template <typename VV     = empty_value,
+          typename EV     = empty_value,
+          typename GV     = empty_value,
+          typename IndexT = uint32_t,
+          typename A      = allocator<char>>
 class caa_graph;
 
-template <typename VV, typename EV, typename GV, typename A>
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_vertex;
 
-template <typename VV, typename EV, typename GV, typename A>
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_edge;
 
-template <typename VV = empty_value, typename EV = empty_value, typename GV = empty_value, typename A = allocator<char>>
+template <typename VV     = empty_value,
+          typename EV     = empty_value,
+          typename GV     = empty_value,
+          typename IndexT = uint32_t,
+          typename A      = allocator<char>>
 using compressed_adjacency_array = caa_graph<VV, EV, GV, A>;
 
 
 ///-------------------------------------------------------------------------------------
 /// caa_edge
 ///
-template <typename VV, typename EV, typename GV, typename A>
+/// @tparam VV     Vertex Value type. default = empty_value.
+/// @tparam EV     Edge Value type. default = empty_value.
+/// @tparam GV     Graph Value type. default = empty_value.
+/// @tparam IntexT The type used for vertex & edge index into the internal vectors.
+/// @tparam A      Allocator. default = std::allocator
+///
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
 public:
-  using graph_type            = caa_graph<VV, EV, GV, A>;
+  using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
   using base_t                = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
-  using vertex_type            = caa_vertex<VV, EV, GV, A>;
+  using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -53,7 +67,7 @@ public:
   using vertex_key_type        = vertex_index;
 
   using edge_user_value_type = EV;
-  using edge_type            = caa_edge<VV, EV, GV, A>;
+  using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_iterator        = typename edge_set::iterator;
@@ -91,14 +105,20 @@ private:
 ///-------------------------------------------------------------------------------------
 /// caa_vertex
 ///
-template <typename VV, typename EV, typename GV, typename A>
+/// @tparam VV     Vertex Value type. default = empty_value.
+/// @tparam EV     Edge Value type. default = empty_value.
+/// @tparam GV     Graph Value type. default = empty_value.
+/// @tparam IntexT The type used for vertex & edge index into the internal vectors.
+/// @tparam A      Allocator. default = std::allocator
+///
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
 public:
-  using graph_type            = caa_graph<VV, EV, GV, A>;
+  using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
   using base_t                = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
-  using vertex_type            = caa_vertex<VV, EV, GV, A>;
+  using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -108,7 +128,7 @@ public:
   using vertex_key_type        = vertex_index;
 
   using edge_user_value_type = EV;
-  using edge_type            = caa_edge<VV, EV, GV, A>;
+  using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_index           = typename edge_set::size_type;
@@ -180,20 +200,21 @@ private:
 /// templatized graph free functions to work with the graph otherwise. While public member functions
 /// (besides constructors) may work, there is no guarantee they will work on all implementations.
 ///
-/// @tparam VV Vertex Value type. default = empty_value.
-/// @tparam EV Edge Value type. default = empty_value.
-/// @tparam GV Graph Value type. default = empty_value.
-/// @tparam A  Allocator. default = std::allocator
+/// @tparam VV     Vertex Value type. default = empty_value.
+/// @tparam EV     Edge Value type. default = empty_value.
+/// @tparam GV     Graph Value type. default = empty_value.
+/// @tparam IntexT The type used for vertex & edge index into the internal vectors.
+/// @tparam A      Allocator. default = std::allocator
 //
-template <typename VV, typename EV, typename GV, typename A>
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
-  using graph_type            = caa_graph<VV, EV, GV, A>;
+  using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
   using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
 
-  using vertex_type            = caa_vertex<VV, EV, GV, A>;
+  using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -206,7 +227,7 @@ public:
   using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(nullptr)));
 
   using edge_user_value_type = EV;
-  using edge_type            = caa_edge<VV, EV, GV, A>;
+  using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_iterator        = typename edge_set::iterator;
@@ -236,11 +257,11 @@ public:
 
   // The following constructors will load edges (and vertices) into the graph
   //
-  // The number of vertices is guaranteed to match the highest vertex key in the edges. 
-  // Edges are scanned first to determine the highest number and the vertices are resized 
+  // The number of vertices is guaranteed to match the highest vertex key in the edges.
+  // Edges are scanned first to determine the highest number and the vertices are resized
   // to match the number.
   //
-  // Accessor functions are used to return the edge_key_type, edge_user_value_type and 
+  // Accessor functions are used to return the edge_key_type, edge_user_value_type and
   // vertex_user_value_type.
   //
   // The order visited in the vertices determines their index (and key/identity) in the
@@ -253,12 +274,12 @@ public:
   ///
   /// @tparam ERng     The edge data range.
   /// @tparam EKeyFnc  Function object to return edge_key_type of the ERng::value_type.
-  /// @tparam EPropFnc Function object to return the edge_user_value_type, or a type that 
-  ///                  edge_user_value_type is constructible from. If the return type is 
+  /// @tparam EPropFnc Function object to return the edge_user_value_type, or a type that
+  ///                  edge_user_value_type is constructible from. If the return type is
   ///                  void or empty_value the edge_user_value_type default constructor
   ///                  will be used to initialize the value.
-  /// @tparam VRng     The vertex data range. 
-  /// @tparam VPropFnc Function object to return the vertex_user_value_type, or a type that 
+  /// @tparam VRng     The vertex data range.
+  /// @tparam VPropFnc Function object to return the vertex_user_value_type, or a type that
   ///                  vertex_user_value_type is constructible from. If the return type is void
   ///                  or empty_value the vertex_user_value_type default constructor
   ///                  will be used to initialize the value.
