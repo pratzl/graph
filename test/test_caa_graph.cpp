@@ -25,6 +25,7 @@ using Route2s = vector<route2>;
 using std::graph::empty_value;
 using std::graph::name_value;
 using std::graph::weight_value;
+
 using Graph      = std::graph::compressed_adjacency_array<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::graph::vertex_key_t<Graph>;
@@ -36,6 +37,11 @@ using std::graph::value;
 using std::graph::begin;
 using std::graph::end;
 
+struct route;
+vector<string>                 unique_cities(vector<route>& routes);
+vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vector<string> const& cities);
+
+
 struct route {
   string from;
   string to;
@@ -44,18 +50,24 @@ struct route {
   route(string const& from_city, string const& to_city, int kilometers)
         : from(from_city), to(to_city), km(kilometers) {}
 };
-struct route2 {
-  vector_index from = numeric_limits<vector_index>::max();
-  vector_index to   = numeric_limits<vector_index>::max();
-  int          km   = 0;
-  route2(vector_index from_city, vector_index to_city, int kilometers) : from(from_city), to(to_city), km(kilometers) {}
-  route2(route const& r, vector<string> const& cities) : km(r.km) {
-    from = ranges::find(cities, r.from) - cities.begin();
-    to   = ranges::find(cities, r.to) - cities.begin();
-    assert(from < cities.size());
-    assert(to < cities.size());
-  }
-};
+
+static vector<route> routes{
+      {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
+      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
+      {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
+      {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
+
+
+static vector<string>                 cities      = unique_cities(routes); // cities is ordered
+static vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
+
+static Graph g(
+      edge_routes,
+      cities,
+      [](Graph::edge_value_type const& er) { return er.first; },
+      [](Graph::edge_value_type const& er) { return er.second; },
+      [](string const& city) -> string const& { return city; });
+
 
 vector<string> unique_cities(vector<route>& routes) {
   vector<string> cities;
@@ -67,34 +79,20 @@ vector<string> unique_cities(vector<route>& routes) {
   return move(cities) | ranges::actions::sort | ranges::actions::unique;
 };
 
-vector<route2> to_route2s(vector<route> const& routes, vector<string> const& cities) {
-  vector<route2> routes2;
-  for (route const& r : routes)
-    routes2.push_back(route2(r, cities));
-  return routes2;
-}
-
-vector<Graph::edge_key_type> to_edge_keys(vector<route> const& routes, vector<string> const& cities) {
-  vector<Graph::edge_key_type> edge_keys;
-  for (route const& r : routes) {
-    route2 r2(r, cities);
-    edge_keys.push_back({r2.from, r2.to});
-  }
-  sort(edge_keys.begin(), edge_keys.end(),
-       [](Graph::edge_key_type const& lhs, Graph::edge_key_type const& rhs) { return lhs.first < rhs.first; });
-  return edge_keys;
-}
-
 vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vector<string> const& cities) {
   vector<Graph::edge_value_type> edge_values;
+  edge_values.reserve(routes.size());
   for (route const& r : routes) {
-    route2 r2(r, cities);
-    edge_values.push_back({{r2.from, r2.to}, r.km});
+    vector_index from = ::ranges::find(cities, r.from) - cities.begin();
+    vector_index to   = ::ranges::find(cities, r.to) - cities.begin();
+    assert(from < cities.size());
+    assert(to < cities.size());
+    edge_values.push_back({{from, to}, r.km});
   }
-  sort(edge_values.begin(), edge_values.end(),
-       [](Graph::edge_value_type const& lhs, Graph::edge_value_type const& rhs) {
-         return lhs.first.first < rhs.first.first;
-       });
+  auto cmp = [](Graph::edge_value_type const& lhs, Graph::edge_value_type const& rhs) {
+    return lhs.first.first < rhs.first.first;
+  };
+  ::ranges::sort(edge_values, cmp);
   return edge_values;
 }
 
@@ -113,20 +111,11 @@ OStream& operator<<(OStream& os, Graph const& g) {
   return os;
 }
 
-static vector<route> routes{
-      {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
-      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
-      {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
-      {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
-
-
-static vector<string> cities = unique_cities(routes); // cities is ordered
-
 
 TEST(TestCAAGraph, TestMinObjSize) {
   using G = std::graph::compressed_adjacency_array<>;
-  EXPECT_EQ(sizeof(size_t), sizeof(G::vertex_type));   // edge size = 8 bytes
-  EXPECT_EQ(sizeof(size_t) * 2, sizeof(G::edge_type)); // vertex size = 16 bytes
+  EXPECT_EQ(sizeof(size_t), sizeof(G::vertex_type));   // vertex size = 8 bytes
+  EXPECT_EQ(sizeof(size_t) * 2, sizeof(G::edge_type)); // edge size = 16 bytes
 }
 
 TEST(TestCAAGraph, TestEmptyGraph) {
@@ -138,18 +127,26 @@ TEST(TestCAAGraph, TestEmptyGraph) {
 }
 
 TEST(TestCAAGraph, TestGraphInit) {
+#if 0
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
+  Graph g(
+        edge_routes, cities, [](Graph::edge_value_type const& er) { return er.first; },
+        [](Graph::edge_value_type const& er) { return er.second; },
+        [](string const& city) -> string const& { return city; });
+#endif
   EXPECT_EQ(cities.size(), vertices_size(g));
   EXPECT_EQ(edge_routes.size(), edges_size(g));
 
-  /*cout << endl << "Cities:" << endl;
+#if 0
+  cout << endl << "Cities:" << endl;
   for (auto& city : cities)
     cout << "  " << (&city - cities.data()) << ". " << city << endl;
 
   cout << endl << "Routes:" << endl;
   for (auto& r : edge_routes)
-    cout << "  " << cities[r.first.first] << " --> " << cities[r.first.second] << " " << r.second.weight << "km" << endl;*/
+    cout << "  " << cities[r.first.first] << " --> " << cities[r.first.second] << " " << r.second.weight << "km" << endl;
+#endif
 
   // iterate thru vertices range
   size_t nVertices = 0;
@@ -207,9 +204,6 @@ TEST(TestCAAGraph, TestGraphInit) {
 }
 
 TEST(TestCAAGraph, DFSVertex) {
-  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
-  Graph                          g(cities, edge_routes);
-
   using vrange = std::graph::dfs_vertex_range;
   vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
@@ -248,20 +242,17 @@ TEST(TestCAAGraph, DFSVertex) {
 
 
 TEST(TestCAAGraph, DFSEdge) {
-  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
-  Graph                          g(cities, edge_routes);
-
   using erange = std::graph::dfs_edge_range;
   erange dfs_edge_rng(g, begin(g) + 2); // Frankfürt
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
-    vtx_iter_t u     = uv.in_vertex();
+    vtx_iter_t u     = out_vertex(g, *uv);
     vtx_key_t  u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
-      vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << u->name << " "
-           << uv->weight << "km" << endl;
+      vtx_iter_t v = out_vertex(g, *uv); // or vertex(g, *uv)
+      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " " << uv->weight << "km"
+           << endl;
     }
   }
 
@@ -284,9 +275,6 @@ TEST(TestCAAGraph, DFSEdge) {
 }
 
 TEST(TestCAAGraph, BFSVertex) {
-  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
-  Graph                          g(cities, edge_routes);
-
   using vrange = std::graph::bfs_vertex_range;
   vrange bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
@@ -307,20 +295,17 @@ TEST(TestCAAGraph, BFSVertex) {
 }
 
 TEST(TestCAAGraph, BFSEdge) {
-  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
-  Graph                          g(cities, edge_routes);
-
   using erange = std::graph::bfs_edge_range;
   erange bfs_edge_rng(g, begin(g) + 2); // Frankfürt
   for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
-    vtx_iter_t u     = uv.in_vertex();
+    vtx_iter_t u     = in_vertex(g, *uv);
     vtx_key_t  u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
       vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " "
-           << uv->weight << "km" << endl;
+      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " " << uv->weight << "km"
+           << endl;
     }
   }
 

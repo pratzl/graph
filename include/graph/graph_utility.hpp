@@ -44,6 +44,31 @@ constexpr auto user_value(graph_value_t<T> const& v) -> T const& {
 }
 
 
+//
+// Common Property Values
+//
+struct empty_value {}; // empty graph|vertex|edge value
+
+struct weight_value {
+  int weight = 0;
+
+  weight_value()                    = default;
+  weight_value(weight_value const&) = default;
+  weight_value& operator=(weight_value const&) = default;
+  weight_value(int const& w) : weight(w) {}
+};
+
+struct name_value {
+  string name;
+
+  name_value()                  = default;
+  name_value(name_value const&) = default;
+  name_value& operator=(name_value const&) = default;
+  name_value(string const& s) : name(s) {}
+  name_value(string&& s) : name(move(s)) {}
+};
+
+
 } // namespace std::graph
 
 #endif // GRAPH_UTILITY_HPP

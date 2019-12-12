@@ -4,7 +4,7 @@
 #include <range/v3/algorithm/find_if.hpp>
 
 #ifndef COMPRESSED_ADJ_ARRAY_IMPL_HPP
-#define COMPRESSED_ADJ_ARRAY_IMPL_HPP
+#  define COMPRESSED_ADJ_ARRAY_IMPL_HPP
 
 namespace std::graph {
 
@@ -142,29 +142,37 @@ caa_graph<VV, EV, GV, A>::caa_graph(graph_user_value_type&& val, allocator_type 
 
 
 template <typename VV, typename EV, typename GV, typename A>
-template <template <class, class> class VCont, template <class, class> class ECont, class VV2, class A2, class A3>
-caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&           vcont,
-                                    ECont<edge_key_type, A3> const& econt,
-                                    allocator_type                  alloc)
+template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
+caa_graph<VV, EV, GV, A>::caa_graph(ERng const&     erng,
+                                    VRng const&     vrng,
+                                    EKeyFnc const&  ekey_fnc,
+                                    EPropFnc const& eprop_fnc,
+                                    VPropFnc const& vprop_fnc,
+                                    A               alloc)
       : vertices_(alloc), edges_(alloc), alloc_(alloc) {
-
   // Evaluate max vertex key needed
-  vertex_key_type max_vtx_key = vcont.size();
-  for (edge_key_type const& edge_key : econt)
-    max_vtx_key = max(max_vtx_key, max(edge_key.first, edge_key.second));
+  vertex_key_type max_vtx_key = vrng.size() - 1;
+  for (auto& e : erng) {
+    edge_key_type const& edge_key = ekey_fnc(e);
+    max_vtx_key                   = max(max_vtx_key, max(edge_key.first, edge_key.second));
+  }
 
   // add vertices
   vertices_.reserve(max_vtx_key + 1);
-  if (!vcont.empty()) {
-    for (vertex_user_value_type const& vtx_val : vcont)
-      create_vertex(vtx_val);
+  if constexpr (!same_as<decltype(vprop_fnc(*::ranges::begin(vrng))), void>) {
+    for (auto& vtx : vrng)
+      create_vertex(vprop_fnc(vtx));
   }
+  vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
 
   // add edges
-  if (!econt.empty()) {
-    edges_.reserve(econt.size());
-    vertex_iterator t = to_iterator(*this, vertices_[econt.begin()->first]);
-    for (edge_key_type const& edge_key : econt) {
+  if (!erng.empty()) {
+    edges_.reserve(erng.size());
+    edge_key_type   tu_key = ekey_fnc(*::ranges::begin(erng));
+    vertex_iterator t      = to_iterator(*this, vertices_[tu_key.first]);
+    for (auto& edge_data : erng) {
+      edge_key_type edge_key = ekey_fnc(edge_data);
+      //auto            edge_val = eprop_fnc(edge_data);
       vertex_iterator u = to_iterator(*this, vertices_[edge_key.first]);
       if (u < t)
         throw_unordered_edges();
@@ -172,54 +180,12 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&           vcont,
       // assure begin edge is set for vertices w/o edges
       t = finalize_out_edges(::ranges::make_subrange(t, u));
 
-      edge_iterator uv = create_edge(edge_key.first, edge_key.second);
-      u->set_edge_begin(*this, uv);
-    }
-
-    // assure begin edge is set for remaining vertices w/o edges
-    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
-  }
-}
-
-
-template <typename VV, typename EV, typename GV, typename A>
-template <template <class, class> class VCont,
-          template <class, class>
-          class ECont,
-          class VV2,
-          class EV2,
-          class A2,
-          class A3>
-caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                      vcont,
-                                    ECont<pair<edge_key_type, EV2>, A3> const& econt,
-                                    allocator_type                             alloc)
-      : vertices_(alloc), edges_(alloc), alloc_(alloc) {
-
-  // Evaluate max vertex key needed
-  vertex_key_type max_vtx_key = vcont.size();
-  for (auto& [edge_key, edge_val] : econt)
-    max_vtx_key = max(max_vtx_key, max(edge_key.first, edge_key.second));
-
-  // add vertices
-  vertices_.reserve(max_vtx_key + 1);
-  if (!vcont.empty()) {
-    for (vertex_user_value_type const& vtx_val : vcont)
-      create_vertex(vtx_val);
-  }
-
-  // add edges
-  if (!econt.empty()) {
-    edges_.reserve(econt.size());
-    vertex_iterator t = to_iterator(*this, vertices_[econt.begin()->first.first]);
-    for (auto& [edge_key, edge_val] : econt) {
-      vertex_iterator u = to_iterator(*this, vertices_[edge_key.first]);
-      if (u < t)
-        throw_unordered_edges();
-
-      // assure begin edge is set for vertices w/o edges
-      t = finalize_out_edges(::ranges::make_subrange(t, u));
-
-      edge_iterator uv = create_edge(edge_key.first, edge_key.second, edge_val);
+      edge_iterator uv;
+      if constexpr (same_as<decltype(eprop_fnc(edge_data)), void>) {
+        uv = create_edge(edge_key.first, edge_key.second);
+      } else {
+        uv = create_edge(edge_key.first, edge_key.second, eprop_fnc(edge_data));
+      }
       u->set_edge_begin(*this, uv);
     }
 
@@ -229,97 +195,11 @@ caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                      v
 }
 
 template <typename VV, typename EV, typename GV, typename A>
-template <template <class, class> class VCont,
-          template <class, class, class>
-          class ECont,
-          class VV2,
-          class Cmp,
-          class A2,
-          class A3>
-caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                vcont,
-                                    ECont<edge_key_type, Cmp, A3> const& econt,
-                                    allocator_type                       alloc)
-      : vertices_(alloc), edges_(alloc), alloc_(alloc) {
+template <typename ERng, typename EKeyFnc, typename EPropFnc>
+caa_graph<VV, EV, GV, A>::caa_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, A alloc)
+      : caa_graph(
+              erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, alloc) {}
 
-  // Evaluate max vertex key needed
-  vertex_key_type max_vtx_key = vcont.size();
-  for (auto& edge_key : econt)
-    max_vtx_key = max(max_vtx_key, max(edge_key.first, edge_key.second));
-
-  // add vertices
-  vertices_.reserve(max_vtx_key + 1);
-  if (!vcont.empty()) {
-    for (vertex_user_value_type const& vtx_val : vcont)
-      create_vertex(vtx_val);
-  }
-
-  // add edges
-  if (!econt.empty()) {
-    edges_.reserve(econt.size());
-    vertex_iterator t = to_iterator(*this, vertices_[econt.begin()->first.first]);
-    for (auto& edge_key : econt) {
-      vertex_iterator u = to_iterator(*this, vertices_[edge_key.first]);
-      if (u < t)
-        throw_unordered_edges();
-
-      // assure begin edge is set for vertices w/o edges
-      t = finalize_out_edges(::ranges::make_subrange(t, u));
-
-      edge_iterator uv = create_edge(edge_key.first, edge_key.second);
-      u->set_edge_begin(*this, uv);
-    }
-
-    // assure begin edge is set for remaining vertices w/o edges
-    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
-  }
-}
-
-template <typename VV, typename EV, typename GV, typename A>
-template <template <class, class> class VCont,
-          template <class, class, class, class>
-          class ECont,
-          class VV2,
-          class EV2,
-          class Cmp,
-          class A2,
-          class A3>
-caa_graph<VV, EV, GV, A>::caa_graph(VCont<VV2, A2> const&                     vcont,
-                                    ECont<edge_key_type, EV2, Cmp, A3> const& econt,
-                                    allocator_type                            alloc)
-      : vertices_(alloc), edges_(alloc), alloc_(alloc) {
-
-  // Evaluate max vertex key needed
-  vertex_key_type max_vtx_key = vcont.size();
-  for (auto& [edge_key, edge_val] : econt)
-    max_vtx_key = max(max_vtx_key, max(edge_key.first, edge_key.second));
-
-  // add vertices
-  vertices_.reserve(max_vtx_key + 1);
-  if (!vcont.empty()) {
-    for (vertex_user_value_type const& vtx_val : vcont)
-      create_vertex(vtx_val);
-  }
-
-  // add edges
-  if (!econt.empty()) {
-    edges_.reserve(econt.size());
-    vertex_iterator t = to_iterator(*this, vertices_[econt.begin()->first.first]);
-    for (auto& [edge_key, edge_val] : econt) {
-      vertex_iterator u = to_iterator(*this, vertices_[edge_key.first]);
-      if (u < t)
-        throw_unordered_edges();
-
-      // assure begin edge is set for vertices w/o edges
-      t = finalize_out_edges(::ranges::make_subrange(t, u));
-
-      edge_iterator uv = create_edge(edge_key.first, edge_key.second);
-      u->set_edge_begin(*this, uv);
-    }
-
-    // assure begin edge is set for remaining vertices w/o edges
-    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
-  }
-}
 
 template <typename VV, typename EV, typename GV, typename A>
 typename caa_graph<VV, EV, GV, A>::vertex_iterator caa_graph<VV, EV, GV, A>::finalize_out_edges(vertex_range vr) {
@@ -550,8 +430,6 @@ constexpr auto out_degree(G<VV, EV, GV, A> const& g, vertex_t<G<VV, EV, GV, A>> 
   return out_size(g, u);
 }
 
-//template <graph_c G> constexpr void clear_out_edges(G& g, vertex_t<G>& u); // n/a
-
 template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
 //requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
 constexpr auto edges(G<VV, EV, GV, A>& g, vertex_t<G<VV, EV, GV, A>>& u) noexcept
@@ -618,28 +496,6 @@ constexpr auto find_vertex(G<VV, EV, GV, A> const& g, vertex_key_t<G<VV, EV, GV,
       -> const_vertex_iterator_t<G<VV, EV, GV, A>> {
   return g.find_vertex(key);
 }
-
-#if 0
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_vertex(G<VV, EV, GV, A>& g) -> pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_vertex(), true);
-}
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_vertex(G<VV, EV, GV, A>& g, vertex_value_t<G<VV, EV, GV, A>> const& val)
-      -> pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_vertex(val), true);
-}
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_vertex(G<VV, EV, GV, A>& g, vertex_value_t<G<VV, EV, GV, A>>&& val)
-      -> pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return pair<vertex_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_vertex(move(val)), true);
-}
-#endif
 
 //
 // API edge functions
@@ -767,63 +623,6 @@ constexpr auto find_edge(G<VV, EV, GV, A> const&               g,
   return find_out_edge(g, vertex(g, ukey), vertex(g, vkey));
 }
 
-#if 0
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_edge(G<VV, EV, GV, A>& g, vertex_t<G<VV, EV, GV, A>>& u, vertex_t<G<VV, EV, GV, A>>& v)
-      -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return create_edge(vertex_key(g, u), vertex_key(g, v));
-}
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_edge(G<VV, EV, GV, A>&               g,
-                           vertex_t<G<VV, EV, GV, A>>&     u,
-                           vertex_t<G<VV, EV, GV, A>>&     v,
-                           edge_value_t<G<VV, EV, GV, A>>& val)
-      -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return create_edge(vertex_key(g, u), vertex_key(g, v), val);
-}
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_edge(G<VV, EV, GV, A>&                g,
-                           vertex_t<G<VV, EV, GV, A>>&      u,
-                           vertex_t<G<VV, EV, GV, A>>&      v,
-                           edge_value_t<G<VV, EV, GV, A>>&& val)
-      -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return create_edge(vertex_key(g, u), vertex_key(g, v), move(val));
-}
-
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto
-create_edge(G<VV, EV, GV, A>& g, vertex_key_t<G<VV, EV, GV, A>>& ukey, vertex_key_t<G<VV, EV, GV, A>>& vkey)
-      -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_edge(ukey, vkey), true);
-}
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_edge(G<VV, EV, GV, A>&               g,
-                           vertex_key_t<G<VV, EV, GV, A>>& ukey,
-                           vertex_key_t<G<VV, EV, GV, A>>& vkey,
-                           edge_value_t<G<VV, EV, GV, A>>& val)
-      -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_edge(ukey, vkey, val), true);
-}
-
-template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-//requires(G&& g) { contiguous_range(g.vertices()); } // vector & array
-constexpr auto create_edge(G<VV, EV, GV, A>&                g,
-                           vertex_key_t<G<VV, EV, GV, A>>&  ukey,
-                           vertex_key_t<G<VV, EV, GV, A>>&  vkey,
-                           edge_value_t<G<VV, EV, GV, A>>&& val)
-      -> pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool> {
-  return pair<vertex_edge_iterator_t<G<VV, EV, GV, A>>, bool>(g.create_edge(ukey, vkey, move(val)), true);
-}
-#endif
 
 //
 // API graph functions
@@ -845,8 +644,7 @@ constexpr auto vertices_size(caa_graph<VV, EV, GV, A> const& g) noexcept -> vert
 }
 
 template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>
-constexpr auto begin(G<VV, EV, GV, A>& g) noexcept
--> vertex_iterator_t<G<VV, EV, GV, A>> {
+constexpr auto begin(G<VV, EV, GV, A>& g) noexcept -> vertex_iterator_t<G<VV, EV, GV, A>> {
   return g.vertices().begin();
 }
 template <template <typename, typename, typename, typename> class G, typename VV, typename EV, typename GV, typename A>

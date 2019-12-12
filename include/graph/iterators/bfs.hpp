@@ -9,7 +9,11 @@
 // by using general functions such as vertex() and edges() instead of out_vertex()
 // and out_edges().
 //
-// Assumes the graph structure remains stable during the duration of iteration.
+// The ranges have the following assumptions and behavior
+//  1.  The graph structure is assumed to remain stable during the duration of iteration.
+//  2.  The depth is a 1-based integer. A value of 0 indicates there is nothing visited.
+//  3.  The state of the traversal is in the range object. Calling begin() returns the
+//      current state, not the beginning of the range.
 //
 // TODO
 //  1.  Add designation for forward range
@@ -40,7 +44,6 @@
 namespace std::graph {
 
 /// breadth-first search range for vertices, given a single seed vertex.
-/// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
 class bfs_vertex_range {
@@ -138,7 +141,7 @@ public:
   };
 
 public:
-  iterator       begin() { return iterator(*this); } // begin() shouldn't be called after iterating starts on range
+  iterator       begin() { return iterator(*this); }
   const_iterator begin() const { return const_iterator(*this); }
   const_iterator cbegin() const { return const_iterator(*this); }
 
@@ -194,9 +197,7 @@ private:
 };
 
 
-//#ifdef _todo
 /// breadth-first search range for edges, given a single seed vertex.
-/// begin() returns the current state kept in the range; it should only be called when starting the iteration.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
 class bfs_edge_range {
@@ -256,7 +257,6 @@ public:
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
     size_t               depth() const { return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; }
-    vertex_iterator_t<G> in_vertex() const { return elem_.u; }
     bool                 is_back_edge() const { return elem_.uv == std::graph::end(bfs_->graph_, *elem_.u); }
 
     bool is_vertex_visited() const { // Has the [out] vertex been visited yet?
@@ -309,7 +309,7 @@ public:
   };
 
 public:
-  iterator       begin() { return iterator(*this); } // begin() shouldn't be called after iterating starts on range
+  iterator       begin() { return iterator(*this); }
   const_iterator begin() const { return const_iterator(*this); }
   const_iterator cbegin() const { return const_iterator(*this); }
 
@@ -360,8 +360,7 @@ private:
   G&                   graph_;
   queue_type           queue_;
   vector<three_colors> visited_;
-}; // namespace std::graph
-//#endif //_todo
+};
 
 } // namespace std::graph
 
