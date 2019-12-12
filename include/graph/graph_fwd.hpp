@@ -420,8 +420,8 @@ concept arithmetic_c = is_arithmetic_v<T>;
 template <typename G>
 concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) {
   ::ranges::forward_range<G>;
-  ::ranges::forward_range<vertex_iterator_t<G>>;
-  ::ranges::forward_range<vertex_edge_iterator_t<G>>;
+  ::ranges::forward_iterator<vertex_iterator_t<G>>;
+  ::ranges::forward_iterator<vertex_edge_iterator_t<G>>;
   //::ranges::forward_range<vertex_t<G>>; // vertex begin/end require graph parameter so it doesn't apply
   integral<vertex_key_t<G>>;
   { vertices(g) } ->vertex_range_t<G>;

@@ -36,6 +36,11 @@ using std::graph::vertex;
 using std::graph::value;
 using std::graph::begin;
 using std::graph::end;
+using std::graph::vertex_t;
+using std::graph::vertex_key_t;
+using std::graph::vertex_iterator_t;
+using std::graph::const_vertex_iterator_t;
+using std::graph::edge_t;
 
 struct route;
 vector<string>                 unique_cities(vector<route>& routes);
@@ -98,12 +103,12 @@ vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vecto
 
 template <class OStream>
 OStream& operator<<(OStream& os, Graph const& g) {
-  for (auto& u : vertices(g)) {
-    auto ukey = vertex_key(g, u);
+  for (vertex_t<Graph> const& u : vertices(g)) {
+    vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (auto& uv : edges(g, u)) {
-      auto v    = out_vertex(g, uv);
-      auto vkey = vertex_key(g, *v);
+    for (edge_t<Graph> const& uv : edges(g, u)) {
+      const_vertex_iterator_t<Graph> v    = out_vertex(g, uv);
+      vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
     }
   }
@@ -245,8 +250,8 @@ TEST(TestCAAGraph, DFSEdge) {
   using erange = std::graph::dfs_edge_range;
   erange dfs_edge_rng(g, begin(g) + 2); // Frankfürt
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
-    vtx_iter_t u     = out_vertex(g, *uv);
-    vtx_key_t  u_key = vertex_key(g, *u);
+    vertex_iterator_t<Graph> u     = out_vertex(g, *uv);
+    vertex_key_t<Graph>      u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
@@ -298,8 +303,8 @@ TEST(TestCAAGraph, BFSEdge) {
   using erange = std::graph::bfs_edge_range;
   erange bfs_edge_rng(g, begin(g) + 2); // Frankfürt
   for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
-    vtx_iter_t u     = in_vertex(g, *uv);
-    vtx_key_t  u_key = vertex_key(g, *u);
+    vertex_iterator_t<Graph> u     = in_vertex(g, *uv);
+    vertex_key_t<Graph>      u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
