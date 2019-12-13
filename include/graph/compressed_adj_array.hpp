@@ -38,7 +38,7 @@ template <typename VV     = empty_value,
           typename GV     = empty_value,
           typename IndexT = uint32_t,
           typename A      = allocator<char>>
-using compressed_adjacency_array = caa_graph<VV, EV, GV, A>;
+using compressed_adjacency_array = caa_graph<VV, EV, GV, IndexT, A>;
 
 
 ///-------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ public:
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
-  using vertex_index           = typename vertex_set::size_type;
+  using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
 
@@ -72,7 +72,7 @@ public:
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_iterator        = typename edge_set::iterator;
   using const_edge_iterator  = typename edge_set::const_iterator;
-  using edge_index           = typename edge_set::size_type;
+  using edge_index           = IndexT;
 
 public:
   caa_edge()                    = default;
@@ -98,8 +98,8 @@ public:
   vertex_key_type       out_vertex_key() const;
 
 private:
-  vertex_index in_vertex_;
-  vertex_index out_vertex_;
+  vertex_key_type in_vertex_;
+  vertex_key_type out_vertex_;
 };
 
 ///-------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ public:
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
-  using vertex_index           = typename vertex_set::size_type;
+  using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
 
@@ -131,7 +131,7 @@ public:
   using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
-  using edge_index           = typename edge_set::size_type;
+  using edge_index           = IndexT;
   using edge_iterator        = typename edge_set::iterator;
   using const_edge_iterator  = typename edge_set::const_iterator;
 
@@ -220,7 +220,7 @@ public:
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
   using vertex_size_type       = typename vertex_set::size_type;
-  using vertex_index           = typename vertex_set::size_type;
+  using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
   using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(nullptr)));
@@ -230,6 +230,7 @@ public:
   using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
+  using edge_index           = IndexT;
   using edge_iterator        = typename edge_set::iterator;
   using const_edge_iterator  = typename edge_set::const_iterator;
   using edge_size_type       = typename edge_set::size_type;
