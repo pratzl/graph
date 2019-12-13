@@ -49,7 +49,9 @@ namespace std::graph {
 /// depth-first search range for vertices, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-class dfs_vertex_range {
+requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
+class dfs_vertex_range 
+{
   struct stack_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
@@ -189,6 +191,7 @@ private:
 /// depth-first search range for edges, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
+requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
 class dfs_edge_range {
   struct stack_elem {
     vertex_iterator_t<G>      u;
