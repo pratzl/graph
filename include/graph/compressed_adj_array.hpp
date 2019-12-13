@@ -91,11 +91,11 @@ public:
 
   vertex_iterator       in_vertex(graph_type&);
   const_vertex_iterator in_vertex(graph_type const&) const;
-  vertex_key_type       in_vertex_key() const;
+  vertex_key_type       in_vertex_key(graph_type const&) const;
 
   vertex_iterator       out_vertex(graph_type&);
   const_vertex_iterator out_vertex(graph_type const&) const;
-  vertex_key_type       out_vertex_key() const;
+  vertex_key_type       out_vertex_key(graph_type const&) const;
 
 private:
   vertex_key_type in_vertex_;

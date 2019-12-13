@@ -165,7 +165,7 @@ protected:
       vertex_key_t<G>           v_key  = vertex_key_t<G>();
       for (; uv != uv_end; ++uv) {
         v     = vertex(graph_, *uv);
-        v_key = vertex_key(graph_, *v);
+        v_key = vertex_key(graph_, *uv);
         if (!visited_[v_key])
           break;
       }

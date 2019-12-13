@@ -242,16 +242,22 @@ template <typename G>
 constexpr auto vertex(G& g, edge_t<G>& uv) noexcept -> vertex_iterator_t<G>&;
 template <typename G>
 constexpr auto vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_t<G> const&;
+template <typename G>
+constexpr auto vertex_key(G const& g, edge_t<G> const& uv) noexcept -> vertex_key_t<G>;
 
 template <typename G>
 constexpr auto out_vertex(G& g, edge_t<G>& uv) noexcept -> vertex_iterator_t<G>&;
 template <typename G>
 constexpr auto out_vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_iterator_t<G> const&;
+template <typename G>
+constexpr auto out_vertex_key(G const& g, edge_t<G> const& uv) noexcept -> vertex_key_t<G>;
 
 template <typename G>
 constexpr auto in_vertex(G& g, edge_t<G>& uv) noexcept -> vertex_iterator_t<G>&;
 template <typename G>
 constexpr auto in_vertex(G const& g, edge_t<G> const& uv) noexcept -> vertex_iterator_t<G> const&;
+template <typename G>
+constexpr auto in_vertex_key(G const& g, edge_t<G> const& uv) noexcept -> vertex_key_t<G>;
 
 template <typename G>
 constexpr auto create_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> pair<vertex_edge_iterator_t<G>, bool>;
