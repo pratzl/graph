@@ -21,8 +21,6 @@ using std::pair;
 using std::cout;
 using std::endl;
 
-using vector_index = size_t;
-
 struct route;
 struct route2;
 using Routes  = vector<route>;
@@ -35,6 +33,7 @@ using std::graph::weight_value;
 using Graph      = std::graph::compressed_adjacency_array<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::graph::vertex_key_t<Graph>;
+//using vector_index = size_t;
 
 // Bring functions into global namespace
 using std::graph::vertex_key;
@@ -97,8 +96,8 @@ vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vecto
   vector<Graph::edge_value_type> edge_values;
   edge_values.reserve(routes.size());
   for (route const& r : routes) {
-    vector_index from = ::ranges::find(cities, r.from) - cities.begin();
-    vector_index to   = ::ranges::find(cities, r.to) - cities.begin();
+    vtx_key_t from = static_cast<vtx_key_t>(::ranges::find(cities, r.from) - cities.begin());
+    vtx_key_t to   = static_cast<vtx_key_t>(::ranges::find(cities, r.to) - cities.begin());
     assert(from < cities.size());
     assert(to < cities.size());
     edge_values.push_back({{from, to}, r.km});
@@ -128,8 +127,8 @@ OStream& operator<<(OStream& os, Graph const& g) {
 
 TEST(TestCAAGraph, TestMinObjSize) {
   using G = std::graph::compressed_adjacency_array<>;
-  EXPECT_EQ(sizeof(size_t), sizeof(G::vertex_type));   // vertex size = 8 bytes
-  EXPECT_EQ(sizeof(size_t) * 2, sizeof(G::edge_type)); // edge size = 16 bytes
+  EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
+  EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
 TEST(TestCAAGraph, TestEmptyGraph) {

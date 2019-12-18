@@ -50,6 +50,7 @@ namespace std::graph {
 /// breadth-first search range for vertices, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
+requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
 class bfs_vertex_range {
   enum three_colors : int8_t {
     white, // undiscovered
@@ -204,6 +205,7 @@ private:
 /// breadth-first search range for edges, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
+requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
 class bfs_edge_range {
   enum three_colors : int8_t {
     white, // undiscovered
