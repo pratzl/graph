@@ -8,6 +8,7 @@
 // Author: Kevin Deweese
 //
 
+#include "pch.h"
 #include <algorithm>
 #include <compressed.hpp>
 #include <edge_list.hpp>

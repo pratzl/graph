@@ -8,6 +8,7 @@
 // Author: Andrew Lumsdaine
 //
 
+#include "pch.h"
 #include "aolos.hpp"
 #include "common/test_header.hpp"
 #include <complex>

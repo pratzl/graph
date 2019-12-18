@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "graph/compressed_adj_array.hpp"
 #include "graph/iterators/dfs.hpp"
 #include "graph/iterators/bfs.hpp"
@@ -6,6 +6,12 @@
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>
 #include <string>
+
+#define TEST_OPTION_OUTPUT (1)
+#define TEST_OPTION_GEN (2)
+#define TEST_OPTION_TEST (3)
+#define TEST_OPTION TEST_OPTION_OUTPUT
+
 
 using std::vector;
 using std::string;
@@ -45,7 +51,7 @@ using std::graph::edge_t;
 struct route;
 vector<string>                 unique_cities(vector<route>& routes);
 vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vector<string> const& cities);
-
+void                           imbue_utf8();
 
 struct route {
   string from;
@@ -57,10 +63,10 @@ struct route {
 };
 
 static vector<route> routes{
-      {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
-      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
-      {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
-      {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
+      {"FrankfÃ¼rt", "Mannheim", 85}, {"FrankfÃ¼rt", "WÃ¼rzburg", 217}, {"FrankfÃ¼rt", "Kassel", 173},
+      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "MÃ¼nchen", 84},
+      {"WÃ¼rzburg", "Erfurt", 186},   {"WÃ¼rzburg", "NÃ¼rnberg", 103},  {"NÃ¼rnberg", "Stuttgart", 183},
+      {"NÃ¼rnberg", "MÃ¼nchen", 167},  {"Kassel", "MÃ¼nchen", 502}};
 
 
 static vector<string>                 cities      = unique_cities(routes); // cities is ordered
@@ -75,6 +81,7 @@ static Graph g(
 
 
 vector<string> unique_cities(vector<route>& routes) {
+  imbue_utf8();
   vector<string> cities;
   cities.reserve(routes.size() * 2);
   for (route const& r : routes) {
@@ -83,6 +90,8 @@ vector<string> unique_cities(vector<route>& routes) {
   }
   return move(cities) | ranges::actions::sort | ranges::actions::unique;
 };
+
+void imbue_utf8() { cout.imbue(std::locale("en_US.utf8")); }
 
 vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vector<string> const& cities) {
   vector<Graph::edge_value_type> edge_values;
@@ -178,10 +187,11 @@ TEST(TestCAAGraph, TestGraphInit) {
     ++n;
   EXPECT_EQ(edge_routes.size(), n);
 
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
        << "\n-------------------------------" << g << endl;
 
-  /* Output
+/* Output
     Germany Routes
     -------------------------------
     [0] Augsburg
@@ -206,11 +216,24 @@ TEST(TestCAAGraph, TestGraphInit) {
       --> [1 Erfurt] 186km
       --> [7 Nnrnberg] 103km
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+  for (vertex_t<Graph> const& u : vertices(g)) {
+    vertex_key_t<Graph> ukey = vertex_key(g, u);
+    os << "\n[" << ukey << "] " << u.name;
+    for (edge_t<Graph> const& uv : edges(g, u)) {
+      const_vertex_iterator_t<Graph> v    = out_vertex(g, uv);
+      vertex_key_t<Graph>            vkey = vertex_key(g, *v);
+      os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
+    }
+  }
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
 }
 
 TEST(TestCAAGraph, DFSVertex) {
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   using vrange = std::graph::dfs_vertex_range;
-  vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
+  vrange dfs_vtx_rng(g, begin(g) + 2); // FrankfÃ¼rt
   for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
@@ -229,9 +252,9 @@ TEST(TestCAAGraph, DFSVertex) {
 
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
-  for (auto& u : vrange(g, begin(g) + 2)) // Frankfürt
+  for (auto& u : vrange(g, begin(g) + 2)) // FrankfÃ¼rt
     cout << u.name << endl;
-  /* Output: seed = Frankfnrt
+    /* Output: seed = Frankfnrt
   Frankfnrt
   Mannheim
   Karlsruhe
@@ -243,12 +266,16 @@ TEST(TestCAAGraph, DFSVertex) {
   Stuttgart
   Kassel
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
 }
 
 
 TEST(TestCAAGraph, DFSEdge) {
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   using erange = std::graph::dfs_edge_range;
-  erange dfs_edge_rng(g, begin(g) + 2); // Frankfürt
+  erange dfs_edge_rng(g, begin(g) + 2); // FrankfÃ¼rt
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
     vertex_iterator_t<Graph> u     = out_vertex(g, *uv);
     vertex_key_t<Graph>      u_key = vertex_key(g, *u);
@@ -277,11 +304,15 @@ TEST(TestCAAGraph, DFSEdge) {
       travel Frankfnrt --> Kassel 173km
       travel Kassel --> Mnnchen 502km
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
 }
 
 TEST(TestCAAGraph, BFSVertex) {
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   using vrange = std::graph::bfs_vertex_range;
-  vrange bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
+  vrange bfs_vtx_rng(g, begin(g) + 2); // FrankfÃ¼rt
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
@@ -297,11 +328,15 @@ TEST(TestCAAGraph, BFSVertex) {
           Augsburg
           Stuttgart
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
 }
 
 TEST(TestCAAGraph, BFSEdge) {
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   using erange = std::graph::bfs_edge_range;
-  erange bfs_edge_rng(g, begin(g) + 2); // Frankfürt
+  erange bfs_edge_rng(g, begin(g) + 2); // FrankfÃ¼rt
   for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
     vertex_iterator_t<Graph> u     = in_vertex(g, *uv);
     vertex_key_t<Graph>      u_key = vertex_key(g, *u);
@@ -330,5 +365,7 @@ TEST(TestCAAGraph, BFSEdge) {
             travel Augsburg --> Mnnchen 84km
             view Stuttgart
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
 }
-
