@@ -134,14 +134,15 @@ public:
   using edge_index           = IndexT;
   using edge_iterator        = typename edge_set::iterator;
   using const_edge_iterator  = typename edge_set::const_iterator;
+  using edge_size_type       = typename edge_set::size_type;
 
-  using vertex_edge_size_type      = typename vertex_set::size_type;
+  using vertex_edge_size_type      = typename edge_set::size_type;
   using vertex_edge_iterator       = typename edge_iterator;
   using const_vertex_edge_iterator = typename const_edge_iterator;
 
-  using out_edge_size_type      = typename edge_set::size_type;
-  using out_edge_iterator       = typename edge_iterator;
-  using const_out_edge_iterator = typename const_edge_iterator;
+  using vertex_out_edge_size_type      = typename edge_set::size_type;
+  using vertex_out_edge_iterator       = typename edge_iterator;
+  using const_vertex_out_edge_iterator = typename const_edge_iterator;
 
 public:
   caa_vertex()                      = default;
@@ -164,6 +165,8 @@ public:
   vertex_edge_iterator       edge_end(graph_type&);
   const_vertex_edge_iterator edge_end(graph_type const&) const;
   const_vertex_edge_iterator edge_cend(graph_type const&) const;
+
+  edge_size_type edge_size(graph_type const&) const;
 
 private:
   edge_index first_edge_ = numeric_limits<edge_index>::max();
@@ -215,6 +218,7 @@ public:
   using allocator_type        = A;
 
   using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
+  using const_vertex_type      = const vertex_type;
   using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -228,6 +232,7 @@ public:
 
   using edge_user_value_type = EV;
   using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
+  using const_edge_type      = const edge_type;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_index           = IndexT;
@@ -238,17 +243,20 @@ public:
   using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type = pair<edge_key_type, edge_user_value_type>;
 
-  using edge_range              = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set*>(nullptr)));
-  using const_edge_range        = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set const*>(nullptr)));
-  using vertex_edge_range       = edge_range;
-  using const_vertex_edge_range = const_edge_range;
-  using out_edge_range          = edge_range;
-  using const_out_edge_range    = const_edge_range;
+  using edge_range       = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set*>(nullptr)));
+  using const_edge_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set const*>(nullptr)));
 
-  using vertex_out_edge_iterator       = typename out_edge_range::iterator;
-  using const_vertex_out_edge_iterator = typename const_out_edge_range::iterator;
-  using vertex_edge_iterator           = vertex_out_edge_iterator;
-  using const_vertex_edge_iterator     = const_vertex_out_edge_iterator;
+  using vertex_out_edge_range          = edge_range;
+  using const_vertex_out_edge_range    = const_edge_range;
+  using vertex_out_edge_iterator       = typename edge_range::iterator;
+  using const_vertex_out_edge_iterator = typename const_edge_range::iterator;
+  using vertex_out_edge_size_type      = typename edge_set::size_type;
+
+  using vertex_edge_range          = edge_range;
+  using const_vertex_edge_range    = const_edge_range;
+  using vertex_edge_iterator       = vertex_out_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
+  using vertex_edge_size_type      = vertex_out_edge_size_type;
 
 public:
   caa_graph() = default;

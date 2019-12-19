@@ -20,6 +20,7 @@ using std::numeric_limits;
 using std::pair;
 using std::cout;
 using std::endl;
+using std::is_same;
 
 struct route;
 struct route2;
@@ -71,13 +72,13 @@ static vector<route> routes{
 static vector<string>                 cities      = unique_cities(routes); // cities is ordered
 static vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
 
-static Graph g(
-      edge_routes,
-      cities,
-      [](Graph::edge_value_type const& er) { return er.first; },
-      [](Graph::edge_value_type const& er) { return er.second; },
-      [](string const& city) -> string const& { return city; });
 
+Graph create_germany_routes_graph() {
+  return Graph(
+        edge_routes, cities, [](Graph::edge_value_type const& er) { return er.first; },
+        [](Graph::edge_value_type const& er) { return er.second; },
+        [](string const& city) -> string const& { return city; });
+}
 
 vector<string> unique_cities(vector<route>& routes) {
   imbue_utf8();
@@ -143,11 +144,8 @@ TEST(TestCAAGraph, TestGraphInit) {
 #if 0
   vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
   Graph                          g(cities, edge_routes);
-  Graph g(
-        edge_routes, cities, [](Graph::edge_value_type const& er) { return er.first; },
-        [](Graph::edge_value_type const& er) { return er.second; },
-        [](string const& city) -> string const& { return city; });
 #endif
+  Graph g = create_germany_routes_graph();
   EXPECT_EQ(cities.size(), vertices_size(g));
   EXPECT_EQ(edge_routes.size(), edges_size(g));
 
@@ -229,7 +227,124 @@ TEST(TestCAAGraph, TestGraphInit) {
 #endif
 }
 
+TEST(TestCAAGraph, AllGraphFunctions) {
+  Graph        g  = create_germany_routes_graph();
+  Graph const& gc = create_germany_routes_graph();
+
+  //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
+  std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
+  std::graph::const_vertex_range_t<Graph> vrc = std::graph::vertices(gc);
+  EXPECT_EQ(vr.size(), vrc.size());
+  EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
+
+  size_t cnt = 0;
+  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g); u != std::graph::end(g); ++u, ++cnt)
+    ;
+  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+
+  cnt = 0;
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc); u != std::graph::end(gc); ++u, ++cnt)
+    ;
+  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+
+  cnt = 0;
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc); u != std::graph::cend(gc); ++u, ++cnt)
+    ;
+  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+
+  //std::graph::reserve_vertices(g, 100); //undefined for semi-mutable graph
+  //std::graph::resisze_vertices(g, 100); //undefined for semi-mutable graph
+
+  std::graph::edge_range_t<Graph>       er       = std::graph::edges(g);
+  std::graph::const_edge_range_t<Graph> erc      = std::graph::edges(gc);
+  std::graph::edge_size_t<Graph>        edg_size = std::graph::edges_size(gc);
+  EXPECT_EQ(std::graph::edges_size(gc), er.size());
+  EXPECT_EQ(std::graph::edges_size(gc), erc.size());
+  // std::graph::reserve_edges(g,100); // undefined for semi-mutable graph
+  // std::graph::clear(g);             // undefined for semi-mutable graph
+
+#if TEST_OPTION == TEST_OPTION_OUTPUT
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
+}
+
+TEST(TestCAAGraph, AllVertexFunctions) {
+  Graph        g  = create_germany_routes_graph();
+  Graph const& gc = g;
+
+  std::graph::vertex_iterator_t<Graph>       ui  = std::graph::begin(g);
+  std::graph::const_vertex_iterator_t<Graph> uic = std::graph::cbegin(g);
+  std::graph::vertex_t<Graph>&               u   = *ui;
+  std::graph::vertex_t<Graph> const&         uc  = *uic;
+
+  std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, u);
+  std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uc);
+  auto                            val   = std::graph::value(u);
+
+  std::graph::vertex_iterator_t<Graph>       f1 = std::graph::find_vertex(g, 1);
+  std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
+  EXPECT_EQ(f1, f2);
+
+  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  EXPECT_NE(f3, g.vertices().end());
+  EXPECT_EQ(2, vertex_key(g, *f3));
+
+  {
+    std::graph::vertex_edge_range_t<Graph>          uvr      = std::graph::edges(g, u);
+    std::graph::const_vertex_edge_range_t<Graph>    uvrc     = std::graph::edges(g, uc);
+    std::graph::vertex_edge_iterator_t<Graph>       uvi_beg1 = std::graph::begin(g, u);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg2 = std::graph::begin(g, uc);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg3 = std::graph::cbegin(g, u);
+    std::graph::vertex_edge_iterator_t<Graph>       uvi_end1 = std::graph::end(g, u);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = std::graph::end(g, uc);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = std::graph::cend(g, u);
+    EXPECT_EQ(std::graph::edges_size(g, u), std::graph::edges_degree(g, u));
+    EXPECT_EQ(std::graph::edges_size(g, u), uvr.size());
+  }
+
+  {
+    std::graph::vertex_out_edge_range_t<Graph>          uvr      = std::graph::out_edges(g, u);
+    std::graph::const_vertex_out_edge_range_t<Graph>    uvrc     = std::graph::out_edges(g, uc);
+    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_beg1 = std::graph::out_begin(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 = std::graph::out_begin(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 = std::graph::out_cbegin(g, u);
+    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_end1 = std::graph::out_end(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 = std::graph::out_end(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
+    EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
+    EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
+  }
+}
+
+TEST(TestCAAGraph, AllEdgeFunctions) {
+  using namespace std::graph;
+  Graph        g  = create_germany_routes_graph();
+  Graph const& gc = g;
+
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
+  EXPECT_NE(end(g), u);
+  EXPECT_NE(end(g), v);
+
+  edge_iterator_t<Graph> uv = find_edge(g, *u, *v); // find edge Frankfurt --> Mannheim
+  EXPECT_NE(end(g.edges()), uv);
+  EXPECT_EQ(v, vertex(g,*uv));
+  EXPECT_EQ(v, out_vertex(g, *uv));
+  EXPECT_EQ(u, in_vertex(g, *uv));
+  edge_iterator_t<Graph> uv2  = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
+  EXPECT_EQ(uv, uv2);
+
+  vertex_out_edge_iterator_t<Graph> uv3; 
+  uv2 = find_out_edge(g, *u, *v);
+  uv3 = find_out_edge(g, vertex_key(g,*u), vertex_key(g,*v));
+  EXPECT_EQ(uv, uv2);
+  EXPECT_EQ(uv, uv3);
+}
+
 TEST(TestCAAGraph, DFSVertex) {
+  Graph g = create_germany_routes_graph();
+
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   using vrange = std::graph::dfs_vertex_range;
   vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
@@ -272,6 +387,8 @@ TEST(TestCAAGraph, DFSVertex) {
 
 
 TEST(TestCAAGraph, DFSEdge) {
+  Graph g = create_germany_routes_graph();
+
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   using erange = std::graph::dfs_edge_range;
   erange dfs_edge_rng(g, begin(g) + 2); // Frankfürt
@@ -309,13 +426,15 @@ TEST(TestCAAGraph, DFSEdge) {
 }
 
 TEST(TestCAAGraph, BFSVertex) {
+  Graph g = create_germany_routes_graph();
+
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   using vrange = std::graph::bfs_vertex_range;
   vrange bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
-  /* Output: seed = Frankfnrt
+    /* Output: seed = Frankfnrt
     Frankfnrt
       Mannheim
       Wnrzburg
@@ -333,6 +452,8 @@ TEST(TestCAAGraph, BFSVertex) {
 }
 
 TEST(TestCAAGraph, BFSEdge) {
+  Graph g = create_germany_routes_graph();
+
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   using erange = std::graph::bfs_edge_range;
   erange bfs_edge_rng(g, begin(g) + 2); // Frankfürt
