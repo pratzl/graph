@@ -140,6 +140,15 @@ caa_vertex<VV, EV, GV, IndexT, A>::edge_cend(graph_type const& g) const {
     return g.edges().end();
 }
 
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+typename caa_vertex<VV, EV, GV, IndexT, A>::edge_size_type
+caa_vertex<VV, EV, GV, IndexT, A>::edge_size(graph_type const& g) const {
+  if (this < &g.vertices().back())
+    return (this + 1)->first_edge_ - first_edge_;
+  else
+    return g.edges().size() - first_edge_;
+}
+
 
 ///-------------------------------------------------------------------------------------
 /// caa_graph
@@ -416,7 +425,7 @@ constexpr auto to_iterator(caa_graph<VV, EV, GV, IndexT, A> const&           g,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_edges(caa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
-      -> out_edge_range_t<caa_graph<VV, EV, GV, IndexT, A>> {
+      -> vertex_out_edge_range_t<caa_graph<VV, EV, GV, IndexT, A>> {
   if (&u < &g.vertices().back()) {
     auto v = to_iterator(g, u) + 1;
     return ::ranges::make_subrange(u.edge_begin(g), v->edge_begin(g));
@@ -428,7 +437,7 @@ constexpr auto out_edges(caa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<caa_graph
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_edges(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                          vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
-      -> const_out_edge_range_t<caa_graph<VV, EV, GV, IndexT, A>> {
+      -> const_vertex_out_edge_range_t<caa_graph<VV, EV, GV, IndexT, A>> {
   if (&u < &g.vertices().back()) {
     auto v = to_iterator(g, u) + 1;
     return ::ranges::make_subrange(u.edge_begin(g), v->edge_begin(g));
@@ -438,21 +447,54 @@ constexpr auto out_edges(caa_graph<VV, EV, GV, IndexT, A> const&           g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto out_begin(caa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+      -> vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_begin(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto out_begin(caa_graph<VV, EV, GV, IndexT, A> const&           g,
+                     vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_begin(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto out_cbegin(caa_graph<VV, EV, GV, IndexT, A> const&           g,
+                      vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_cbegin(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto out_end(caa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+      -> vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_end(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto out_end(caa_graph<VV, EV, GV, IndexT, A> const&           g,
+                   vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_end(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto out_cend(caa_graph<VV, EV, GV, IndexT, A> const&           g,
+                    vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_cend(g);
+}
+
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_size(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                         vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
-      -> out_edge_size_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  if (&u < &g.edges().back()) {
-    auto& v = *(&u + 1);
-    return v.edge_begin(g) - u.edge_begin(g);
-  } else {
-    return g.edges().end() - u.edge_begin(g);
-  }
+      -> vertex_out_edge_size_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_size(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_degree(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                           vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
-      -> out_edge_size_t<caa_graph<VV, EV, GV, IndexT, A>> {
+      -> vertex_out_edge_size_t<caa_graph<VV, EV, GV, IndexT, A>> {
   return out_size(g, u);
 }
 
@@ -472,37 +514,51 @@ constexpr auto edges(caa_graph<VV, EV, GV, IndexT, A> const&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto begin(caa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_begin(g);
+  return out_begin(g,u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto begin(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                      vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_begin(g);
+  return out_begin(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto cbegin(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                       vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_cbegin(g);
+  return out_cbegin(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto end(caa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_end(g);
+  return out_end(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto end(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                    vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_end(g);
+  return out_end(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto cend(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                     vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> const_vertex_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_cend(g);
+  return out_cend(g, u);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edges_size(caa_graph<VV, EV, GV, IndexT, A> const& g,
+    vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+    -> vertex_edge_size_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return (u.edge_end(g) - u.edge_begin(g));
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edges_degree(caa_graph<VV, EV, GV, IndexT, A> const&           g,
+                            vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> vertex_edge_size_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return (u.edge_end(g) - u.edge_begin(g));
 }
 
 
@@ -589,32 +645,32 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(caa_graph<VV, EV, GV, IndexT, A>&           g,
                              vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u,
                              vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& v) noexcept
-      -> out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return ::ranges::find_if(out_range(g, u), [&g, &v](auto uv) { return &out_vertex(g, uv) == &v; });
+      -> vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                              vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u,
                              vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& v) noexcept
-      -> const_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return ::ranges::find_if(out_range(g, u), [&g, &v](auto uv) { return &out_vertex(g, uv) == &v; });
+      -> const_vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(caa_graph<VV, EV, GV, IndexT, A>&                     g,
                              vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& ukey,
                              vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
-      -> out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return find_out_edge(g, vertex(g, ukey), vertex(g, vkey));
+      -> vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return find_out_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(caa_graph<VV, EV, GV, IndexT, A> const&               g,
                              vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& ukey,
                              vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
-      -> const_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return find_out_edge(g, vertex(g, ukey), vertex(g, vkey));
+      -> const_vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return find_out_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
 
 
@@ -622,32 +678,32 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(caa_graph<VV, EV, GV, IndexT, A>&           g,
                          vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& u,
                          vertex_t<caa_graph<VV, EV, GV, IndexT, A>>& v) noexcept
-      -> out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return ::ranges::find_if(out_range(g, u), [&g, &v](auto uv) { return &out_vertex(g, uv) == &v; });
+      -> vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(caa_graph<VV, EV, GV, IndexT, A> const&           g,
                          vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u,
                          vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& v) noexcept
-      -> const_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return ::ranges::find_if(out_range(g, u), [&g, &v](auto uv) { return &out_vertex(g, uv) == &v; });
+      -> const_vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(caa_graph<VV, EV, GV, IndexT, A>&                     g,
                          vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& ukey,
                          vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
-      -> out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return find_out_edge(g, vertex(g, ukey), vertex(g, vkey));
+      -> vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return find_out_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(caa_graph<VV, EV, GV, IndexT, A> const&               g,
                          vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& ukey,
                          vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
-      -> const_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return find_out_edge(g, vertex(g, ukey), vertex(g, vkey));
+      -> const_vertex_out_edge_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
+  return find_out_edge(g, find_vertex(g, ukey), find_vertex(g, vkey));
 }
 
 
@@ -681,13 +737,12 @@ constexpr auto begin(caa_graph<VV, EV, GV, IndexT, A>& g) noexcept
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto begin(caa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> const_vertex_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().begin();
+  return g.vertices().cbegin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(caa_graph<VV, EV, GV, IndexT, A> const&           g,
-                      vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto cbegin(caa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> const_vertex_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().begin();
+  return g.vertices().cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -698,13 +753,12 @@ constexpr auto end(caa_graph<VV, EV, GV, IndexT, A>& g) noexcept
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto end(caa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> const_vertex_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().end();
+  return g.vertices().cend();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(caa_graph<VV, EV, GV, IndexT, A> const&           g,
-                    vertex_t<caa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto cend(caa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> const_vertex_iterator_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().end();
+  return g.vertices().cend();
 }
 
 

@@ -7,6 +7,7 @@
 //
 // Author: Andrew Lumsdaine
 //
+#include "pch.h"
 #include "plain_range.hpp"
 #include "spmv_range.hpp"
 #include "vovos.hpp"
