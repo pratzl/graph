@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "graph/compressed_adj_array.hpp"
-#include "graph/iterators/dfs.hpp"
-#include "graph/iterators/bfs.hpp"
+#include "graph/range/dfs.hpp"
+#include "graph/range/bfs.hpp"
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>

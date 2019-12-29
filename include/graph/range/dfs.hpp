@@ -16,16 +16,16 @@
 //      current state, not the beginning of the range.
 //
 // TODO
-//  1.  Add designation for forward range
-//  2.  Add concepts for requirements
-//      a.  integer vertex_key
-//      b.  vertices in contiguous space? (vertex or deque)
-//      c.  max vertex key is number of vertices
+//  1x  Add designation for forward range
+//  2x  Add concepts for requirements
+//      ax  integer vertex_key
+//      bx  vertices in contiguous space (vertex or array)
 //  3.  Test with const graph
 //  4.  Make more compatible with Ranges
 //  5.  Add range functions to create the range
 //  6.  [SG19] Check integer-based performance vs existing iterator-based performance
 //  7.  [SG19] Support graphs with non-consecutive integers
+//  8.  Test with array<>
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?
@@ -34,6 +34,10 @@
 //          and the longest DFS path.
 //      c.  the current design could be useful for multi-threading, assuming the stack &
 //          visited members are guarded with locks.
+//  2. Becase indexes are used to access vertices, a deque would also be acceptable in
+//     addition to a vector & array. Is there a way to distinguish between a deque and 
+//     map[int] to avoid using a map using concepts?
+//  3.  Is there any additional work require to make this more compatible with Ranges?
 //
 
 #include "../graph_fwd.hpp"

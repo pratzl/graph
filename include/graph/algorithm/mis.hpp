@@ -11,7 +11,7 @@
 /*Implements maximal independent set algorithm*/
 #pragma once
 
-#include "graph/iterators/bfs_range.hpp"
+#include "graph/range/bfs_range.hpp"
 
 template<typename Graph>
 void mis_algorithm(Graph A, std::vector<size_t>& mis) {

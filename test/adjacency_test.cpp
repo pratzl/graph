@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <compressed.hpp>
 #include <edge_list.hpp>
-#include <graph/iterators/bfs_range.hpp>
+#include <graph/range/bfs_range.hpp>
 #include <mmio.hpp>
 #include <vector>
 
