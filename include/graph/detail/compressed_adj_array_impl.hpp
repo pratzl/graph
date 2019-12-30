@@ -595,10 +595,10 @@ constexpr auto in_vertex(caa_graph<VV, EV, GV, IndexT, A> const&         g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex_key(caa_graph<VV, EV, GV, IndexT, A> const&,
+constexpr auto in_vertex_key(caa_graph<VV, EV, GV, IndexT, A> const& g,
                              edge_t<caa_graph<VV, EV, GV, IndexT, A>> const& uv) noexcept
       -> vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return uv.in_vertex_key();
+  return uv.in_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -615,10 +615,10 @@ constexpr auto out_vertex(caa_graph<VV, EV, GV, IndexT, A> const&         g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex_key(caa_graph<VV, EV, GV, IndexT, A> const&,
+constexpr auto out_vertex_key(caa_graph<VV, EV, GV, IndexT, A> const& g,
                               edge_t<caa_graph<VV, EV, GV, IndexT, A>> const& uv) noexcept
       -> vertex_key_t<caa_graph<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex_key();
+  return uv.out_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>

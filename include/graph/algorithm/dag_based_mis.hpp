@@ -12,7 +12,7 @@
 #pragma once
 
 #include "plain_range.hpp"
-#include "../iterators/dag_range.hpp"
+#include "../range/dag_range.hpp"
 
 using namespace bgl17;
 

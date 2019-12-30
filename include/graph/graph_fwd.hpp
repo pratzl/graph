@@ -69,7 +69,7 @@ template <typename G>
 using const_edge_t = typename G::const_edge_type;
 
 template <typename G>
-using edge_value_t = typename G::edge_user_value;
+using edge_value_t = typename G::edge_user_value_type;
 
 template <typename G>
 using edge_range_t = typename G::edge_range;
