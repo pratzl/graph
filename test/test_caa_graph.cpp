@@ -641,11 +641,14 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(
+        g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
-  bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), false, true, weight_fnc);
+  bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
+        g, u, back_inserter(short_paths), false, true,
+                                   weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -669,7 +672,8 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
 
   cout << "\n";
   short_paths.clear();
-  bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), true, true, weight_fnc);
+  neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
+        g, u, back_inserter(short_paths), true, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
