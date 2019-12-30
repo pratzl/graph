@@ -19,12 +19,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{42245303
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "range", "range", "{6F31AFF7-259A-4B3C-9559-4D756D2B09B7}"
 	ProjectSection(SolutionItems) = preProject
+		include\graph\range\bfs.hpp = include\graph\range\bfs.hpp
 		include\graph\range\bfs_edge_range.hpp = include\graph\range\bfs_edge_range.hpp
 		include\graph\range\bfs_range.hpp = include\graph\range\bfs_range.hpp
 		include\graph\range\dag_range.hpp = include\graph\range\dag_range.hpp
+		include\graph\range\dfs.hpp = include\graph\range\dfs.hpp
 		include\graph\range\dfs_range.hpp = include\graph\range\dfs_range.hpp
 		include\graph\range\filtered_bfs_range.hpp = include\graph\range\filtered_bfs_range.hpp
 		include\graph\range\new_dfs_range.hpp = include\graph\range\new_dfs_range.hpp
+		include\graph\range\topo_sort.hpp = include\graph\range\topo_sort.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{1B39F91E-48A8-4D17-8DEE-C694CE374A6D}"
@@ -34,12 +37,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{
 		include\graph\algorithm\boykov_kolmogorov3.hpp = include\graph\algorithm\boykov_kolmogorov3.hpp
 		include\graph\algorithm\connected_component.hpp = include\graph\algorithm\connected_component.hpp
 		include\graph\algorithm\dag_based_mis.hpp = include\graph\algorithm\dag_based_mis.hpp
-		include\graph\algorithm\dijkstra.hpp = include\graph\algorithm\dijkstra.hpp
 		include\graph\algorithm\jones_plassmann_coloring.hpp = include\graph\algorithm\jones_plassmann_coloring.hpp
 		include\graph\algorithm\k_core.hpp = include\graph\algorithm\k_core.hpp
 		include\graph\algorithm\max_flow.hpp = include\graph\algorithm\max_flow.hpp
 		include\graph\algorithm\mis.hpp = include\graph\algorithm\mis.hpp
 		include\graph\algorithm\page_rank.hpp = include\graph\algorithm\page_rank.hpp
+		include\graph\algorithm\shortest_paths.hpp = include\graph\algorithm\shortest_paths.hpp
 		include\graph\algorithm\spanning_tree.hpp = include\graph\algorithm\spanning_tree.hpp
 		include\graph\algorithm\spMatspMat.hpp = include\graph\algorithm\spMatspMat.hpp
 		include\graph\algorithm\triangle_count.hpp = include\graph\algorithm\triangle_count.hpp

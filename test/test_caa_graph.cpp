@@ -2,6 +2,7 @@
 #include "graph/compressed_adj_array.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
+#include "graph/algorithm/shortest_paths.hpp"
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
 #include <range/v3/algorithm/find.hpp>
@@ -47,6 +48,10 @@ using std::graph::vertex_key_t;
 using std::graph::vertex_iterator_t;
 using std::graph::const_vertex_iterator_t;
 using std::graph::edge_t;
+using std::graph::edge_value_t;
+
+using std::graph::shortest_distance;
+using std::graph::shortest_path;
 
 struct route;
 vector<string>                 unique_cities(vector<route>& routes);
@@ -329,15 +334,15 @@ TEST(TestCAAGraph, AllEdgeFunctions) {
 
   edge_iterator_t<Graph> uv = find_edge(g, *u, *v); // find edge Frankfurt --> Mannheim
   EXPECT_NE(end(g.edges()), uv);
-  EXPECT_EQ(v, vertex(g,*uv));
+  EXPECT_EQ(v, vertex(g, *uv));
   EXPECT_EQ(v, out_vertex(g, *uv));
   EXPECT_EQ(u, in_vertex(g, *uv));
-  edge_iterator_t<Graph> uv2  = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
+  edge_iterator_t<Graph> uv2 = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
   EXPECT_EQ(uv, uv2);
 
-  vertex_out_edge_iterator_t<Graph> uv3; 
+  vertex_out_edge_iterator_t<Graph> uv3;
   uv2 = find_out_edge(g, *u, *v);
-  uv3 = find_out_edge(g, vertex_key(g,*u), vertex_key(g,*v));
+  uv3 = find_out_edge(g, vertex_key(g, *u), vertex_key(g, *v));
   EXPECT_EQ(uv, uv2);
   EXPECT_EQ(uv, uv3);
 }
@@ -488,4 +493,100 @@ TEST(TestCAAGraph, BFSEdge) {
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
 #endif
+}
+
+TEST(TestCAAGraph, DijkstraShortestDistances) {
+  using std::graph::dijkstra_shortest_distances;
+  using std::graph::dijkstra_shortest_paths;
+  using std::graph::shortest_distance;
+  using std::graph::shortest_path;
+
+  using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
+  using short_dists_t = vector<short_dist_t>;
+  short_dists_t short_dists;
+
+  Graph                    g = create_germany_routes_graph();
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+
+  auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
+
+  dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), false, weight_fnc);
+  for (short_dist_t& sd : short_dists)
+    cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
+  /* Output: source = Frankfurt
+    Frankfnrt --> Augsburg  415km
+    Frankfnrt --> Erfurt  403km
+    Frankfnrt --> Frankfnrt  0km
+    Frankfnrt --> Karlsruhe  165km
+    Frankfnrt --> Kassel  173km
+    Frankfnrt --> Mannheim  85km
+    Frankfnrt --> Mnnchen  487km
+    Frankfnrt --> Nnrnberg  320km
+    Frankfnrt --> Stuttgart  503km
+    Frankfnrt --> Wnrzburg  217km
+  */
+
+  cout << "\n";
+  short_dists.clear();
+  dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), true, weight_fnc);
+  for (short_dist_t& sd : short_dists)
+    cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
+  /* Output: source = Frankfurt
+    Frankfnrt --> Erfurt  403km
+    Frankfnrt --> Mnnchen  487km
+    Frankfnrt --> Stuttgart  503km
+  */
+}
+
+TEST(TestCAAGraph, DijkstraShortestPaths) {
+  using std::graph::dijkstra_shortest_paths;
+  using std::graph::shortest_path;
+
+  using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
+  using short_paths_t = vector<short_path_t>;
+  short_paths_t short_paths;
+
+  Graph                    g = create_germany_routes_graph();
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+
+  auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
+
+  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
+  for (short_path_t& sp : short_paths) {
+    for (size_t i = 0; i < sp.path.size(); ++i) {
+      if (i > 0)
+        cout << " --> ";
+      cout << sp.path[i]->name;
+    }
+    cout << "  " << sp.distance << "km\n";
+  }
+  /* Output: source = Frankfurt
+    Frankfnrt --> Mannheim --> Karlsruhe --> Augsburg  415km
+    Frankfnrt --> Wnrzburg --> Erfurt  403km
+    Frankfnrt  0km
+    Frankfnrt --> Mannheim --> Karlsruhe  165km
+    Frankfnrt --> Kassel  173km
+    Frankfnrt --> Mannheim  85km
+    Frankfnrt --> Wnrzburg --> Nnrnberg --> Mnnchen  487km
+    Frankfnrt --> Wnrzburg --> Nnrnberg  320km
+    Frankfnrt --> Wnrzburg --> Nnrnberg --> Stuttgart  503km
+    Frankfnrt --> Wnrzburg  217km
+  */
+
+  cout << "\n";
+  short_paths.clear();
+  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+  for (short_path_t& sp : short_paths) {
+    for (size_t i = 0; i < sp.path.size(); ++i) {
+      if (i > 0)
+        cout << " --> ";
+      cout << sp.path[i]->name;
+    }
+    cout << "  " << sp.distance << "km\n";
+  }
+  /* Output: source = Frankfurt
+    Frankfnrt --> Wnrzburg --> Erfurt  403km
+    Frankfnrt --> Wnrzburg --> Nnrnberg --> Mnnchen  487km
+    Frankfnrt --> Wnrzburg --> Nnrnberg --> Stuttgart  503km
+  */
 }
