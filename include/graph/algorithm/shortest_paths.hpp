@@ -9,7 +9,7 @@
 // The algorithms are designed to work with both directed & undirected graphs
 // by using general functions such as vertex() and edges() instead of out_vertex()
 // and out_edges().
-//  
+//
 // Dijktra's shortest path algorithm runs in O(|E| + |V|log|V|) time and supports non-negative
 // edge weights. Signed weight types are allowed to accomodate real-world situations, and it
 // is the user's responsibility to assure only non-negative weights exist.
@@ -53,22 +53,25 @@
 
 namespace std::graph {
 
+// forward declarations
 template <typename G, typename DistFnc, typename DistanceT = decltype(DistFnc), typename A = allocator<DistanceT>>
 class dijkstra_fn;
 template <typename G, typename DistFnc, typename DistanceT = decltype(DistFnc), typename A = allocator<DistanceT>>
 class bellman_ford_fn;
 
+//! The return value of the shortest distance functions
 template <typename VertexIteratorT, typename DistanceT>
 struct shortest_distance {
-  VertexIteratorT first;
-  VertexIteratorT last;
-  DistanceT       distance;
+  VertexIteratorT first;                  // source vertex
+  VertexIteratorT last;                   // last vertex in path
+  DistanceT       distance = DistanceT(); // sum of the path's edge distances in the path
 };
 
+//! The return value of the shortest path functions
 template <typename VertexIteratorT, typename DistanceT, typename A = allocator<VertexIteratorT>>
 struct shortest_path {
-  vector<VertexIteratorT, A> path;
-  DistanceT                  distance = DistanceT();
+  vector<VertexIteratorT, A> path;                   // vertices that make up the path; path[0] is the source vertex
+  DistanceT                  distance = DistanceT(); // sum of the path's edge distances in the path
 
   shortest_path()                     = default;
   shortest_path(shortest_path const&) = default;
