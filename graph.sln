@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "range", "range", "{6F31AFF7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{1B39F91E-48A8-4D17-8DEE-C694CE374A6D}"
 	ProjectSection(SolutionItems) = preProject
+		include\graph\algorithm\articulation_poiints.hpp = include\graph\algorithm\articulation_poiints.hpp
 		include\graph\algorithm\boykov_kolmogorov.hpp = include\graph\algorithm\boykov_kolmogorov.hpp
 		include\graph\algorithm\boykov_kolmogorov2.hpp = include\graph\algorithm\boykov_kolmogorov2.hpp
 		include\graph\algorithm\boykov_kolmogorov3.hpp = include\graph\algorithm\boykov_kolmogorov3.hpp
