@@ -8,11 +8,12 @@
 // Author: Kevin Deweese
 //
 
+#include "pch.h"
 #include <algorithm>
 #include <compressed.hpp>
 #include <edge_list.hpp>
-#include <graph/iterators/new_dfs_range.hpp>
-#include <graph/algorithms/k_core.hpp>
+#include <graph/range/new_dfs_range.hpp>
+#include <graph/algorithm/k_core.hpp>
 #include <mmio.hpp>
 #include <vector>
 

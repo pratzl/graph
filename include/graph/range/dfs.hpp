@@ -15,6 +15,13 @@
 //  3.  The state of the traversal is in the range object. Calling begin() returns the
 //      current state, not the beginning of the range.
 //
+// The dfs_edge_range iterators have is_back_edge() and back_vertex() which are used
+// on terminal vertices in the search. A terminal is a vertex that hasn't been visited
+// yet and has no edges to search. When this is true, a pseudo edge is used which is just
+// the end(g,u) edge for the vertex. When is_back_edge() is true, back_vertex() should
+// be used to retreive the vertex that was traversed from most recentely. This must
+// be used as the edge returned is invalid.
+//
 // TODO
 //  1x  Add designation for forward range
 //  2x  Add concepts for requirements
@@ -26,6 +33,8 @@
 //  6.  [SG19] Check integer-based performance vs existing iterator-based performance
 //  7.  [SG19] Support graphs with non-consecutive integers
 //  8.  Test with array<>
+//  9.  Test with unordered graph
+//  10. const_iterators should return const_vertex_iterator<G> for back_vertex() & out_vertex()
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?
@@ -35,7 +44,7 @@
 //      c.  the current design could be useful for multi-threading, assuming the stack &
 //          visited members are guarded with locks.
 //  2. Becase indexes are used to access vertices, a deque would also be acceptable in
-//     addition to a vector & array. Is there a way to distinguish between a deque and 
+//     addition to a vector & array. Is there a way to distinguish between a deque and
 //     map[int] to avoid using a map using concepts?
 //  3.  Is there any additional work require to make this more compatible with Ranges?
 //
@@ -50,12 +59,16 @@
 namespace std::graph {
 
 
+//---------------------------------------------------------------------------------------
 /// depth-first search range for vertices, given a single seed vertex.
 ///
+
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class dfs_vertex_range 
-{
+requires uniform_graph_c<G>&&
+      integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class dfs_vertex_range {
+
+  enum colors : int8_t { white, grey, black };
+
   struct stack_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
@@ -63,11 +76,21 @@ class dfs_vertex_range
   using stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<stack_elem>;
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
+  using visited_alloc = typename allocator_traits<typename A>::template rebind_alloc<colors>;
+  using visited_type  = vector<colors, visited_alloc>;
+
+  using parent_alloc = typename allocator_traits<typename A>::template rebind_alloc<vertex_iterator_t<G>>;
+  using parent_type  = vector<vertex_iterator_t<G>, parent_alloc>;
+
 public:
-  dfs_vertex_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph)) {
+  dfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+        : graph_(graph)
+        , stack_(alloc)
+        , visited_(vertices_size(graph), white, alloc)
+        , parent_(vertices_size(graph), std::graph::end(graph), alloc) {
     if (seed != std::graph::end(graph_)) {
       stack_.push(stack_elem{seed, std::graph::begin(graph_, *seed)});
-      visited_[vertex_key(graph_, *seed)] = true;
+      visited_[vertex_key(graph_, *seed)] = grey;
     }
   }
 
@@ -106,7 +129,8 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    size_t depth() const { return dfs_->stack_.size(); }
+    size_t               depth() const { return dfs_->stack_.size(); }
+    vertex_iterator_t<G> parent() const { return parent_[vertex_key(graph_, *elem_.u)]; }
 
   protected:
     dfs_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
@@ -168,17 +192,21 @@ protected:
       vertex_iterator_t<G>      v      = vertex_iterator_t<G>();
       vertex_key_t<G>           v_key  = vertex_key_t<G>();
       for (; uv != uv_end; ++uv) {
-        v     = vertex(graph_, *uv);
-        v_key = vertex_key(graph_, *uv);
-        if (!visited_[v_key])
+        v     = vertex(graph_, *uv, *u);
+        v_key = vertex_key(graph_, *uv, *u);
+        if (visited_[v_key] == white)
           break;
       }
 
-      if (uv != uv_end) {
+      if (uv == uv_end) {
+        vertex_key_t<G> u_key = vertex_key(graph_, *u);
+        visited_[u_key]       = black;
+      } else {                                                        // (visited_[v_key] == white)
         stack_.push(stack_elem{u, uv});                               // remember next edge to resume on for u
         vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
         stack_.push(stack_elem{v, vw});                               // go level deaper in traversal
-        visited_[v_key] = true;
+        visited_[v_key] = grey;
+        parent_[v_key]  = u;
         return stack_.top();
       }
     }
@@ -187,34 +215,59 @@ protected:
 
 private:
   G&           graph_;
-  stack_type   stack_;
-  vector<bool> visited_;
+  stack_type   stack_;   // stack<stack_elem, >
+  visited_type visited_; // vector<colors, >
+  parent_type  parent_;  // vector<vertex_iterator_t<G>, >
 };
 
 
+//---------------------------------------------------------------------------------------
 /// depth-first search range for edges, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class dfs_edge_range {
+requires uniform_graph_c<G> /*directed_graph_c<G> */&&
+      integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class dfs_edge_range {
+
+  enum colors : int8_t { white, grey, black };
+
   struct stack_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
   };
+
   using stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<stack_elem>;
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
+  using visited_alloc = typename allocator_traits<typename A>::template rebind_alloc<colors>;
+  using visited_type  = vector<colors, visited_alloc>;
+
+  using parent_alloc = typename allocator_traits<typename A>::template rebind_alloc<vertex_iterator_t<G>>;
+  using parent_type  = vector<vertex_iterator_t<G>, parent_alloc>;
+
 public:
-  dfs_edge_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph)) {
+  dfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+        : graph_(graph)
+        , stack_(alloc)
+        , visited_(vertices_size(graph), white, alloc)
+        , parent_(vertices_size(graph), std::graph::end(graph), alloc) {
     if (seed != std::graph::end(graph_)) {
-      stack_.push(stack_elem{seed, std::graph::begin(graph_, *seed)});
-      visited_[vertex_key(graph_, *seed)] = true;
+      stack_.push({seed, std::graph::begin(graph_, *seed)});
+      visit(seed, grey);
     }
   }
 
+public:
   class const_iterator {
   public:
     using iterator_category = forward_iterator_tag;
+
+    using vertex_type           = const_vertex_t<G>;
+    using vertex_reference_type = vertex_type&;
+    using vertex_iterator_type  = const_vertex_iterator_t<G>;
+
+    using edge_type                 = const_edge_t<G>;
+    using edge_reference_type       = edge_type&;
+    using vertex_edge_iterator_type = const_vertex_edge_iterator_t<G>;
 
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
@@ -228,8 +281,8 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    edge_t<G> const&                operator*() const { return *elem_.uv; }
-    const_vertex_edge_iterator_t<G> operator->() const { return elem_.uv; }
+    edge_reference_type       operator*() const { return *elem_.uv; }
+    vertex_edge_iterator_type operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
       stack_elem elem_ = dfs_->advance();
@@ -245,26 +298,38 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    size_t               depth() const { return dfs_->stack_.size(); }
-    bool                 is_back_edge() const { return elem_.uv == std::graph::end(dfs_->graph_, *elem_.u); }
+    vertex_iterator_type in_vertex() const { return elem_.u; }
+    vertex_iterator_type out_vertex() const { return vertex(dfs_->graph_, *elem_.uv, *elem_.u); }
+    vertex_iterator_type back_vertex() const { return out_vertex(); }
 
-    bool is_vertex_visited() const { // Has the [out] vertex been visited yet?
-      if (is_back_edge())
-        return false;
+    size_t depth() const { return dfs_->stack_.size(); }
 
-      vertex_iterator_t<G> v     = vertex(dfs_->graph_, *elem_.uv);
-      vertex_key_t<G>      v_key = vertex_key(graph_, *v);
-      return dfs_->visited_[v_key];
+    bool is_path_end() const { return !out_exists(); }
+    bool is_back_edge() const { // No outgoing edge, or outgoing vertex has been visised (undirected, or directed cycle)
+      return !out_exists() || (out_exists() && is_out_visited());
     }
+
+  protected:
+    bool out_exists() const { return dfs_->out_exists(elem_); }
+    bool is_out_visited() const { return dfs_->is_out_visited(elem_); }
 
   protected:
     dfs_edge_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     stack_elem      elem_;
   };
 
+
   class iterator : public const_iterator {
   public:
     using iterator_category = forward_iterator_tag;
+
+    using vertex_type           = vertex_t<G>;
+    using vertex_reference_type = vertex_type&;
+    using vertex_iterator_type  = vertex_iterator_t<G>;
+
+    using edge_type                 = edge_t<G>;
+    using edge_reference_type       = edge_type&;
+    using vertex_edge_iterator_type = vertex_edge_iterator_t<G>;
 
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
@@ -280,8 +345,8 @@ public:
       return *this;
     }
 
-    edge_t<G>&                operator*() { return *this->elem_.uv; }
-    vertex_edge_iterator_t<G> operator->() const { return this->elem_.uv; }
+    edge_reference_type       operator*() { return *this->elem_.uv; }
+    vertex_edge_iterator_type operator->() const { return this->elem_.uv; }
 
     iterator& operator++() {
       this->elem_ = this->dfs_->advance();
@@ -293,6 +358,10 @@ public:
       ++(*this);
       return tmp;
     }
+
+    vertex_iterator_type in_vertex() const { return this->elem_.u; }
+    vertex_iterator_type out_vertex() const { return vertex(this->dfs_->graph_, *this->elem_.uv, *this->elem_.u); }
+    vertex_iterator_type back_vertex() const { return out_vertex(); }
   };
 
 public:
@@ -305,45 +374,91 @@ public:
   const_iterator cend() const { return const_iterator(*this, true); }
 
 protected:
+  bool out_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+    return uv != std::graph::end(graph_, *u);
+  }
+
+  bool is_out_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+    const_vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
+    vertex_key_t<G>            v_key = vertex_key(graph_, *v);
+    return visited_[v_key] >= grey;
+  }
+
+  bool is_back_edge(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+    return !out_exists(u, uv) || (out_exists(u, uv) && is_out_visited(u, uv));
+  }
+
+  bool out_exists(stack_elem const& se) const { return out_exists(se.u, se.uv); }
+  bool is_out_visited(stack_elem const& se) const { return is_out_visited(se.u, se.uv); }
+  bool is_back_edge(stack_elem const& se) const { return is_back_edge(se.u, se.uv); }
+
+  bool is_parent(vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) const {
+    vertex_key_t<G>      u_key = vertex_key(graph_, *u);
+    vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
+    return v == parent_[u_key];
+  }
+
   stack_elem advance() {
-    bool resume = false;
     while (!stack_.empty()) {
-      if (resume)
-        return stack_.top();
-
-      auto [u, uv] = stack_.top();
-
-      vertex_iterator_t<G>      v      = vertex(graph_, *uv);
-      vertex_key_t<G>           v_key  = vertex_key(graph_, *v);
-      vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
-
-      stack_.pop();
-      resume = true;
-
-      // no more edges for u? (will occur if no [out] edges)
-      if (uv == uv_end)
+      if (!out_exists(stack_.top())) { // orphan vertex, or no out edges?
+        visit(stack_.top().u, black);
+        stack_.pop();
         continue;
+      } else if (is_out_visited(stack_.top())) { // back edge?
+        auto [u, uv]                     = stack_.top();
+        vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
+        stack_.pop();
+        for (++uv; uv != uv_end && is_parent(u, uv); ++uv)
+          ;
+        if (uv == uv_end) { // no more edges?
+          visit(u, black);
+          continue;
+        } else {                // next sibling of uv
+          stack_.push({u, uv}); // sibling to uv
+          break;
+        }
+      } else { // go down a level
+        auto [u, uv]                     = stack_.top();
+        vertex_iterator_t<G>      v      = vertex(graph_, *uv, *u);
+        vertex_edge_iterator_t<G> vw     = std::graph::begin(graph_, *v);
+        vertex_edge_iterator_t<G> vw_end = std::graph::end(graph_, *v);
 
-      // remember next edge to resume on for u
-      if (++uv != uv_end)
-        stack_.push(stack_elem{u, uv});
+        // scan past parent of v (we have enough info so parent_[] isn't needed)
+        for (; vw != vw_end && vertex(graph_, *vw, *v) == u; ++vw)
+          ;
 
-      // visit v vertex if it hasn't been visited yet
-      if (!visited_[v_key]) {
-        vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
-        stack_.push(stack_elem{v, vw});                               // go level deeper in traversal
-        visited_[v_key] = true;
+        stack_.push({v, vw});
+        visit(u, v, grey);
+        break;
       }
     }
-    return stack_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>()};
+
+    if (!stack_.empty())
+      return stack_.top();
+    else
+      return empty_elem();
   }
+
+  void visit(vertex_iterator_t<G> u, colors color) {
+    vertex_key_t<G> u_key = vertex_key(graph_, *u);
+    visited_[u_key]       = color;
+  }
+
+  void visit(vertex_iterator_t<G> parent, vertex_iterator_t<G> u, colors color) {
+    vertex_key_t<G> u_key = vertex_key(graph_, *u);
+    visited_[u_key]       = color;
+    parent_[u_key]        = parent;
+  }
+
+  stack_elem empty_elem() const { return stack_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>()}; }
+
 
 private:
   G&           graph_;
-  stack_type   stack_;
-  vector<bool> visited_;
+  stack_type   stack_;   // stack<stack_elem, >
+  visited_type visited_; // vector<colors, >
+  parent_type  parent_;  // vector<vertex_iterator_t<G>, >; only needed for undirected graphs
 };
-
 
 } // namespace std::graph
 

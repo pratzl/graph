@@ -216,6 +216,7 @@ public:
   using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
+  using graph_category        = sparse_graph_tag;
 
   using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type      = const vertex_type;

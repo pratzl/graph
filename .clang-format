@@ -31,7 +31,7 @@ BraceWrapping:
 BreakConstructorInitializers: BeforeComma
 BreakBeforeInheritanceComma: true
 BreakInheritanceList: BeforeComma
-ColumnLimit:     90
+ColumnLimit:     120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 6
 ContinuationIndentWidth: 6
@@ -59,7 +59,7 @@ SortIncludes:    false
 SortUsingDeclarations: false
 SpacesBeforeTrailingComments: 1
 
-Standard:        Cpp11
+Standard:        Latest 
 UseTab:          Never
 ...
 

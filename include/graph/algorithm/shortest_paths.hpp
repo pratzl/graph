@@ -37,6 +37,7 @@
 //  1.  Figure how to define DistanceT from DistFnc so user isn't required to specify it.
 //      Then move DistFnc parameter later in template.
 //  2.  Add output_iterator concept check for parameter
+//  3.  Add edges(g) requirement concept to djikstra
 //
 // ISSUES / QUESTIONS
 //  1.  Should bellman_ford always check for negative edge cycles? (e.g. remove
@@ -48,22 +49,40 @@
 #include "../graph_fwd.hpp"
 #include "range/v3/algorithm/reverse.hpp"
 
+#define SHORTEST_RANGE
+
 #ifndef GRAPH_SHORTEST_PATHS_HPP
 #  define GRAPH_SHORTEST_PATHS_HPP
 
 namespace std::graph {
 
 // forward declarations
-template <typename G,
-          typename DistFnc,
-          typename DistanceT = decltype(DistFnc),
-          typename A         = allocator<DistanceT>>
+template <typename G, typename DistFnc, typename DistanceT = decltype(DistFnc), typename A = allocator<DistanceT>>
 class dijkstra_fn;
-template <typename G,
-          typename DistFnc,
-          typename DistanceT = decltype(DistFnc),
-          typename A         = allocator<DistanceT>>
+template <typename G, typename DistFnc, typename DistanceT = decltype(DistFnc), typename A = allocator<DistanceT>>
 class bellman_ford_fn;
+
+
+template <typename G, typename A = allocator<vertex_iterator_t<G>>>
+using vertex_path_t = vector<vertex_iterator_t<G>, A>;
+
+template <typename G, typename A = allocator<edge_iterator_t<G>>>
+using vertex_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_path_t<G, A>*>(nullptr)));
+
+template <typename G, typename A = allocator<edge_iterator_t<G>>>
+using edge_path_t = vector<edge_iterator_t<G>, A>;
+
+template <typename G, typename A>
+using edge_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_path_t<G, A>*>(nullptr)));
+
+
+template <typename G, arithmetic_c DistanceT, typename A = allocator<vertex_iterator_t<G>>>
+struct shortest_path2 {
+  DistanceT               distance;
+  vertex_path_range<G, A> vertex_path;
+  edge_path_range<G, A>   path;
+};
+
 
 //! The return value of the shortest distance functions
 template <forward_iterator VertexIteratorT, arithmetic_c DistanceT>
@@ -74,12 +93,10 @@ struct shortest_distance {
 };
 
 //! The return value of the shortest path functions
-template <forward_iterator VertexIteratorT,
-          arithmetic_c     DistanceT,
-          typename A = allocator<VertexIteratorT>>
+template <forward_iterator VertexIteratorT, arithmetic_c DistanceT, typename A = allocator<VertexIteratorT>>
 struct shortest_path {
-  vector<VertexIteratorT, A> path;  // vertices that make up the path
-  DistanceT distance = DistanceT(); // sum of the path's edge distances in the path
+  vector<VertexIteratorT, A> path;                   // vertices that make up the path
+  DistanceT                  distance = DistanceT(); // sum of the path's edge distances in the path
 
   shortest_path()                     = default;
   shortest_path(shortest_path const&) = default;
@@ -103,17 +120,12 @@ struct shortest_path {
 //!                    vertices on an edge. The default is to return a value of 1.
 //! @param alloc       The allocator to use for internal containers.
 //
-template <arithmetic_c DistanceT,
-          typename G,
-          typename OutIter,
-          typename DistFnc,
-          typename A = allocator<DistanceT>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> void
-dijkstra_shortest_distances(
+template <arithmetic_c DistanceT, typename G, typename OutIter, typename DistFnc, typename A = allocator<DistanceT>>
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> void dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
-      bool const           leaves_only  = false,
+      bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
 
@@ -143,8 +155,7 @@ template <arithmetic_c DistanceT, // = invoke_result<DistFnc(edge_value_t<G>&)>:
           typename DistFnc,
           typename A = allocator<DistanceT>>
 //requires output_iterator<OutIter, typename OutIter::value_type>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> void
-dijkstra_shortest_paths(
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> void dijkstra_shortest_paths(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
@@ -179,20 +190,15 @@ dijkstra_shortest_paths(
 //! @return            true if a negateve edge cycle exists, which is only detected if
 //!                    detect_neg_edge_cycles is true.
 //
-template <arithmetic_c DistanceT,
-          typename G,
-          typename OutIter,
-          typename DistFnc,
-          typename A = allocator<DistanceT>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> bool
-bellman_ford_shortest_distances(
+template <arithmetic_c DistanceT, typename G, typename OutIter, typename DistFnc, typename A = allocator<DistanceT>>
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> bool bellman_ford_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
       bool const           leaves_only            = true,
       bool const           detect_neg_edge_cycles = true,
-      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-      A                    alloc        = A()) {
+      DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
+      A                    alloc                  = A()) {
 
   bellman_ford_fn<G, DistFnc, DistanceT, A> fn(g, distance_fnc, alloc);
   return fn.shortest_distances(source, result_iter, leaves_only, detect_neg_edge_cycles);
@@ -235,8 +241,8 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
             OutIter              result_iter,
             bool const           leaves_only            = true,
             bool const           detect_neg_edge_cycles = true,
-            DistFnc distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-            A       alloc        = A()) {
+            DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
+            A                    alloc                  = A()) {
   //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
   bellman_ford_fn<G, DistFnc, DistanceT, A> fn(g, distance_fnc, alloc);
   return fn.shortest_paths(source, result_iter, leaves_only, detect_neg_edge_cycles);
@@ -247,6 +253,12 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
 //!
 template <typename G, typename DistFnc, typename DistanceT, typename A>
 class dijkstra_fn {
+  enum colors : int8_t {
+    white, // undiscovered
+    grey,  // discovered (in-process)
+    black  // visited; all edges have been visited
+  };
+
   struct vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
     vertex_key_t<G> vtx_key  = numeric_limits<vertex_key_t<G>>::max();
     DistanceT       distance = numeric_limits<DistanceT>::max(); // distance from source
@@ -269,13 +281,11 @@ public:
 
   //template <::ranges::output_iterator<shortest_distance<vertex_iterator_t<G>, DistanceT>> OutIter>
   template <typename OutIter>
-  void shortest_distances(vertex_iterator_t<G> source,
-                          OutIter              result_iter,
-                          bool const           leaves_only) {
+  void shortest_distances(vertex_iterator_t<G> source, OutIter result_iter, bool const leaves_only) {
     // find the paths
     vertex_dist_cont distances(vertices_size(g_), alloc_);
     vector<bool>     leaf(vertices_size(g_), alloc_);
-    find_paths(source, distances, leaf);
+    find_paths(source, distances, leaves_only, leaf);
 
     // output distances to the output iterator
     using path                 = shortest_distance<vertex_iterator_t<G>, DistanceT>;
@@ -289,13 +299,11 @@ public:
   }
 
   template <typename OutIter>
-  void shortest_paths(vertex_iterator_t<G> source,
-                      OutIter              result_iter,
-                      bool const           leaves_only) {
+  void shortest_paths(vertex_iterator_t<G> source, OutIter result_iter, bool const leaves_only) {
     // find the paths
     vertex_dist_cont distances(vertices_size(g_), alloc_);
     vector<bool>     leaf(vertices_size(g_), alloc_);
-    find_paths(source, distances, leaf);
+    find_paths(source, distances, leaves_only, leaf);
 
     // output paths to the output iterator
     using path_t = shortest_path<vertex_iterator_t<G>, DistanceT>;
@@ -326,39 +334,66 @@ protected:
   //!                 the number of vertices in the graph.
   //! @param leaf     A bool vertex where leaf[k]==true indicates distance[k] is the last vertex
   //!                 in a path. It is assumed to be pre-initialized to be the number of vertices
-  //!                 in the graph.
-  void find_paths(vertex_iterator_t<G> source,
-                  vertex_dist_cont&    distances,
-                  vector<bool>&        leaf) {
-    vertex_key_t<G> const source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
+  //!                 in the graph with value of false.
+  void
+  find_paths(vertex_iterator_t<G> source, vertex_dist_cont& distances, bool const leaves_only, vector<bool>& leaf) {
+    vertex_key_t<G> const source_key = vertex_key(g_, *source);
     distances[source_key]            = {source_key, 0};
 
-    priority_queue<vertex_dist, vector<vertex_dist>> q(alloc_);
-    vector<bool>                                     in_q(vertices_size(g_), alloc_);
+    struct q_vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
+      vertex_key_t<G> vtx_key    = numeric_limits<vertex_key_t<G>>::max();
+      DistanceT       distance   = numeric_limits<DistanceT>::max(); // distance from source
+      vertex_key_t<G> parent_key = numeric_limits<vertex_key_t<G>>::max();
+      bool            operator<(q_vertex_dist const& rhs) const {
+        return distance > rhs.distance; // > so top has lowest distance in priority_queue
+      }
+    };
+    priority_queue<q_vertex_dist, vector<q_vertex_dist>> q(alloc_);
+    vector<bool>                                         in_q(vertices_size(g_), alloc_);
 
     q.push({source_key, 0});
     in_q[source_key] = true;
     while (!q.empty()) {
       // next vertex
-      auto ukey = q.top().vtx_key;
+      auto ukey       = q.top().vtx_key;
+      auto parent_key = q.top().parent_key;
       q.pop();
       in_q[ukey] = false;
 
       // thru u's edges
       for (edge_t<G>& uv : edges(g_, *find_vertex(g_, ukey))) {
         DistanceT       v_dist = distances[ukey].distance + distance_fnc_(uv);
-        vertex_key_t<G> vkey   = vertex_key(g_, uv);
-        leaf[ukey]             = false;
+        vertex_key_t<G> vkey   = vertex_key(g_, uv, ukey);
+        if (vkey != parent_key)
+          leaf[ukey] = false;
 
         // new shorter distance to v?
         if (v_dist < distances[vkey].distance) {
           distances[vkey] = {ukey, v_dist}; // {prev,dist}
           leaf[vkey]      = true;
           if (!in_q[vkey]) {
-            q.push({vkey, v_dist}); // {vtx,dist}
+            q.push({vkey, v_dist, ukey}); // {vtx,dist}
             in_q[vkey] = true;
           }
         }
+      }
+    }
+
+    // Identify the leaves, if needed (only needed for undirected graphs)
+    if (leaves_only) {
+      // identify all vertices that are reachable by source
+      size_t reached = 0;
+      for (vertex_key_t<G> vkey = 0; vkey < distances.size(); ++vkey) {
+        if (distances[vkey].vtx_key != numeric_limits<vertex_key_t<G>>::max()) {
+          leaf[vkey] = true;
+          ++reached;
+        }
+      }
+      // turn off leaf for vertices that are previous to other vertices
+      if (reached > 1) {
+        for (edge_t<G>& uv : edges(g_))
+          if (out_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
+            leaf[in_vertex_key(g_, uv)] = false;
       }
     }
   }
@@ -403,8 +438,7 @@ public:
     // find the paths
     vertex_dist_cont distance(vertices_size(g_), alloc_);
     vector<bool>     leaf(vertices_size(g_), alloc_);
-    bool             neg_edge_cycles =
-          find_paths(source, distance, leaf, leaves_only, detect_neg_edge_cycles);
+    bool             neg_edge_cycles = find_paths(source, distance, leaf, leaves_only, detect_neg_edge_cycles);
     if (neg_edge_cycles)
       return true;
 
@@ -428,8 +462,7 @@ public:
     // find the paths
     vertex_dist_cont distances(vertices_size(g_), alloc_);
     vector<bool>     leaf(vertices_size(g_), alloc_);
-    bool             neg_edge_cycles =
-          find_paths(source, distances, leaf, leaves_only, detect_neg_edge_cycles);
+    bool             neg_edge_cycles = find_paths(source, distances, leaf, leaves_only, detect_neg_edge_cycles);
     if (neg_edge_cycles)
       return true;
 
@@ -494,7 +527,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_t<G> uv : edges(g_))
+        for (edge_t<G>& uv : edges(g_))
           if (out_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[in_vertex_key(g_, uv)] = false;
       }
@@ -503,7 +536,7 @@ protected:
     // Detect negative edge cycles, if desired
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
-      for (edge_t<G> uv : edges(g_)) {
+      for (edge_t<G>& uv : edges(g_)) {
         vertex_key_t<G> ukey = in_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source

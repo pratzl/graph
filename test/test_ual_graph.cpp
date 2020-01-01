@@ -1,10 +1,28 @@
-﻿#include "pch.h"
-#include "graph/compressed_adj_array.hpp"
+#include "pch.h"
+#include "graph/undirected_adj_list.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
-#include "graph//algorithm/transitive_closure.hpp"
 #include "data_routes.hpp"
+
+/* ToDo
+    1x  Get graph output to match expected
+    2.  Replace vector(g,uv) --> vector(g,uv,source)
+
+    Tests
+    0.  pass: Basic creation, destruction, traversal
+    1.  DFS
+        a.  pass: dfs_vertex_range
+        b.  pass: dfs_edge_range
+    4.  BFS
+        a.  pass: bfs_vertex_range
+        b.  pass: bfs_edge_range
+    5.  shortest_paths
+        a. pass: dijkstra_shortest_distances
+        b. pass: dijkstra_shortest_paths
+        c. pass: bellman_ford_shortest_distances
+        d. pass: bellman_ford_shortest_paths
+ */
 
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
@@ -21,15 +39,18 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
-using namespace std::graph; // Bring graph functions into global namespace
-using Graph      = std::graph::compressed_adjacency_array<name_value, weight_value>;
+using namespace std::graph; // Bring graph types & functions into global namespace
+using Graph      = std::graph::undirected_adjacency_list<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 
 struct route;
 using Routes = routes_t;
 
-vector<Graph::edge_value_type> caa_germany_edge_routes = to_edge_values<Graph>(germany_routes, germany_cities);
+template <class OStream>
+OStream& operator<<(OStream& os, Graph const& g);
+
+vector<Graph::edge_value_type> ual_germany_edge_routes = to_edge_values<Graph>(germany_routes, germany_cities);
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
@@ -37,7 +58,7 @@ vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
 
 Graph create_germany_routes_graph() {
   return Graph(
-        caa_germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
+        ual_germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
         [](Graph::edge_value_type const& er) { return er.second; },
         [](string const& city) -> string const& { return city; });
 }
@@ -48,9 +69,9 @@ OStream& operator<<(OStream& os, Graph const& g) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
     for (edge_t<Graph> const& uv : edges(g, u)) {
-      const_vertex_iterator_t<Graph> v    = out_vertex(g, uv);
+      const_vertex_iterator_t<Graph> v    = vertex(g, uv, u);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
-      os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
+      os << "\n  <--> [" << vkey << " " << v->name << "] " << uv.weight << "km";
     }
   }
   os << "\n";
@@ -58,28 +79,26 @@ OStream& operator<<(OStream& os, Graph const& g) {
 }
 
 
-TEST(TestCAAGraph, TestMinObjSize) {
-  using G = std::graph::compressed_adjacency_array<>;
-  EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
-  EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
+TEST(TestUALGraph, TestMinObjSize) {
+  using G = std::graph::undirected_adjacency_list<>;
+  EXPECT_EQ(24, sizeof(G::vertex_type)); // vertex size = 4 bytes
+  EXPECT_EQ(48, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
-TEST(TestCAAGraph, TestEmptyGraph) {
+TEST(TestUALGraph, TestEmptyGraph) {
   Graph g;
   EXPECT_EQ(0, vertices_size(g));
   EXPECT_EQ(0, edges_size(g));
-  //EXPECT_EQ(sizeof(Graph::edge_size_type) + sizeof(name_value), sizeof(Graph::vertex_type));
-  //EXPECT_EQ(sizeof(Graph::vertex_size_type) + sizeof(weight_value), sizeof(Graph::edge_type));
 }
 
-TEST(TestCAAGraph, TestGraphInit) {
+TEST(TestUALGraph, TestGraphInit) {
 #if 0
   vector<Graph::edge_value_type> caa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, caa_germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
   EXPECT_EQ(germany_cities.size(), vertices_size(g));
-  EXPECT_EQ(caa_germany_edge_routes.size(), edges_size(g));
+  EXPECT_EQ(ual_germany_edge_routes.size(), edges_size(g));
 
 #if 0
   cout << endl << "Cities:" << endl;
@@ -98,7 +117,7 @@ TEST(TestCAAGraph, TestGraphInit) {
     ++nVertices;
 
     size_t n1 = 0;
-    for (auto& uv : out_edges(g, u))
+    for (auto& uv : edges(g, u))
       ++n1;
 
     size_t n2 = 0;
@@ -108,13 +127,13 @@ TEST(TestCAAGraph, TestGraphInit) {
     nEdges += n1;
   }
   EXPECT_EQ(germany_cities.size(), nVertices);
-  EXPECT_EQ(caa_germany_edge_routes.size(), nEdges);
+  EXPECT_EQ(ual_germany_edge_routes.size() * 2, nEdges);
 
   // iterate thru edges range
   size_t n = 0;
   for (auto& uv : edges(g))
     ++n;
-  EXPECT_EQ(caa_germany_edge_routes.size(), n);
+  EXPECT_EQ(ual_germany_edge_routes.size() * 2, n);
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
@@ -124,27 +143,39 @@ TEST(TestCAAGraph, TestGraphInit) {
     Germany Routes
     -------------------------------
     [0] Augsburg
-      --> [6 München] 84km
+      <--> [6 München] 84km
+      <--> [3 Karlsruhe] 250km
     [1] Erfurt
+      <--> [9 Würzburg] 186km
     [2] Frankfürt
-      --> [5 Mannheim] 85km
-      --> [9 Würzburg] 217km
-      --> [4 Kassel] 173km
+      <--> [5 Mannheim] 85km
+      <--> [9 Würzburg] 217km
+      <--> [4 Kassel] 173km
     [3] Karlsruhe
-      --> [0 Augsburg] 250km
+      <--> [0 Augsburg] 250km
+      <--> [5 Mannheim] 80km
     [4] Kassel
-      --> [6 München] 502km
+      <--> [2 Frankfürt] 173km
+      <--> [6 München] 502km
     [5] Mannheim
-      --> [3 Karlsruhe] 80km
+      <--> [2 Frankfürt] 85km
+      <--> [3 Karlsruhe] 80km
     [6] München
+      <--> [0 Augsburg] 84km
+      <--> [4 Kassel] 502km
+      <--> [7 Nürnberg] 167km
     [7] Nürnberg
-      --> [8 Stuttgart] 183km
-      --> [6 München] 167km
+      <--> [8 Stuttgart] 183km
+      <--> [6 München] 167km
+      <--> [9 Würzburg] 103km
     [8] Stuttgart
+      <--> [7 Nürnberg] 183km
     [9] Würzburg
-      --> [1 Erfurt] 186km
-      --> [7 Nürnberg] 103km
+      <--> [2 Frankfürt] 217km
+      <--> [1 Erfurt] 186km
+      <--> [7 Nürnberg] 103km
   */
+
 #elif TEST_OPTION == TEST_OPTION_GEN
   vertex_iterator_t<Graph>      u;
   vertex_edge_iterator_t<Graph> uv;
@@ -175,16 +206,23 @@ TEST(TestCAAGraph, TestGraphInit) {
 
   u = begin(g) + 0;
   EXPECT_EQ("Augsburg", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
   EXPECT_EQ(6, out_vertex_key(g, *uv));
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
   EXPECT_EQ(84, uv->weight);
+  ++uv;
+  EXPECT_EQ(0, out_vertex_key(g, *uv));
+  EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(250, uv->weight);
 
   u = begin(g) + 1;
   EXPECT_EQ("Erfurt", u->name);
-  EXPECT_EQ(0, edges_size(g, *u));
+  EXPECT_EQ(1, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(1, out_vertex_key(g, *uv));
+  EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
+  EXPECT_EQ(186, uv->weight);
 
   u = begin(g) + 2;
   EXPECT_EQ("Frankfürt", u->name);
@@ -204,36 +242,59 @@ TEST(TestCAAGraph, TestGraphInit) {
 
   u = begin(g) + 3;
   EXPECT_EQ("Karlsruhe", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
   EXPECT_EQ(0, out_vertex_key(g, *uv));
   EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
   EXPECT_EQ(250, uv->weight);
+  ++uv;
+  EXPECT_EQ(3, out_vertex_key(g, *uv));
+  EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
+  EXPECT_EQ(80, uv->weight);
 
   u = begin(g) + 4;
   EXPECT_EQ("Kassel", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(4, out_vertex_key(g, *uv));
+  EXPECT_EQ("Kassel", out_vertex(g, *uv)->name);
+  EXPECT_EQ(173, uv->weight);
+  ++uv;
   EXPECT_EQ(6, out_vertex_key(g, *uv));
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
   EXPECT_EQ(502, uv->weight);
 
   u = begin(g) + 5;
   EXPECT_EQ("Mannheim", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(5, out_vertex_key(g, *uv));
+  EXPECT_EQ("Mannheim", out_vertex(g, *uv)->name);
+  EXPECT_EQ(85, uv->weight);
+  ++uv;
   EXPECT_EQ(3, out_vertex_key(g, *uv));
   EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
   EXPECT_EQ(80, uv->weight);
 
   u = begin(g) + 6;
   EXPECT_EQ("München", u->name);
-  EXPECT_EQ(0, edges_size(g, *u));
+  EXPECT_EQ(3, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(84, uv->weight);
+  ++uv;
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(502, uv->weight);
+  ++uv;
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(167, uv->weight);
 
   u = begin(g) + 7;
   EXPECT_EQ("Nürnberg", u->name);
-  EXPECT_EQ(2, edges_size(g, *u));
+  EXPECT_EQ(3, edges_size(g, *u));
   uv = begin(g, *u);
   EXPECT_EQ(8, out_vertex_key(g, *uv));
   EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
@@ -242,16 +303,27 @@ TEST(TestCAAGraph, TestGraphInit) {
   EXPECT_EQ(6, out_vertex_key(g, *uv));
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
   EXPECT_EQ(167, uv->weight);
+  ++uv;
+  EXPECT_EQ(7, out_vertex_key(g, *uv));
+  EXPECT_EQ("Nürnberg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(103, uv->weight);
 
   u = begin(g) + 8;
   EXPECT_EQ("Stuttgart", u->name);
-  EXPECT_EQ(0, edges_size(g, *u));
+  EXPECT_EQ(1, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(8, out_vertex_key(g, *uv));
+  EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
+  EXPECT_EQ(183, uv->weight);
 
   u = begin(g) + 9;
   EXPECT_EQ("Würzburg", u->name);
-  EXPECT_EQ(2, edges_size(g, *u));
+  EXPECT_EQ(3, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(9, out_vertex_key(g, *uv));
+  EXPECT_EQ("Würzburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(217, uv->weight);
+  ++uv;
   EXPECT_EQ(1, out_vertex_key(g, *uv));
   EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
   EXPECT_EQ(186, uv->weight);
@@ -262,7 +334,8 @@ TEST(TestCAAGraph, TestGraphInit) {
 #endif
 }
 
-TEST(TestCAAGraph, AllGraphFunctions) {
+
+TEST(TestUALGraph, AllGraphFunctions) {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = create_germany_routes_graph();
 
@@ -293,8 +366,8 @@ TEST(TestCAAGraph, AllGraphFunctions) {
   std::graph::edge_range_t<Graph>       er       = std::graph::edges(g);
   std::graph::const_edge_range_t<Graph> erc      = std::graph::edges(gc);
   std::graph::edge_size_t<Graph>        edg_size = std::graph::edges_size(gc);
-  EXPECT_EQ(std::graph::edges_size(gc), er.size());
-  EXPECT_EQ(std::graph::edges_size(gc), erc.size());
+  //EXPECT_EQ(std::graph::edges_size(gc), er.size());  // forward-only range; size n/a
+  //EXPECT_EQ(std::graph::edges_size(gc), erc.size()); // forward-only range; size n/a
   // std::graph::reserve_edges(g,100); // undefined for semi-mutable graph
   // std::graph::clear(g);             // undefined for semi-mutable graph
 
@@ -304,7 +377,7 @@ TEST(TestCAAGraph, AllGraphFunctions) {
 #endif
 }
 
-TEST(TestCAAGraph, AllVertexFunctions) {
+TEST(TestUALGraph, AllVertexFunctions) {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
 
@@ -335,10 +408,10 @@ TEST(TestCAAGraph, AllVertexFunctions) {
     std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = std::graph::end(g, uc);
     std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = std::graph::cend(g, u);
     EXPECT_EQ(std::graph::edges_size(g, u), std::graph::edges_degree(g, u));
-    EXPECT_EQ(std::graph::edges_size(g, u), uvr.size());
+    //EXPECT_EQ(std::graph::edges_size(g, u), uvr.size()); // forward-only range; size n/a
   }
 
-  {
+  /*{
     std::graph::vertex_out_edge_range_t<Graph>          uvr      = std::graph::out_edges(g, u);
     std::graph::const_vertex_out_edge_range_t<Graph>    uvrc     = std::graph::out_edges(g, uc);
     std::graph::vertex_out_edge_iterator_t<Graph>       uvi_beg1 = std::graph::out_begin(g, u);
@@ -349,10 +422,10 @@ TEST(TestCAAGraph, AllVertexFunctions) {
     std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
     EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
     EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
-  }
+  }*/
 }
 
-TEST(TestCAAGraph, AllEdgeFunctions) {
+TEST(TestUALGraph, AllEdgeFunctions) {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
@@ -363,39 +436,40 @@ TEST(TestCAAGraph, AllEdgeFunctions) {
   EXPECT_NE(end(g), v);
 
   edge_iterator_t<Graph> uv = find_edge(g, *u, *v); // find edge Frankfurt --> Mannheim
-  EXPECT_NE(end(edges(g)), uv);
+  EXPECT_NE(::ranges::end(edges(g)), uv);
   EXPECT_EQ(v, vertex(g, *uv, *u));
   EXPECT_EQ(v, out_vertex(g, *uv));
   EXPECT_EQ(u, in_vertex(g, *uv));
   edge_iterator_t<Graph> uv2 = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
   EXPECT_EQ(uv, uv2);
 
-  vertex_out_edge_iterator_t<Graph> uv3;
-  uv2 = find_out_edge(g, *u, *v);
-  uv3 = find_out_edge(g, vertex_key(g, *u), vertex_key(g, *v));
+  edge_iterator_t<Graph> uv3;
+  uv2 = find_edge(g, *u, *v);
+  uv3 = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
   EXPECT_EQ(uv, uv2);
   EXPECT_EQ(uv, uv3);
 }
 
-TEST(TestCAAGraph, DFSVertex) {
+TEST(TestUALGraph, DFSVertex) {
   Graph g = create_germany_routes_graph();
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#if 0
+#elif TEST_OPTION == TEST_OPTION_OUTPUT
   dfs_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt"));
   for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
   /* Output: seed = Frankfürt
-  Frankfürt
-    Mannheim
-      Karlsruhe
-        Augsburg
-          München
-    Würzburg
-      Erfurt
-      Nürnberg
-        Stuttgart
-    Kassel
+    Frankfürt
+      Mannheim
+        Karlsruhe
+          Augsburg
+            München
+              Kassel
+              Nürnberg
+                Stuttgart
+                Würzburg
+                  Erfurt
   */
 
   // a flat list when using range syntax (depth n/a on vertex)
@@ -408,11 +482,11 @@ TEST(TestCAAGraph, DFSVertex) {
     Karlsruhe
     Augsburg
     München
-    Würzburg
-    Erfurt
+    Kassel
     Nürnberg
     Stuttgart
-    Kassel
+    Würzburg
+    Erfurt
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
@@ -428,52 +502,54 @@ TEST(TestCAAGraph, DFSVertex) {
   EXPECT_EQ(4, u.depth());
   EXPECT_EQ("München", (++u)->name);
   EXPECT_EQ(5, u.depth());
-  EXPECT_EQ("Würzburg", (++u)->name);
-  EXPECT_EQ(2, u.depth());
-  EXPECT_EQ("Erfurt", (++u)->name);
-  EXPECT_EQ(3, u.depth());
-  EXPECT_EQ("Nürnberg", (++u)->name);
-  EXPECT_EQ(3, u.depth());
-  EXPECT_EQ("Stuttgart", (++u)->name);
-  EXPECT_EQ(4, u.depth());
   EXPECT_EQ("Kassel", (++u)->name);
-  EXPECT_EQ(2, u.depth());
+  EXPECT_EQ(6, u.depth());
+  EXPECT_EQ("Nürnberg", (++u)->name);
+  EXPECT_EQ(6, u.depth());
+  EXPECT_EQ("Stuttgart", (++u)->name);
+  EXPECT_EQ(7, u.depth());
+  EXPECT_EQ("Würzburg", (++u)->name);
+  EXPECT_EQ(7, u.depth());
+  EXPECT_EQ("Erfurt", (++u)->name);
+  EXPECT_EQ(8, u.depth());
 #endif
 }
 
-TEST(TestCAAGraph, DFSEdge) {
+TEST(TestUALGraph, DFSEdge) {
   Graph          g = create_germany_routes_graph();
   dfs_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
+  int ln = 0;
+  for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv, ++ln) {
     vertex_iterator_t<Graph> u     = uv.in_vertex();
     vertex_key_t<Graph>      u_key = vertex_key(g, *u);
     if (uv.is_path_end()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
-      vtx_iter_t v         = uv.out_vertex(); // or vertex(g, *uv)
-      bool       back_edge = uv.is_back_edge();
+      vtx_iter_t          v     = uv.back_vertex();
+      vertex_key_t<Graph> v_key = vertex_key(g, *uv, *u);
       cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " " << uv->weight << "km"
            << (uv.is_back_edge() ? " [back edge]" : "") << endl;
     }
   }
 
   /* Output: seed = Frankfürt
-      travel Frankfürt --> Mannheim 85km
-        travel Mannheim --> Karlsruhe 80km
-        travel Karlsruhe --> Augsburg 250km
+  travel Frankfürt --> Mannheim 85km
+    travel Mannheim --> Karlsruhe 80km
+      travel Karlsruhe --> Augsburg 250km
         travel Augsburg --> München 84km
-        view München
-      travel Frankfürt --> Würzburg 217km
-        travel Würzburg --> Erfurt 186km
-          view Erfurt
-        travel Würzburg --> Nürnberg 103km
-        travel Nürnberg --> Stuttgart 183km
-          view Stuttgart
-        travel Nürnberg --> München 167km
-      travel Frankfürt --> Kassel 173km
-      travel Kassel --> München 502km
+          travel München --> Kassel 502km
+            travel Kassel --> Frankfürt 173km [back edge]
+          travel München --> Nürnberg 167km
+            travel Nürnberg --> Stuttgart 183km
+              view Stuttgart
+            travel Nürnberg --> Würzburg 103km
+              travel Würzburg --> Frankfürt 217km [back edge]
+              travel Würzburg --> Erfurt 186km
+                view Erfurt
+  travel Frankfürt --> Würzburg 217km [back edge]
+  travel Frankfürt --> Kassel 173km [back edge]
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
   cout << "dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();\n"
@@ -484,16 +560,17 @@ TEST(TestCAAGraph, DFSEdge) {
       cout << "\n"
            << "++uv;\n";
 
-    if (uv.is_path_end()) {
-      cout << "EXPECT_TRUE(uv.is_path_end());\n";
-      cout << "EXPECT_EQ(\"" << uv.back_vertex()->name << "\", uv.back_vertex()->name);\n";
+    if (uv.is_back_edge()) {
+      cout << "EXPECT_TRUE(uv.is_back_edge());\n";
+      if (uv.is_path_end()) {
+        cout << "EXPECT_TRUE(uv.is_path_end());\n";
+      } else {
+        cout << "EXPECT_FALSE(uv.is_path_end());\n";
+        cout << "EXPECT_EQ(\"" << uv.back_vertex()->name << "\", uv.back_vertex()->name);\n";
+      }
       cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
     } else {
-      cout << "EXPECT_FALSE(uv.is_path_end());\n";
-      if (uv.is_back_edge())
-        cout << "EXPECT_TRUE(uv.is_back_edge());\n";
-      else
-        cout << "EXPECT_FALSE(uv.is_back_edge());\n";
+      cout << "EXPECT_FALSE(uv.is_back_edge());\n";
       cout << "EXPECT_EQ(\"" << in_vertex(g, *uv)->name << "\", in_vertex(g, *uv)->name);\n";
       cout << "EXPECT_EQ(\"" << out_vertex(g, *uv)->name << "\", out_vertex(g, *uv)->name);\n";
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
@@ -503,7 +580,6 @@ TEST(TestCAAGraph, DFSEdge) {
 #elif TEST_OPTION == TEST_OPTION_TEST
   dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
 
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
   EXPECT_EQ("Mannheim", out_vertex(g, *uv)->name);
@@ -511,7 +587,6 @@ TEST(TestCAAGraph, DFSEdge) {
   EXPECT_EQ(1, uv.depth());
 
   ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Mannheim", in_vertex(g, *uv)->name);
   EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
@@ -519,7 +594,6 @@ TEST(TestCAAGraph, DFSEdge) {
   EXPECT_EQ(2, uv.depth());
 
   ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Karlsruhe", in_vertex(g, *uv)->name);
   EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
@@ -527,7 +601,6 @@ TEST(TestCAAGraph, DFSEdge) {
   EXPECT_EQ(3, uv.depth());
 
   ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Augsburg", in_vertex(g, *uv)->name);
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
@@ -535,79 +608,77 @@ TEST(TestCAAGraph, DFSEdge) {
   EXPECT_EQ(4, uv.depth());
 
   ++uv;
-  EXPECT_TRUE(uv.is_path_end());
-  EXPECT_EQ("Stuttgart", uv.back_vertex()->name);
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Kassel", in_vertex(g, *uv)->name);
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(502, uv->weight);
   EXPECT_EQ(5, uv.depth());
 
   ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
   EXPECT_FALSE(uv.is_path_end());
+  EXPECT_EQ("Frankfürt", uv.back_vertex()->name);
+  EXPECT_EQ(6, uv.depth());
+
+  ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
-  EXPECT_EQ("Würzburg", out_vertex(g, *uv)->name);
-  EXPECT_EQ(217, uv->weight);
-  EXPECT_EQ(1, uv.depth());
+  EXPECT_EQ("Nürnberg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(167, uv->weight);
+  EXPECT_EQ(5, uv.depth());
 
   ++uv;
-  EXPECT_FALSE(uv.is_path_end());
-  EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
-  EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
-  EXPECT_EQ(186, uv->weight);
-  EXPECT_EQ(2, uv.depth());
-
-  ++uv;
-  EXPECT_TRUE(uv.is_path_end());
-  EXPECT_EQ("Mannheim", uv.back_vertex()->name);
-  EXPECT_EQ(3, uv.depth());
-
-  ++uv;
-  EXPECT_FALSE(uv.is_path_end());
-  EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
-  EXPECT_EQ("Nürnberg", out_vertex(g, *uv)->name);
-  EXPECT_EQ(103, uv->weight);
-  EXPECT_EQ(2, uv.depth());
-
-  ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Nürnberg", in_vertex(g, *uv)->name);
   EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
   EXPECT_EQ(183, uv->weight);
-  EXPECT_EQ(3, uv.depth());
+  EXPECT_EQ(6, uv.depth());
 
   ++uv;
-  EXPECT_TRUE(uv.is_path_end());
-  EXPECT_EQ("Erfurt", uv.back_vertex()->name);
-  EXPECT_EQ(4, uv.depth());
-
-  ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_TRUE(uv.is_back_edge());
-  EXPECT_EQ("Nürnberg", in_vertex(g, *uv)->name);
-  EXPECT_EQ("München", out_vertex(g, *uv)->name);
-  EXPECT_EQ(167, uv->weight);
-  EXPECT_EQ(3, uv.depth());
+  EXPECT_TRUE(uv.is_path_end());
+  EXPECT_EQ(7, uv.depth());
 
   ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
-  EXPECT_EQ("Kassel", out_vertex(g, *uv)->name);
-  EXPECT_EQ(173, uv->weight);
+  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Nürnberg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(103, uv->weight);
+  EXPECT_EQ(6, uv.depth());
+
+  ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_FALSE(uv.is_path_end());
+  EXPECT_EQ("Frankfürt", uv.back_vertex()->name);
+  EXPECT_EQ(7, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
+  EXPECT_EQ(186, uv->weight);
+  EXPECT_EQ(7, uv.depth());
+
+  ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_TRUE(uv.is_path_end());
+  EXPECT_EQ(8, uv.depth());
+
+  ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_FALSE(uv.is_path_end());
+  EXPECT_EQ("Würzburg", uv.back_vertex()->name);
   EXPECT_EQ(1, uv.depth());
 
   ++uv;
-  EXPECT_FALSE(uv.is_path_end());
   EXPECT_TRUE(uv.is_back_edge());
-  EXPECT_EQ("Kassel", in_vertex(g, *uv)->name);
-  EXPECT_EQ("München", out_vertex(g, *uv)->name);
-  EXPECT_EQ(502, uv->weight);
-  EXPECT_EQ(2, uv.depth());
+  EXPECT_FALSE(uv.is_path_end());
+  EXPECT_EQ("Kassel", uv.back_vertex()->name);
+  EXPECT_EQ(1, uv.depth());
 #endif
 }
 
-TEST(TestCAAGraph, BFSVertex) {
+TEST(TestUALGraph, BFSVertex) {
   Graph            g = create_germany_routes_graph();
   bfs_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
@@ -653,19 +724,19 @@ TEST(TestCAAGraph, BFSVertex) {
 #endif
 }
 
-TEST(TestCAAGraph, BFSEdge) {
+TEST(TestUALGraph, BFSEdge) {
   Graph          g = create_germany_routes_graph();
   bfs_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
-    vertex_iterator_t<Graph> u     = in_vertex(g, *uv);
-    vertex_key_t<Graph>      u_key = vertex_key(g, *u);
+    vertex_iterator_t<Graph> v     = uv.back_vertex();
+    vertex_key_t<Graph>      v_key = vertex_key(g, *v);
     if (uv.is_path_end()) {
-      cout << string(uv.depth() * 2, ' ') << "view " << uv.back_vertex()->name << endl;
+      cout << string(uv.depth() * 2, ' ') << "view " << v->name << endl;
     } else {
-      vtx_iter_t          v         = vertex(g, *uv, *u);
-      vertex_key_t<Graph> v_key     = vertex_key(g, *v);
+      vtx_iter_t          u         = vertex(g, *uv, *v);
+      vertex_key_t<Graph> u_key     = vertex_key(g, *u);
       bool                back_edge = uv.is_back_edge();
       cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " " << uv->weight << "km"
            << (back_edge ? " [back edge]" : "") << endl;
@@ -684,7 +755,8 @@ TEST(TestCAAGraph, BFSEdge) {
           view Erfurt
           travel Nürnberg --> Stuttgart 183km
           travel Nürnberg --> München 167km [back edge]
-          view München
+          travel München --> Augsburg 84km [back edge]
+          travel München --> Nürnberg 167km [back edge]
             travel Augsburg --> München 84km [back edge]
             view Stuttgart
   */
@@ -719,7 +791,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Mannheim", uv.back_vertex()->name);
-  EXPECT_EQ("Mannheim", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Frankfürt", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(85, uv->weight);
   EXPECT_EQ(1, uv.depth());
 
@@ -727,7 +799,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Würzburg", uv.back_vertex()->name);
-  EXPECT_EQ("Würzburg", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Frankfürt", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(217, uv->weight);
   EXPECT_EQ(1, uv.depth());
 
@@ -735,7 +807,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Kassel", uv.back_vertex()->name);
-  EXPECT_EQ("Kassel", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Frankfürt", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(173, uv->weight);
   EXPECT_EQ(1, uv.depth());
 
@@ -743,7 +815,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Karlsruhe", uv.back_vertex()->name);
-  EXPECT_EQ("Karlsruhe", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Mannheim", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(80, uv->weight);
   EXPECT_EQ(2, uv.depth());
 
@@ -751,7 +823,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Erfurt", uv.back_vertex()->name);
-  EXPECT_EQ("Erfurt", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Würzburg", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(186, uv->weight);
   EXPECT_EQ(2, uv.depth());
 
@@ -759,7 +831,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Nürnberg", uv.back_vertex()->name);
-  EXPECT_EQ("Nürnberg", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Würzburg", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(103, uv->weight);
   EXPECT_EQ(2, uv.depth());
 
@@ -767,7 +839,7 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("München", uv.back_vertex()->name);
-  EXPECT_EQ("München", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Kassel", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(502, uv->weight);
   EXPECT_EQ(2, uv.depth());
 
@@ -775,21 +847,20 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Augsburg", uv.back_vertex()->name);
-  EXPECT_EQ("Augsburg", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Karlsruhe", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(250, uv->weight);
   EXPECT_EQ(3, uv.depth());
 
   ++uv;
   EXPECT_TRUE(uv.is_path_end());
   EXPECT_EQ("Erfurt", uv.back_vertex()->name);
-  EXPECT_EQ(85, uv->weight);
   EXPECT_EQ(3, uv.depth());
 
   ++uv;
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Stuttgart", uv.back_vertex()->name);
-  EXPECT_EQ("Stuttgart", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Nürnberg", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(183, uv->weight);
   EXPECT_EQ(3, uv.depth());
 
@@ -797,33 +868,47 @@ TEST(TestCAAGraph, BFSEdge) {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_TRUE(uv.is_back_edge());
   EXPECT_EQ("München", uv.back_vertex()->name);
+  EXPECT_EQ("Nürnberg", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ(167, uv->weight);
+  EXPECT_EQ(3, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_path_end());
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_EQ("Augsburg", uv.back_vertex()->name);
+  EXPECT_EQ("München", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ(84, uv->weight);
+  EXPECT_EQ(3, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_path_end());
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_EQ("Nürnberg", uv.back_vertex()->name);
   EXPECT_EQ("München", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(167, uv->weight);
   EXPECT_EQ(3, uv.depth());
 
   ++uv;
-  EXPECT_TRUE(uv.is_path_end());
-  EXPECT_EQ("München", uv.back_vertex()->name);
-  EXPECT_EQ(183, uv->weight);
-  EXPECT_EQ(3, uv.depth());
-
-  ++uv;
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_TRUE(uv.is_back_edge());
   EXPECT_EQ("München", uv.back_vertex()->name);
-  EXPECT_EQ("München", vertex(g, *uv, *uv.back_vertex())->name);
+  EXPECT_EQ("Augsburg", vertex(g, *uv, *uv.back_vertex())->name);
   EXPECT_EQ(84, uv->weight);
   EXPECT_EQ(4, uv.depth());
 
   ++uv;
   EXPECT_TRUE(uv.is_path_end());
   EXPECT_EQ("Stuttgart", uv.back_vertex()->name);
-  EXPECT_EQ(186, uv->weight);
   EXPECT_EQ(4, uv.depth());
 #endif
 }
 
-TEST(TestCAAGraph, DijkstraShortestDistances) {
+TEST(TestUALGraph, DijkstraShortestDistances) {
+  using std::graph::dijkstra_shortest_distances;
+  using std::graph::dijkstra_shortest_paths;
+  using std::graph::shortest_distance;
+  using std::graph::shortest_path;
+
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -923,7 +1008,10 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
 #endif
 }
 
-TEST(TestCAAGraph, BellmanFordShortestDistances) {
+TEST(TestUALGraph, BellmanFordShortestDistances) {
+  using std::graph::bellman_ford_shortest_distances;
+  using std::graph::shortest_distance;
+
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -1024,7 +1112,8 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 #endif
 }
 
-TEST(TestCAAGraph, DijkstraShortestPaths) {
+
+TEST(TestUALGraph, DijkstraShortestPaths) {
   using std::graph::dijkstra_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1178,6 +1267,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
   {
     short_paths.clear();
     dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+    EXPECT_EQ(3, short_paths.size());
 
     EXPECT_EQ(403, short_paths[0].distance);
     EXPECT_EQ(3, short_paths[0].path.size());
@@ -1202,7 +1292,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 #endif
 }
 
-TEST(TestCAAGraph, BellmanFordShortestPaths) {
+TEST(TestUALGraph, BellmanFordShortestPaths) {
   using std::graph::bellman_ford_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1388,265 +1478,3 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
 #endif
 }
 
-
-TEST(TestCAAGraph, bfs_transitive_closure) {
-  using std::graph::dfs_transitive_closure;
-  using std::graph::reaches;
-
-  using reachs_t      = reaches<Graph>;
-  using reaches_vec_t = vector<reachs_t>;
-  reaches_vec_t reaches_vec;
-
-  Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
-
-#if TEST_OPTION == TEST_OPTION_OUTPUT
-  dfs_transitive_closure(g, back_inserter(reaches_vec));
-  for (reachs_t& r : reaches_vec) {
-    cout << r.from->name << " --> " << r.to->name << "\n";
-  }
-
-  /* Output:
-    Augsburg --> München
-    Frankfürt --> Mannheim
-    Frankfürt --> Karlsruhe
-    Frankfürt --> Augsburg
-    Frankfürt --> München
-    Frankfürt --> Würzburg
-    Frankfürt --> Erfurt
-    Frankfürt --> Nürnberg
-    Frankfürt --> Stuttgart
-    Frankfürt --> Kassel
-    Karlsruhe --> Augsburg
-    Karlsruhe --> München
-    Kassel --> München
-    Mannheim --> Karlsruhe
-    Mannheim --> Augsburg
-    Mannheim --> München
-    Nürnberg --> Stuttgart
-    Nürnberg --> München
-    Würzburg --> Erfurt
-    Würzburg --> Nürnberg
-    Würzburg --> Stuttgart
-    Würzburg --> München
-  */
-
-#elif TEST_OPTION == TEST_OPTION_GEN
-  {
-    cout << "{\n";
-    dfs_transitive_closure(g, back_inserter(reaches_vec));
-
-    cout << "  dfs_transitive_closure(g, back_inserter(reaches_vec));\n";
-    cout << "  EXPECT_EQ(" << reaches_vec.size() << ", reaches_vec.size());\n";
-    for (size_t i = 0; i < reaches_vec.size(); ++i) {
-      cout << "\n";
-      cout << "  EXPECT_EQ(\"" << reaches_vec[i].from->name << "\", reaches_vec[" << i << "].from->name);\n";
-      cout << "  EXPECT_EQ(\"" << reaches_vec[i].to->name << "\", reaches_vec[" << i << "].to->name);\n";
-    }
-    cout << "}\n";
-  }
-#elif TEST_OPTION == TEST_OPTION_TEST
-  {
-    dfs_transitive_closure(g, back_inserter(reaches_vec));
-    EXPECT_EQ(22, reaches_vec.size());
-
-    EXPECT_EQ("Augsburg", reaches_vec[0].from->name);
-    EXPECT_EQ("München", reaches_vec[0].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[1].from->name);
-    EXPECT_EQ("Mannheim", reaches_vec[1].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[2].from->name);
-    EXPECT_EQ("Karlsruhe", reaches_vec[2].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[3].from->name);
-    EXPECT_EQ("Augsburg", reaches_vec[3].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[4].from->name);
-    EXPECT_EQ("München", reaches_vec[4].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[5].from->name);
-    EXPECT_EQ("Würzburg", reaches_vec[5].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[6].from->name);
-    EXPECT_EQ("Erfurt", reaches_vec[6].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[7].from->name);
-    EXPECT_EQ("Nürnberg", reaches_vec[7].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[8].from->name);
-    EXPECT_EQ("Stuttgart", reaches_vec[8].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[9].from->name);
-    EXPECT_EQ("Kassel", reaches_vec[9].to->name);
-
-    EXPECT_EQ("Karlsruhe", reaches_vec[10].from->name);
-    EXPECT_EQ("Augsburg", reaches_vec[10].to->name);
-
-    EXPECT_EQ("Karlsruhe", reaches_vec[11].from->name);
-    EXPECT_EQ("München", reaches_vec[11].to->name);
-
-    EXPECT_EQ("Kassel", reaches_vec[12].from->name);
-    EXPECT_EQ("München", reaches_vec[12].to->name);
-
-    EXPECT_EQ("Mannheim", reaches_vec[13].from->name);
-    EXPECT_EQ("Karlsruhe", reaches_vec[13].to->name);
-
-    EXPECT_EQ("Mannheim", reaches_vec[14].from->name);
-    EXPECT_EQ("Augsburg", reaches_vec[14].to->name);
-
-    EXPECT_EQ("Mannheim", reaches_vec[15].from->name);
-    EXPECT_EQ("München", reaches_vec[15].to->name);
-
-    EXPECT_EQ("Nürnberg", reaches_vec[16].from->name);
-    EXPECT_EQ("Stuttgart", reaches_vec[16].to->name);
-
-    EXPECT_EQ("Nürnberg", reaches_vec[17].from->name);
-    EXPECT_EQ("München", reaches_vec[17].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[18].from->name);
-    EXPECT_EQ("Erfurt", reaches_vec[18].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[19].from->name);
-    EXPECT_EQ("Nürnberg", reaches_vec[19].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[20].from->name);
-    EXPECT_EQ("Stuttgart", reaches_vec[20].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[21].from->name);
-    EXPECT_EQ("München", reaches_vec[21].to->name);
-  }
-#endif
-}
-
-
-TEST(TestCAAGraph, warshall_transitive_closure) {
-  using std::graph::warshall_transitive_closure;
-  using std::graph::reaches;
-
-  using reachs_t      = reaches<Graph>;
-  using reaches_vec_t = vector<reachs_t>;
-  reaches_vec_t reaches_vec;
-
-  Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
-
-#if TEST_OPTION == TEST_OPTION_OUTPUT
-  warshall_transitive_closure(g, back_inserter(reaches_vec));
-  for (reachs_t& r : reaches_vec) {
-    cout << r.from->name << " --> " << r.to->name << "\n";
-  }
-
-  /* Output:
-    Augsburg --> München
-    Frankfürt --> Augsburg
-    Frankfürt --> Erfurt
-    Frankfürt --> Karlsruhe
-    Frankfürt --> Kassel
-    Frankfürt --> Mannheim
-    Frankfürt --> München
-    Frankfürt --> Nürnberg
-    Frankfürt --> Stuttgart
-    Frankfürt --> Würzburg
-    Karlsruhe --> Augsburg
-    Karlsruhe --> München
-    Kassel --> München
-    Mannheim --> Augsburg
-    Mannheim --> Karlsruhe
-    Mannheim --> München
-    Nürnberg --> München
-    Nürnberg --> Stuttgart
-    Würzburg --> Erfurt
-    Würzburg --> München
-    Würzburg --> Nürnberg
-    Würzburg --> Stuttgart
-  */
-
-#elif TEST_OPTION == TEST_OPTION_GEN
-  {
-    cout << "{\n";
-    warshall_transitive_closure(g, back_inserter(reaches_vec));
-
-    cout << "  warshall_transitive_closure(g, back_inserter(reaches_vec));\n";
-    cout << "  EXPECT_EQ(" << reaches_vec.size() << ", reaches_vec.size());\n";
-    for (size_t i = 0; i < reaches_vec.size(); ++i) {
-      cout << "\n";
-      cout << "  EXPECT_EQ(\"" << reaches_vec[i].from->name << "\", reaches_vec[" << i << "].from->name);\n";
-      cout << "  EXPECT_EQ(\"" << reaches_vec[i].to->name << "\", reaches_vec[" << i << "].to->name);\n";
-    }
-    cout << "}\n";
-  }
-#elif TEST_OPTION == TEST_OPTION_TEST
-  {
-    warshall_transitive_closure(g, back_inserter(reaches_vec));
-    EXPECT_EQ(22, reaches_vec.size());
-
-    EXPECT_EQ("Augsburg", reaches_vec[0].from->name);
-    EXPECT_EQ("München", reaches_vec[0].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[1].from->name);
-    EXPECT_EQ("Augsburg", reaches_vec[1].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[2].from->name);
-    EXPECT_EQ("Erfurt", reaches_vec[2].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[3].from->name);
-    EXPECT_EQ("Karlsruhe", reaches_vec[3].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[4].from->name);
-    EXPECT_EQ("Kassel", reaches_vec[4].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[5].from->name);
-    EXPECT_EQ("Mannheim", reaches_vec[5].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[6].from->name);
-    EXPECT_EQ("München", reaches_vec[6].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[7].from->name);
-    EXPECT_EQ("Nürnberg", reaches_vec[7].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[8].from->name);
-    EXPECT_EQ("Stuttgart", reaches_vec[8].to->name);
-
-    EXPECT_EQ("Frankfürt", reaches_vec[9].from->name);
-    EXPECT_EQ("Würzburg", reaches_vec[9].to->name);
-
-    EXPECT_EQ("Karlsruhe", reaches_vec[10].from->name);
-    EXPECT_EQ("Augsburg", reaches_vec[10].to->name);
-
-    EXPECT_EQ("Karlsruhe", reaches_vec[11].from->name);
-    EXPECT_EQ("München", reaches_vec[11].to->name);
-
-    EXPECT_EQ("Kassel", reaches_vec[12].from->name);
-    EXPECT_EQ("München", reaches_vec[12].to->name);
-
-    EXPECT_EQ("Mannheim", reaches_vec[13].from->name);
-    EXPECT_EQ("Augsburg", reaches_vec[13].to->name);
-
-    EXPECT_EQ("Mannheim", reaches_vec[14].from->name);
-    EXPECT_EQ("Karlsruhe", reaches_vec[14].to->name);
-
-    EXPECT_EQ("Mannheim", reaches_vec[15].from->name);
-    EXPECT_EQ("München", reaches_vec[15].to->name);
-
-    EXPECT_EQ("Nürnberg", reaches_vec[16].from->name);
-    EXPECT_EQ("München", reaches_vec[16].to->name);
-
-    EXPECT_EQ("Nürnberg", reaches_vec[17].from->name);
-    EXPECT_EQ("Stuttgart", reaches_vec[17].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[18].from->name);
-    EXPECT_EQ("Erfurt", reaches_vec[18].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[19].from->name);
-    EXPECT_EQ("München", reaches_vec[19].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[20].from->name);
-    EXPECT_EQ("Nürnberg", reaches_vec[20].to->name);
-
-    EXPECT_EQ("Würzburg", reaches_vec[21].from->name);
-    EXPECT_EQ("Stuttgart", reaches_vec[21].to->name);
-  }
-
-#endif
-}

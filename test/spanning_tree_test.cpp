@@ -1,6 +1,7 @@
+#include "pch.h"
 #include <edge_list.hpp>
 #include <mmio.hpp>
-#include <graph/algorithms/spanning_tree.hpp>
+#include <graph/algorithm/spanning_tree.hpp>
 #include "common/test_header.hpp"
 
 using namespace bgl17;
