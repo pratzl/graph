@@ -3,10 +3,7 @@
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
-#include <range/v3/action/sort.hpp>
-#include <range/v3/action/unique.hpp>
-#include <range/v3/algorithm/find.hpp>
-#include <string>
+#include "data_routes.hpp"
 
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
@@ -23,96 +20,32 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
-struct route;
-struct route2;
-using Routes  = vector<route>;
-using Route2s = vector<route2>;
-
-using std::graph::empty_value;
-using std::graph::name_value;
-using std::graph::weight_value;
-
+using namespace std::graph; // Bring graph functions into global namespace
 using Graph      = std::graph::compressed_adjacency_array<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::graph::vertex_key_t<Graph>;
-//using vector_index = size_t;
-
-// Bring functions into global namespace
-using std::graph::vertex_key;
-using std::graph::vertex;
-using std::graph::value;
-using std::graph::begin;
-using std::graph::end;
-using std::graph::vertex_t;
-using std::graph::vertex_key_t;
-using std::graph::vertex_iterator_t;
-using std::graph::const_vertex_iterator_t;
-using std::graph::edge_t;
-using std::graph::edge_value_t;
-
-using std::graph::shortest_distance;
-using std::graph::shortest_path;
 
 struct route;
-vector<string>                 unique_cities(vector<route>& routes);
-vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vector<string> const& cities);
-void                           imbue_utf8();
+using Routes = routes_t;
 
-struct route {
-  string from;
-  string to;
-  int    km = 0;
+static vector<string> cities = unique_cities(germany_routes); // cities is ordered
+static vector<Graph::edge_value_type> edge_routes =
+      to_edge_values<Graph>(germany_routes, cities);
 
-  route(string const& from_city, string const& to_city, int kilometers)
-        : from(from_city), to(to_city), km(kilometers) {}
-};
+vertex_iterator_t<Graph> find_frankfurt(Graph& g) {
+  return ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+}
 
-static vector<route> routes{
-      {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
-      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
-      {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
-      {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
-
-
-static vector<string>                 cities      = unique_cities(routes); // cities is ordered
-static vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
-
+vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
+  return ::ranges::find_if(
+        g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
+}
 
 Graph create_germany_routes_graph() {
   return Graph(
         edge_routes, cities, [](Graph::edge_value_type const& er) { return er.first; },
         [](Graph::edge_value_type const& er) { return er.second; },
         [](string const& city) -> string const& { return city; });
-}
-
-vector<string> unique_cities(vector<route>& routes) {
-  imbue_utf8();
-  vector<string> cities;
-  cities.reserve(routes.size() * 2);
-  for (route const& r : routes) {
-    cities.push_back(r.from);
-    cities.push_back(r.to);
-  }
-  return move(cities) | ranges::actions::sort | ranges::actions::unique;
-};
-
-void imbue_utf8() { cout.imbue(std::locale("en_US.utf8")); }
-
-vector<Graph::edge_value_type> to_edge_values(vector<route> const& routes, vector<string> const& cities) {
-  vector<Graph::edge_value_type> edge_values;
-  edge_values.reserve(routes.size());
-  for (route const& r : routes) {
-    vtx_key_t from = static_cast<vtx_key_t>(::ranges::find(cities, r.from) - cities.begin());
-    vtx_key_t to   = static_cast<vtx_key_t>(::ranges::find(cities, r.to) - cities.begin());
-    assert(from < cities.size());
-    assert(to < cities.size());
-    edge_values.push_back({{from, to}, r.km});
-  }
-  auto cmp = [](Graph::edge_value_type const& lhs, Graph::edge_value_type const& rhs) {
-    return lhs.first.first < rhs.first.first;
-  };
-  ::ranges::sort(edge_values, cmp);
-  return edge_values;
 }
 
 template <class OStream>
@@ -193,42 +126,145 @@ TEST(TestCAAGraph, TestGraphInit) {
   cout << "\nGermany Routes"
        << "\n-------------------------------" << g << endl;
 
-/* Output
+  /* Output
     Germany Routes
     -------------------------------
     [0] Augsburg
-      --> [6 Mnnchen] 84km
+      --> [6 München] 84km
     [1] Erfurt
-    [2] Frankfnrt
+    [2] Frankfürt
       --> [5 Mannheim] 85km
-      --> [9 Wnrzburg] 217km
+      --> [9 Würzburg] 217km
       --> [4 Kassel] 173km
     [3] Karlsruhe
       --> [0 Augsburg] 250km
     [4] Kassel
-      --> [6 Mnnchen] 502km
+      --> [6 München] 502km
     [5] Mannheim
       --> [3 Karlsruhe] 80km
-    [6] Mnnchen
-    [7] Nnrnberg
+    [6] München
+    [7] Nürnberg
       --> [8 Stuttgart] 183km
-      --> [6 Mnnchen] 167km
+      --> [6 München] 167km
     [8] Stuttgart
-    [9] Wnrzburg
+    [9] Würzburg
       --> [1 Erfurt] 186km
-      --> [7 Nnrnberg] 103km
+      --> [7 Nürnberg] 103km
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
-  for (vertex_t<Graph> const& u : vertices(g)) {
-    vertex_key_t<Graph> ukey = vertex_key(g, u);
-    os << "\n[" << ukey << "] " << u.name;
-    for (edge_t<Graph> const& uv : edges(g, u)) {
-      const_vertex_iterator_t<Graph> v    = out_vertex(g, uv);
-      vertex_key_t<Graph>            vkey = vertex_key(g, *v);
-      os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
+  vertex_iterator_t<Graph>      u;
+  vertex_edge_iterator_t<Graph> uv;
+
+  cout << "vertex_iterator_t<Graph>      u; \n";
+  cout << "vertex_edge_iterator_t<Graph> uv;\n";
+
+  for (size_t ui = 0; ui < vertices_size(g); ++ui) {
+    cout << "\n";
+    u = begin(g) + ui;
+    cout << "u = begin(g) + " << ui << ";\n";
+    cout << "EXPECT_EQ(\"" << u->name << "\", u->name);\n";
+    cout << "EXPECT_EQ(" << edges_size(g, *u) << ", edges_size(g, *u));\n";
+    cout << "uv = begin(g, *u);\n";
+    size_t uvi = 0;
+    for (uv = begin(g, *u); uv != end(g, *u); ++uv, ++uvi) {
+      if (uvi > 0) {
+        cout << "++uv;\n";
+      }
+      cout << "EXPECT_EQ(" << out_vertex_key(g, *uv) << ", out_vertex_key(g, *uv));\n";
+      cout << "EXPECT_EQ(\"" << out_vertex(g, *uv)->name << "\", out_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
     }
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
+  vertex_iterator_t<Graph>      u;
+  vertex_edge_iterator_t<Graph> uv;
+
+  u = begin(g) + 0;
+  EXPECT_EQ("Augsburg", u->name);
+  EXPECT_EQ(1, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(84, uv->weight);
+
+  u = begin(g) + 1;
+  EXPECT_EQ("Erfurt", u->name);
+  EXPECT_EQ(0, edges_size(g, *u));
+  uv = begin(g, *u);
+
+  u = begin(g) + 2;
+  EXPECT_EQ("Frankfürt", u->name);
+  EXPECT_EQ(3, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(5, out_vertex_key(g, *uv));
+  EXPECT_EQ("Mannheim", out_vertex(g, *uv)->name);
+  EXPECT_EQ(85, uv->weight);
+  ++uv;
+  EXPECT_EQ(9, out_vertex_key(g, *uv));
+  EXPECT_EQ("Würzburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(217, uv->weight);
+  ++uv;
+  EXPECT_EQ(4, out_vertex_key(g, *uv));
+  EXPECT_EQ("Kassel", out_vertex(g, *uv)->name);
+  EXPECT_EQ(173, uv->weight);
+
+  u = begin(g) + 3;
+  EXPECT_EQ("Karlsruhe", u->name);
+  EXPECT_EQ(1, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(0, out_vertex_key(g, *uv));
+  EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(250, uv->weight);
+
+  u = begin(g) + 4;
+  EXPECT_EQ("Kassel", u->name);
+  EXPECT_EQ(1, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(502, uv->weight);
+
+  u = begin(g) + 5;
+  EXPECT_EQ("Mannheim", u->name);
+  EXPECT_EQ(1, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(3, out_vertex_key(g, *uv));
+  EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
+  EXPECT_EQ(80, uv->weight);
+
+  u = begin(g) + 6;
+  EXPECT_EQ("München", u->name);
+  EXPECT_EQ(0, edges_size(g, *u));
+  uv = begin(g, *u);
+
+  u = begin(g) + 7;
+  EXPECT_EQ("Nürnberg", u->name);
+  EXPECT_EQ(2, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(8, out_vertex_key(g, *uv));
+  EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
+  EXPECT_EQ(183, uv->weight);
+  ++uv;
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(167, uv->weight);
+
+  u = begin(g) + 8;
+  EXPECT_EQ("Stuttgart", u->name);
+  EXPECT_EQ(0, edges_size(g, *u));
+  uv = begin(g, *u);
+
+  u = begin(g) + 9;
+  EXPECT_EQ("Würzburg", u->name);
+  EXPECT_EQ(2, edges_size(g, *u));
+  uv = begin(g, *u);
+  EXPECT_EQ(1, out_vertex_key(g, *uv));
+  EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
+  EXPECT_EQ(186, uv->weight);
+  ++uv;
+  EXPECT_EQ(7, out_vertex_key(g, *uv));
+  EXPECT_EQ("Nürnberg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(103, uv->weight);
 #endif
 }
 
@@ -243,17 +279,20 @@ TEST(TestCAAGraph, AllGraphFunctions) {
   EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
 
   size_t cnt = 0;
-  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g); u != std::graph::end(g); ++u, ++cnt)
+  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g);
+       u != std::graph::end(g); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc); u != std::graph::end(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc);
+       u != std::graph::end(gc); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc); u != std::graph::cend(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc);
+       u != std::graph::cend(gc); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
@@ -291,7 +330,8 @@ TEST(TestCAAGraph, AllVertexFunctions) {
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
   EXPECT_EQ(f1, f2);
 
-  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> f3 =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
   EXPECT_NE(f3, g.vertices().end());
   EXPECT_EQ(2, vertex_key(g, *f3));
 
@@ -309,14 +349,18 @@ TEST(TestCAAGraph, AllVertexFunctions) {
   }
 
   {
-    std::graph::vertex_out_edge_range_t<Graph>          uvr      = std::graph::out_edges(g, u);
-    std::graph::const_vertex_out_edge_range_t<Graph>    uvrc     = std::graph::out_edges(g, uc);
-    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_beg1 = std::graph::out_begin(g, u);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 = std::graph::out_begin(g, uc);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 = std::graph::out_cbegin(g, u);
-    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_end1 = std::graph::out_end(g, u);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 = std::graph::out_end(g, uc);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
+    std::graph::vertex_out_edge_range_t<Graph>       uvr   = std::graph::out_edges(g, u);
+    std::graph::const_vertex_out_edge_range_t<Graph> uvrc  = std::graph::out_edges(g, uc);
+    std::graph::vertex_out_edge_iterator_t<Graph> uvi_beg1 = std::graph::out_begin(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 =
+          std::graph::out_begin(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 =
+          std::graph::out_cbegin(g, u);
+    std::graph::vertex_out_edge_iterator_t<Graph> uvi_end1 = std::graph::out_end(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 =
+          std::graph::out_end(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 =
+          std::graph::out_cend(g, u);
     EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
     EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
   }
@@ -327,8 +371,10 @@ TEST(TestCAAGraph, AllEdgeFunctions) {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
 
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
-  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
   EXPECT_NE(end(g), u);
   EXPECT_NE(end(g), v);
 
@@ -357,14 +403,14 @@ TEST(TestCAAGraph, DFSVertex) {
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
   /* Output: seed = Frankfnrt
-  Frankfnrt
+  Frankfürt
     Mannheim
       Karlsruhe
         Augsburg
-          Mnnchen
-    Wnrzburg
+          München
+    Würzburg
       Erfurt
-      Nnrnberg
+      Nürnberg
         Stuttgart
     Kassel
   */
@@ -374,16 +420,16 @@ TEST(TestCAAGraph, DFSVertex) {
   for (auto& u : vrange(g, begin(g) + 2)) // Frankfürt
     cout << u.name << endl;
     /* Output: seed = Frankfnrt
-  Frankfnrt
-  Mannheim
-  Karlsruhe
-  Augsburg
-  Mnnchen
-  Wnrzburg
-  Erfurt
-  Nnrnberg
-  Stuttgart
-  Kassel
+    Frankfürt
+    Mannheim
+    Karlsruhe
+    Augsburg
+    München
+    Würzburg
+    Erfurt
+    Nürnberg
+    Stuttgart
+    Kassel
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
@@ -396,34 +442,34 @@ TEST(TestCAAGraph, DFSEdge) {
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   using erange = std::graph::dfs_edge_range;
-  erange dfs_edge_rng(g, begin(g) + 2); // Frankfürt
+  erange dfs_edge_rng(g, find_city(g, "Frankfürt"));
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
-    vertex_iterator_t<Graph> u     = out_vertex(g, *uv);
+    vertex_iterator_t<Graph> u     = in_vertex(g, *uv);
     vertex_key_t<Graph>      u_key = vertex_key(g, *u);
     if (uv.is_back_edge()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
       vtx_iter_t v = out_vertex(g, *uv); // or vertex(g, *uv)
-      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " " << uv->weight << "km"
-           << endl;
+      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name
+           << " " << uv->weight << "km" << endl;
     }
   }
 
   /* Output: seed = Frankfnrt
-      travel Frankfnrt --> Mannheim 85km
+      travel Frankfürt --> Mannheim 85km
         travel Mannheim --> Karlsruhe 80km
         travel Karlsruhe --> Augsburg 250km
-        travel Augsburg --> Mnnchen 84km
-        view Mnnchen
-      travel Frankfnrt --> Wnrzburg 217km
-        travel Wnrzburg --> Erfurt 186km
-          view Erfurt
-        travel Wnrzburg --> Nnrnberg 103km
-        travel Nnrnberg --> Stuttgart 183km
-          view Stuttgart
-        travel Nnrnberg --> Mnnchen 167km
-      travel Frankfnrt --> Kassel 173km
-      travel Kassel --> Mnnchen 502km
+        travel Augsburg --> München 84km
+        view Nürnberg
+      travel Frankfürt --> Würzburg 217km
+        travel Würzburg --> Erfurt 186km
+          view Frankfürt
+        travel Würzburg --> Nürnberg 103km
+        travel Nürnberg --> Stuttgart 183km
+          view Würzburg
+        travel Nürnberg --> München 167km
+      travel Frankfürt --> Kassel 173km
+      travel Kassel --> München 502km
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
@@ -440,16 +486,16 @@ TEST(TestCAAGraph, BFSVertex) {
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
     /* Output: seed = Frankfnrt
-    Frankfnrt
-      Mannheim
-      Wnrzburg
-      Kassel
-        Karlsruhe
-        Erfurt
-        Nnrnberg
-        Mnnchen
-          Augsburg
-          Stuttgart
+      Frankfürt
+        Mannheim
+        Würzburg
+        Kassel
+          Karlsruhe
+          Erfurt
+          Nürnberg
+          München
+            Augsburg
+            Stuttgart
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
@@ -469,8 +515,8 @@ TEST(TestCAAGraph, BFSEdge) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
     } else {
       vtx_iter_t v = vertex(g, *uv);
-      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name << " " << uv->weight << "km"
-           << endl;
+      cout << string(uv.depth() * 2, ' ') << "travel " << u->name << " --> " << v->name
+           << " " << uv->weight << "km" << endl;
     }
   }
 
@@ -506,7 +552,8 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -547,11 +594,13 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
-  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true, weight_fnc);
+  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true,
+                                       weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
   /* Output: source = Frankfurt
@@ -569,7 +618,8 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 
   cout << "\n";
   short_dists.clear();
-  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true, weight_fnc);
+  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true,
+                                       weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
   /* Output: source = Frankfurt
@@ -588,7 +638,8 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -641,14 +692,13 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(
-        g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
   bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
-        g, u, back_inserter(short_paths), false, true,
-                                   weight_fnc);
+        g, u, back_inserter(short_paths), false, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
