@@ -8,7 +8,7 @@
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_OUTPUT
+#define TEST_OPTION TEST_OPTION_TEST
 
 
 using std::vector;
@@ -171,7 +171,8 @@ TEST(TestCAAGraph, TestGraphInit) {
         cout << "++uv;\n";
       }
       cout << "EXPECT_EQ(" << out_vertex_key(g, *uv) << ", out_vertex_key(g, *uv));\n";
-      cout << "EXPECT_EQ(\"" << out_vertex(g, *uv)->name << "\", out_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(\"" << out_vertex(g, *uv)->name
+           << "\", out_vertex(g, *uv)->name);\n";
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
     }
   }
@@ -397,9 +398,9 @@ TEST(TestCAAGraph, DFSVertex) {
   Graph g = create_germany_routes_graph();
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  using vrange = std::graph::dfs_vertex_range;
-  vrange dfs_vtx_rng(g, begin(g) + 2); // Frankfürt
-  for (auto u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
+  dfs_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt")); // Frankfürt
+  for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end();
+       ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
   /* Output: seed = Frankfnrt
@@ -417,7 +418,7 @@ TEST(TestCAAGraph, DFSVertex) {
 
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
-  for (auto& u : vrange(g, begin(g) + 2)) // Frankfürt
+  for (auto& u : dfs_vertex_range(g, begin(g) + 2)) // Frankfürt
     cout << u.name << endl;
     /* Output: seed = Frankfnrt
     Frankfürt
@@ -433,16 +434,37 @@ TEST(TestCAAGraph, DFSVertex) {
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
+  dfs_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt")); // Frankfürt
+  dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
+  EXPECT_EQ("Frankfürt", u->name);
+  EXPECT_EQ(1, u.depth());
+  EXPECT_EQ("Mannheim", (++u)->name);
+  EXPECT_EQ(2, u.depth());
+  EXPECT_EQ("Karlsruhe", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("Augsburg", (++u)->name);
+  EXPECT_EQ(4, u.depth());
+  EXPECT_EQ("München", (++u)->name);
+  EXPECT_EQ(5, u.depth());
+  EXPECT_EQ("Würzburg", (++u)->name);
+  EXPECT_EQ(2, u.depth());
+  EXPECT_EQ("Erfurt", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("Nürnberg", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("Stuttgart", (++u)->name);
+  EXPECT_EQ(4, u.depth());
+  EXPECT_EQ("Kassel", (++u)->name);
+  EXPECT_EQ(2, u.depth());
 #endif
 }
 
 
 TEST(TestCAAGraph, DFSEdge) {
-  Graph g = create_germany_routes_graph();
+  Graph          g = create_germany_routes_graph();
+  dfs_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  using erange = std::graph::dfs_edge_range;
-  erange dfs_edge_rng(g, find_city(g, "Frankfürt"));
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv) {
     vertex_iterator_t<Graph> u     = in_vertex(g, *uv);
     vertex_key_t<Graph>      u_key = vertex_key(g, *u);
@@ -472,16 +494,131 @@ TEST(TestCAAGraph, DFSEdge) {
       travel Kassel --> München 502km
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
+  cout << "dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();\n"
+       << "\n";
+  size_t uvi = 0;
+  for (dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
+       uv != dfs_edge_rng.end(); ++uv, ++uvi) {
+    if (uvi > 0)
+      cout << "\n"
+           << "++uv;\n";
+
+    if (uv.is_back_edge()) {
+      cout << "EXPECT_TRUE(uv.is_back_edge());\n";
+      cout << "EXPECT_EQ(\"" << in_vertex(g, *uv)->name
+           << "\", in_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
+    } else {
+      cout << "EXPECT_FALSE(uv.is_back_edge());\n";
+      cout << "EXPECT_EQ(\"" << in_vertex(g, *uv)->name
+           << "\", in_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(\"" << out_vertex(g, *uv)->name
+           << "\", out_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
+      cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
+    }
+  }
 #elif TEST_OPTION == TEST_OPTION_TEST
+  dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
+
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Mannheim", out_vertex(g, *uv)->name);
+  EXPECT_EQ(85, uv->weight);
+  EXPECT_EQ(1, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Mannheim", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
+  EXPECT_EQ(80, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Karlsruhe", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(250, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Augsburg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(84, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_EQ("Nürnberg", in_vertex(g, *uv)->name);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Würzburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(217, uv->weight);
+  EXPECT_EQ(1, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
+  EXPECT_EQ(186, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
+  EXPECT_EQ(3, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Nürnberg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(103, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Nürnberg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
+  EXPECT_EQ(183, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_TRUE(uv.is_back_edge());
+  EXPECT_EQ("Würzburg", in_vertex(g, *uv)->name);
+  EXPECT_EQ(3, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Nürnberg", in_vertex(g, *uv)->name);
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(167, uv->weight);
+  EXPECT_EQ(2, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
+  EXPECT_EQ("Kassel", out_vertex(g, *uv)->name);
+  EXPECT_EQ(173, uv->weight);
+  EXPECT_EQ(1, uv.depth());
+
+  ++uv;
+  EXPECT_FALSE(uv.is_back_edge());
+  EXPECT_EQ("Kassel", in_vertex(g, *uv)->name);
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(502, uv->weight);
+  EXPECT_EQ(1, uv.depth());
 #endif
 }
 
 TEST(TestCAAGraph, BFSVertex) {
   Graph g = create_germany_routes_graph();
+  bfs_vertex_range bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  using vrange = std::graph::bfs_vertex_range;
-  vrange bfs_vtx_rng(g, begin(g) + 2); // Frankfürt
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
@@ -499,6 +636,27 @@ TEST(TestCAAGraph, BFSVertex) {
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
+  bfs_vertex_range<Graph>::iterator u = bfs_vtx_rng.begin();
+  EXPECT_EQ("Frankfürt", u->name);
+  EXPECT_EQ(1, u.depth());
+  EXPECT_EQ("Mannheim", (++u)->name);
+  EXPECT_EQ(2, u.depth());
+  EXPECT_EQ("Würzburg", (++u)->name);
+  EXPECT_EQ(2, u.depth());
+  EXPECT_EQ("Kassel", (++u)->name);
+  EXPECT_EQ(2, u.depth());
+  EXPECT_EQ("Karlsruhe", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("Erfurt", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("Nürnberg", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("München", (++u)->name);
+  EXPECT_EQ(3, u.depth());
+  EXPECT_EQ("Augsburg", (++u)->name);
+  EXPECT_EQ(4, u.depth());
+  EXPECT_EQ("Stuttgart", (++u)->name);
+  EXPECT_EQ(4, u.depth());
 #endif
 }
 
