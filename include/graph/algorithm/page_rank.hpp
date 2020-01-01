@@ -10,11 +10,12 @@
 
 #pragma once
 
+#include "pch.h"
 #include <tuple>
 #include <vector>
 
 #include <degree.hpp>
-#include <graph/algorithms/utils.hpp>
+#include <graph/algorithm/utils.hpp>
 #include <compressed.hpp>
 #include <edge_list.hpp>
 #include <spmv_range.hpp>

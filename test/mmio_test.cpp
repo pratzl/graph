@@ -8,6 +8,7 @@
 // Author: Andrew Lumsdaine
 //
 
+#include "pch.h"
 #include "common/test_header.hpp"
 #include "compressed.hpp"
 

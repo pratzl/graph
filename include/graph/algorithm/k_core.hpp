@@ -10,11 +10,12 @@
 
 #pragma once
 
+#include "pch.h"
 #include <tuple>
 #include <algorithm>
 #include <utility>
 #include <util.hpp>
-#include <graph/iterators/new_dfs_range.hpp>
+#include <graph/range/new_dfs_range.hpp>
 #include <unordered_map>
 
 struct pair_hash {

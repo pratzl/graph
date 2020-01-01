@@ -8,12 +8,13 @@
 // Author: Kevin Deweese
 //
 
+#include "pch.h"
 #include <algorithm>
 #include <compressed.hpp>
 #include <edge_list.hpp>
 #include <mmio.hpp>
 #include <vector>
-#include <graph/algorithms/boykov_kolmogorov.hpp>
+#include <graph/algorithm/boykov_kolmogorov.hpp>
 #include "common/test_header.hpp"
 
 using namespace bgl17;
