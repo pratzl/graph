@@ -12,7 +12,8 @@ using routes_t     = std::vector<route>;
 using route_city_t = std::vector<std::string>;
 
 // data
-extern routes_t const germany_routes;
+extern routes_t const           germany_routes;
+extern std::vector<std::string> germany_cities;
 
 // data structures
 struct route {

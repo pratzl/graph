@@ -16,6 +16,8 @@ routes_t const germany_routes{
       {"Nürnberg", "Stuttgart", 183}, {"Nürnberg", "München", 167},
       {"Kassel", "München", 502}};
 
+vector<string> germany_cities = unique_cities(germany_routes);
+
 std::vector<std::string> unique_cities(routes_t const& routes) {
   vector<string> cities;
   cities.reserve(routes.size() * 2);

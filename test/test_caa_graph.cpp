@@ -28,9 +28,8 @@ using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 struct route;
 using Routes = routes_t;
 
-static vector<string> cities = unique_cities(germany_routes); // cities is ordered
-static vector<Graph::edge_value_type> edge_routes =
-      to_edge_values<Graph>(germany_routes, cities);
+vector<Graph::edge_value_type> germany_edge_routes =
+      to_edge_values<Graph>(germany_routes, germany_cities);
 
 vertex_iterator_t<Graph> find_frankfurt(Graph& g) {
   return ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
@@ -43,7 +42,7 @@ vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
 
 Graph create_germany_routes_graph() {
   return Graph(
-        edge_routes, cities, [](Graph::edge_value_type const& er) { return er.first; },
+        germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
         [](Graph::edge_value_type const& er) { return er.second; },
         [](string const& city) -> string const& { return city; });
 }
@@ -80,21 +79,21 @@ TEST(TestCAAGraph, TestEmptyGraph) {
 
 TEST(TestCAAGraph, TestGraphInit) {
 #if 0
-  vector<Graph::edge_value_type> edge_routes = to_edge_values(routes, cities);
-  Graph                          g(cities, edge_routes);
+  vector<Graph::edge_value_type> germany_edge_routes = to_edge_values(routes, germany_cities);
+  Graph                          g(germany_cities, germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
-  EXPECT_EQ(cities.size(), vertices_size(g));
-  EXPECT_EQ(edge_routes.size(), edges_size(g));
+  EXPECT_EQ(germany_cities.size(), vertices_size(g));
+  EXPECT_EQ(germany_edge_routes.size(), edges_size(g));
 
 #if 0
   cout << endl << "Cities:" << endl;
-  for (auto& city : cities)
-    cout << "  " << (&city - cities.data()) << ". " << city << endl;
+  for (auto& city : germany_cities)
+    cout << "  " << (&city - germany_cities.data()) << ". " << city << endl;
 
   cout << endl << "Routes:" << endl;
-  for (auto& r : edge_routes)
-    cout << "  " << cities[r.first.first] << " --> " << cities[r.first.second] << " " << r.second.weight << "km" << endl;
+  for (auto& r : germany_edge_routes)
+    cout << "  " << germany_cities[r.first.first] << " --> " << germany_cities[r.first.second] << " " << r.second.weight << "km" << endl;
 #endif
 
   // iterate thru vertices range
@@ -113,14 +112,14 @@ TEST(TestCAAGraph, TestGraphInit) {
     EXPECT_EQ(n1, n2); // same as before?
     nEdges += n1;
   }
-  EXPECT_EQ(cities.size(), nVertices);
-  EXPECT_EQ(edge_routes.size(), nEdges);
+  EXPECT_EQ(germany_cities.size(), nVertices);
+  EXPECT_EQ(germany_edge_routes.size(), nEdges);
 
   // iterate thru edges range
   size_t n = 0;
   for (auto& uv : edges(g))
     ++n;
-  EXPECT_EQ(edge_routes.size(), n);
+  EXPECT_EQ(germany_edge_routes.size(), n);
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
