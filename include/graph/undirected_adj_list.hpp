@@ -10,6 +10,7 @@
 
 namespace std::graph {
 
+#ifdef FUTURE
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list forward declarations
 ///
@@ -354,6 +355,7 @@ private:
   allocator_type alloc_;
 };
 
+#endif //FUTURE
 
 } // namespace std::graph
 
