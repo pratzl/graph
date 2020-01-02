@@ -15,6 +15,13 @@
 //  3.  The state of the traversal is in the range object. Calling begin() returns the
 //      current state, not the beginning of the range.
 //
+// The dfs_edge_range iterators have is_back_edge() and back_vertex() which are used
+// on terminal vertices in the search. A terminal is a vertex that hasn't been visited
+// yet and has no edges to search. When this is true, a pseudo edge is used which is just
+// the end(g,u) edge for the vertex. When is_back_edge() is true, back_vertex() should
+// be used to retreive the vertex that was traversed from most recentely. This must
+// be used as the edge returned is invalid.
+//
 // TODO
 //  1x  Add designation for forward range
 //  2x  Add concepts for requirements
@@ -247,6 +254,7 @@ public:
 
     size_t               depth() const { return dfs_->stack_.size(); }
     bool                 is_back_edge() const { return elem_.uv == std::graph::end(dfs_->graph_, *elem_.u); }
+    vertex_iterator_t<G> back_vertex() { return elem_.u; }
 
     bool is_vertex_visited() const { // Has the [out] vertex been visited yet?
       if (is_back_edge())

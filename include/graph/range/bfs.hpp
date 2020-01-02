@@ -15,6 +15,13 @@
 //  3.  The state of the traversal is in the range object. Calling begin() returns the
 //      current state, not the beginning of the range.
 //
+// The bfs_edge_range iterators have is_back_edge() and back_vertex() which are used
+// on terminal vertices in the search. A terminal is a vertex that hasn't been visited
+// yet and has no edges to search. When this is true, a pseudo edge is used which is just
+// the end(g,u) edge for the vertex. When is_back_edge() is true, back_vertex() should
+// be used to retreive the vertex that was traversed from most recentely. This must
+// be used as the edge returned is invalid.
+//
 // TODO
 //  1x  Add designation for forward range
 //  2x  Add concepts for requirements
@@ -22,7 +29,7 @@
 //      bx  vertices in contiguous space (vertex or array)
 //  3.  Test with const graph
 //  5.  Add range functions to create the range
-//  6.  [SG19] Check integer-based performance vs existing iterator-based performance 
+//  6.  [SG19] Check integer-based performance vs existing iterator-based performance
 //  7.  [SG19] Support graphs with non-consecutive integers
 //  8.  Test with array<>
 //
@@ -33,7 +40,7 @@
 //          and the longest DFS path.
 //      c.  the current design could be useful for multi-threading, assuming the queue &
 //          visited members are guarded with locks.
-//  2.  Will BFS ranges will work with centrality, or is a visitor needed? Similar for 
+//  2.  Will BFS ranges will work with centrality, or is a visitor needed? Similar for
 //      Weighted Betweeness. - Matt Galati
 //  3.  Is there any additional work require to make this more compatible with Ranges?
 //
@@ -50,8 +57,8 @@ namespace std::graph {
 /// breadth-first search range for vertices, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class bfs_vertex_range {
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<
+      vertex_range_t<G>> class bfs_vertex_range {
   enum three_colors : int8_t {
     white, // undiscovered
     grey,  // discovered, but not visited (in queue)
@@ -62,11 +69,13 @@ class bfs_vertex_range {
     vertex_iterator_t<G> u;
     size_t               depth = 0;
   };
-  using queue_alloc = typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
-  using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
+  using queue_alloc =
+        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
+  using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph), white) {
+  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed)
+        : graph_(graph), visited_(vertices_size(graph), white) {
     if (seed != std::graph::end(graph_)) {
       queue_.push(queue_elem{seed, 1});
       visited_[vertex_key(graph_, *seed)] = grey;
@@ -80,7 +89,8 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{std::graph::end(bfs.graph_)} {
+    const_iterator(bfs_vertex_range& bfs, bool end_iter = false)
+          : bfs_(&bfs), elem_{std::graph::end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -185,7 +195,8 @@ protected:
 
   void push_neighbors(vertex_iterator_t<G> u, size_t depth) {
     vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
-    for (vertex_edge_iterator_t<G> uv = std::graph::begin(graph_, *u); uv != uv_end; ++uv) {
+    for (vertex_edge_iterator_t<G> uv = std::graph::begin(graph_, *u); uv != uv_end;
+         ++uv) {
       vertex_iterator_t<G> v     = vertex(graph_, *uv);
       vertex_key_t<G>      v_key = vertex_key(graph_, *v);
       if (visited_[v_key] == white) {
@@ -205,8 +216,8 @@ private:
 /// breadth-first search range for edges, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class bfs_edge_range {
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<
+      vertex_range_t<G>> class bfs_edge_range {
   enum three_colors : int8_t {
     white, // undiscovered
     grey,  // discovered, but not visited (in queue)
@@ -218,11 +229,13 @@ class bfs_edge_range {
     vertex_edge_iterator_t<G> uv;
     size_t                    depth = 0;
   };
-  using queue_alloc = typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
-  using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
+  using queue_alloc =
+        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
+  using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_edge_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph), white) {
+  bfs_edge_range(G& graph, vertex_iterator_t<G> seed)
+        : graph_(graph), visited_(vertices_size(graph), white) {
     if (seed != std::graph::end(graph_))
       push_neighbors(seed, 1);
   }
@@ -262,8 +275,13 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    size_t               depth() const { return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; }
-    bool                 is_back_edge() const { return elem_.uv == std::graph::end(bfs_->graph_, *elem_.u); }
+    size_t depth() const { 
+        return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; 
+    }
+    bool   is_back_edge() const {
+      return elem_.uv == std::graph::end(bfs_->graph_, *elem_.u);
+    }
+    vertex_iterator_t<G> back_vertex() { return elem_.u; }
 
     bool is_vertex_visited() const { // Has the [out] vertex been visited yet?
       if (is_back_edge())
@@ -356,7 +374,8 @@ protected:
     if (std::graph::begin(graph_, *v) == vw_end) {
       queue_.push(queue_elem{v, vw_end, depth}); // back edge
     } else {
-      for (vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); vw != vw_end; ++vw)
+      for (vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); vw != vw_end;
+           ++vw)
         queue_.push(queue_elem{v, vw, depth});
     }
     visited_[v_key] = grey;
