@@ -8,7 +8,7 @@
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_OUTPUT
+#define TEST_OPTION TEST_OPTION_TEST
 
 
 using std::vector;
@@ -434,7 +434,7 @@ TEST(TestCAAGraph, DFSVertex) {
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
-  dfs_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt"));
+  dfs_vertex_range                  dfs_vtx_rng(g, find_city(g, "Frankfürt"));
   dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
   EXPECT_EQ("Frankfürt", u->name);
   EXPECT_EQ(1, u.depth());
@@ -615,7 +615,7 @@ TEST(TestCAAGraph, DFSEdge) {
 }
 
 TEST(TestCAAGraph, BFSVertex) {
-  Graph g = create_germany_routes_graph();
+  Graph            g = create_germany_routes_graph();
   bfs_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -661,7 +661,7 @@ TEST(TestCAAGraph, BFSVertex) {
 }
 
 TEST(TestCAAGraph, BFSEdge) {
-  Graph g = create_germany_routes_graph();
+  Graph          g = create_germany_routes_graph();
   bfs_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -835,16 +835,16 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
   /* Output: source = Frankfurt
-    Frankfnrt --> Augsburg  415km
-    Frankfnrt --> Erfurt  403km
-    Frankfnrt --> Frankfnrt  0km
-    Frankfnrt --> Karlsruhe  165km
-    Frankfnrt --> Kassel  173km
-    Frankfnrt --> Mannheim  85km
-    Frankfnrt --> Mnnchen  487km
-    Frankfnrt --> Nnrnberg  320km
-    Frankfnrt --> Stuttgart  503km
-    Frankfnrt --> Wnrzburg  217km
+    Frankfürt --> Augsburg  415km
+    Frankfürt --> Erfurt  403km
+    Frankfürt --> Frankfürt  0km
+    Frankfürt --> Karlsruhe  165km
+    Frankfürt --> Kassel  173km
+    Frankfürt --> Mannheim  85km
+    Frankfürt --> München  487km
+    Frankfürt --> Nürnberg  320km
+    Frankfürt --> Stuttgart  503km
+    Frankfürt --> Würzburg  217km
   */
 
   cout << "\n";
@@ -852,13 +852,71 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
   dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), true, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
-  /* Output: source = Frankfurt
-    Frankfnrt --> Erfurt  403km
-    Frankfnrt --> Mnnchen  487km
-    Frankfnrt --> Stuttgart  503km
+    /* Output: source = Frankfurt
+    Frankfürt --> Erfurt  403km
+    Frankfürt --> München  487km
+    Frankfürt --> Stuttgart  503km
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
+  {
+    dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), false, weight_fnc);
+    EXPECT_EQ("Frankfürt", short_dists[0].first->name);
+    EXPECT_EQ("Augsburg", short_dists[0].last->name);
+    EXPECT_EQ(415, short_dists[0].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[1].first->name);
+    EXPECT_EQ("Erfurt", short_dists[1].last->name);
+    EXPECT_EQ(403, short_dists[1].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[2].first->name);
+    EXPECT_EQ("Frankfürt", short_dists[2].last->name);
+    EXPECT_EQ(0, short_dists[2].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[3].first->name);
+    EXPECT_EQ("Karlsruhe", short_dists[3].last->name);
+    EXPECT_EQ(165, short_dists[3].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[4].first->name);
+    EXPECT_EQ("Kassel", short_dists[4].last->name);
+    EXPECT_EQ(173, short_dists[4].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[5].first->name);
+    EXPECT_EQ("Mannheim", short_dists[5].last->name);
+    EXPECT_EQ(85, short_dists[5].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[6].first->name);
+    EXPECT_EQ("München", short_dists[6].last->name);
+    EXPECT_EQ(487, short_dists[6].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[7].first->name);
+    EXPECT_EQ("Nürnberg", short_dists[7].last->name);
+    EXPECT_EQ(320, short_dists[7].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[8].first->name);
+    EXPECT_EQ("Stuttgart", short_dists[8].last->name);
+    EXPECT_EQ(503, short_dists[8].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[9].first->name);
+    EXPECT_EQ("Würzburg", short_dists[9].last->name);
+    EXPECT_EQ(217, short_dists[9].distance);
+  }
+  {
+    short_dists.clear();
+    dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), true, weight_fnc);
+
+    EXPECT_EQ("Frankfürt", short_dists[0].first->name);
+    EXPECT_EQ("Erfurt", short_dists[0].last->name);
+    EXPECT_EQ(403, short_dists[0].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[1].first->name);
+    EXPECT_EQ("München", short_dists[1].last->name);
+    EXPECT_EQ(487, short_dists[1].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[2].first->name);
+    EXPECT_EQ("Stuttgart", short_dists[2].last->name);
+    EXPECT_EQ(503, short_dists[2].distance);
+  }
 #endif
 }
 
@@ -876,21 +934,22 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true,
                                        weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
-  /* Output: source = Frankfurt
-    Frankfnrt --> Augsburg  415km
-    Frankfnrt --> Erfurt  403km
-    Frankfnrt --> Frankfnrt  0km
-    Frankfnrt --> Karlsruhe  165km
-    Frankfnrt --> Kassel  173km
-    Frankfnrt --> Mannheim  85km
-    Frankfnrt --> Mnnchen  487km
-    Frankfnrt --> Nnrnberg  320km
-    Frankfnrt --> Stuttgart  503km
-    Frankfnrt --> Wnrzburg  217km
+  /* Output: source = Frankfürt
+    Frankfürt --> Augsburg  415km
+    Frankfürt --> Erfurt  403km
+    Frankfürt --> Frankfürt  0km
+    Frankfürt --> Karlsruhe  165km
+    Frankfürt --> Kassel  173km
+    Frankfürt --> Mannheim  85km
+    Frankfürt --> München  487km
+    Frankfürt --> Nürnberg  320km
+    Frankfürt --> Stuttgart  503km
+    Frankfürt --> Würzburg  217km
   */
 
   cout << "\n";
@@ -899,11 +958,75 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
                                        weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
-  /* Output: source = Frankfurt
-    Frankfnrt --> Erfurt  403km
-    Frankfnrt --> Mnnchen  487km
-    Frankfnrt --> Stuttgart  503km
+    /* Output: source = Frankfürt
+    Frankfürt --> Erfurt  403km
+    Frankfürt --> München  487km
+    Frankfürt --> Stuttgart  503km
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+  {
+    bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true,
+                                         weight_fnc);
+
+    EXPECT_EQ("Frankfürt", short_dists[0].first->name);
+    EXPECT_EQ("Augsburg", short_dists[0].last->name);
+    EXPECT_EQ(415, short_dists[0].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[1].first->name);
+    EXPECT_EQ("Erfurt", short_dists[1].last->name);
+    EXPECT_EQ(403, short_dists[1].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[2].first->name);
+    EXPECT_EQ("Frankfürt", short_dists[2].last->name);
+    EXPECT_EQ(0, short_dists[2].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[3].first->name);
+    EXPECT_EQ("Karlsruhe", short_dists[3].last->name);
+    EXPECT_EQ(165, short_dists[3].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[4].first->name);
+    EXPECT_EQ("Kassel", short_dists[4].last->name);
+    EXPECT_EQ(173, short_dists[4].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[5].first->name);
+    EXPECT_EQ("Mannheim", short_dists[5].last->name);
+    EXPECT_EQ(85, short_dists[5].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[6].first->name);
+    EXPECT_EQ("München", short_dists[6].last->name);
+    EXPECT_EQ(487, short_dists[6].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[7].first->name);
+    EXPECT_EQ("Nürnberg", short_dists[7].last->name);
+    EXPECT_EQ(320, short_dists[7].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[8].first->name);
+    EXPECT_EQ("Stuttgart", short_dists[8].last->name);
+    EXPECT_EQ(503, short_dists[8].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[9].first->name);
+    EXPECT_EQ("Würzburg", short_dists[9].last->name);
+    EXPECT_EQ(217, short_dists[9].distance);
+  }
+  {
+    short_dists.clear();
+    bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true,
+                                         weight_fnc);
+
+    EXPECT_EQ("Frankfürt", short_dists[0].first->name);
+    EXPECT_EQ("Erfurt", short_dists[0].last->name);
+    EXPECT_EQ(403, short_dists[0].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[1].first->name);
+    EXPECT_EQ("München", short_dists[1].last->name);
+    EXPECT_EQ(487, short_dists[1].distance);
+
+    EXPECT_EQ("Frankfürt", short_dists[2].first->name);
+    EXPECT_EQ("Stuttgart", short_dists[2].last->name);
+    EXPECT_EQ(503, short_dists[2].distance);
+  }
+#endif
 }
 
 TEST(TestCAAGraph, DijkstraShortestPaths) {
@@ -920,6 +1043,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
@@ -929,17 +1053,17 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
     }
     cout << "  " << sp.distance << "km\n";
   }
-  /* Output: source = Frankfurt
-    Frankfnrt --> Mannheim --> Karlsruhe --> Augsburg  415km
-    Frankfnrt --> Wnrzburg --> Erfurt  403km
-    Frankfnrt  0km
-    Frankfnrt --> Mannheim --> Karlsruhe  165km
-    Frankfnrt --> Kassel  173km
-    Frankfnrt --> Mannheim  85km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Mnnchen  487km
-    Frankfnrt --> Wnrzburg --> Nnrnberg  320km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Stuttgart  503km
-    Frankfnrt --> Wnrzburg  217km
+  /* Output: source = Frankfürt
+    Frankfürt --> Mannheim --> Karlsruhe --> Augsburg  415km
+    Frankfürt --> Würzburg --> Erfurt  403km
+    Frankfürt  0km
+    Frankfürt --> Mannheim --> Karlsruhe  165km
+    Frankfürt --> Kassel  173km
+    Frankfürt --> Mannheim  85km
+    Frankfürt --> Würzburg --> Nürnberg --> München  487km
+    Frankfürt --> Würzburg --> Nürnberg  320km
+    Frankfürt --> Würzburg --> Nürnberg --> Stuttgart  503km
+    Frankfürt --> Würzburg  217km
   */
 
   cout << "\n";
@@ -953,11 +1077,139 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
     }
     cout << "  " << sp.distance << "km\n";
   }
-  /* Output: source = Frankfurt
-    Frankfnrt --> Wnrzburg --> Erfurt  403km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Mnnchen  487km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Stuttgart  503km
+  /* Output: source = Frankfürt
+    Frankfürt --> Würzburg --> Erfurt  403km
+    Frankfürt --> Würzburg --> Nürnberg --> München  487km
+    Frankfürt --> Würzburg --> Nürnberg --> Stuttgart  503km
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+  {
+    cout << "{\n";
+    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
+    cout << "  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, "
+            "weight_fnc);\n";
+    for (size_t spi = 0; spi < short_paths.size(); ++spi) {
+      cout << "\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].distance << ", short_paths[" << spi
+           << "].distance);\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].path.size() << ", short_paths[" << spi
+           << "].path.size());\n";
+      for (size_t i = 0; i < short_paths[spi].path.size(); ++i) {
+        cout << "  EXPECT_EQ(\"" << short_paths[spi].path[i]->name << "\", short_paths["
+             << spi << "].path[" << i << "]->name);\n";
+      }
+    }
+    cout << "}\n";
+  }
+
+  {
+    short_paths.clear();
+    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+    cout << "{\n";
+    cout << "  short_paths.clear();\n";
+    cout << "  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, "
+            "weight_fnc);\n";
+    for (size_t spi = 0; spi < short_paths.size(); ++spi) {
+      cout << "\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].distance << ", short_paths[" << spi
+           << "].distance);\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].path.size() << ", short_paths[" << spi
+           << "].path.size());\n";
+      for (size_t i = 0; i < short_paths[spi].path.size(); ++i) {
+        cout << "  EXPECT_EQ(\"" << short_paths[spi].path[i]->name << "\", short_paths["
+             << spi << "].path[" << i << "]->name);\n";
+      }
+    }
+    cout << "}\n";
+  }
+
+#elif TEST_OPTION == TEST_OPTION_TEST
+  {
+    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
+
+    EXPECT_EQ(415, short_paths[0].distance);
+    EXPECT_EQ(4, short_paths[0].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[0].path[0]->name);
+    EXPECT_EQ("Mannheim", short_paths[0].path[1]->name);
+    EXPECT_EQ("Karlsruhe", short_paths[0].path[2]->name);
+    EXPECT_EQ("Augsburg", short_paths[0].path[3]->name);
+
+    EXPECT_EQ(403, short_paths[1].distance);
+    EXPECT_EQ(3, short_paths[1].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[1].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[1].path[1]->name);
+    EXPECT_EQ("Erfurt", short_paths[1].path[2]->name);
+
+    EXPECT_EQ(0, short_paths[2].distance);
+    EXPECT_EQ(1, short_paths[2].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[2].path[0]->name);
+
+    EXPECT_EQ(165, short_paths[3].distance);
+    EXPECT_EQ(3, short_paths[3].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[3].path[0]->name);
+    EXPECT_EQ("Mannheim", short_paths[3].path[1]->name);
+    EXPECT_EQ("Karlsruhe", short_paths[3].path[2]->name);
+
+    EXPECT_EQ(173, short_paths[4].distance);
+    EXPECT_EQ(2, short_paths[4].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[4].path[0]->name);
+    EXPECT_EQ("Kassel", short_paths[4].path[1]->name);
+
+    EXPECT_EQ(85, short_paths[5].distance);
+    EXPECT_EQ(2, short_paths[5].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[5].path[0]->name);
+    EXPECT_EQ("Mannheim", short_paths[5].path[1]->name);
+
+    EXPECT_EQ(487, short_paths[6].distance);
+    EXPECT_EQ(4, short_paths[6].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[6].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[6].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[6].path[2]->name);
+    EXPECT_EQ("München", short_paths[6].path[3]->name);
+
+    EXPECT_EQ(320, short_paths[7].distance);
+    EXPECT_EQ(3, short_paths[7].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[7].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[7].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[7].path[2]->name);
+
+    EXPECT_EQ(503, short_paths[8].distance);
+    EXPECT_EQ(4, short_paths[8].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[8].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[8].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[8].path[2]->name);
+    EXPECT_EQ("Stuttgart", short_paths[8].path[3]->name);
+
+    EXPECT_EQ(217, short_paths[9].distance);
+    EXPECT_EQ(2, short_paths[9].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[9].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[9].path[1]->name);
+  }
+  {
+    short_paths.clear();
+    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+
+    EXPECT_EQ(403, short_paths[0].distance);
+    EXPECT_EQ(3, short_paths[0].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[0].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[0].path[1]->name);
+    EXPECT_EQ("Erfurt", short_paths[0].path[2]->name);
+
+    EXPECT_EQ(487, short_paths[1].distance);
+    EXPECT_EQ(4, short_paths[1].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[1].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[1].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[1].path[2]->name);
+    EXPECT_EQ("München", short_paths[1].path[3]->name);
+
+    EXPECT_EQ(503, short_paths[2].distance);
+    EXPECT_EQ(4, short_paths[2].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[2].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[2].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[2].path[2]->name);
+    EXPECT_EQ("Stuttgart", short_paths[2].path[3]->name);
+  }
+#endif
 }
 
 TEST(TestCAAGraph, BellmanFordShortestPaths) {
@@ -974,6 +1226,7 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
+#if TEST_OPTION == TEST_OPTION_OUTPUT
   bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
         g, u, back_inserter(short_paths), false, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
@@ -984,17 +1237,17 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
     }
     cout << "  " << sp.distance << "km\n";
   }
-  /* Output: source = Frankfurt
-    Frankfnrt --> Mannheim --> Karlsruhe --> Augsburg  415km
-    Frankfnrt --> Wnrzburg --> Erfurt  403km
-    Frankfnrt  0km
-    Frankfnrt --> Mannheim --> Karlsruhe  165km
-    Frankfnrt --> Kassel  173km
-    Frankfnrt --> Mannheim  85km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Mnnchen  487km
-    Frankfnrt --> Wnrzburg --> Nnrnberg  320km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Stuttgart  503km
-    Frankfnrt --> Wnrzburg  217km
+  /* Output: source = Frankfürt
+    Frankfürt --> Mannheim --> Karlsruhe --> Augsburg  415km
+    Frankfürt --> Würzburg --> Erfurt  403km
+    Frankfürt  0km
+    Frankfürt --> Mannheim --> Karlsruhe  165km
+    Frankfürt --> Kassel  173km
+    Frankfürt --> Mannheim  85km
+    Frankfürt --> Würzburg --> Nürnberg --> München  487km
+    Frankfürt --> Würzburg --> Nürnberg  320km
+    Frankfürt --> Würzburg --> Nürnberg --> Stuttgart  503km
+    Frankfürt --> Würzburg  217km
   */
 
   cout << "\n";
@@ -1009,9 +1262,142 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
     }
     cout << "  " << sp.distance << "km\n";
   }
-  /* Output: source = Frankfurt
-    Frankfnrt --> Wnrzburg --> Erfurt  403km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Mnnchen  487km
-    Frankfnrt --> Wnrzburg --> Nnrnberg --> Stuttgart  503km
+  /* Output: source = Frankfürt
+    Frankfürt --> Würzburg --> Erfurt  403km
+    Frankfürt --> Würzburg --> Nürnberg --> München  487km
+    Frankfürt --> Würzburg --> Nürnberg --> Stuttgart  503km
   */
+#elif TEST_OPTION == TEST_OPTION_GEN
+  {
+    cout << "{\n";
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
+          g, u, back_inserter(short_paths), false, true, weight_fnc);
+    cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), false, true, weight_fnc);\n ";
+    cout << "  EXPECT_FALSE(neg_edge_cycle_exists);\n";
+    for (size_t spi = 0; spi < short_paths.size(); ++spi) {
+      cout << "\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].distance << ", short_paths[" << spi
+           << "].distance);\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].path.size() << ", short_paths[" << spi
+           << "].path.size());\n";
+      for (size_t i = 0; i < short_paths[spi].path.size(); ++i) {
+        cout << "  EXPECT_EQ(\"" << short_paths[spi].path[i]->name << "\", short_paths["
+             << spi << "].path[" << i << "]->name);\n";
+      }
+    }
+    cout << "}\n";
+  }
+
+  {
+    short_paths.clear();
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
+          g, u, back_inserter(short_paths), true, true, weight_fnc);
+    cout << "{\n";
+    cout << "  short_paths.clear();\n";
+    cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), true, true, weight_fnc);\n ";
+    cout << "  EXPECT_FALSE(neg_edge_cycle_exists);\n";
+    for (size_t spi = 0; spi < short_paths.size(); ++spi) {
+      cout << "\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].distance << ", short_paths[" << spi
+           << "].distance);\n";
+      cout << "  EXPECT_EQ(" << short_paths[spi].path.size() << ", short_paths[" << spi
+           << "].path.size());\n";
+      for (size_t i = 0; i < short_paths[spi].path.size(); ++i) {
+        cout << "  EXPECT_EQ(\"" << short_paths[spi].path[i]->name << "\", short_paths["
+             << spi << "].path[" << i << "]->name);\n";
+      }
+    }
+    cout << "}\n";
+  }
+#elif TEST_OPTION == TEST_OPTION_TEST
+  {
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
+          g, u, back_inserter(short_paths), false, true, weight_fnc);
+    EXPECT_FALSE(neg_edge_cycle_exists);
+
+    EXPECT_EQ(415, short_paths[0].distance);
+    EXPECT_EQ(4, short_paths[0].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[0].path[0]->name);
+    EXPECT_EQ("Mannheim", short_paths[0].path[1]->name);
+    EXPECT_EQ("Karlsruhe", short_paths[0].path[2]->name);
+    EXPECT_EQ("Augsburg", short_paths[0].path[3]->name);
+
+    EXPECT_EQ(403, short_paths[1].distance);
+    EXPECT_EQ(3, short_paths[1].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[1].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[1].path[1]->name);
+    EXPECT_EQ("Erfurt", short_paths[1].path[2]->name);
+
+    EXPECT_EQ(0, short_paths[2].distance);
+    EXPECT_EQ(1, short_paths[2].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[2].path[0]->name);
+
+    EXPECT_EQ(165, short_paths[3].distance);
+    EXPECT_EQ(3, short_paths[3].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[3].path[0]->name);
+    EXPECT_EQ("Mannheim", short_paths[3].path[1]->name);
+    EXPECT_EQ("Karlsruhe", short_paths[3].path[2]->name);
+
+    EXPECT_EQ(173, short_paths[4].distance);
+    EXPECT_EQ(2, short_paths[4].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[4].path[0]->name);
+    EXPECT_EQ("Kassel", short_paths[4].path[1]->name);
+
+    EXPECT_EQ(85, short_paths[5].distance);
+    EXPECT_EQ(2, short_paths[5].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[5].path[0]->name);
+    EXPECT_EQ("Mannheim", short_paths[5].path[1]->name);
+
+    EXPECT_EQ(487, short_paths[6].distance);
+    EXPECT_EQ(4, short_paths[6].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[6].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[6].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[6].path[2]->name);
+    EXPECT_EQ("München", short_paths[6].path[3]->name);
+
+    EXPECT_EQ(320, short_paths[7].distance);
+    EXPECT_EQ(3, short_paths[7].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[7].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[7].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[7].path[2]->name);
+
+    EXPECT_EQ(503, short_paths[8].distance);
+    EXPECT_EQ(4, short_paths[8].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[8].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[8].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[8].path[2]->name);
+    EXPECT_EQ("Stuttgart", short_paths[8].path[3]->name);
+
+    EXPECT_EQ(217, short_paths[9].distance);
+    EXPECT_EQ(2, short_paths[9].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[9].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[9].path[1]->name);
+  }
+  {
+    short_paths.clear();
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(
+          g, u, back_inserter(short_paths), true, true, weight_fnc);
+    EXPECT_FALSE(neg_edge_cycle_exists);
+
+    EXPECT_EQ(403, short_paths[0].distance);
+    EXPECT_EQ(3, short_paths[0].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[0].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[0].path[1]->name);
+    EXPECT_EQ("Erfurt", short_paths[0].path[2]->name);
+
+    EXPECT_EQ(487, short_paths[1].distance);
+    EXPECT_EQ(4, short_paths[1].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[1].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[1].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[1].path[2]->name);
+    EXPECT_EQ("München", short_paths[1].path[3]->name);
+
+    EXPECT_EQ(503, short_paths[2].distance);
+    EXPECT_EQ(4, short_paths[2].path.size());
+    EXPECT_EQ("Frankfürt", short_paths[2].path[0]->name);
+    EXPECT_EQ("Würzburg", short_paths[2].path[1]->name);
+    EXPECT_EQ("Nürnberg", short_paths[2].path[2]->name);
+    EXPECT_EQ("Stuttgart", short_paths[2].path[3]->name);
+  }
+#endif
 }
