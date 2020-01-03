@@ -4,6 +4,7 @@
 #include "graph_utility.hpp"
 #include <vector>
 #include <range/v3/view/subrange.hpp>
+#include <cassert>
 
 #ifndef UNDIRECTED_ADJ_LIST_HPP
 #  define UNDIRECTED_ADJ_LIST_HPP
@@ -324,7 +325,8 @@ public:
   const_vertex_iterator out_vertex(graph_type const&) const noexcept;
   vertex_key_type       out_vertex_key() const noexcept;
 
-  friend graph_type; // the graph is the one to create & destroy edges because it owns the allocator
+  friend graph_type;  // the graph is the one to create & destroy edges because it owns the allocator
+  friend vertex_type; // vertex can also destroy its own edges
 };
 
 ///-------------------------------------------------------------------------------------
@@ -356,10 +358,6 @@ public:
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
   using edge_size_type       = IndexT;
-#  ifdef FUTURE
-  using edge_iterator       = typename edge_set::iterator;
-  using const_edge_iterator = typename edge_set::const_iterator;
-#  endif
 
   using edge_list_type             = ual_edge_list<VV, EV, GV, IndexT, A>;
   using edge_list_in_link_type     = ual_edge_list_link<VV, EV, GV, IndexT, A, in_list>;
@@ -384,6 +382,7 @@ public:
   ual_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type const&);
   ual_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&) noexcept;
 
+public:
   vertex_key_type       vertex_key(graph_type const&) const noexcept;
   vertex_edge_size_type edge_size() const noexcept;
 
@@ -552,6 +551,7 @@ public:
   ual_graph(allocator_type alloc);
   ual_graph(graph_user_value_type const&, allocator_type alloc = allocator_type());
   ual_graph(graph_user_value_type&&, allocator_type alloc = allocator_type()) noexcept;
+  ~ual_graph();
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -672,7 +672,7 @@ public:
 
   const_edge_iterator erase_edge(const_edge_iterator);
 
- public:
+public:
   void clear();
 
 protected:

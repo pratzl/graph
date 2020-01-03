@@ -360,7 +360,7 @@ ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, vertex_edge_iterato
   edge_type* uv = &*uvi;
   ++uvi;
   auto alloc = g.edge_allocator();
-  uv->~edgeType();
+      uv->~edge_type();
   alloc.deallocate(uv, 1);
   return uvi;
 }
@@ -369,7 +369,7 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_vertex<VV, EV, GV, IndexT, A>::vertex_edge_iterator
 ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, vertex_edge_iterator first, vertex_edge_iterator last) {
   while (first != last)
-    first = erase_edge(first);
+    first = erase_edge(g, first);
   return first;
 }
 
@@ -446,6 +446,11 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
     // assure begin edge is set for remaining vertices w/o edges
     //finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
   }
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+ual_graph<VV, EV, GV, IndexT, A>::~ual_graph() {
+  clear(); // assure edges are deleted using edge_alloc_
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -608,7 +613,10 @@ ual_graph<VV, EV, GV, IndexT, A>::erase_edge(const_edge_iterator pos) {
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_graph<VV, EV, GV, IndexT, A>::clear() {
-  vertices_.clear(); // todo: this doesn't guarantee use of edge_alloc_ to dealloate edges
+  // make sure edges are deallocated from edge_alloc_
+  for (vertex_type& u : vertices_)
+    u.clear_edges(*this);
+  vertices_.clear(); // now we can clear the vertices
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
