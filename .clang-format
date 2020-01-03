@@ -31,7 +31,7 @@ BraceWrapping:
 BreakConstructorInitializers: BeforeComma
 BreakBeforeInheritanceComma: true
 BreakInheritanceList: BeforeComma
-ColumnLimit:     90
+ColumnLimit:     120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 6
 ContinuationIndentWidth: 6

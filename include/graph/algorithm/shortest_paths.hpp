@@ -37,6 +37,7 @@
 //  1.  Figure how to define DistanceT from DistFnc so user isn't required to specify it.
 //      Then move DistFnc parameter later in template.
 //  2.  Add output_iterator concept check for parameter
+//  3.  Add edges(g) requirement concept to djikstra
 //
 // ISSUES / QUESTIONS
 //  1.  Should bellman_ford always check for negative edge cycles? (e.g. remove
