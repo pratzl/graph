@@ -59,16 +59,14 @@ OStream& operator<<(OStream& os, Graph const& g) {
 
 TEST(TestUALGraph, TestMinObjSize) {
   using G = std::graph::undirected_adjacency_list<>;
-  EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
-  EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
+  EXPECT_EQ(24, sizeof(G::vertex_type)); // vertex size = 4 bytes
+  EXPECT_EQ(48, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
 TEST(TestUALGraph, TestEmptyGraph) {
   Graph g;
   EXPECT_EQ(0, vertices_size(g));
-#ifdef FUTURE
   EXPECT_EQ(0, edges_size(g));
-#endif
 }
 
 TEST(TestUALGraph, TestGraphInit) {
@@ -109,13 +107,11 @@ TEST(TestUALGraph, TestGraphInit) {
   EXPECT_EQ(germany_cities.size(), nVertices);
   EXPECT_EQ(ual_germany_edge_routes.size(), nEdges);
 
-#ifdef FUTURE
   // iterate thru edges range
   size_t n = 0;
   for (auto& uv : edges(g))
     ++n;
-  EXPECT_EQ(caa_germany_edge_routes.size(), n);
-#endif
+  EXPECT_EQ(ual_germany_edge_routes.size(), n);
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
