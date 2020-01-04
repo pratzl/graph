@@ -5,6 +5,14 @@
 //#include "graph/algorithm/shortest_paths.hpp"
 #include "data_routes.hpp"
 
+/* ToDo
+    1.  Get graph output to match expected
+    2.  Replace vector(g,uv) --> vector(g,uv,source)
+    3.  Test dfs
+    4.  Test bfs
+    5.  Test shortest_paths
+ */
+
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
@@ -28,6 +36,9 @@ using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 struct route;
 using Routes = routes_t;
 
+template <class OStream>
+OStream& operator<<(OStream& os, Graph const& g);
+
 vector<Graph::edge_value_type> ual_germany_edge_routes = to_edge_values<Graph>(germany_routes, germany_cities);
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
@@ -35,10 +46,28 @@ vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
 }
 
 Graph create_germany_routes_graph() {
+#if 0
   return Graph(
         ual_germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
         [](Graph::edge_value_type const& er) { return er.second; },
         [](string const& city) -> string const& { return city; });
+#else
+  auto  ekey_fnc  = [](Graph::edge_value_type const& er) { return er.first; };
+  auto  eprop_fnc = [](Graph::edge_value_type const& er) { return er.second; };
+  Graph g(vector<Graph::edge_value_type>(), germany_cities, ekey_fnc, eprop_fnc,
+          [](string const& city) -> string const& { return city; });
+
+  int hit = 0;
+  for (auto& edge_data : ual_germany_edge_routes) {
+    Graph::edge_key_type uv_key = ekey_fnc(edge_data);
+    cout << "\n\nAdd: (" << ++hit << ") [" << uv_key.first << "," << uv_key.second << "] " << find_vertex(g, uv_key.first)->name << " <--> "
+         << find_vertex(g, uv_key.second)->name << "\n";
+
+    g.create_edge(uv_key.first, uv_key.second, eprop_fnc(edge_data));
+    cout << g;
+  }
+  return g;
+#endif
 }
 
 template <class OStream>
@@ -47,7 +76,7 @@ OStream& operator<<(OStream& os, Graph const& g) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
     for (edge_t<Graph> const& uv : edges(g, u)) {
-      const_vertex_iterator_t<Graph> v    = out_vertex(g, uv);
+      const_vertex_iterator_t<Graph> v    = vertex(g, uv, u);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
     }
@@ -92,7 +121,7 @@ TEST(TestUALGraph, TestGraphInit) {
   size_t nVertices = 0;
   size_t nEdges    = 0;
   for (auto& u : vertices(g)) {
-    ++nVertices;    
+    ++nVertices;
 
     size_t n1 = 0;
     for (auto& uv : edges(g, u))

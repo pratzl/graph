@@ -196,9 +196,9 @@ caa_graph<VV, EV, GV, IndexT, A>::caa_graph(ERng const&     erng,
     edge_key_type   tu_key = ekey_fnc(*::ranges::begin(erng));
     vertex_iterator t      = to_iterator(*this, vertices_[tu_key.first]);
     for (auto& edge_data : erng) {
-      edge_key_type edge_key = ekey_fnc(edge_data);
+      edge_key_type uv_key = ekey_fnc(edge_data);
       //auto            edge_val = eprop_fnc(edge_data);
-      vertex_iterator u = to_iterator(*this, vertices_[edge_key.first]);
+      vertex_iterator u = to_iterator(*this, vertices_[uv_key.first]);
       if (u < t)
         throw_unordered_edges();
 
@@ -207,11 +207,12 @@ caa_graph<VV, EV, GV, IndexT, A>::caa_graph(ERng const&     erng,
 
       edge_iterator uv;
       if constexpr (same_as<decltype(eprop_fnc(edge_data)), void>) {
-        uv = create_edge(edge_key.first, edge_key.second);
+        uv = create_edge(uv_key.first, uv_key.second);
       } else {
-        uv = create_edge(edge_key.first, edge_key.second, eprop_fnc(edge_data));
+        uv = create_edge(uv_key.first, uv_key.second, eprop_fnc(edge_data));
       }
       u->set_edge_begin(*this, uv);
+      
     }
 
     // assure begin edge is set for remaining vertices w/o edges
