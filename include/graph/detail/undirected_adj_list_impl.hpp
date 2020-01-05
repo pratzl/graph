@@ -150,7 +150,7 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::link_back(edge_type&                 
       tail_               = &uv;
     }
   } else {
-    assert(!head_ && !tail_ && size_ == 0);
+    _ASSERT(!head_ && !tail_ && size_ == 0);
     head_ = tail_ = &uv;
   }
   ++size_;
@@ -160,29 +160,44 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ListT>
 void ual_edge_list<VV, EV, GV, IndexT, A>::unlink(edge_type&                                        uv,
                                                   ual_edge_list_link<VV, EV, GV, IndexT, A, ListT>& uv_link) {
-  using link_t = ual_edge_list_link<VV, EV, GV, IndexT, A, ListT>;
 
-  if (uv_link.prev_ && uv_link.next_) {
-    assert(&uv != head_ && &uv != tail_ && size_ > 2);
-    link_t& prev_link = *static_cast<link_t*>(uv_link.prev_);
-    link_t& next_link = *static_cast<link_t*>(uv_link.next_);
-    prev_link.next_   = uv_link.next_;
-    next_link.prev_   = uv_link.prev_;
-  } else if (uv_link.prev_ && !uv_link.next_) {
-    assert(tail_ == &uv && size_ > 1);
-    link_t& prev_link = *static_cast<link_t*>(uv_link.prev_);
-    prev_link.next_   = nullptr;
-    tail_             = uv_link.prev_;
-  } else if (uv_link.next_ && !uv_link.prev_) {
-    assert(head_ == &uv && size_ > 1);
-    link_t& next_link = *static_cast<link_t*>(uv_link.next_);
-    next_link.prev_   = nullptr;
-    head_             = uv_link.next_;
-  } else {
-    assert(&uv == head_ && &uv == tail_ && size_ == 1);
-    head_ = tail_ = nullptr;
+  if (uv_link.prev_) {
+    edge_list_in_link_type&  prev_in_link  = static_cast<edge_list_in_link_type&>(*uv_link.prev_);
+    edge_list_out_link_type& prev_out_link = static_cast<edge_list_out_link_type&>(*uv_link.prev_);
+    if (prev_in_link.vertex_key_ == uv_link.vertex_key_) {
+      prev_in_link.next_ = uv_link.next_;
+    } else {
+      _ASSERT(prev_out_link.vertex_key_ == uv_link.vertex_key_);
+      prev_out_link.next_ = uv_link.next_;
+    }
   }
+  if (tail_ == &uv) {
+    tail_ = uv_link.prev_;
+  }
+
+  if (uv_link.next_) {
+    edge_list_in_link_type&  next_in_link  = static_cast<edge_list_in_link_type&>(*uv_link.next_);
+    edge_list_out_link_type& next_out_link = static_cast<edge_list_out_link_type&>(*uv_link.next_);
+    if (next_in_link.vertex_key_ == uv_link.vertex_key_) {
+      next_in_link.prev_ = uv_link.prev_;
+    } else {
+      _ASSERT(next_out_link.vertex_key_ == uv_link.vertex_key_);
+      next_out_link.prev_ = uv_link.prev_;
+    }
+  }
+  if (head_ == &uv) {
+    head_ = uv_link.next_;
+  }
+
+  uv_link.prev_ = uv_link.next_ = nullptr;
   --size_;
+
+  if (size_ == 0)
+    _ASSERT(head_ == nullptr && tail_ == nullptr);
+  else if (size_ == 1)
+    _ASSERT(head_ == tail_);
+  else
+    _ASSERT(head_ != tail_);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -273,10 +288,10 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&            g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_edge<VV, EV, GV, IndexT, A>::~ual_edge() noexcept {
   edge_list_out_link_type& out_link = *static_cast<edge_list_out_link_type*>(this);
-  assert(out_link.prev() == nullptr && out_link.next() == nullptr); // has edge been unlinked?
+  _ASSERT(out_link.prev() == nullptr && out_link.next() == nullptr); // has edge been unlinked?
 
   edge_list_in_link_type& in_link = *static_cast<edge_list_in_link_type*>(this);
-  assert(in_link.prev() == nullptr && in_link.next() == nullptr); // has edge been unlinked?
+  _ASSERT(in_link.prev() == nullptr && in_link.next() == nullptr); // has edge been unlinked?
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -299,7 +314,7 @@ void ual_edge<VV, EV, GV, IndexT, A>::unlink(vertex_type& u, vertex_type& v) {
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_iterator
 ual_edge<VV, EV, GV, IndexT, A>::in_vertex(graph_type& g) noexcept {
-  return g.vertices().begin() + in_vertex_key();
+  return g.vertices().begin() + in_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -317,7 +332,7 @@ ual_edge<VV, EV, GV, IndexT, A>::in_vertex_key(graph_type const& g) const noexce
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_iterator
 ual_edge<VV, EV, GV, IndexT, A>::out_vertex(graph_type& g) noexcept {
-  return g.vertices().begin() + out_vertex_key();
+  return g.vertices().begin() + out_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -423,12 +438,17 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, edge_type* uv) {
   vertex_type& u = *(g.vertices().data() + uv->in_vertex_key(g));
   vertex_type& v = *(g.vertices().data() + uv->out_vertex_key(g));
-  if (this == &u) {
+#  ifdef _DEBUG
+  vertex_key_type ukey = u.vertex_key(g);
+  vertex_key_type vkey = v.vertex_key(g);
+#  endif
+  uv->unlink(u, v);
+  /*if (this == &u) {
     uv->unlink(u, v);
   } else {
-    assert(this == &v);
+    _ASSERT(this == &v);
     uv->unlink(v, u);
-  }
+  }*/
 
   uv->~edge_type();
   g.edge_alloc_.deallocate(uv, 1);
@@ -437,8 +457,9 @@ void ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, edge_type* uv)
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_vertex<VV, EV, GV, IndexT, A>::vertex_edge_iterator
 ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, vertex_edge_iterator uvi) {
+  edge_type* uv = &*uvi;
   ++uvi;
-  erase_edge(g, &*uvi);
+  erase_edge(g, uv);
   return uvi;
 }
 
@@ -452,6 +473,9 @@ ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, vertex_edge_iterato
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_vertex<VV, EV, GV, IndexT, A>::clear_edges(graph_type& g) {
+#  ifdef _DEBUG
+  vertex_key_type key = vertex_key(g);
+#  endif
   erase_edge(g, edge_begin(g), edge_end(g));
 }
 
@@ -733,7 +757,7 @@ void ual_graph<VV, EV, GV, IndexT, A>::clear() {
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_graph<VV, EV, GV, IndexT, A>::throw_unordered_edges() const {
-  assert(false); // container must be sorted by edge_key.first
+  _ASSERT(false); // container must be sorted by edge_key.first
   throw invalid_argument("edges not ordered");
 }
 
@@ -829,14 +853,14 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const&           g,
                           vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_size(g);
+  return u.edge_size();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_degree(ual_graph<VV, EV, GV, IndexT, A> const&           g,
                             vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_size(g);
+  return u.edge_size();
 }
 
 
@@ -976,6 +1000,14 @@ constexpr auto find_edge(ual_graph<VV, EV, GV, IndexT, A> const&               g
                          vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
       -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return find_edge(g, find_vertex(g, ukey), find_vertex(g, vkey));
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto erase_edge(ual_graph<VV, EV, GV, IndexT, A>&                        g,
+                          vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> uv)
+      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> u = in_vertex(g, *uv);
+  return u->erase_edge(g, uv);
 }
 
 

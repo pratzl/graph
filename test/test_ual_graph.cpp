@@ -16,7 +16,7 @@
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_OUTPUT
+#define TEST_OPTION TEST_OPTION_TEST
 
 
 using std::vector;
@@ -46,7 +46,7 @@ vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
 }
 
 Graph create_germany_routes_graph() {
-#if 0
+#if 1
   return Graph(
         ual_germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
         [](Graph::edge_value_type const& er) { return er.second; },
@@ -66,6 +66,20 @@ Graph create_germany_routes_graph() {
     g.create_edge(uv_key.first, uv_key.second, eprop_fnc(edge_data));
     cout << g;
   }
+
+  hit = 0;
+  for (vertex_t<Graph>& u : vertices(g)) {
+    while (edges_size(g, u) > 0) {
+      edge_t<Graph>* uv = &*begin(g, u);
+      vertex_key_t<Graph> ukey = in_vertex_key(g, *uv);
+      vertex_key_t<Graph> vkey = out_vertex_key(g, *uv);
+      cout << "\n\nRemove: (" << ++hit << ") [" << ukey << "," << vkey << "] "
+           << find_vertex(g, ukey)->name << " <--> " << find_vertex(g, vkey)->name << "\n";
+
+      erase_edge(g, begin(g, u));
+      cout << g;
+    }
+  }
   return g;
 #endif
 }
@@ -78,7 +92,7 @@ OStream& operator<<(OStream& os, Graph const& g) {
     for (edge_t<Graph> const& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = vertex(g, uv, u);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
-      os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
+      os << "\n  <--> [" << vkey << " " << v->name << "] " << uv.weight << "km";
     }
   }
   os << "\n";
@@ -134,13 +148,13 @@ TEST(TestUALGraph, TestGraphInit) {
     nEdges += n1;
   }
   EXPECT_EQ(germany_cities.size(), nVertices);
-  EXPECT_EQ(ual_germany_edge_routes.size(), nEdges);
+  EXPECT_EQ(ual_germany_edge_routes.size()*2, nEdges);
 
   // iterate thru edges range
   size_t n = 0;
   for (auto& uv : edges(g))
     ++n;
-  EXPECT_EQ(ual_germany_edge_routes.size(), n);
+  EXPECT_EQ(ual_germany_edge_routes.size()*2, n);
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
@@ -150,27 +164,39 @@ TEST(TestUALGraph, TestGraphInit) {
     Germany Routes
     -------------------------------
     [0] Augsburg
-      --> [6 München] 84km
+      <--> [6 München] 84km
+      <--> [3 Karlsruhe] 250km
     [1] Erfurt
+      <--> [9 Würzburg] 186km
     [2] Frankfürt
-      --> [5 Mannheim] 85km
-      --> [9 Würzburg] 217km
-      --> [4 Kassel] 173km
+      <--> [5 Mannheim] 85km
+      <--> [9 Würzburg] 217km
+      <--> [4 Kassel] 173km
     [3] Karlsruhe
-      --> [0 Augsburg] 250km
+      <--> [0 Augsburg] 250km
+      <--> [5 Mannheim] 80km
     [4] Kassel
-      --> [6 München] 502km
+      <--> [2 Frankfürt] 173km
+      <--> [6 München] 502km
     [5] Mannheim
-      --> [3 Karlsruhe] 80km
+      <--> [2 Frankfürt] 85km
+      <--> [3 Karlsruhe] 80km
     [6] München
+      <--> [0 Augsburg] 84km
+      <--> [4 Kassel] 502km
+      <--> [7 Nürnberg] 167km
     [7] Nürnberg
-      --> [8 Stuttgart] 183km
-      --> [6 München] 167km
+      <--> [8 Stuttgart] 183km
+      <--> [6 München] 167km
+      <--> [9 Würzburg] 103km
     [8] Stuttgart
+      <--> [7 Nürnberg] 183km
     [9] Würzburg
-      --> [1 Erfurt] 186km
-      --> [7 Nürnberg] 103km
+      <--> [2 Frankfürt] 217km
+      <--> [1 Erfurt] 186km
+      <--> [7 Nürnberg] 103km
   */
+
 #elif TEST_OPTION == TEST_OPTION_GEN
   vertex_iterator_t<Graph>      u;
   vertex_edge_iterator_t<Graph> uv;
@@ -201,16 +227,23 @@ TEST(TestUALGraph, TestGraphInit) {
 
   u = begin(g) + 0;
   EXPECT_EQ("Augsburg", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
   EXPECT_EQ(6, out_vertex_key(g, *uv));
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
   EXPECT_EQ(84, uv->weight);
+  ++uv;
+  EXPECT_EQ(0, out_vertex_key(g, *uv));
+  EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(250, uv->weight);
 
   u = begin(g) + 1;
   EXPECT_EQ("Erfurt", u->name);
-  EXPECT_EQ(0, edges_size(g, *u));
+  EXPECT_EQ(1, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(1, out_vertex_key(g, *uv));
+  EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
+  EXPECT_EQ(186, uv->weight);
 
   u = begin(g) + 2;
   EXPECT_EQ("Frankfürt", u->name);
@@ -230,36 +263,59 @@ TEST(TestUALGraph, TestGraphInit) {
 
   u = begin(g) + 3;
   EXPECT_EQ("Karlsruhe", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
   EXPECT_EQ(0, out_vertex_key(g, *uv));
   EXPECT_EQ("Augsburg", out_vertex(g, *uv)->name);
   EXPECT_EQ(250, uv->weight);
+  ++uv;
+  EXPECT_EQ(3, out_vertex_key(g, *uv));
+  EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
+  EXPECT_EQ(80, uv->weight);
 
   u = begin(g) + 4;
   EXPECT_EQ("Kassel", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(4, out_vertex_key(g, *uv));
+  EXPECT_EQ("Kassel", out_vertex(g, *uv)->name);
+  EXPECT_EQ(173, uv->weight);
+  ++uv;
   EXPECT_EQ(6, out_vertex_key(g, *uv));
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
   EXPECT_EQ(502, uv->weight);
 
   u = begin(g) + 5;
   EXPECT_EQ("Mannheim", u->name);
-  EXPECT_EQ(1, edges_size(g, *u));
+  EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(5, out_vertex_key(g, *uv));
+  EXPECT_EQ("Mannheim", out_vertex(g, *uv)->name);
+  EXPECT_EQ(85, uv->weight);
+  ++uv;
   EXPECT_EQ(3, out_vertex_key(g, *uv));
   EXPECT_EQ("Karlsruhe", out_vertex(g, *uv)->name);
   EXPECT_EQ(80, uv->weight);
 
   u = begin(g) + 6;
   EXPECT_EQ("München", u->name);
-  EXPECT_EQ(0, edges_size(g, *u));
+  EXPECT_EQ(3, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(84, uv->weight);
+  ++uv;
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(502, uv->weight);
+  ++uv;
+  EXPECT_EQ(6, out_vertex_key(g, *uv));
+  EXPECT_EQ("München", out_vertex(g, *uv)->name);
+  EXPECT_EQ(167, uv->weight);
 
   u = begin(g) + 7;
   EXPECT_EQ("Nürnberg", u->name);
-  EXPECT_EQ(2, edges_size(g, *u));
+  EXPECT_EQ(3, edges_size(g, *u));
   uv = begin(g, *u);
   EXPECT_EQ(8, out_vertex_key(g, *uv));
   EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
@@ -268,16 +324,27 @@ TEST(TestUALGraph, TestGraphInit) {
   EXPECT_EQ(6, out_vertex_key(g, *uv));
   EXPECT_EQ("München", out_vertex(g, *uv)->name);
   EXPECT_EQ(167, uv->weight);
+  ++uv;
+  EXPECT_EQ(7, out_vertex_key(g, *uv));
+  EXPECT_EQ("Nürnberg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(103, uv->weight);
 
   u = begin(g) + 8;
   EXPECT_EQ("Stuttgart", u->name);
-  EXPECT_EQ(0, edges_size(g, *u));
+  EXPECT_EQ(1, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(8, out_vertex_key(g, *uv));
+  EXPECT_EQ("Stuttgart", out_vertex(g, *uv)->name);
+  EXPECT_EQ(183, uv->weight);
 
   u = begin(g) + 9;
   EXPECT_EQ("Würzburg", u->name);
-  EXPECT_EQ(2, edges_size(g, *u));
+  EXPECT_EQ(3, edges_size(g, *u));
   uv = begin(g, *u);
+  EXPECT_EQ(9, out_vertex_key(g, *uv));
+  EXPECT_EQ("Würzburg", out_vertex(g, *uv)->name);
+  EXPECT_EQ(217, uv->weight);
+  ++uv;
   EXPECT_EQ(1, out_vertex_key(g, *uv));
   EXPECT_EQ("Erfurt", out_vertex(g, *uv)->name);
   EXPECT_EQ(186, uv->weight);

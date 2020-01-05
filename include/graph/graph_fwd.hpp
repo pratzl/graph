@@ -335,10 +335,13 @@ template <typename G>
 constexpr void erase_edge(G& g, edge_iterator_t<G> uv);
 
 template <typename G>
-constexpr void erase_edge(G& g, vertex_out_edge_iterator_t<G> uv);
+constexpr auto erase_edge(G& g, vertex_out_edge_iterator_t<G> uv) -> vertex_out_edge_iterator_t<G>;
 
 template <typename G>
-constexpr void erase_edge(G& g, vertex_in_edge_iterator_t<G> uv);
+constexpr auto erase_edge(G& g, vertex_in_edge_iterator_t<G> uv) -> vertex_in_edge_iterator_t<G>;
+
+template <typename G>
+constexpr auto erase_edge(G& g, vertex_edge_iterator_t<G> uv)-> vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto find_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) noexcept -> edge_iterator_t<G>;
