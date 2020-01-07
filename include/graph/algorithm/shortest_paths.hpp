@@ -495,7 +495,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_t<G> uv : edges(g_))
+        for (edge_t<G>& uv : edges(g_))
           if (out_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[in_vertex_key(g_, uv)] = false;
       }
@@ -504,7 +504,7 @@ protected:
     // Detect negative edge cycles, if desired
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
-      for (edge_t<G> uv : edges(g_)) {
+      for (edge_t<G>& uv : edges(g_)) {
         vertex_key_t<G> ukey = in_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source

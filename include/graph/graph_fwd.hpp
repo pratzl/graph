@@ -440,11 +440,28 @@ constexpr void swap(G& a, G& b);
 //
 
 template <typename G>
-concept directed_graph_c = true;
+concept uniform_graph_c = requires(G&& g, vertex_t<G>& u) {
+  { edges(g, u) } ->vertex_edge_range_t<G>;
+};
+
 template <typename G>
-concept bidirected_graph_c = true;
+concept out_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
+  { out_edges<G>(g, u) } ->vertex_out_edge_range_t<G>;
+};
+
 template <typename G>
-concept undirected_graph_c = true;
+concept in_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
+  { in_edges(g, u) } ->vertex_in_edge_range_t<G>;
+};
+
+template <typename G>
+concept directed_graph_c = uniform_graph_c && out_directed_graph<G>;
+
+template <typename G>
+concept undirected_graph_c = uniform_graph_c && !directed_graph_c<G>;
+
+template <typename G>
+concept bidirected_graph_c = uniform_graph_c && out_directed_graph<G>&& in_directed_graph<G>;
 
 template <typename G>
 concept sparse_graph_c = true;
@@ -462,7 +479,7 @@ concept arithmetic_c = is_arithmetic_v<T>;
 
 // for DFS, BFS & TopoSort ranges
 template <typename G>
-concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) {
+concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G>& u, vertex_edge_iterator_t<G>& uv) {
   ::ranges::forward_range<G>;
   ::ranges::forward_iterator<vertex_iterator_t<G>>;
   ::ranges::forward_iterator<vertex_edge_iterator_t<G>>;
@@ -473,7 +490,6 @@ concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G> u, vertex_edge
   { vertex(g, *uv) } ->vertex_iterator_t<G>;
   { vertex_key(g,*u) } ->vertex_key_t<G>;
 };
-
 
 
 } // namespace std::graph

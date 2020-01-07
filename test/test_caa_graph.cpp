@@ -8,7 +8,7 @@
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_TEST
+#define TEST_OPTION TEST_OPTION_OUTPUT
 
 
 using std::vector;
@@ -553,7 +553,7 @@ TEST(TestCAAGraph, DFSEdge) {
   EXPECT_EQ("Frankfürt", in_vertex(g, *uv)->name);
   EXPECT_EQ("Würzburg", out_vertex(g, *uv)->name);
   EXPECT_EQ(217, uv->weight);
-  EXPECT_EQ(1, uv.depth());
+  EXPECT_EQ(1, uv.depth()); 
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
@@ -1396,3 +1396,4 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   }
 #endif
 }
+

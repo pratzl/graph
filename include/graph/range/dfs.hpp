@@ -60,8 +60,8 @@ namespace std::graph {
 /// depth-first search range for vertices, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class dfs_vertex_range 
+requires uniform_graph_c<G> && integral<vertex_key_t<G>>&& ::ranges::contiguous_range<
+      vertex_range_t<G>> class dfs_vertex_range 
 {
   struct stack_elem {
     vertex_iterator_t<G>      u;
@@ -202,8 +202,8 @@ private:
 /// depth-first search range for edges, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class dfs_edge_range {
+requires uniform_graph_c<G> /*directed_graph_c<G> */ &&
+      integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class dfs_edge_range {
   struct stack_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
@@ -337,7 +337,10 @@ protected:
         stack_.push(stack_elem{u, uv});
 
       // visit v vertex if it hasn't been visited yet
-      if (!visited_[v_key]) {
+      if (visited_[v_key]) {
+        //stack_.push(stack_elem{v, std::graph::end(graph_, *v)}); // view the vertex
+      }
+      else {
         vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
         stack_.push(stack_elem{v, vw});                               // go level deeper in traversal
         visited_[v_key] = true;
