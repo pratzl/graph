@@ -354,3 +354,119 @@ TEST(TestUALGraph, TestGraphInit) {
   EXPECT_EQ(103, uv->weight);
 #endif
 }
+
+
+TEST(TestUALGraph, AllGraphFunctions) {
+  Graph        g  = create_germany_routes_graph();
+  Graph const& gc = create_germany_routes_graph();
+
+  //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
+  std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
+  std::graph::const_vertex_range_t<Graph> vrc = std::graph::vertices(gc);
+  EXPECT_EQ(vr.size(), vrc.size());
+  EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
+
+  size_t cnt = 0;
+  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g); u != std::graph::end(g); ++u, ++cnt)
+    ;
+  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+
+  cnt = 0;
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc); u != std::graph::end(gc); ++u, ++cnt)
+    ;
+  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+
+  cnt = 0;
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc); u != std::graph::cend(gc); ++u, ++cnt)
+    ;
+  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+
+  //std::graph::reserve_vertices(g, 100); //undefined for semi-mutable graph
+  //std::graph::resisze_vertices(g, 100); //undefined for semi-mutable graph
+
+  std::graph::edge_range_t<Graph>       er       = std::graph::edges(g);
+  std::graph::const_edge_range_t<Graph> erc      = std::graph::edges(gc);
+  std::graph::edge_size_t<Graph>        edg_size = std::graph::edges_size(gc);
+  //EXPECT_EQ(std::graph::edges_size(gc), er.size());  // forward-only range; size n/a
+  //EXPECT_EQ(std::graph::edges_size(gc), erc.size()); // forward-only range; size n/a
+  // std::graph::reserve_edges(g,100); // undefined for semi-mutable graph
+  // std::graph::clear(g);             // undefined for semi-mutable graph
+
+#if TEST_OPTION == TEST_OPTION_OUTPUT
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
+#endif
+}
+
+TEST(TestUALGraph, AllVertexFunctions) {
+  Graph        g  = create_germany_routes_graph();
+  Graph const& gc = g;
+
+  std::graph::vertex_iterator_t<Graph>       ui  = std::graph::begin(g);
+  std::graph::const_vertex_iterator_t<Graph> uic = std::graph::cbegin(g);
+  std::graph::vertex_t<Graph>&               u   = *ui;
+  std::graph::vertex_t<Graph> const&         uc  = *uic;
+
+  std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, u);
+  std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uc);
+  auto                            val   = std::graph::value(u);
+
+  std::graph::vertex_iterator_t<Graph>       f1 = std::graph::find_vertex(g, 1);
+  std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
+  EXPECT_EQ(f1, f2);
+
+  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  EXPECT_NE(f3, g.vertices().end());
+  EXPECT_EQ(2, vertex_key(g, *f3));
+
+  {
+    std::graph::vertex_edge_range_t<Graph>          uvr      = std::graph::edges(g, u);
+    std::graph::const_vertex_edge_range_t<Graph>    uvrc     = std::graph::edges(g, uc);
+    std::graph::vertex_edge_iterator_t<Graph>       uvi_beg1 = std::graph::begin(g, u);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg2 = std::graph::begin(g, uc);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg3 = std::graph::cbegin(g, u);
+    std::graph::vertex_edge_iterator_t<Graph>       uvi_end1 = std::graph::end(g, u);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = std::graph::end(g, uc);
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = std::graph::cend(g, u);
+    EXPECT_EQ(std::graph::edges_size(g, u), std::graph::edges_degree(g, u));
+    //EXPECT_EQ(std::graph::edges_size(g, u), uvr.size()); // forward-only range; size n/a
+  }
+
+  /*{
+    std::graph::vertex_out_edge_range_t<Graph>          uvr      = std::graph::out_edges(g, u);
+    std::graph::const_vertex_out_edge_range_t<Graph>    uvrc     = std::graph::out_edges(g, uc);
+    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_beg1 = std::graph::out_begin(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 = std::graph::out_begin(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 = std::graph::out_cbegin(g, u);
+    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_end1 = std::graph::out_end(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 = std::graph::out_end(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
+    EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
+    EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
+  }*/
+}
+
+TEST(TestUALGraph, AllEdgeFunctions) {
+  using namespace std::graph;
+  Graph        g  = create_germany_routes_graph();
+  Graph const& gc = g;
+
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
+  EXPECT_NE(end(g), u);
+  EXPECT_NE(end(g), v);
+
+  edge_iterator_t<Graph> uv = find_edge(g, *u, *v); // find edge Frankfurt --> Mannheim
+  EXPECT_NE(end(g.edges()), uv);
+  EXPECT_EQ(v, vertex(g, *uv));
+  EXPECT_EQ(v, out_vertex(g, *uv));
+  EXPECT_EQ(u, in_vertex(g, *uv));
+  edge_iterator_t<Graph> uv2 = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
+  EXPECT_EQ(uv, uv2);
+
+  edge_iterator_t<Graph> uv3;
+  uv2 = find_edge(g, *u, *v);
+  uv3 = find_edge(g, vertex_key(g, *u), vertex_key(g, *v));
+  EXPECT_EQ(uv, uv2);
+  EXPECT_EQ(uv, uv3);
+}

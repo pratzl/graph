@@ -141,7 +141,7 @@ public:
     vertex_key_type vertex_key_ = numeric_limits<vertex_key_type>::max(); // owning vertex for the list we're in
     edge_type*      edge_       = nullptr;                                // current vertex (==nullptr for end)
     graph_type*     graph_      = nullptr;
-  };                                                                      // end const_iterator
+  }; // end const_iterator
 
   class iterator : public const_iterator {
   public:
@@ -456,7 +456,7 @@ private:
 /// @tparam GV     Graph Value type. default = empty_value.
 /// @tparam IntexT The type used for vertex & edge index into the internal vectors.
 /// @tparam A      Allocator. default = std::allocator
-//
+///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class ual_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
@@ -507,8 +507,11 @@ public:
     using reference         = value_type const&;
 
   public:
-    const_edge_iterator(graph_type& g, vertex_iterator u) : g_(&g), u_(u) { advance_vertex(); }
-    const_edge_iterator(graph_type& g, vertex_iterator u, vertex_edge_iterator uv) : g_(&g), u_(u), uv_(uv) {}
+    const_edge_iterator(graph_type const& g, vertex_iterator u) : g_(&const_cast<graph_type&>(g)), u_(u) {
+      advance_vertex();
+    }
+    const_edge_iterator(graph_type const& g, vertex_iterator u, vertex_edge_iterator uv)
+          : g_(&const_cast<graph_type&>(g)), u_(u), uv_(uv) {}
 
     const_edge_iterator() noexcept                               = default;
     const_edge_iterator(const_edge_iterator const& rhs) noexcept = default;
@@ -572,6 +575,7 @@ public:
 
     edge_iterator() noexcept : const_edge_iterator(){};
     edge_iterator(edge_iterator const& rhs) noexcept : const_edge_iterator(rhs) {}
+    edge_iterator(const_edge_iterator& rhs) : const_edge_iterator(rhs) {}
     ~edge_iterator() {}
     edge_iterator& operator=(edge_iterator const& rhs) noexcept {
       const_edge_iterator::operator=(rhs);
@@ -685,12 +689,20 @@ public:
   constexpr edge_size_type edges_size() const noexcept;
 
   constexpr edge_iterator       edge_begin() { return edge_iterator(*this, begin()); }
-  constexpr const_edge_iterator edge_begin() const { return edge_iterator(*this, begin()); }
-  constexpr const_edge_iterator edge_cbegin() const { return edge_iterator(*this, cbegin()); }
+  constexpr const_edge_iterator edge_begin() const {
+    return const_edge_iterator(*this, const_cast<graph_type&>(*this).begin());
+  }
+  constexpr const_edge_iterator edge_cbegin() const {
+    return const_edge_iterator(*this, const_cast<graph_type&>(*this).cbegin());
+  }
 
   constexpr edge_iterator       edge_end() { return edge_iterator(*this, end()); }
-  constexpr const_edge_iterator edge_end() const { return edge_iterator(*this, end()); }
-  constexpr const_edge_iterator edge_cend() const { return edge_iterator(*this, cend()); }
+  constexpr const_edge_iterator edge_end() const {
+    return const_edge_iterator(*this, const_cast<graph_type&>(*this).end());
+  }
+  constexpr const_edge_iterator edge_cend() const {
+    return const_edge_iterator(*this, const_cast<graph_type&>(*this).end());
+  }
 
   edge_range       edges() { return ::ranges::make_subrange(edge_begin(), edge_end()); }
   const_edge_range edges() const { return ::ranges::make_subrange(edge_begin(), edge_end()); }
