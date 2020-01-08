@@ -57,42 +57,10 @@ vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
 }
 
 Graph create_germany_routes_graph() {
-#if 1
   return Graph(
         ual_germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
         [](Graph::edge_value_type const& er) { return er.second; },
         [](string const& city) -> string const& { return city; });
-#else
-  auto  ekey_fnc  = [](Graph::edge_value_type const& er) { return er.first; };
-  auto  eprop_fnc = [](Graph::edge_value_type const& er) { return er.second; };
-  Graph g(vector<Graph::edge_value_type>(), germany_cities, ekey_fnc, eprop_fnc,
-          [](string const& city) -> string const& { return city; });
-
-  int hit = 0;
-  for (auto& edge_data : ual_germany_edge_routes) {
-    Graph::edge_key_type uv_key = ekey_fnc(edge_data);
-    cout << "\n\nAdd: (" << ++hit << ") [" << uv_key.first << "," << uv_key.second << "] " << find_vertex(g, uv_key.first)->name << " <--> "
-         << find_vertex(g, uv_key.second)->name << "\n";
-
-    g.create_edge(uv_key.first, uv_key.second, eprop_fnc(edge_data));
-    cout << g;
-  }
-
-  hit = 0;
-  for (vertex_t<Graph>& u : vertices(g)) {
-    while (edges_size(g, u) > 0) {
-      edge_t<Graph>* uv = &*begin(g, u);
-      vertex_key_t<Graph> ukey = in_vertex_key(g, *uv);
-      vertex_key_t<Graph> vkey = out_vertex_key(g, *uv);
-      cout << "\n\nRemove: (" << ++hit << ") [" << ukey << "," << vkey << "] "
-           << find_vertex(g, ukey)->name << " <--> " << find_vertex(g, vkey)->name << "\n";
-
-      erase_edge(g, begin(g, u));
-      cout << g;
-    }
-  }
-  return g;
-#endif
 }
 
 template <class OStream>

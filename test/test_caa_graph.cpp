@@ -810,11 +810,6 @@ TEST(TestCAAGraph, BFSEdge) {
 }
 
 TEST(TestCAAGraph, DijkstraShortestDistances) {
-  using std::graph::dijkstra_shortest_distances;
-  using std::graph::dijkstra_shortest_paths;
-  using std::graph::shortest_distance;
-  using std::graph::shortest_path;
-
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -916,9 +911,6 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
 }
 
 TEST(TestCAAGraph, BellmanFordShortestDistances) {
-  using std::graph::bellman_ford_shortest_distances;
-  using std::graph::shortest_distance;
-
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;

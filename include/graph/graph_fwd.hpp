@@ -151,7 +151,6 @@ template <typename G>
 using vertex_edge_size_t = typename G::vertex_edge_size_type;
 
 
-
 //
 // Uniform API Functions
 //
@@ -260,10 +259,8 @@ void reserve_edges(G& g, edge_size_t<G>) {}
 template <typename G>
 void clear(G& g);
 
-#  ifdef TODO
 template <typename G>
 constexpr void swap(G& a, G& b);
-#  endif
 
 
 // Uniform API: Vertex functions
@@ -490,7 +487,6 @@ constexpr auto find_out_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key
       -> const_vertex_out_edge_iterator_t<G>;
 
 
-
 // Directed API (incoming): Edge functions
 template <typename G>
 constexpr void erase_edges(G& g, vertex_in_edge_range_t<G>);
@@ -519,21 +515,24 @@ constexpr auto find_in_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key_
 
 template <typename G>
 concept uniform_graph_c = requires(G&& g, vertex_t<G>& u) {
-  { edges(g, u) } ->vertex_edge_range_t<G>;
+  { edges(g, u) }
+  ->vertex_edge_range_t<G>;
 };
 
 template <typename G>
 concept out_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
-  { out_edges<G>(g, u) } ->vertex_out_edge_range_t<G>;
+  { out_edges<G>(g, u) }
+  ->vertex_out_edge_range_t<G>;
 };
 
 template <typename G>
 concept in_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
-  { in_edges(g, u) } ->vertex_in_edge_range_t<G>;
+  { in_edges(g, u) }
+  ->vertex_in_edge_range_t<G>;
 };
 
 template <typename G>
-concept directed_graph_c = uniform_graph_c && out_directed_graph<G>;
+concept directed_graph_c = uniform_graph_c&& out_directed_graph<G>;
 
 template <typename G>
 concept bidirected_graph_c = uniform_graph_c&& out_directed_graph<G>&& in_directed_graph<G>;
@@ -562,11 +561,16 @@ concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G>& u, vertex_edg
   ::ranges::forward_iterator<vertex_iterator_t<G>>;
   ::ranges::forward_iterator<vertex_edge_iterator_t<G>>;
   //::ranges::forward_range<vertex_t<G>>; // vertex begin/end require graph parameter so it doesn't apply
-  { vertices(g) } ->vertex_range_t<G>;
-  { begin(g, *u) } ->vertex_edge_iterator_t<G>;
-  { end(g, *u) } ->vertex_edge_iterator_t<G>;
-  { vertex(g, *uv) } ->vertex_iterator_t<G>;
-  { vertex_key(g,*u) } ->vertex_key_t<G>;
+  { vertices(g) }
+  ->vertex_range_t<G>;
+  { begin(g, *u) }
+  ->vertex_edge_iterator_t<G>;
+  { end(g, *u) }
+  ->vertex_edge_iterator_t<G>;
+  { vertex(g, *uv) }
+  ->vertex_iterator_t<G>;
+  { vertex_key(g, *u) }
+  ->vertex_key_t<G>;
 };
 
 

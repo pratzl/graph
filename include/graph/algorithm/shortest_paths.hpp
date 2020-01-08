@@ -114,7 +114,7 @@ dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
-      bool const           leaves_only  = false,
+      bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
 
