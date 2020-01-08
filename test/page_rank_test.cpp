@@ -8,6 +8,7 @@
 // Author: Scott McMillan
 //
 
+#include "pch.h"
 #include <iostream>
 #include <random>
 #include <queue>
@@ -22,7 +23,7 @@
 
 #include "timer.hpp"
 #include "util.hpp"
-#include <graph/algorithms/page_rank.hpp>
+#include <graph/algorithm/page_rank.hpp>
 #include <degree.hpp>
 #include "common/abstract_test.hpp"
 

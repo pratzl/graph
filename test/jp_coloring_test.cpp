@@ -8,6 +8,7 @@
 // Author: Jesun Sahariar Firoz
 //
 
+#include "pch.h"
 #include <iostream>
 #include <algorithm>
 #include <list>
@@ -17,7 +18,7 @@
 #include "compressed.hpp"
 #include "mmio.hpp"
 #include "util.hpp"
-#include "graph/algorithms/jones_plassmann_coloring.hpp"
+#include "graph/algorithm/jones_plassmann_coloring.hpp"
 #include "common/test_header.hpp"
 
 using namespace bgl17;

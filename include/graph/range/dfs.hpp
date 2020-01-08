@@ -15,6 +15,13 @@
 //  3.  The state of the traversal is in the range object. Calling begin() returns the
 //      current state, not the beginning of the range.
 //
+// The dfs_edge_range iterators have is_back_edge() and back_vertex() which are used
+// on terminal vertices in the search. A terminal is a vertex that hasn't been visited
+// yet and has no edges to search. When this is true, a pseudo edge is used which is just
+// the end(g,u) edge for the vertex. When is_back_edge() is true, back_vertex() should
+// be used to retreive the vertex that was traversed from most recentely. This must
+// be used as the edge returned is invalid.
+//
 // TODO
 //  1x  Add designation for forward range
 //  2x  Add concepts for requirements
@@ -26,6 +33,7 @@
 //  6.  [SG19] Check integer-based performance vs existing iterator-based performance
 //  7.  [SG19] Support graphs with non-consecutive integers
 //  8.  Test with array<>
+//  9.  Test with unordered graph
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?
@@ -53,8 +61,8 @@ namespace std::graph {
 /// depth-first search range for vertices, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class dfs_vertex_range 
+requires uniform_graph_c<G> && integral<vertex_key_t<G>>&& ::ranges::contiguous_range<
+      vertex_range_t<G>> class dfs_vertex_range 
 {
   struct stack_elem {
     vertex_iterator_t<G>      u;
@@ -195,8 +203,8 @@ private:
 /// depth-first search range for edges, given a single seed vertex.
 ///
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>> && ::ranges::contiguous_range<vertex_range_t<G>> 
-class dfs_edge_range {
+requires uniform_graph_c<G> /*directed_graph_c<G> */ &&
+      integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class dfs_edge_range {
   struct stack_elem {
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
@@ -247,6 +255,7 @@ public:
 
     size_t               depth() const { return dfs_->stack_.size(); }
     bool                 is_back_edge() const { return elem_.uv == std::graph::end(dfs_->graph_, *elem_.u); }
+    vertex_iterator_t<G> back_vertex() { return elem_.u; }
 
     bool is_vertex_visited() const { // Has the [out] vertex been visited yet?
       if (is_back_edge())
@@ -329,7 +338,10 @@ protected:
         stack_.push(stack_elem{u, uv});
 
       // visit v vertex if it hasn't been visited yet
-      if (!visited_[v_key]) {
+      if (visited_[v_key]) {
+        //stack_.push(stack_elem{v, std::graph::end(graph_, *v)}); // view the vertex
+      }
+      else {
         vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
         stack_.push(stack_elem{v, vw});                               // go level deeper in traversal
         visited_[v_key] = true;

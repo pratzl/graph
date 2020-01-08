@@ -10,6 +10,7 @@
 
 /**/
 
+#include "pch.h"
 #include <iostream>
 #include <algorithm>
 #include <list>
@@ -19,7 +20,7 @@
 #include "compressed.hpp"
 #include "mmio.hpp"
 #include "util.hpp"
-#include "graph/algorithms/connected_component.hpp"
+#include "graph/algorithm/connected_component.hpp"
 #include "common/test_header.hpp"
 
 using namespace bgl17;

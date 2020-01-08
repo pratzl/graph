@@ -8,12 +8,13 @@
 // Author: Andrew Lumsdaine
 //
 
+#include "pch.h"
 #include <iostream>
 #include <queue>
 
 #include "common/abstract_test.hpp"
 #include "aos.hpp"
-#include "graph/iterators/bfs_range.hpp"
+#include "graph/range/bfs_range.hpp"
 
 using namespace bgl17;
 

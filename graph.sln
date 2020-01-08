@@ -6,15 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{357F34C0-AD47-44F9-886D-B9B57C82C9DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{C528C0F5-3ED0-4C8B-A623-9639CF1BE4BF}"
-	ProjectSection(SolutionItems) = preProject
-		include\graph\compressed_adj_array.hpp = include\graph\compressed_adj_array.hpp
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graph", "graph", "{42245303-B7DB-4C12-9926-11E7580C3C14}"
 	ProjectSection(SolutionItems) = preProject
+		include\graph\compressed_adj_array.hpp = include\graph\compressed_adj_array.hpp
 		include\graph\graph.hpp = include\graph\graph.hpp
 		include\graph\graph_fwd.hpp = include\graph\graph_fwd.hpp
 		include\graph\graph_utility.hpp = include\graph\graph_utility.hpp
+		include\graph\undirected_adj_list.hpp = include\graph\undirected_adj_list.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "range", "range", "{6F31AFF7-259A-4B3C-9559-4D756D2B09B7}"
@@ -32,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "range", "range", "{6F31AFF7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{1B39F91E-48A8-4D17-8DEE-C694CE374A6D}"
 	ProjectSection(SolutionItems) = preProject
+		include\graph\algorithm\articulation_poiints.hpp = include\graph\algorithm\articulation_poiints.hpp
 		include\graph\algorithm\boykov_kolmogorov.hpp = include\graph\algorithm\boykov_kolmogorov.hpp
 		include\graph\algorithm\boykov_kolmogorov2.hpp = include\graph\algorithm\boykov_kolmogorov2.hpp
 		include\graph\algorithm\boykov_kolmogorov3.hpp = include\graph\algorithm\boykov_kolmogorov3.hpp
@@ -114,7 +114,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{18AF61
 	ProjectSection(SolutionItems) = preProject
 		include\graph\detail\compressed_adj_array_impl.hpp = include\graph\detail\compressed_adj_array_impl.hpp
 		include\graph\detail\graph_fwd_impl.hpp = include\graph\detail\graph_fwd_impl.hpp
+		include\graph\detail\undirected_adj_list_impl.hpp = include\graph\detail\undirected_adj_list_impl.hpp
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{C3A137DA-3D56-4110-A95A-53AD0DA264B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

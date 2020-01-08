@@ -37,6 +37,7 @@
 //  1.  Figure how to define DistanceT from DistFnc so user isn't required to specify it.
 //      Then move DistFnc parameter later in template.
 //  2.  Add output_iterator concept check for parameter
+//  3.  Add edges(g) requirement concept to djikstra
 //
 // ISSUES / QUESTIONS
 //  1.  Should bellman_ford always check for negative edge cycles? (e.g. remove
@@ -113,7 +114,7 @@ dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
-      bool const           leaves_only  = false,
+      bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
 
@@ -494,7 +495,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_t<G> uv : edges(g_))
+        for (edge_t<G>& uv : edges(g_))
           if (out_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[in_vertex_key(g_, uv)] = false;
       }
@@ -503,7 +504,7 @@ protected:
     // Detect negative edge cycles, if desired
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
-      for (edge_t<G> uv : edges(g_)) {
+      for (edge_t<G>& uv : edges(g_)) {
         vertex_key_t<G> ukey = in_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source

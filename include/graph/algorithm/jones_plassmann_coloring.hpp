@@ -11,8 +11,9 @@
 /*Implements Jones-Plassmann algorithm for coloring */
 #pragma once
 
+#include "pch.h"
 #include "plain_range.hpp"
-#include "../iterators/dag_range.hpp"
+#include "../range/dag_range.hpp"
 
 // #define PRINT_DEBUG 1
 

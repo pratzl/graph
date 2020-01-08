@@ -8,11 +8,12 @@
 // Author: Kevin Deweese
 //
 
+#include "pch.h"
 #include <algorithm>
-#include <graph/algorithms/max_flow.hpp>
+#include <graph/algorithm/max_flow.hpp>
 #include <compressed.hpp>
 #include <edge_list.hpp>
-#include <graph/iterators/filtered_bfs_range.hpp>
+#include <graph/range/filtered_bfs_range.hpp>
 #include <mmio.hpp>
 #include <reverse.hpp>
 #include <vector>

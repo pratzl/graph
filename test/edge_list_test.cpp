@@ -8,6 +8,7 @@
 // Author: Andrew Lumsdaine
 //
 
+#include "pch.h"
 #include "compressed.hpp"
 #include "edge_list.hpp"
 
