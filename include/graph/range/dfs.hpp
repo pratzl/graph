@@ -226,6 +226,8 @@ public:
   class const_iterator {
   public:
     using iterator_category = forward_iterator_tag;
+    using value_type        = edge_t<G>;
+    using reference         = value_type const&;
 
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
@@ -277,6 +279,8 @@ public:
   class iterator : public const_iterator {
   public:
     using iterator_category = forward_iterator_tag;
+    using value_type        = edge_t<G>;
+    using reference         = value_type&;
 
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}

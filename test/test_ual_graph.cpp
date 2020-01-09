@@ -436,7 +436,7 @@ TEST(TestUALGraph, AllEdgeFunctions) {
   EXPECT_NE(end(g), v);
 
   edge_iterator_t<Graph> uv = find_edge(g, *u, *v); // find edge Frankfurt --> Mannheim
-  EXPECT_NE(end(g.edges()), uv);
+  EXPECT_NE(::ranges::end(g.edges()), uv);
   EXPECT_EQ(v, vertex(g, *uv));
   EXPECT_EQ(v, out_vertex(g, *uv));
   EXPECT_EQ(u, in_vertex(g, *uv));
