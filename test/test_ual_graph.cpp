@@ -27,7 +27,7 @@
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_TEST
+#define TEST_OPTION TEST_OPTION_OUTPUT
 
 
 using std::vector;

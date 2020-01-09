@@ -72,7 +72,8 @@ requires uniform_graph_c<G> && integral<vertex_key_t<G>>&& ::ranges::contiguous_
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
 public:
-  dfs_vertex_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph)) {
+  dfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+        : graph_(graph), stack_(alloc), visited_(vertices_size(graph), alloc), alloc_(alloc) {
     if (seed != std::graph::end(graph_)) {
       stack_.push(stack_elem{seed, std::graph::begin(graph_, *seed)});
       visited_[vertex_key(graph_, *seed)] = true;
@@ -197,6 +198,7 @@ private:
   G&           graph_;
   stack_type   stack_;
   vector<bool> visited_;
+  A            alloc_;
 };
 
 
@@ -213,7 +215,8 @@ requires uniform_graph_c<G> /*directed_graph_c<G> */ &&
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
 public:
-  dfs_edge_range(G& graph, vertex_iterator_t<G> seed) : graph_(graph), visited_(vertices_size(graph)) {
+  dfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+        : graph_(graph), stack_(alloc), visited_(vertices_size(graph), alloc) {
     if (seed != std::graph::end(graph_)) {
       stack_.push(stack_elem{seed, std::graph::begin(graph_, *seed)});
       visited_[vertex_key(graph_, *seed)] = true;
@@ -354,6 +357,7 @@ private:
   G&           graph_;
   stack_type   stack_;
   vector<bool> visited_;
+  A            alloc_;
 };
 
 

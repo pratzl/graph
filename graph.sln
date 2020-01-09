@@ -45,6 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{
 		include\graph\algorithm\shortest_paths.hpp = include\graph\algorithm\shortest_paths.hpp
 		include\graph\algorithm\spanning_tree.hpp = include\graph\algorithm\spanning_tree.hpp
 		include\graph\algorithm\spMatspMat.hpp = include\graph\algorithm\spMatspMat.hpp
+		include\graph\algorithm\transitive_closure.hpp = include\graph\algorithm\transitive_closure.hpp
 		include\graph\algorithm\triangle_count.hpp = include\graph\algorithm\triangle_count.hpp
 		include\graph\algorithm\utils.hpp = include\graph\algorithm\utils.hpp
 	EndProjectSection

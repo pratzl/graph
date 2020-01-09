@@ -75,8 +75,8 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<
   using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed)
-        : graph_(graph), visited_(vertices_size(graph), white) {
+  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc=A())
+        : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
     if (seed != std::graph::end(graph_)) {
       queue_.push(queue_elem{seed, 1});
       visited_[vertex_key(graph_, *seed)] = grey;
@@ -211,6 +211,7 @@ private:
   G&                   graph_;
   queue_type           queue_;
   vector<three_colors> visited_;
+  A                    alloc_;
 };
 
 
@@ -235,8 +236,8 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<
   using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_edge_range(G& graph, vertex_iterator_t<G> seed)
-        : graph_(graph), visited_(vertices_size(graph), white) {
+  bfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc=A())
+        : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
     if (seed != std::graph::end(graph_))
       push_neighbors(seed, 1);
   }
@@ -386,6 +387,7 @@ private:
   G&                   graph_;
   queue_type           queue_;
   vector<three_colors> visited_;
+  A                    alloc_;
 };
 
 } // namespace std::graph
