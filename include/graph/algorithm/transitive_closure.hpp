@@ -28,8 +28,8 @@ struct reaches {
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a sparse graph.
 template <directed_graph_c G, typename OutIter, typename A = allocator<char>>
-  requires sparse_graph_c<G>&& integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
-constexpr void transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
+  requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
+constexpr void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   using reach_t = reaches<vertex_iterator_t<G>>;
   auto first = begin(g);
   for (auto ui = first; ui != end(g); ++ui) {
@@ -42,9 +42,12 @@ constexpr void transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a dense graph using Warshall's algorithm.
+///
+/// ToDo: Add parallel option
+///
 template <directed_graph_c G, typename OutIter, typename A = allocator<bool>>
-  requires dense_graph_c<G>&& integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
-constexpr void transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
+  requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
+constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   size_t const V = vertices_size(g);
 
   vector<bool> reach(V * V, alloc);

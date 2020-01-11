@@ -49,6 +49,8 @@
 #include "../graph_fwd.hpp"
 #include "range/v3/algorithm/reverse.hpp"
 
+#define SHORTEST_RANGE
+
 #ifndef GRAPH_SHORTEST_PATHS_HPP
 #  define GRAPH_SHORTEST_PATHS_HPP
 
@@ -65,6 +67,28 @@ template <typename G,
           typename DistanceT = decltype(DistFnc),
           typename A         = allocator<DistanceT>>
 class bellman_ford_fn;
+
+
+template <typename G, typename A = allocator<vertex_iterator_t<G>>>
+using vertex_path_t = vector<vertex_iterator_t<G>, A>;
+
+template <typename G, typename A = allocator<edge_iterator_t<G>>>
+using vertex_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_path_t<G, A>*>(nullptr)));
+
+template <typename G, typename A = allocator<edge_iterator_t<G>>>
+using edge_path_t = vector<edge_iterator_t<G>, A>;
+
+template <typename G, typename A>
+using edge_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_path_t<G, A>*>(nullptr)));
+
+
+template <typename G, arithmetic_c DistanceT, typename A = allocator<vertex_iterator_t<G>>>
+struct shortest_path2 {
+  DistanceT               distance;
+  vertex_path_range<G, A> vertex_path;
+  edge_path_range<G, A>   path;
+};
+
 
 //! The return value of the shortest distance functions
 template <forward_iterator VertexIteratorT, arithmetic_c DistanceT>
