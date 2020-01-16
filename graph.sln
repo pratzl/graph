@@ -55,6 +55,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{59FC2CF8-6CB3-456B-BA96-761CAE23308C}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		Todo.txt = Todo.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17", "bgl17", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
