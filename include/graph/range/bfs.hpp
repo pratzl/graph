@@ -248,7 +248,7 @@ public:
   class const_iterator {
   public:
     using iterator_category = forward_iterator_tag;
-    using value_type        = vertex_t<G>;
+    using value_type        = edge_t<G>;
     using reference         = value_type const&;
 
     using vertex_type           = const_vertex_t<G>;
