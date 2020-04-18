@@ -273,17 +273,20 @@ TEST(TestCAAGraph, AllGraphFunctions) {
   EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
 
   size_t cnt = 0;
-  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g); u != std::graph::end(g); ++u, ++cnt)
+  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g);
+       u != std::graph::end(g); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc); u != std::graph::end(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc);
+       u != std::graph::end(gc); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc); u != std::graph::cend(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc);
+       u != std::graph::cend(gc); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
@@ -321,7 +324,8 @@ TEST(TestCAAGraph, AllVertexFunctions) {
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
   EXPECT_EQ(f1, f2);
 
-  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> f3 =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
   EXPECT_NE(f3, g.vertices().end());
   EXPECT_EQ(2, vertex_key(g, *f3));
 
@@ -339,14 +343,18 @@ TEST(TestCAAGraph, AllVertexFunctions) {
   }
 
   {
-    std::graph::vertex_out_edge_range_t<Graph>          uvr      = std::graph::out_edges(g, u);
-    std::graph::const_vertex_out_edge_range_t<Graph>    uvrc     = std::graph::out_edges(g, uc);
-    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_beg1 = std::graph::out_begin(g, u);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 = std::graph::out_begin(g, uc);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 = std::graph::out_cbegin(g, u);
-    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_end1 = std::graph::out_end(g, u);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 = std::graph::out_end(g, uc);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
+    std::graph::vertex_out_edge_range_t<Graph>       uvr   = std::graph::out_edges(g, u);
+    std::graph::const_vertex_out_edge_range_t<Graph> uvrc  = std::graph::out_edges(g, uc);
+    std::graph::vertex_out_edge_iterator_t<Graph> uvi_beg1 = std::graph::out_begin(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 =
+          std::graph::out_begin(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 =
+          std::graph::out_cbegin(g, u);
+    std::graph::vertex_out_edge_iterator_t<Graph> uvi_end1 = std::graph::out_end(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 =
+          std::graph::out_end(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 =
+          std::graph::out_cend(g, u);
     EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
     EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
   }
@@ -357,8 +365,10 @@ TEST(TestCAAGraph, AllEdgeFunctions) {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
 
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
-  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
   EXPECT_NE(end(g), u);
   EXPECT_NE(end(g), v);
 
@@ -829,7 +839,8 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -929,12 +940,14 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true, weight_fnc);
+  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true,
+                                       weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
   /* Output: source = Frankfürt
@@ -952,7 +965,8 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 
   cout << "\n";
   short_dists.clear();
-  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true, weight_fnc);
+  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true,
+                                       weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
     /* Output: source = Frankfürt
@@ -1033,7 +1047,8 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u =
+        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 

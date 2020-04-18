@@ -204,6 +204,7 @@ public:
   edge_type&       back();
   edge_type const& back() const;
 
+
 public:
   template <typename ListT>
   void link_front(edge_type& uv, ual_edge_list_link<VV, EV, GV, IndexT, A, ListT>& uv_link);

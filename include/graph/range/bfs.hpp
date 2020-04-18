@@ -70,8 +70,9 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
     vertex_iterator_t<G> u;
     size_t               depth = 0;
   };
-  using queue_alloc = typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
-  using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
+  using queue_alloc =
+        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
+  using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
   bfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
@@ -89,7 +90,8 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{std::graph::end(bfs.graph_)} {
+    const_iterator(bfs_vertex_range& bfs, bool end_iter = false)
+          : bfs_(&bfs), elem_{std::graph::end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -231,8 +233,9 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
     vertex_edge_iterator_t<G> uv;
     size_t                    depth = 0;
   };
-  using queue_alloc = typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
-  using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
+  using queue_alloc =
+        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
+  using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
   bfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
