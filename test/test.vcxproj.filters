@@ -24,17 +24,11 @@
     <ClCompile Include="data_routes.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="test_cycle_directed.cpp" />
-    <ClCompile Include="test_data.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
+    <ClCompile Include="test_concomp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="data_routes.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="test_data.hpp">
       <Filter>data</Filter>
     </ClInclude>
   </ItemGroup>

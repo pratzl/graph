@@ -29,18 +29,16 @@ using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 struct route;
 using Routes = routes_t;
 
-vector<Graph::edge_value_type> caa_germany_edge_routes = to_edge_values<Graph>(germany_routes, germany_cities);
+vector<Graph::edge_value_type> const& caa_germany_edge_routes = germany_routes_directed_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
-Graph create_germany_routes_graph() {
-  return Graph(
-        caa_germany_edge_routes, germany_cities, [](Graph::edge_value_type const& er) { return er.first; },
-        [](Graph::edge_value_type const& er) { return er.second; },
-        [](string const& city) -> string const& { return city; });
+static Graph create_germany_routes_graph() {
+  return germany_routes_directed_graph.create_graph();
 }
+static vector<std::string> const& germany_cities() { return germany_routes_directed_graph.vertex_values(); }
 
 template <class OStream>
 OStream& operator<<(OStream& os, Graph const& g) {
@@ -78,7 +76,7 @@ TEST(TestCAAGraph, TestGraphInit) {
   Graph                          g(germany_cities, caa_germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
-  EXPECT_EQ(germany_cities.size(), vertices_size(g));
+  EXPECT_EQ(germany_cities().size(), vertices_size(g));
   EXPECT_EQ(caa_germany_edge_routes.size(), edges_size(g));
 
 #if 0
@@ -107,7 +105,7 @@ TEST(TestCAAGraph, TestGraphInit) {
     EXPECT_EQ(n1, n2); // same as before?
     nEdges += n1;
   }
-  EXPECT_EQ(germany_cities.size(), nVertices);
+  EXPECT_EQ(germany_cities().size(), nVertices);
   EXPECT_EQ(caa_germany_edge_routes.size(), nEdges);
 
   // iterate thru edges range

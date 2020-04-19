@@ -33,7 +33,6 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClInclude Include="test_data.hpp" />
     <ClInclude Include="data_routes.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -45,7 +44,6 @@
     <ClCompile Include="bk.cpp" />
     <ClCompile Include="compressed_test.cpp" />
     <ClCompile Include="connected_component_test.cpp" />
-    <ClCompile Include="test_data.cpp" />
     <ClCompile Include="data_routes.cpp" />
     <ClCompile Include="edge_list_test.cpp" />
     <ClCompile Include="jp_coloring_test.cpp" />
@@ -63,7 +61,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="test_caa_graph.cpp" />
-    <ClCompile Include="test_cycle_directed.cpp" />
+    <ClCompile Include="test_concomp.cpp" />
     <ClCompile Include="test_ual_graph.cpp" />
     <ClCompile Include="vov_test.cpp" />
   </ItemGroup>

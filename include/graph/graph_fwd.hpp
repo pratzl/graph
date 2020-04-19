@@ -107,9 +107,9 @@ template <typename G>
 using const_vertex_key_t = const typename G::vertex_key_type;
 
 template <typename G>
-using vertex_value_t = typename G::vertex_user_value;
+using vertex_value_t = typename G::vertex_user_value_type;
 template <typename G>
-using const_vertex_value_t = const typename G::vertex_user_value;
+using const_vertex_value_t = const typename G::vertex_user_value_type;
 
 template <typename G>
 using vertex_range_t = typename G::vertex_range;
