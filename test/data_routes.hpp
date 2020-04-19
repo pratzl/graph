@@ -28,6 +28,7 @@ struct route {
 
 std::vector<std::string> unique_cities(routes_t const& routes);
 
+// transform {str, str, dist} --> pair{ pair{u_idx, v_idx}, dist}, ordered by {u_idx, v_idx}
 template <typename G>
 std::vector<typename G::edge_value_type> to_edge_values(routes_t const& routes, std::vector<std::string> const& cities) {
   using std::graph::vertex_key_t;
@@ -41,7 +42,7 @@ std::vector<typename G::edge_value_type> to_edge_values(routes_t const& routes, 
           static_cast<vertex_key_t<G>>(::ranges::find(cities, r.to) - cities.begin());
     assert(from < cities.size());
     assert(to < cities.size());
-    edge_values.push_back({{from, to}, r.km});
+    edge_values.push_back({{from, to}, r.km}); // pair{ pair{u_idx, v_idx}, dist}
   }
   auto cmp = [](typename G::edge_value_type const& lhs,
                 typename G::edge_value_type const& rhs) {

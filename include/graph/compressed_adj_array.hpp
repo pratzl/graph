@@ -211,7 +211,7 @@ private:
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
-public:
+public: 
   using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
   using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;

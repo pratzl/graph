@@ -5,8 +5,6 @@
 
 using std::vector;
 using std::string;
-using std::cout;
-using std::endl;
 
 routes_t const germany_routes{
       {"Frankfürt", "Mannheim", 85},  {"Frankfürt", "Würzburg", 217},
