@@ -13,6 +13,10 @@
 
 namespace data {
 
+template <typename Mapper>
+class GraphXlate;
+
+// a weight value with double type
 struct dbl_weight_value {
   double weight = 0;
 
@@ -21,6 +25,57 @@ struct dbl_weight_value {
   dbl_weight_value& operator=(dbl_weight_value const&) = default;
   dbl_weight_value(double const& w) : weight(w) {}
 };
+
+struct data_edge;
+struct caa_data_edge_mapper;
+struct ual_data_edge_mapper;
+extern GraphXlate<caa_data_edge_mapper> dollar_directed_graph;
+extern GraphXlate<ual_data_edge_mapper> dollar_undirected_graph;
+
+extern GraphXlate<caa_data_edge_mapper> candle_directed_graph;
+extern GraphXlate<ual_data_edge_mapper> candle_undirected_graph;
+
+
+struct data_edge {
+  std::string from;
+  std::string to;
+  double      weight = 0.0;
+  data_edge(std::string const& from_vertex, std::string const& to_vertex, double wght)
+        : from(from_vertex), to(to_vertex), weight(wght) {}
+  data_edge()                 = default;
+  data_edge(data_edge const&) = default;
+  data_edge& operator=(data_edge const&) = default;
+  ~data_edge()                           = default;
+};
+using data_edges_t    = std::vector<data_edge>;
+using vertex_labels_t = std::vector<std::string>;
+
+struct caa_data_edge_mapper {
+  using target_graph_t        = std::graph::compressed_adjacency_array<std::graph::name_value, dbl_weight_value>;
+  using source_edge_range_t   = data_edges_t;
+  using source_edge_t         = data_edges_t::value_type;
+
+  using vertex_label_t = std::string;
+
+  vertex_label_t in_label(source_edge_t const& uv) const { return uv.from;  }
+  vertex_label_t out_label(source_edge_t const& uv) const { return uv.to; }
+
+  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
+};
+
+struct ual_data_edge_mapper {
+  using target_graph_t      = std::graph::undirected_adjacency_list<std::graph::name_value, dbl_weight_value>;
+  using source_edge_range_t = data_edges_t;
+  using source_edge_t       = data_edges_t::value_type;
+
+  using vertex_label_t = std::string;
+
+  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+
+  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
+};
+
 
 // Translates raw edge data into intermediate forms that can easily be used for
 // creating a compressed_adjacency_array or undirected_adjacency_list.
@@ -79,9 +134,7 @@ protected:
       edge_values.push_back({{from, to}, r.weight}); // pair{ pair{u_label, v_label}, uv_value }
     }
     auto cmp = [](typename target_graph_t::edge_value_type const& lhs,
-                  typename target_graph_t::edge_value_type const& rhs) {
-      return lhs.first.first < rhs.first.first;
-    };
+                  typename target_graph_t::edge_value_type const& rhs) { return lhs.first.first < rhs.first.first; };
     ::ranges::sort(edge_values, cmp);
     return edge_values;
   }
@@ -92,48 +145,5 @@ private:
   target_edges_t  edge_values_;
 };
 
-
-struct data_edge {
-  std::string from;
-  std::string to;
-  double      weight = 0.0;
-  data_edge(std::string const& from_vertex, std::string const& to_vertex, double wght)
-        : from(from_vertex), to(to_vertex), weight(wght) {}
-};
-using data_edges_t    = std::vector<data_edge>;
-using vertex_labels_t = std::vector<std::string>;
-
-struct caa_data_edge_mapper {
-  using target_graph_t        = std::graph::compressed_adjacency_array<std::graph::name_value, dbl_weight_value>;
-  using source_edge_range_t   = data_edges_t;
-  using source_edge_t         = data_edges_t::value_type;
-
-  using vertex_label_t = std::string;
-
-  vertex_label_t in_label(source_edge_t const& uv) const { return uv.from;  }
-  vertex_label_t out_label(source_edge_t const& uv) const { return uv.to; }
-
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
-};
-
-struct ual_data_edge_mapper {
-  using target_graph_t      = std::graph::undirected_adjacency_list<std::graph::name_value, dbl_weight_value>;
-  using source_edge_range_t = data_edges_t;
-  using source_edge_t       = data_edges_t::value_type;
-
-  using vertex_label_t = std::string;
-
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
-
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
-};
-
-
-extern GraphXlate<caa_data_edge_mapper> dollar_directed_graph;
-extern GraphXlate<ual_data_edge_mapper> dollar_undirected_graph;
-
-extern GraphXlate<caa_data_edge_mapper> candle_directed_graph;
-extern GraphXlate<ual_data_edge_mapper> candle_undirected_graph;
 
 } // namespace data
