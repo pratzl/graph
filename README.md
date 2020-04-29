@@ -6,20 +6,34 @@ Build & Run Requirements
 1. MSVC 2019 16.5 with following build settings
 	/std:c++latest
 	/permissive-
-	/experimental:preprocessor 
+	/experimental:preprocessor (compliant pre-processor release in 16.6)
 	precompiled headers (enbled; optional)
 2. range-v3 library (assumed in D:\lib\range-v3)
 3. Build tool: MSBuild
+4. Test framework: google test (tentative)
 
-Language requirements
+C++20 requirements
 1. Concepts (language and <concepts> header)
+2. Ranges (range-v3)
 
-Other Notes
+ORIENTATION
+1.	./test/ contains unit tests. 
+	test_* are test files
+	data_* hold data to be used for tests
+2.	graph/include holds the graph implementation
+	./graph_fwd.hpp is the primary header that contains prototypes in the paper
+	./compressed_adj_array.hpp is the directed graph interface
+	./undirected_adj_list.hpp is the undirected graph interface
+	./algorithm/ holds algorithm implementation
+	./range/ holds range definitions
+	./detail/ hold the implementation details for the graphs
+
+NOTES (OTHER)
 Range requirement for container
 https://stackoverflow.com/questions/35542744/how-to-create-a-custom-container-for-range-v3
 
 TODO
-1.	Remove old bgl17 code
+1x	Remove old bgl17 code
 2.	bgl17
 	a.	Add simple adapator to show dfs_vertex_range iteratation
 3.	Multi-platform/compiler support
@@ -27,11 +41,12 @@ TODO
 	b.	Use range-v3 macros for platform-specific concept support
 	c.	Build with gcc in linux
 	d.	Build with clang in linux
+	e.	MSVC: support gcc & clang builds in WSL
 4.	Paper
 	a.	Strongly-connected components: impl, test, update paper
 	b.	Connected components: impl, test, update paper
 	c.	Bi-connected components: impl, test, update paper
 	d.	Articulation Points: impl, test, update paper
-	e.	Test with arrray<T> for constexpr
+	e.	Simple test with arrray<T> for constexpr
 	f.	modules
 	g.	compare with other libraries (Lemon, ...)
