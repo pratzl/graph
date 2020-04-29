@@ -44,9 +44,21 @@ TODO
 	e.	MSVC: support gcc & clang builds in WSL
 4.	Paper / Design
 	a.	Strongly-connected components: impl, test, update paper
+		i	implement & test
+		ii	update paper
+		iii	add example to paper
 	b.	Connected components: impl, test, update paper
+		i	implement & test
+		ii	update paper
+		iii	add example to paper
 	c.	Bi-connected components: impl, test, update paper
+		i	implement & test
+		ii	update paper
+		iii	add example to paper
 	d.	Articulation Points: impl, test, update paper
+		i	implement & test
+		ii	update paper
+		iii	add example to paper
 	e.	Simple test with arrray<T> for constexpr
 	f.	define graph module (C++20)
 	g.	compare with other libraries (Lemon, ...)
@@ -54,3 +66,6 @@ TODO
 		i	support map for vertices? for edges?
 		ii	allow non-integer vertex_key?
 	i.	how extensive should graph concepts be, esp when an algo may not need everything?
+	j.	add data structures
+		i	directed data structure
+		ii	unordered data structure
