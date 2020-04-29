@@ -12,7 +12,8 @@
 //
 // Dijktra's shortest path algorithm runs in O(|E| + |V|log|V|) time and supports non-negative
 // edge weights. Signed weight types are allowed to accomodate real-world situations, and it
-// is the user's responsibility to assure only non-negative weights exist.
+// is the user's responsibility to assure only non-negative weights exist. Outputting leaf-only 
+// distances/paths adds an additional O(|V| + |E|). 
 //
 // Bellman-Ford shortest path algorithm runs in O(|V| * |E|) and support negative edge weights.
 // It is slower than Dijktra's algorithm but is more versatile because it supports negative

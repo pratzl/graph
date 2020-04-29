@@ -2,6 +2,7 @@
 #include "graph/compressed_adj_array.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
+#include "graph/algorithm/components.hpp"
 #include "data_routes.hpp"
 
 #define TEST_OPTION_OUTPUT (1)

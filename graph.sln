@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{
 		include\graph\algorithm\boykov_kolmogorov.hpp = include\graph\algorithm\boykov_kolmogorov.hpp
 		include\graph\algorithm\boykov_kolmogorov2.hpp = include\graph\algorithm\boykov_kolmogorov2.hpp
 		include\graph\algorithm\boykov_kolmogorov3.hpp = include\graph\algorithm\boykov_kolmogorov3.hpp
+		include\graph\algorithm\components.hpp = include\graph\algorithm\components.hpp
 		include\graph\algorithm\connected_component.hpp = include\graph\algorithm\connected_component.hpp
 		include\graph\algorithm\dag_based_mis.hpp = include\graph\algorithm\dag_based_mis.hpp
 		include\graph\algorithm\jones_plassmann_coloring.hpp = include\graph\algorithm\jones_plassmann_coloring.hpp
