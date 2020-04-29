@@ -9,7 +9,7 @@ Build & Run Requirements
 	/experimental:preprocessor (compliant pre-processor release in 16.6)
 	precompiled headers (enbled; optional)
 2. range-v3 library (assumed in D:\lib\range-v3)
-3. Build tool: MSBuild
+3. Build tool: MSBuild (temporary)
 4. Test framework: google test (tentative)
 
 C++20 requirements
@@ -42,11 +42,15 @@ TODO
 	c.	Build with gcc in linux
 	d.	Build with clang in linux
 	e.	MSVC: support gcc & clang builds in WSL
-4.	Paper
+4.	Paper / Design
 	a.	Strongly-connected components: impl, test, update paper
 	b.	Connected components: impl, test, update paper
 	c.	Bi-connected components: impl, test, update paper
 	d.	Articulation Points: impl, test, update paper
 	e.	Simple test with arrray<T> for constexpr
-	f.	modules
+	f.	define graph module (C++20)
 	g.	compare with other libraries (Lemon, ...)
+	h.	algorithms: refine concept requirements
+		i	support map for vertices? for edges?
+		ii	allow non-integer vertex_key?
+	i.	how extensive should graph concepts be, esp when an algo may not need everything?
