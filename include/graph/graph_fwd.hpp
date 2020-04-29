@@ -53,13 +53,8 @@
    TODO
 	1.	Extend compressed_adj_array to support:
 		a.	in edges?
-		d.	create_vertex & create_edge?
-	2.	Add algorithms
-	3.	Add reverse_graph (swap in/out edges)
-	4.	Add more flexible adj_array to support 
-		a.	adding/removing disjoint edges
-	5.	Add adj_list
-	6.	Add adj_matrix
+	2.	Add reverse_graph (swap in/out edges)
+	3.	Add adj_matrix impl
 
 */
 

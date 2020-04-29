@@ -37,23 +37,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="adjacency_test.cpp" />
-    <ClCompile Include="aolos_test.cpp" />
-    <ClCompile Include="aos_test.cpp" />
-    <ClCompile Include="bfs_test_0.cpp" />
-    <ClCompile Include="bk.cpp" />
-    <ClCompile Include="compressed_test.cpp" />
-    <ClCompile Include="connected_component_test.cpp" />
     <ClCompile Include="data_routes.cpp" />
-    <ClCompile Include="edge_list_test.cpp" />
-    <ClCompile Include="jp_coloring_test.cpp" />
-    <ClCompile Include="kcore_test.cpp" />
-    <ClCompile Include="max_flow_test.cpp" />
-    <ClCompile Include="mis_test.cpp" />
-    <ClCompile Include="mmio_test.cpp" />
-    <ClCompile Include="new_dfs_test.cpp" />
-    <ClCompile Include="page_rank_test.cpp" />
-    <ClCompile Include="spanning_tree_test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -63,7 +47,6 @@
     <ClCompile Include="test_caa_graph.cpp" />
     <ClCompile Include="test_concomp.cpp" />
     <ClCompile Include="test_ual_graph.cpp" />
-    <ClCompile Include="vov_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -85,7 +68,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17;D:\dev\graph\src;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -104,7 +87,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17;D:\dev\graph\src;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,7 +105,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17;D:\dev\graph\src;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -142,7 +125,7 @@
       <AdditionalOptions>/experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\dev\graph\adaptors\bgl17;D:\dev\graph\src;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\graph\include;D:\lib\range-v3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
