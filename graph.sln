@@ -19,35 +19,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "range", "range", "{6F31AFF7-259A-4B3C-9559-4D756D2B09B7}"
 	ProjectSection(SolutionItems) = preProject
 		include\graph\range\bfs.hpp = include\graph\range\bfs.hpp
-		include\graph\range\bfs_edge_range.hpp = include\graph\range\bfs_edge_range.hpp
-		include\graph\range\bfs_range.hpp = include\graph\range\bfs_range.hpp
-		include\graph\range\dag_range.hpp = include\graph\range\dag_range.hpp
 		include\graph\range\dfs.hpp = include\graph\range\dfs.hpp
-		include\graph\range\dfs_range.hpp = include\graph\range\dfs_range.hpp
-		include\graph\range\filtered_bfs_range.hpp = include\graph\range\filtered_bfs_range.hpp
-		include\graph\range\new_dfs_range.hpp = include\graph\range\new_dfs_range.hpp
 		include\graph\range\topo_sort.hpp = include\graph\range\topo_sort.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "algorithm", "algorithm", "{1B39F91E-48A8-4D17-8DEE-C694CE374A6D}"
 	ProjectSection(SolutionItems) = preProject
-		include\graph\algorithm\articulation_poiints.hpp = include\graph\algorithm\articulation_poiints.hpp
-		include\graph\algorithm\boykov_kolmogorov.hpp = include\graph\algorithm\boykov_kolmogorov.hpp
-		include\graph\algorithm\boykov_kolmogorov2.hpp = include\graph\algorithm\boykov_kolmogorov2.hpp
-		include\graph\algorithm\boykov_kolmogorov3.hpp = include\graph\algorithm\boykov_kolmogorov3.hpp
 		include\graph\algorithm\components.hpp = include\graph\algorithm\components.hpp
-		include\graph\algorithm\connected_component.hpp = include\graph\algorithm\connected_component.hpp
-		include\graph\algorithm\dag_based_mis.hpp = include\graph\algorithm\dag_based_mis.hpp
-		include\graph\algorithm\jones_plassmann_coloring.hpp = include\graph\algorithm\jones_plassmann_coloring.hpp
-		include\graph\algorithm\k_core.hpp = include\graph\algorithm\k_core.hpp
-		include\graph\algorithm\max_flow.hpp = include\graph\algorithm\max_flow.hpp
-		include\graph\algorithm\mis.hpp = include\graph\algorithm\mis.hpp
 		include\graph\algorithm\page_rank.hpp = include\graph\algorithm\page_rank.hpp
 		include\graph\algorithm\shortest_paths.hpp = include\graph\algorithm\shortest_paths.hpp
-		include\graph\algorithm\spanning_tree.hpp = include\graph\algorithm\spanning_tree.hpp
-		include\graph\algorithm\spMatspMat.hpp = include\graph\algorithm\spMatspMat.hpp
 		include\graph\algorithm\transitive_closure.hpp = include\graph\algorithm\transitive_closure.hpp
-		include\graph\algorithm\triangle_count.hpp = include\graph\algorithm\triangle_count.hpp
 		include\graph\algorithm\utils.hpp = include\graph\algorithm\utils.hpp
 	EndProjectSection
 EndProject
@@ -57,60 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 		Todo.txt = Todo.txt
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17", "bgl17", "{D1335215-222B-4795-82DF-CCE1673DA9D3}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17\aolos.hpp = adaptors\bgl17\aolos.hpp
-		adaptors\bgl17\aos.hpp = adaptors\bgl17\aos.hpp
-		adaptors\bgl17\compressed.hpp = adaptors\bgl17\compressed.hpp
-		adaptors\bgl17\degree.hpp = adaptors\bgl17\degree.hpp
-		adaptors\bgl17\disjoint_set.hpp = adaptors\bgl17\disjoint_set.hpp
-		adaptors\bgl17\edge_list.hpp = adaptors\bgl17\edge_list.hpp
-		adaptors\bgl17\graph_base.hpp = adaptors\bgl17\graph_base.hpp
-		adaptors\bgl17\mmio.hpp = adaptors\bgl17\mmio.hpp
-		adaptors\bgl17\neighbor_range.hpp = adaptors\bgl17\neighbor_range.hpp
-		adaptors\bgl17\plain_range.hpp = adaptors\bgl17\plain_range.hpp
-		adaptors\bgl17\random_range.hpp = adaptors\bgl17\random_range.hpp
-		adaptors\bgl17\reverse.hpp = adaptors\bgl17\reverse.hpp
-		adaptors\bgl17\spmv_range.hpp = adaptors\bgl17\spmv_range.hpp
-		adaptors\bgl17\timer.hpp = adaptors\bgl17\timer.hpp
-		adaptors\bgl17\util.hpp = adaptors\bgl17\util.hpp
-		adaptors\bgl17\util_par.hpp = adaptors\bgl17\util_par.hpp
-		adaptors\bgl17\vovos.hpp = adaptors\bgl17\vovos.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "attic", "attic", "{8FBEBA4F-9797-4A0B-B6E9-C4BFDFF6FFB3}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17\attic\compressed.hpp = adaptors\bgl17\attic\compressed.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backlog", "backlog", "{C48C4310-BE33-49F4-96F3-61ADC3D66F8B}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17\backlog\adj.hpp = adaptors\bgl17\backlog\adj.hpp
-		adaptors\bgl17\backlog\dimacs_io.hpp = adaptors\bgl17\backlog\dimacs_io.hpp
-		adaptors\bgl17\backlog\vov.hpp = adaptors\bgl17\backlog\vov.hpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "checkpoint", "checkpoint", "{5A8B09F6-FCE2-4179-99D2-E456DE30221A}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17\checkpoint\adj.hpp = adaptors\bgl17\checkpoint\adj.hpp
-		adaptors\bgl17\checkpoint\aos.hpp = adaptors\bgl17\checkpoint\aos.hpp
-		adaptors\bgl17\checkpoint\attributed.hpp = adaptors\bgl17\checkpoint\attributed.hpp
-		adaptors\bgl17\checkpoint\compressed.hpp = adaptors\bgl17\checkpoint\compressed.hpp
-		adaptors\bgl17\checkpoint\dimacs_io.hpp = adaptors\bgl17\checkpoint\dimacs_io.hpp
-		adaptors\bgl17\checkpoint\graph_base.hpp = adaptors\bgl17\checkpoint\graph_base.hpp
-		adaptors\bgl17\checkpoint\mmio.hpp = adaptors\bgl17\checkpoint\mmio.hpp
-		adaptors\bgl17\checkpoint\timer.hpp = adaptors\bgl17\checkpoint\timer.hpp
-		adaptors\bgl17\checkpoint\util.hpp = adaptors\bgl17\checkpoint\util.hpp
-		adaptors\bgl17\checkpoint\var_compressed.hpp = adaptors\bgl17\checkpoint\var_compressed.hpp
-		adaptors\bgl17\checkpoint\vov.hpp = adaptors\bgl17\checkpoint\vov.hpp
-		adaptors\bgl17\checkpoint\vtuple.cpp = adaptors\bgl17\checkpoint\vtuple.cpp
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{8410FEC4-523E-46AF-AE02-8BF9D0DAF647}"
-	ProjectSection(SolutionItems) = preProject
-		adaptors\bgl17\detail\numeric.hpp = adaptors\bgl17\detail\numeric.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{18AF61EA-6F9E-4555-8AEE-C462598E4330}"
@@ -146,11 +73,6 @@ Global
 		{42245303-B7DB-4C12-9926-11E7580C3C14} = {C528C0F5-3ED0-4C8B-A623-9639CF1BE4BF}
 		{6F31AFF7-259A-4B3C-9559-4D756D2B09B7} = {42245303-B7DB-4C12-9926-11E7580C3C14}
 		{1B39F91E-48A8-4D17-8DEE-C694CE374A6D} = {42245303-B7DB-4C12-9926-11E7580C3C14}
-		{D1335215-222B-4795-82DF-CCE1673DA9D3} = {80652490-1FD3-4DA4-8986-2EA29FB1F441}
-		{8FBEBA4F-9797-4A0B-B6E9-C4BFDFF6FFB3} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
-		{C48C4310-BE33-49F4-96F3-61ADC3D66F8B} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
-		{5A8B09F6-FCE2-4179-99D2-E456DE30221A} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
-		{8410FEC4-523E-46AF-AE02-8BF9D0DAF647} = {D1335215-222B-4795-82DF-CCE1673DA9D3}
 		{18AF61EA-6F9E-4555-8AEE-C462598E4330} = {42245303-B7DB-4C12-9926-11E7580C3C14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
