@@ -4,10 +4,11 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="test_caa_graph.cpp" />
     <ClCompile Include="test_ual_graph.cpp" />
+    <ClCompile Include="test_concomp.cpp" />
     <ClCompile Include="data_routes.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="test_concomp.cpp" />
+    <ClCompile Include="test_vovos.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

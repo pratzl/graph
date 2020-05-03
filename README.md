@@ -33,7 +33,7 @@ Range requirement for container
 https://stackoverflow.com/questions/35542744/how-to-create-a-custom-container-for-range-v3
 
 TODO
-1x	Remove old bgl17 code
+1.	[done] Remove old bgl17 code
 2.	bgl17
 	a.	Add simple adapator to show dfs_vertex_range iteratation
 3.	Multi-platform/compiler support

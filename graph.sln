@@ -49,6 +49,40 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "detail", "detail", "{18AF61
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{C3A137DA-3D56-4110-A95A-53AD0DA264B1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bgl17", "bgl17", "{F4905E66-5D3F-4FB2-B8EC-0C07F82E9230}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{72C97993-6D35-4525-A717-4748806CAD8D}"
+	ProjectSection(SolutionItems) = preProject
+		..\bgl17\src\aolos.hpp = ..\bgl17\src\aolos.hpp
+		..\bgl17\src\aos.hpp = ..\bgl17\src\aos.hpp
+		..\bgl17\src\back_edge_range.hpp = ..\bgl17\src\back_edge_range.hpp
+		..\bgl17\src\bfs_edge_range.hpp = ..\bgl17\src\bfs_edge_range.hpp
+		..\bgl17\src\bfs_range.hpp = ..\bgl17\src\bfs_range.hpp
+		..\bgl17\src\binio.hpp = ..\bgl17\src\binio.hpp
+		..\bgl17\src\compressed.hpp = ..\bgl17\src\compressed.hpp
+		..\bgl17\src\dag_range.hpp = ..\bgl17\src\dag_range.hpp
+		..\bgl17\src\dfs_range.hpp = ..\bgl17\src\dfs_range.hpp
+		..\bgl17\src\disjoint_set.hpp = ..\bgl17\src\disjoint_set.hpp
+		..\bgl17\src\edge_list.hpp = ..\bgl17\src\edge_list.hpp
+		..\bgl17\src\edge_range.hpp = ..\bgl17\src\edge_range.hpp
+		..\bgl17\src\filtered_bfs_range.hpp = ..\bgl17\src\filtered_bfs_range.hpp
+		..\bgl17\src\graph_base.hpp = ..\bgl17\src\graph_base.hpp
+		..\bgl17\src\linalg.hpp = ..\bgl17\src\linalg.hpp
+		..\bgl17\src\mmio.hpp = ..\bgl17\src\mmio.hpp
+		..\bgl17\src\neighbor_range.hpp = ..\bgl17\src\neighbor_range.hpp
+		..\bgl17\src\new_dfs_range.hpp = ..\bgl17\src\new_dfs_range.hpp
+		..\bgl17\src\plain_range.hpp = ..\bgl17\src\plain_range.hpp
+		..\bgl17\src\provenance.hpp = ..\bgl17\src\provenance.hpp
+		..\bgl17\src\proxysort.hpp = ..\bgl17\src\proxysort.hpp
+		..\bgl17\src\random_range.hpp = ..\bgl17\src\random_range.hpp
+		..\bgl17\src\reverse.hpp = ..\bgl17\src\reverse.hpp
+		..\bgl17\src\soa.hpp = ..\bgl17\src\soa.hpp
+		..\bgl17\src\util.hpp = ..\bgl17\src\util.hpp
+		..\bgl17\src\util_par.hpp = ..\bgl17\src\util_par.hpp
+		..\bgl17\src\vovos.hpp = ..\bgl17\src\vovos.hpp
+		..\bgl17\src\worklist.hpp = ..\bgl17\src\worklist.hpp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -74,6 +108,7 @@ Global
 		{6F31AFF7-259A-4B3C-9559-4D756D2B09B7} = {42245303-B7DB-4C12-9926-11E7580C3C14}
 		{1B39F91E-48A8-4D17-8DEE-C694CE374A6D} = {42245303-B7DB-4C12-9926-11E7580C3C14}
 		{18AF61EA-6F9E-4555-8AEE-C462598E4330} = {42245303-B7DB-4C12-9926-11E7580C3C14}
+		{72C97993-6D35-4525-A717-4748806CAD8D} = {F4905E66-5D3F-4FB2-B8EC-0C07F82E9230}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3DE43A65-513E-4C25-82B5-0373B806D033}
