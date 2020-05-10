@@ -35,7 +35,7 @@ https://stackoverflow.com/questions/35542744/how-to-create-a-custom-container-fo
 TODO
 1.	[done] Remove old bgl17 code
 2.	bgl17
-	a.	Add simple adapator to show dfs_vertex_range iteratation
+	a.	[in process] Add simple adapator to show dfs_vertex_range iteratation with bgl17 vov graph
 3.	Multi-platform/compiler support
 	a.	Use CMake for build
 	b.	Use range-v3 macros for platform-specific concept support
