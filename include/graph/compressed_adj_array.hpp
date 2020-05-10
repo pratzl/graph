@@ -261,9 +261,15 @@ public:
 
 public:
   caa_graph() = default;
+  caa_graph(caa_graph&& rhs)  = default;
+  caa_graph(caa_graph const&) = default;
+
   caa_graph(allocator_type alloc);
   caa_graph(graph_user_value_type const&, allocator_type alloc = allocator_type());
   caa_graph(graph_user_value_type&&, allocator_type alloc = allocator_type());
+
+  caa_graph& operator=(caa_graph const&) = default;
+  caa_graph& operator=(caa_graph&&) = default;
 
   // The following constructors will load edges (and vertices) into the graph
   //

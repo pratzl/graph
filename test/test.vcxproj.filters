@@ -8,7 +8,9 @@
     <ClCompile Include="data_routes.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="test_vovos.cpp" />
+    <ClCompile Include="vov_test.cpp" />
+    <ClCompile Include="compressed_test.cpp" />
+    <ClCompile Include="test_vov_adaptor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

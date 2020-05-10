@@ -69,3 +69,6 @@ TODO
 	j.	add data structures
 		i	directed data structure
 		ii	unordered data structure
+	k.	concepts
+		i	Add has_edge_set concept?
+		ii	Add has_vertex_set concept?

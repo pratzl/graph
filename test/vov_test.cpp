@@ -1,4 +1,17 @@
+//
+// This file is part of BGL17 (aka NWGraph aka GraphPack aka the Graph Standard Library)
+// (c) Pacific Northwest National Laboratory 2018
+//
+// Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
+// https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+// Author: Andrew Lumsdaine
+//
+// 03-May-20 jpr Copy from bgl17 & modified to use gtest & work within graph/test directory.
+//
+
 #include "pch.h"
+//#include "common/test_header.hpp"
 #include "edge_list.hpp"
 #include "plain_range.hpp"
 #include "edge_range.hpp"
@@ -8,12 +21,10 @@
 
 #include "util/print_types.hpp"
 
-TEST(vector_of_vector_of_structures, vector_of_vector_of_structs) {
-  vector_of_vector_of_structs A(5);
-}
+TEST(vector_of_vector_of_structures, vector_of_vector_of_structs) { vector_of_vector_of_structs A(5); }
 
 TEST(vector_of_vectors, vov) {
-  //SECTION("construct") 
+  //SECTION("construct")
   {
     vov A(5);
     A.push_back(3, 4);
@@ -22,7 +33,7 @@ TEST(vector_of_vectors, vov) {
     vov<double, std::complex<float>> C(5);
     C.push_back(3, 1, 4.159, std::complex{86.7, 5.309});
   }
-  //SECTION("edge_list") 
+  //SECTION("edge_list")
   {
     edge_list<directed, double> A{{0, 0, 8.0}, {0, 1, 6.7}, {1, 2, 5.3}, {3, 0, 0.9}};
     vov<double>                 B(A);
@@ -37,7 +48,7 @@ TEST(vector_of_vectors, vov) {
     });
     std::cout << std::endl;
   }
-  //SECTION("iterate") 
+  //SECTION("iterate")
   {
     vov<double> A(5);
     A.push_back(0, 0, 3);
