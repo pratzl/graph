@@ -1,6 +1,8 @@
 
 #Ignore thumbnails created by Windows
 Thumbs.db
+#Ignore tool config
+.vscode/
 #Ignore files related to cmake
 [Bb]uild*/
 #Ignore files built by Visual Studio
