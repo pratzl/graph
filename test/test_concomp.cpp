@@ -1,9 +1,16 @@
-#include "pch.h"
+//#include "pch.h"
 #include "graph/compressed_adj_array.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/components.hpp"
 #include "data_routes.hpp"
+#include <iostream>
+#include <catch2/catch.hpp>
+
+#define EXPECT_EQ(a, b) REQUIRE((a) == (b))
+#define EXPECT_NE(a, b) REQUIRE((a) != (b))
+#define EXPECT_FALSE(a) REQUIRE(!(a))
+#define EXPECT_TRUE(a) REQUIRE(a);
 
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
@@ -24,7 +31,7 @@ using namespace std::graph; // Bring graph functions into global namespace
 using DollarGraph = GraphXlate<caa_data_edge_mapper>::target_graph_t;
 
 
-TEST(TestCycleDirected, DollarStructure) {
+TEST_CASE("caa dollar structure", "[caa][dollar][structure]") {
 
   DollarGraph g = dollar_directed_graph.create_graph();
   EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));

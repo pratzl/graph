@@ -3,6 +3,7 @@
 //
 #include "graph_utility.hpp"
 #include <vector>
+#include <cassert>
 #include <range/v3/view/subrange.hpp>
 
 #ifndef COMPRESSED_ADJ_ARRAY_HPP
@@ -58,7 +59,7 @@ public:
   using base_t                = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
   using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
-  using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
@@ -68,7 +69,7 @@ public:
 
   using edge_user_value_type = EV;
   using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
-  using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_iterator        = typename edge_set::iterator;
   using const_edge_iterator  = typename edge_set::const_iterator;
@@ -119,7 +120,7 @@ public:
   using base_t                = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
   using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
-  using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
@@ -129,7 +130,7 @@ public:
 
   using edge_user_value_type = EV;
   using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
-  using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_index           = IndexT;
   using edge_iterator        = typename edge_set::iterator;
@@ -137,12 +138,12 @@ public:
   using edge_size_type       = typename edge_set::size_type;
 
   using vertex_edge_size_type      = typename edge_set::size_type;
-  using vertex_edge_iterator       = typename edge_iterator;
-  using const_vertex_edge_iterator = typename const_edge_iterator;
+  using vertex_edge_iterator       = edge_iterator;
+  using const_vertex_edge_iterator = const_edge_iterator;
 
   using vertex_out_edge_size_type      = typename edge_set::size_type;
-  using vertex_out_edge_iterator       = typename edge_iterator;
-  using const_vertex_out_edge_iterator = typename const_edge_iterator;
+  using vertex_out_edge_iterator       = edge_iterator;
+  using const_vertex_out_edge_iterator = const_edge_iterator;
 
 public:
   caa_vertex()                      = default;
@@ -211,7 +212,7 @@ private:
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class caa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
-public: 
+public:
   using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
   using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
@@ -220,7 +221,7 @@ public:
 
   using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type      = const vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
@@ -228,13 +229,13 @@ public:
   using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(nullptr)));
-  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(nullptr)));
+  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
+  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
 
   using edge_user_value_type = EV;
   using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
   using const_edge_type      = const edge_type;
-  using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_index           = IndexT;
   using edge_iterator        = typename edge_set::iterator;
@@ -244,8 +245,8 @@ public:
   using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type = pair<edge_key_type, edge_user_value_type>;
 
-  using edge_range       = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set*>(nullptr)));
-  using const_edge_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set const*>(nullptr)));
+  using edge_range       = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set*>(0)));
+  using const_edge_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set const*>(0)));
 
   using vertex_out_edge_range          = edge_range;
   using const_vertex_out_edge_range    = const_edge_range;
@@ -260,7 +261,7 @@ public:
   using vertex_edge_size_type      = vertex_out_edge_size_type;
 
 public:
-  caa_graph() = default;
+  caa_graph()                 = default;
   caa_graph(caa_graph&& rhs)  = default;
   caa_graph(caa_graph const&) = default;
 

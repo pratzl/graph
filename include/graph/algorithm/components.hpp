@@ -40,10 +40,10 @@ public:
 
 protected:
   using stack_elem  = vertex_iterator_t<G>;
-  using stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<stack_elem>;
+  using stack_alloc = typename allocator_traits<A>::template rebind_alloc<stack_elem>;
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
-  using visited_alloc = typename allocator_traits<typename A>::template rebind_alloc<bool>;
+  using visited_alloc = typename allocator_traits<A>::template rebind_alloc<bool>;
   using visited_type  = vector<bool, visited_alloc>;
 
 public:
@@ -135,14 +135,14 @@ protected:
     visit_elem(visit_elem const&) = default;
     visit_elem& operator=(visit_elem const&) = default;
   };
-  using visited_alloc = typename allocator_traits<typename A>::template rebind_alloc<visit_elem>;
+  using visited_alloc = typename allocator_traits<A>::template rebind_alloc<visit_elem>;
   using visited_type  = vector<CompT, visited_alloc>;
 
   using stack_elem  = vertex_iterator_t<G>;
-  using stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<stack_elem>;
+  using stack_alloc = typename allocator_traits<A>::template rebind_alloc<stack_elem>;
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
-  using in_stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<bool>;
+  using in_stack_alloc = typename allocator_traits<A>::template rebind_alloc<bool>;
   using in_stack_type  = vector<bool, in_stack_alloc>;
 
 protected:

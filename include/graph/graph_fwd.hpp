@@ -1,8 +1,9 @@
 //#include <memory>
 //#include <range/v3/all.hpp>
 #include <concepts>
-#include <range/v3/range/concepts.hpp>
+//#include <range/v3/range/concepts.hpp>
 #include <type_traits>
+#include <utility>     // pair
 
 /* 
     This header's organization
@@ -325,8 +326,7 @@ template <typename G>
 constexpr auto vertex(G const& g, edge_t<G> const& uv, vertex_t<G> const& source) noexcept
       -> const_vertex_iterator_t<G> const&;
 template <typename G>
-constexpr auto vertex_key(G const& g, edge_t<G> const& uv, vertex_t<G> const&) noexcept
-      -> vertex_key_t<G> const&;
+constexpr auto vertex_key(G const& g, edge_t<G> const& uv, vertex_t<G> const&) noexcept -> vertex_key_t<G> const&;
 template <typename G>
 constexpr auto vertex_key(G const& g, edge_t<G> const& uv, vertex_key_t<G> const& source_key) noexcept
       -> vertex_key_t<G> const&;
@@ -596,20 +596,21 @@ struct dense_graph_tag {};
 // clang-format off
 template <typename G>
 concept uniform_graph_c = requires(G&& g, vertex_t<G>& u) {
-  { edges(g) } -> edge_range_t<G>;
+  true;
+  //{ edges(g) } -> edge_range_t<G>;
   //{ edges(g, u) } ->vertex_edge_range_t<G>;
 };
 
 template <typename G>
 concept out_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
-  { out_edges<G>(g, u) }
-  ->vertex_out_edge_range_t<G>;
+  true;
+  //{ out_edges<G>(g, u) } -> vertex_out_edge_range_t<G>;
 };
 
 template <typename G>
 concept in_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
-  { in_edges(g, u) }
-  ->vertex_in_edge_range_t<G>;
+  true;
+  //{ in_edges(g, u) } -> vertex_in_edge_range_t<G>;
 };
 
 template <typename G>
@@ -621,10 +622,12 @@ concept bidirected_graph_c = uniform_graph_c<G> && out_directed_graph_c<G>&& in_
 template <typename G>
 concept undirected_graph_c = uniform_graph_c<G> && !out_directed_graph_c<G> && !in_directed_graph_c<G>;
 
+#if 0
 template <typename G>
 concept dense_graph_c = is_same<typename G::graph_category, dense_graph_tag>;
 template <typename G>
-concept sparse_graph_c = !dense_graph<G>;
+concept sparse_graph_c = !dense_graph_c<G>;
+#endif
 
 template <typename V>
 concept vertex_c = true;
@@ -638,6 +641,9 @@ concept arithmetic_c = is_arithmetic_v<T>;
 // for DFS, BFS & TopoSort ranges
 template <typename G>
 concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G>& u, vertex_edge_iterator_t<G>& uv) {
+#if 1
+      true;
+#else
   ::ranges::forward_range<G>;
   ::ranges::forward_iterator<vertex_iterator_t<G>>;
   ::ranges::forward_iterator<vertex_edge_iterator_t<G>>;
@@ -647,6 +653,7 @@ concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G>& u, vertex_edg
   { end(g, *u) } ->vertex_edge_iterator_t<G>;
   { vertex(g, *uv, *u) } ->vertex_iterator_t<G>;
   { vertex_key(g, *u) } ->vertex_key_t<G>;
+#endif
 };
 // clang-format on
 

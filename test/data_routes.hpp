@@ -189,7 +189,7 @@ public:
           [](vertex_label_t const& label) -> vertex_label_t const& { return label; });
   }
 
-  target_edges_t const& edge_values() const { return edge_values_; } // exposed mainly for sanity test
+  target_edges_t const&  edge_values() const { return edge_values_; } // exposed mainly for sanity test
   vertex_labels_t const& vertex_values() const { return vertex_labels_; }
 
 protected:

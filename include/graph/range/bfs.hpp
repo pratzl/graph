@@ -71,7 +71,7 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
     size_t               depth = 0;
   };
   using queue_alloc =
-        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
+        typename allocator_traits<A>::template rebind_alloc<queue_elem>;
   using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
@@ -103,7 +103,7 @@ public:
     const_vertex_iterator_t<G> operator->() const { return elem_.u; }
 
     const_iterator& operator++() {
-      queue_elem elem_ = bfs_->advance();
+      elem_ = bfs_->advance();
       return *this;
     }
 
@@ -179,8 +179,8 @@ protected:
       queue_.pop();
 
       while (!queue_.empty()) {
-        auto [u, depth]       = queue_.front();
-        vertex_key_t<G> u_key = vertex_key(graph_, *u);
+        u     = queue_.front().u;
+        u_key = vertex_key(graph_, *u);
 
         if (visited_[u_key] == grey)
           return queue_.front(); // visit it
@@ -234,7 +234,7 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
     size_t                    depth = 0;
   };
   using queue_alloc =
-        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
+        typename allocator_traits<A>::template rebind_alloc<queue_elem>;
   using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
@@ -275,7 +275,7 @@ public:
     vertex_edge_iterator_type operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
-      queue_elem elem_ = bfs_->advance();
+      elem_ = bfs_->advance();
       return *this;
     }
 

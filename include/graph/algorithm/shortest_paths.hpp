@@ -58,23 +58,18 @@
 namespace std::graph {
 
 // forward declarations
-template <typename G, typename DistFnc, typename DistanceT = decltype(DistFnc), typename A = allocator<DistanceT>>
-class dijkstra_fn;
-template <typename G, typename DistFnc, typename DistanceT = decltype(DistFnc), typename A = allocator<DistanceT>>
-class bellman_ford_fn;
-
 
 template <typename G, typename A = allocator<vertex_iterator_t<G>>>
 using vertex_path_t = vector<vertex_iterator_t<G>, A>;
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
-using vertex_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_path_t<G, A>*>(nullptr)));
+using vertex_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_path_t<G, A>*>(0)));
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
 using edge_path_t = vector<edge_iterator_t<G>, A>;
 
 template <typename G, typename A>
-using edge_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_path_t<G, A>*>(nullptr)));
+using edge_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_path_t<G, A>*>(0)));
 
 
 template <typename G, arithmetic_c DistanceT, typename A = allocator<vertex_iterator_t<G>>>
@@ -107,152 +102,9 @@ struct shortest_path {
   shortest_path(A alloc) : path(alloc) {}
 };
 
-//! Find the shortest distances to vertices reachable from the source vertex.
-//!
-//! @param g           The graph
-//! @param source      The single source vertex to start the search.
-//! @param result_iter The output iterator that results are written to. The iterator
-//!                    must accept a type of shortest_distance<vertex_iterator_t<G>, DistanceT>.
-//! @param leaves_only When false, all vertices are written to the output iterator.
-//!                    When true, only vertices that are the end of a path are written
-//!                    to the output iterator.
-//! @param distance_fnc
-//!                    The weight function object used to determine the distance between
-//!                    vertices on an edge. The default is to return a value of 1.
-//! @param alloc       The allocator to use for internal containers.
-//
-template <arithmetic_c DistanceT, typename G, typename OutIter, typename DistFnc, typename A = allocator<DistanceT>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> void dijkstra_shortest_distances(
-      G&                   g,
-      vertex_iterator_t<G> source,
-      OutIter              result_iter,
-      bool const           leaves_only  = true,
-      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-      A                    alloc        = A()) {
-
-  dijkstra_fn<G, DistFnc, DistanceT, A> fn(g, distance_fnc, alloc);
-  fn.shortest_distances(source, result_iter, leaves_only);
-}
-
-
-//! Find the shortest paths to vertices reachable from the source vertex.
-//!
-//! @param g           The graph
-//! @param source      The single source vertex to start the search.
-//! @param result_iter The output iterator that results are written to. The iterator
-//!                    must accept a type of shortest_path<vertex_iterator_t<G>, DistanceT>.
-//! @param leaves_only When false, the shortest path is written to the output iterator for each
-//!                    vertex reachable from source.
-//!                    When true, only paths to final vertices at the end of a path are written
-//!                    to the output iterator.
-//! @param distance_fnc
-//!                    The weight function object used to determine the distance between
-//!                    vertices on an edge. The default is to return a value of 1.
-//! @param alloc       The allocator to use for internal containers.
-//
-template <arithmetic_c DistanceT, // = invoke_result<DistFnc(edge_value_t<G>&)>::type
-          typename G,
-          typename OutIter,
-          typename DistFnc,
-          typename A = allocator<DistanceT>>
-//requires output_iterator<OutIter, typename OutIter::value_type>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> void dijkstra_shortest_paths(
-      G&                   g,
-      vertex_iterator_t<G> source,
-      OutIter              result_iter,
-      bool const           leaves_only  = true,
-      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-      A                    alloc        = A()) {
-  //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
-  dijkstra_fn<G, DistFnc, DistanceT, A> fn(g, distance_fnc, alloc);
-  fn.shortest_paths(source, result_iter, leaves_only);
-}
-
-
-//! Find the shortest distances to vertices reachable from the source vertex.
-//!
-//! @param g           The graph
-//! @param source      The single source vertex to start the search.
-//! @param result_iter The output iterator that results are written to. The iterator
-//!                    must accept a type of shortest_distance<vertex_iterator_t<G>, DistanceT>.
-//!                    Nothing will be output to this if detect_neg_edge_cycles is true and
-//!                    a negative edge cycle exists.
-//! @param leaves_only When false, all vertices are written to the output iterator.
-//!                    When true, only vertices that are the end of a path are written
-//!                    to the output iterator with an additional cost of O(|V|+|E|).
-//! @param detect_neg_edge_cycles
-//!                    Detects if a negateve edge cycle exists. When true, an additional O(|E|)
-//!                    pass is made and true/false is returned to identify if a negateve edge
-//!                    cycle exists.
-//! @param distance_fnc
-//!                    The weight function object used to determine the distance between
-//!                    vertices on an edge. The default is to return a value of 1.
-//! @param alloc       The allocator to use for internal containers.
-//! @return            true if a negateve edge cycle exists, which is only detected if
-//!                    detect_neg_edge_cycles is true.
-//
-template <arithmetic_c DistanceT, typename G, typename OutIter, typename DistFnc, typename A = allocator<DistanceT>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> bool bellman_ford_shortest_distances(
-      G&                   g,
-      vertex_iterator_t<G> source,
-      OutIter              result_iter,
-      bool const           leaves_only            = true,
-      bool const           detect_neg_edge_cycles = true,
-      DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
-      A                    alloc                  = A()) {
-
-  bellman_ford_fn<G, DistFnc, DistanceT, A> fn(g, distance_fnc, alloc);
-  return fn.shortest_distances(source, result_iter, leaves_only, detect_neg_edge_cycles);
-}
-
-
-//! Find the shortest paths to vertices reachable from the source vertex.
-//!
-//! @param g           The graph
-//! @param source      The single source vertex to start the search.
-//! @param result_iter The output iterator that results are written to. The iterator
-//!                    must accept a type of shortest_path<vertex_iterator_t<G>, DistanceT>.
-//!                    Nothing will be output to this if detect_neg_edge_cycles is true and
-//!                    a negative edge cycle exists.
-//! @param leaves_only When false, the shortest path is written to the output iterator for each
-//!                    vertex reachable from source.
-//!                    When true, only paths to final vertices at the end of a path are written
-//!                    to the output iterator with an additional cost of O(|V|+|E|).
-//! @param detect_neg_edge_cycles
-//!                    Detects if a negateve edge cycle exists. When true, an additional O(|E|)
-//!                    pass is made and true/false is returned to identify if a negateve edge
-//!                    cycle exists.
-//! @param distance_fnc
-//!                    The weight function object used to determine the distance between
-//!                    vertices on an edge. The default is to return a value of 1.
-//! @param alloc       The allocator to use for internal containers.
-//! @return            true if a negateve edge cycle exists, which is only detected if
-//!                    detect_neg_edge_cycles is true.
-//!
-template <arithmetic_c DistanceT, // = invoke_result<DistFnc(edge_value_t<G>&)>::type
-          typename G,
-          typename OutIter,
-          typename DistFnc,
-          typename A = allocator<DistanceT>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>>
-      //requires output_iterator<OutIter, typename OutIter::value_type>
-      bool bellman_ford_shortest_paths(
-            G&                   g,
-            vertex_iterator_t<G> source,
-            OutIter              result_iter,
-            bool const           leaves_only            = true,
-            bool const           detect_neg_edge_cycles = true,
-            DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
-            A                    alloc                  = A()) {
-  //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
-  bellman_ford_fn<G, DistFnc, DistanceT, A> fn(g, distance_fnc, alloc);
-  return fn.shortest_paths(source, result_iter, leaves_only, detect_neg_edge_cycles);
-}
-
-
 //! Internal implementation of the Dijstra algorithm.
 //!
-template <typename G, typename DistFnc, typename DistanceT, typename A>
+template <typename G, typename DistFnc, typename DistanceT, typename A = allocator<DistanceT>>
 class dijkstra_fn {
   enum colors : int8_t {
     white, // undiscovered
@@ -289,9 +141,10 @@ public:
     find_paths(source, distances, leaves_only, leaf);
 
     // output distances to the output iterator
-    using path                 = shortest_distance<vertex_iterator_t<G>, DistanceT>;
+    //using path                 = shortest_distance<vertex_iterator_t<G>, DistanceT>;
+    using key_t                = vertex_key_t<G>;
     vertex_iterator_t<G> first = begin(vertices(g_));
-    for (size_t vkey = 0; vkey < distances.size(); ++vkey) {
+    for (key_t vkey = 0; vkey < static_cast<key_t>(distances.size()); ++vkey) {
       if (!leaves_only || (leaves_only && leaf[vkey])) {
         auto& [prev_key, dist] = distances[vkey];
         *result_iter           = {source, first + vkey, dist};
@@ -308,13 +161,14 @@ public:
 
     // output paths to the output iterator
     using path_t = shortest_path<vertex_iterator_t<G>, DistanceT>;
+    using key_t  = vertex_key_t<G>;
     path_t                spath(alloc_);
-    vertex_key_t<G> const source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
+    key_t const           source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
     vertex_iterator_t<G>  first      = begin(vertices(g_));
-    for (size_t vkey = 0; vkey < distances.size(); ++vkey) {
+    for (key_t vkey = 0; vkey < static_cast<key_t>(distances.size()); ++vkey) {
       if (!leaves_only || (leaves_only && leaf[vkey])) {
         spath.distance = distances[vkey].distance;
-        for (auto ukey = vkey; ukey != source_key; ukey = distances[ukey].vtx_key) {
+        for (key_t ukey = vkey; ukey != source_key; ukey = distances[ukey].vtx_key) {
           spath.path.push_back(first + ukey);
         }
         spath.path.push_back(source);
@@ -408,7 +262,7 @@ protected:
 
 //! Internal implementation of the Bellman-Ford algorithm.
 //!
-template <typename G, typename DistFnc, typename DistanceT, typename A>
+template <typename G, typename DistFnc, typename DistanceT, typename A = allocator<DistanceT>>
 class bellman_ford_fn {
   struct vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
     vertex_key_t<G> vtx_key  = numeric_limits<vertex_key_t<G>>::max();
@@ -444,9 +298,10 @@ public:
       return true;
 
     // output distances to the output iterator
-    using path                 = shortest_distance<vertex_iterator_t<G>, DistanceT>;
+    //using path                 = shortest_distance<vertex_iterator_t<G>, DistanceT>;
+    using key_t                = vertex_key_t<G>;
     vertex_iterator_t<G> first = begin(vertices(g_));
-    for (size_t vkey = 0; vkey < distance.size(); ++vkey) {
+    for (key_t vkey = 0; vkey < static_cast<key_t>(distance.size()); ++vkey) {
       if (!leaves_only || (leaves_only && leaf[vkey])) {
         auto& [prev_key, dist] = distance[vkey];
         *result_iter           = {source, first + vkey, dist};
@@ -469,13 +324,14 @@ public:
 
     // output paths to the output iterator
     using path_t = shortest_path<vertex_iterator_t<G>, DistanceT>;
+    using key_t  = vertex_key_t<G>;
     path_t                spath(alloc_);
-    vertex_key_t<G> const source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
+    key_t const           source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
     vertex_iterator_t<G>  first      = begin(vertices(g_));
-    for (size_t vkey = 0; vkey < distances.size(); ++vkey) {
+    for (key_t vkey = 0; vkey < static_cast<key_t>(distances.size()); ++vkey) {
       if (!leaves_only || (leaves_only && leaf[vkey])) {
         spath.distance = distances[vkey].distance;
-        for (auto ukey = vkey; ukey != source_key; ukey = distances[ukey].vtx_key) {
+        for (key_t ukey = vkey; ukey != source_key; ukey = distances[ukey].vtx_key) {
           spath.path.push_back(first + ukey);
         }
         spath.path.push_back(source);
@@ -558,6 +414,153 @@ protected:
   distance_fnc_t distance_fnc_;
   allocator_t    alloc_;
 };
+
+
+//! Find the shortest distances to vertices reachable from the source vertex.
+//!
+//! @param g           The graph
+//! @param source      The single source vertex to start the search.
+//! @param result_iter The output iterator that results are written to. The iterator
+//!                    must accept a type of shortest_distance<vertex_iterator_t<G>, DistanceT>.
+//! @param leaves_only When false, all vertices are written to the output iterator.
+//!                    When true, only vertices that are the end of a path are written
+//!                    to the output iterator.
+//! @param distance_fnc
+//!                    The weight function object used to determine the distance between
+//!                    vertices on an edge. The default is to return a value of 1.
+//! @param alloc       The allocator to use for internal containers.
+//
+template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
+void dijkstra_shortest_distances(
+      G&                   g,
+      vertex_iterator_t<G> source,
+      OutIter              result_iter,
+      bool const           leaves_only  = true,
+      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
+      A                    alloc        = A()) {
+
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
+  fn.shortest_distances(source, result_iter, leaves_only);
+}
+
+
+//! Find the shortest paths to vertices reachable from the source vertex.
+//!
+//! @param g           The graph
+//! @param source      The single source vertex to start the search.
+//! @param result_iter The output iterator that results are written to. The iterator
+//!                    must accept a type of shortest_path<vertex_iterator_t<G>, DistanceT>.
+//! @param leaves_only When false, the shortest path is written to the output iterator for each
+//!                    vertex reachable from source.
+//!                    When true, only paths to final vertices at the end of a path are written
+//!                    to the output iterator.
+//! @param distance_fnc
+//!                    The weight function object used to determine the distance between
+//!                    vertices on an edge. The default is to return a value of 1.
+//! @param alloc       The allocator to use for internal containers.
+//
+template <typename G,
+          typename OutIter,
+          typename DistFnc,
+          typename A = allocator<char>>
+//requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic_c; }
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
+void dijkstra_shortest_paths(
+      G&                   g,
+      vertex_iterator_t<G> source,
+      OutIter              result_iter,
+      bool const           leaves_only  = true,
+      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
+      A                    alloc        = A()) {
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
+  fn.shortest_paths(source, result_iter, leaves_only);
+}
+
+
+//! Find the shortest distances to vertices reachable from the source vertex.
+//!
+//! @param g           The graph
+//! @param source      The single source vertex to start the search.
+//! @param result_iter The output iterator that results are written to. The iterator
+//!                    must accept a type of shortest_distance<vertex_iterator_t<G>, DistanceT>.
+//!                    Nothing will be output to this if detect_neg_edge_cycles is true and
+//!                    a negative edge cycle exists.
+//! @param leaves_only When false, all vertices are written to the output iterator.
+//!                    When true, only vertices that are the end of a path are written
+//!                    to the output iterator with an additional cost of O(|V|+|E|).
+//! @param detect_neg_edge_cycles
+//!                    Detects if a negateve edge cycle exists. When true, an additional O(|E|)
+//!                    pass is made and true/false is returned to identify if a negateve edge
+//!                    cycle exists.
+//! @param distance_fnc
+//!                    The weight function object used to determine the distance between
+//!                    vertices on an edge. The default is to return a value of 1.
+//! @param alloc       The allocator to use for internal containers.
+//! @return            true if a negateve edge cycle exists, which is only detected if
+//!                    detect_neg_edge_cycles is true.
+//
+template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
+bool bellman_ford_shortest_distances(
+      G&                   g,
+      vertex_iterator_t<G> source,
+      OutIter              result_iter,
+      bool const           leaves_only            = true,
+      bool const           detect_neg_edge_cycles = true,
+      DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
+      A                    alloc                  = A()) {
+
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
+  return fn.shortest_distances(source, result_iter, leaves_only, detect_neg_edge_cycles);
+}
+
+
+//! Find the shortest paths to vertices reachable from the source vertex.
+//!
+//! @param g           The graph
+//! @param source      The single source vertex to start the search.
+//! @param result_iter The output iterator that results are written to. The iterator
+//!                    must accept a type of shortest_path<vertex_iterator_t<G>, DistanceT>.
+//!                    Nothing will be output to this if detect_neg_edge_cycles is true and
+//!                    a negative edge cycle exists.
+//! @param leaves_only When false, the shortest path is written to the output iterator for each
+//!                    vertex reachable from source.
+//!                    When true, only paths to final vertices at the end of a path are written
+//!                    to the output iterator with an additional cost of O(|V|+|E|).
+//! @param detect_neg_edge_cycles
+//!                    Detects if a negateve edge cycle exists. When true, an additional O(|E|)
+//!                    pass is made and true/false is returned to identify if a negateve edge
+//!                    cycle exists.
+//! @param distance_fnc
+//!                    The weight function object used to determine the distance between
+//!                    vertices on an edge. The default is to return a value of 1.
+//! @param alloc       The allocator to use for internal containers.
+//! @return            true if a negateve edge cycle exists, which is only detected if
+//!                    detect_neg_edge_cycles is true.
+//!
+template <typename G,
+          typename OutIter,
+          typename DistFnc,
+          typename A = allocator<char>>
+requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>>
+      //requires output_iterator<OutIter, typename OutIter::value_type>
+      bool bellman_ford_shortest_paths(
+            G&                   g,
+            vertex_iterator_t<G> source,
+            OutIter              result_iter,
+            bool const           leaves_only            = true,
+            bool const           detect_neg_edge_cycles = true,
+            DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
+            A                    alloc                  = A()) {
+  //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
+  return fn.shortest_paths(source, result_iter, leaves_only, detect_neg_edge_cycles);
+}
 
 
 } // namespace std::graph

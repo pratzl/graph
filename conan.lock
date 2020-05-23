@@ -1,0 +1,30 @@
+{
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=gcc\ncompiler.libcxx=libstdc++11\ncompiler.version=10\nos=Linux\nos_build=Linux\n[options]\n[build_requires]\n[env]\n",
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "pref": null,
+    "options": "fmt:fPIC=True\nfmt:header_only=False\nfmt:shared=False\nfmt:with_fmt_alias=False",
+    "requires": [
+     "1",
+     "2",
+     "3"
+    ],
+    "path": "/mnt/d/dev/graph-v3/conanfile.txt"
+   },
+   "1": {
+    "pref": "range-v3/0.10.0#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "2": {
+    "pref": "fmt/6.2.1#0:b173bbda18164d49a449ffadc1c9e817f49e819d#4611174488252cc900e4317275b060de",
+    "options": "fPIC=True\nheader_only=False\nshared=False\nwith_fmt_alias=False"
+   },
+   "3": {
+    "pref": "catch2/2.11.0#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   }
+  }
+ },
+ "version": "0.3"
+}

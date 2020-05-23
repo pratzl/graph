@@ -73,13 +73,13 @@ requires uniform_graph_c<G>&&
     vertex_iterator_t<G>      u;
     vertex_edge_iterator_t<G> uv;
   };
-  using stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<stack_elem>;
+  using stack_alloc = typename allocator_traits<A>::template rebind_alloc<stack_elem>;
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
-  using visited_alloc = typename allocator_traits<typename A>::template rebind_alloc<colors>;
+  using visited_alloc = typename allocator_traits<A>::template rebind_alloc<colors>;
   using visited_type  = vector<colors, visited_alloc>;
 
-  using parent_alloc = typename allocator_traits<typename A>::template rebind_alloc<vertex_iterator_t<G>>;
+  using parent_alloc = typename allocator_traits<A>::template rebind_alloc<vertex_iterator_t<G>>;
   using parent_type  = vector<vertex_iterator_t<G>, parent_alloc>;
 
 public:
@@ -116,7 +116,7 @@ public:
     const_vertex_iterator_t<G> operator->() const { return elem_.u; }
 
     const_iterator& operator++() {
-      stack_elem elem_ = dfs_->advance();
+      elem_ = dfs_->advance();
       return *this;
     }
 
@@ -235,13 +235,13 @@ requires uniform_graph_c<G> /*directed_graph_c<G> */&&
     vertex_edge_iterator_t<G> uv;
   };
 
-  using stack_alloc = typename allocator_traits<typename A>::template rebind_alloc<stack_elem>;
+  using stack_alloc = typename allocator_traits<A>::template rebind_alloc<stack_elem>;
   using stack_type  = stack<stack_elem, deque<stack_elem, stack_alloc>>;
 
-  using visited_alloc = typename allocator_traits<typename A>::template rebind_alloc<colors>;
+  using visited_alloc = typename allocator_traits<A>::template rebind_alloc<colors>;
   using visited_type  = vector<colors, visited_alloc>;
 
-  using parent_alloc = typename allocator_traits<typename A>::template rebind_alloc<vertex_iterator_t<G>>;
+  using parent_alloc = typename allocator_traits<A>::template rebind_alloc<vertex_iterator_t<G>>;
   using parent_type  = vector<vertex_iterator_t<G>, parent_alloc>;
 
 public:
@@ -287,7 +287,7 @@ public:
     vertex_edge_iterator_type operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
-      stack_elem elem_ = dfs_->advance();
+      elem_ = dfs_->advance();
       return *this;
     }
 

@@ -71,7 +71,7 @@ public:
   using graph_type = ual_graph<VV, EV, GV, IndexT, A>;
 
   using vertex_type           = ual_vertex<VV, EV, GV, IndexT, A>;
-  using vertex_allocator_type = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set            = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
@@ -84,7 +84,7 @@ public:
   using edge_list_type          = ual_edge_list<VV, EV, GV, IndexT, A>;
   using edge_list_in_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, in_list>;
   using edge_list_out_link_type = ual_edge_list_link<VV, EV, GV, IndexT, A, out_list>;
-  using edge_allocator_type     = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type     = typename allocator_traits<A>::template rebind_alloc<edge_type>;
 
   using value_type      = edge_type;
   using pointer         = value_type*;
@@ -245,7 +245,7 @@ public:
   using graph_type = ual_graph<VV, EV, GV, IndexT, A>;
 
   using vertex_type           = ual_vertex<VV, EV, GV, IndexT, A>;
-  using vertex_allocator_type = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set            = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
@@ -306,7 +306,7 @@ public:
   using base_t                = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
   using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
-  using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
@@ -316,7 +316,7 @@ public:
 
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
-  using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_index           = IndexT;
   using edge_size_type       = IndexT;
 #  ifdef FUTURE
@@ -345,7 +345,7 @@ protected:
   ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, edge_user_value_type const&) noexcept;
   ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, edge_user_value_type&&) noexcept;
 
-  ~ual_edge();
+  ~ual_edge() noexcept;
 
   void link_front(vertex_type&, vertex_type&);
   void link_back(vertex_type&, vertex_type&);
@@ -385,7 +385,7 @@ public:
   using base_t                = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
   using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
-  using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
@@ -395,7 +395,7 @@ public:
 
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
-  using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_size_type       = IndexT;
 
   using edge_list_type             = ual_edge_list<VV, EV, GV, IndexT, A>;
@@ -481,7 +481,7 @@ public:
 
   using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type      = const vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<vertex_type>;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
   using const_vertex_iterator  = typename vertex_set::const_iterator;
@@ -489,13 +489,13 @@ public:
   using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(nullptr)));
-  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(nullptr)));
+  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
+  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
 
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
   using const_edge_type      = const edge_type;
-  using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
 
   using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type = pair<edge_key_type, edge_user_value_type>;

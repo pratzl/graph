@@ -48,8 +48,8 @@ public:
   using vertex_index           = size_t;
   using vertex_user_value_type = std::graph::empty_value;
   using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(nullptr)));
-  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(nullptr)));
+  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
+  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
   using vertex_size_type       = typename vertex_set::size_type;
 
   using edge_type       = std::tuple<size_t, Attributes...>; //typename graph_type::inner_container::value_type;
@@ -60,9 +60,9 @@ public:
   //using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
 
   using vertex_out_edge_range =
-        decltype(::ranges::make_subrange(*reinterpret_cast<typename graph_type::inner_container*>(nullptr)));
+        decltype(::ranges::make_subrange(*reinterpret_cast<typename graph_type::inner_container*>(0)));
   using const_vertex_out_edge_range =
-        decltype(::ranges::make_subrange(*reinterpret_cast<typename graph_type::inner_container const*>(nullptr)));
+        decltype(::ranges::make_subrange(*reinterpret_cast<typename graph_type::inner_container const*>(0)));
   using vertex_out_edge_iterator       = typename vertex_out_edge_range::iterator;
   using const_vertex_out_edge_iterator = typename const_vertex_out_edge_range::iterator;
   using vertex_out_edge_size_type      = typename vertex_out_edge_range::size_type;
@@ -77,7 +77,7 @@ public:
   using edge_iterator       = vertex_out_edge_iterator;
   using const_edge_iterator = const_vertex_out_edge_iterator;
   using edge_size_type      = vertex_out_edge_size_type;
-  //using edge_allocator_type  = typename allocator_traits<typename A>::template rebind_alloc<edge_type>;
+  //using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
 
   using edge_range       = vertex_out_edge_range;
   using const_edge_range = const_vertex_out_edge_range;
@@ -468,7 +468,7 @@ vov_germany_t get_germany_routes() {
 } // namespace adaptor::vov
 
 
-TEST(vov_graph_test, vov) {
+TEST_CASE(vov_graph_test, vov) {
   //using namespace adaptor::vov;
   using vov_germany_t = adaptor::vov::vov_germany_t;
   using Graph         = adaptor::vov::vov_germany_wrap_t;
@@ -498,7 +498,7 @@ TEST(vov_graph_test, vov) {
   }
 }
 
-TEST(vov_graph_test, DFSVertex) {
+TEST_CASE(vov_graph_test, DFSVertex) {
   using std::graph::dfs_vertex_range;
   using vov_germany_t = adaptor::vov::vov_germany_t;
   using Graph         = adaptor::vov::vov_germany_wrap_t;

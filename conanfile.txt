@@ -1,0 +1,15 @@
+[requires]
+range-v3/0.10.0
+fmt/6.2.1
+catch2/2.11.0
+
+[generators]
+cmake
+
+[options]
+#poco:shared=True
+#openssl:shared=True
+
+[imports]
+bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
+lib, *.dylib* -> ./bin # Copies all dylib files from packages lib folder to my "bin" folder
