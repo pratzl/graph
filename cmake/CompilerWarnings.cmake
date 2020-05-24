@@ -39,6 +39,7 @@ function(set_project_warnings project_name)
               # conversion has been implicitly applied
       /wd4100 # 'x': unreferenced formal parameter
       /wd4189 # 'x': local variable is initialized but not referenced
+      /wd4459 # declaration of 'x' hides global declaration (in range-v3 sort)
       /permissive- # standards conformance mode for MSVC compiler.
   )
 

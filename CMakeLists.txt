@@ -56,6 +56,9 @@ if (ENABLE_PCH)
   target_precompile_headers(project_options INTERFACE <vector> <string> <map> <utility>)
 endif()
 
+option(ENABLE_BGL17 "Enable Better Graph Library 17" ON)
+if(ENABLE_BGL17)
+endif()
 
 # Set up some extra Conan dependencies based on our needs
 # before loading Conan

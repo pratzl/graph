@@ -1,25 +1,32 @@
-#include "pch.h"
+//#include "pch.h"
 #include "graph/graph_fwd.hpp"
 #include "graph/graph_utility.hpp"
-//#include "common/test_header.hpp"
 
 #include "edge_list.hpp"
-#include "plain_range.hpp"
-#include "edge_range.hpp"
-#include "vovos.hpp"
-#include "data_routes.hpp"
+#if 0
+#  include "plain_range.hpp"
+//#include "edge_range.hpp"
+//#include "vovos.hpp"
+#  include "data_routes.hpp"
+#  include <iostream>
+#  include <catch2/catch.hpp>
 
-#include "util/print_types.hpp"
+#  include "util/print_types.hpp"
 
-#include <range/v3/view/subrange.hpp>
-#include <range/v3/algorithm/find_if.hpp>
+#  include <range/v3/view/subrange.hpp>
+#  include <range/v3/algorithm/find_if.hpp>
 
-#include "graph/range/dfs.hpp"
+#  include "graph/range/dfs.hpp"
 
-#define TEST_OPTION_OUTPUT (1)
-#define TEST_OPTION_GEN (2)
-#define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_OUTPUT
+#  define EXPECT_EQ(a, b) REQUIRE((a) == (b))
+#  define EXPECT_NE(a, b) REQUIRE((a) != (b))
+#  define EXPECT_FALSE(a) REQUIRE(!(a))
+#  define EXPECT_TRUE(a) REQUIRE(a);
+
+#  define TEST_OPTION_OUTPUT (1)
+#  define TEST_OPTION_GEN (2)
+#  define TEST_OPTION_TEST (3)
+#  define TEST_OPTION TEST_OPTION_OUTPUT
 
 using std::string;
 using std::cout;
@@ -27,6 +34,7 @@ using std::endl;
 
 namespace adaptor::vov {
 using namespace std::graph;
+using std::get;
 
 class vov_vector;
 class vov_edge;
@@ -38,7 +46,7 @@ public:
   using graph_user_value_type = std::graph::empty_value;
   using base_t                = std::graph::empty_value;
 
-  using vertex_set             = typename graph_type;
+  using vertex_set             = graph_type;
   using vertex_type            = typename vertex_set::value_type;
   using const_vertex_type      = const vertex_type;
   using iterator               = typename graph_type::iterator;
@@ -55,7 +63,7 @@ public:
   using edge_type       = std::tuple<size_t, Attributes...>; //typename graph_type::inner_container::value_type;
   using const_edge_type = const edge_type;
   //using edge_set             = void; //vector<edge_type, edge_allocator_type>;
-  using edge_user_value_type = typename edge_type;
+  using edge_user_value_type = edge_type;
 
   //using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
 
@@ -100,7 +108,7 @@ public:
   const_vertex_iterator end() const noexcept { return graph_.end(); }
   const_vertex_iterator cend() const noexcept { return graph_.cend(); }
 
-#if 0
+#  if 0
   edge_iterator       edge_begin(graph_type&);
   const_edge_iterator edge_begin(graph_type const&) const;
   const_edge_iterator edge_cbegin(graph_type const&) const;
@@ -108,7 +116,7 @@ public:
   edge_iterator       edge_end(graph_type&);
   const_edge_iterator edge_end(graph_type const&) const;
   const_edge_iterator edge_cend(graph_type const&) const;
-#endif
+#  endif
 
   constexpr graph_type&       graph() noexcept { return graph_; }
   constexpr graph_type const& graph() const noexcept { return graph_; }
@@ -209,7 +217,7 @@ constexpr auto vertex_key(vov_graph<Attributes...> const&               g,
 template <typename... Attributes>
 constexpr auto vertex_key(vov_graph<Attributes...> const& g, vertex_t<vov_graph<Attributes...>> const& u) noexcept
       -> vertex_key_t<vov_graph<Attributes...>> {
-  return &u - g.vertices().data();
+  return static_cast<vertex_key_t<vov_graph<Attributes...>>>(&u - g.vertices().data());
 }
 
 template <typename... Attributes>
@@ -468,7 +476,7 @@ vov_germany_t get_germany_routes() {
 } // namespace adaptor::vov
 
 
-TEST_CASE(vov_graph_test, vov) {
+TEST_CASE("vov graph", "[vov]") {
   //using namespace adaptor::vov;
   using vov_germany_t = adaptor::vov::vov_germany_t;
   using Graph         = adaptor::vov::vov_germany_wrap_t;
@@ -498,7 +506,7 @@ TEST_CASE(vov_graph_test, vov) {
   }
 }
 
-TEST_CASE(vov_graph_test, DFSVertex) {
+TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   using std::graph::dfs_vertex_range;
   using vov_germany_t = adaptor::vov::vov_germany_t;
   using Graph         = adaptor::vov::vov_germany_wrap_t;
@@ -511,7 +519,6 @@ TEST_CASE(vov_graph_test, DFSVertex) {
   // end(g, vertex_t<Graph>&) isn't found/generated (linker error)
   // end(g) isn't found/generated (linker error)
 
-#if 0
 #  if TEST_OPTION == TEST_OPTION_OUTPUT
   dfs_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
   for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
@@ -546,8 +553,8 @@ TEST_CASE(vov_graph_test, DFSVertex) {
     Stuttgart
     Kassel
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
   dfs_vertex_range                  dfs_vtx_rng(g, find_city(g, "Frankfürt"));
   dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
   EXPECT_EQ("Frankfürt", u->name);
@@ -570,6 +577,6 @@ TEST_CASE(vov_graph_test, DFSVertex) {
   EXPECT_EQ(4, u.depth());
   EXPECT_EQ("Kassel", (++u)->name);
   EXPECT_EQ(2, u.depth());
-#endif
-#endif
+#  endif
 }
+#endif //0
