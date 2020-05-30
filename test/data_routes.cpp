@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 #include "data_routes.hpp"
 #include <ostream>
 #include <range/v3/action/unique.hpp>
@@ -7,12 +7,10 @@ using std::vector;
 using std::string;
 
 routes_t const germany_routes{
-      {"Frankfürt", "Mannheim", 85},  {"Frankfürt", "Würzburg", 217},
-      {"Frankfürt", "Kassel", 173},   {"Mannheim", "Karlsruhe", 80},
-      {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
-      {"Würzburg", "Erfurt", 186},    {"Würzburg", "Nürnberg", 103},
-      {"Nürnberg", "Stuttgart", 183}, {"Nürnberg", "München", 167},
-      {"Kassel", "München", 502}};
+      {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
+      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
+      {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
+      {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
 
 GraphXlate<caa_routes_edge_mapper> germany_routes_directed_graph(caa_routes_edge_mapper(), germany_routes);
 GraphXlate<ual_routes_edge_mapper> germany_routes_undirected_graph(ual_routes_edge_mapper(), germany_routes);

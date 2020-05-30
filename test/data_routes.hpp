@@ -141,6 +141,24 @@ struct ual_data_edge_mapper {
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
 
+#if 0
+struct vov_data_edge_mapper {
+  using target_graph_t      = vov<double>;
+  using source_edge_range_t = data_edges_t;
+  using source_edge_t       = data_edges_t::value_type;
+
+  using vertex_label_t = std::string;
+  using vertex_index_t = size_t;
+
+  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+
+  vertex_index_t const& in_index(source_edge_t const& uv) const { return uv.from; }
+  vertex_index_t const& out_index(source_edge_t const& uv) const { return uv.to; }
+
+  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
+};
+#endif
 
 //---------------------------------------------------------------------------------------
 // Translates raw edge data into intermediate forms that can easily be used for
@@ -171,7 +189,7 @@ public:
           [](vertex_label_t const& label) -> vertex_label_t const& { return label; });
   }
 
-  target_edges_t const& edge_values() const { return edge_values_; } // exposed mainly for sanity test
+  target_edges_t const&  edge_values() const { return edge_values_; } // exposed mainly for sanity test
   vertex_labels_t const& vertex_values() const { return vertex_labels_; }
 
 protected:

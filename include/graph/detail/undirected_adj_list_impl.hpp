@@ -15,13 +15,13 @@ namespace std::graph {
 // ual_edge_list::const_iterator
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::reference
-      ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::operator*() const {
+ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::operator*() const {
   return *edge_;
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::pointer
-      ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::operator->() const {
+ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::operator->() const {
   return edge_;
 }
 
@@ -62,7 +62,7 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::advance() {
   if (in_link.vertex_key_ == vertex_key_) {
     edge_ = in_link.next_;
   } else {
-    _ASSERTE(out_link.vertex_key_ == vertex_key_);
+    assert(out_link.vertex_key_ == vertex_key_);
     edge_ = out_link.next_;
   }
 }
@@ -75,12 +75,12 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::retreat() {
     if (in_link.vertex_key_ == vertex_key_) {
       edge_ = in_link.prev_;
     } else {
-      _ASSERTE(out_link.vertex_key_ == vertex_key_);
+      assert(out_link.vertex_key_ == vertex_key_);
       edge_ = out_link.prev_;
     }
   } else {
     vertex_iterator u = graph_->find_vertex(vertex_key_);
-    edge_ = &u->edge_back(*graph_);
+    edge_             = &u->edge_back(*graph_);
   }
 }
 
@@ -97,13 +97,13 @@ bool ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::operator!=(const_iter
 // ual_edge_list::iterator
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge_list<VV, EV, GV, IndexT, A>::reference
-      ual_edge_list<VV, EV, GV, IndexT, A>::iterator::operator*() const {
+ual_edge_list<VV, EV, GV, IndexT, A>::iterator::operator*() const {
   return *this->edge_;
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge_list<VV, EV, GV, IndexT, A>::pointer
-      ual_edge_list<VV, EV, GV, IndexT, A>::iterator::operator->() const {
+ual_edge_list<VV, EV, GV, IndexT, A>::iterator::operator->() const {
   return this->edge_;
 }
 
@@ -196,7 +196,7 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::link_back(edge_type&                 
       tail_               = &uv;
     }
   } else {
-    _ASSERT(!head_ && !tail_ && size_ == 0);
+    assert(!head_ && !tail_ && size_ == 0);
     head_ = tail_ = &uv;
   }
   ++size_;
@@ -213,7 +213,7 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::unlink(edge_type&                    
     if (prev_in_link.vertex_key_ == uv_link.vertex_key_) {
       prev_in_link.next_ = uv_link.next_;
     } else {
-      _ASSERT(prev_out_link.vertex_key_ == uv_link.vertex_key_);
+      assert(prev_out_link.vertex_key_ == uv_link.vertex_key_);
       prev_out_link.next_ = uv_link.next_;
     }
   }
@@ -227,7 +227,7 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::unlink(edge_type&                    
     if (next_in_link.vertex_key_ == uv_link.vertex_key_) {
       next_in_link.prev_ = uv_link.prev_;
     } else {
-      _ASSERT(next_out_link.vertex_key_ == uv_link.vertex_key_);
+      assert(next_out_link.vertex_key_ == uv_link.vertex_key_);
       next_out_link.prev_ = uv_link.prev_;
     }
   }
@@ -239,11 +239,11 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::unlink(edge_type&                    
   --size_;
 
   if (size_ == 0)
-    _ASSERT(head_ == nullptr && tail_ == nullptr);
+    assert(head_ == nullptr && tail_ == nullptr);
   else if (size_ == 1)
-    _ASSERT(head_ == tail_);
+    assert(head_ == tail_);
   else
-    _ASSERT(head_ != tail_);
+    assert(head_ != tail_);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -322,7 +322,7 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&                 g,
                                           vertex_iterator             ui,
                                           vertex_iterator             vi,
                                           edge_user_value_type const& val) noexcept
-      : ual_graph(g, *ui, *vi, val) {}
+      : ual_edge(g, *ui, *vi, val) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&            g,
@@ -334,10 +334,10 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&            g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_edge<VV, EV, GV, IndexT, A>::~ual_edge() noexcept {
   edge_list_out_link_type& out_link = *static_cast<edge_list_out_link_type*>(this);
-  _ASSERT(out_link.prev() == nullptr && out_link.next() == nullptr); // has edge been unlinked?
+  assert(out_link.prev() == nullptr && out_link.next() == nullptr); // has edge been unlinked?
 
   edge_list_in_link_type& in_link = *static_cast<edge_list_in_link_type*>(this);
-  _ASSERT(in_link.prev() == nullptr && in_link.next() == nullptr); // has edge been unlinked?
+  assert(in_link.prev() == nullptr && in_link.next() == nullptr); // has edge been unlinked?
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -408,8 +408,8 @@ ual_edge<VV, EV, GV, IndexT, A>::other_vertex(graph_type const& g, vertex_key_ty
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_key_type
-ual_edge<VV, EV, GV, IndexT, A>::other_vertex_key(graph_type const& g, vertex_key_type const in_or_out_key) const
-      noexcept {
+ual_edge<VV, EV, GV, IndexT, A>::other_vertex_key(graph_type const&     g,
+                                                  vertex_key_type const in_or_out_key) const noexcept {
   return in_or_out_key != in_vertex_key(g) ? in_vertex_key(g) : out_vertex_key(g);
 }
 
@@ -501,8 +501,8 @@ ual_vertex<VV, EV, GV, IndexT, A>::edge_back(graph_type const& g) const noexcept
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_vertex<VV, EV, GV, IndexT, A>::vertex_edge_size_type ual_vertex<VV, EV, GV, IndexT, A>::edge_size() const
-      noexcept {
+typename ual_vertex<VV, EV, GV, IndexT, A>::vertex_edge_size_type
+ual_vertex<VV, EV, GV, IndexT, A>::edge_size() const noexcept {
   return edges_.size();
 }
 
@@ -689,7 +689,7 @@ template <class VV2>
 typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator
 ual_graph<VV, EV, GV, IndexT, A>::create_vertex(VV2 const& val) {
   vertices_.push_back(vertex_type(vertices_, static_cast<vertex_key_type>(vertices_.size()), val));
-  return vertices_.begin() + (vertices_.size() - 1);
+  return vertices_.begin() + static_cast<vertex_key_type>(vertices_.size() - 1);
 }
 
 
@@ -732,8 +732,8 @@ constexpr typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator ual_graph<V
   return vertices_.end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator ual_graph<VV, EV, GV, IndexT, A>::end() const
-      noexcept {
+constexpr typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator
+ual_graph<VV, EV, GV, IndexT, A>::end() const noexcept {
   return vertices_.end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -743,8 +743,8 @@ ual_graph<VV, EV, GV, IndexT, A>::cend() const noexcept {
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::edge_size_type ual_graph<VV, EV, GV, IndexT, A>::edges_size() const
-      noexcept {
+constexpr typename ual_graph<VV, EV, GV, IndexT, A>::edge_size_type
+ual_graph<VV, EV, GV, IndexT, A>::edges_size() const noexcept {
   return edges_size_;
 }
 
@@ -816,7 +816,7 @@ void ual_graph<VV, EV, GV, IndexT, A>::clear() {
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_graph<VV, EV, GV, IndexT, A>::throw_unordered_edges() const {
-  _ASSERT(false); // container must be sorted by edge_key.first
+  assert(false); // container must be sorted by edge_key.first
   throw invalid_argument("edges not ordered");
 }
 
@@ -909,6 +909,43 @@ constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const&           g,
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_begin(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_begin(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_begin(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                          vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_begin(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_cbegin(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                           vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_cbegin(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_end(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_end(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_end(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                        vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_end(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_cend(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                         vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_cend(g);
+}
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const&           g,
                           vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
@@ -921,7 +958,7 @@ constexpr auto edges_degree(ual_graph<VV, EV, GV, IndexT, A> const&           g,
       -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_size();
 }
-    
+
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex(ual_graph<VV, EV, GV, IndexT, A>&                     g,
@@ -982,7 +1019,7 @@ constexpr auto out_vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&         g,
   return uv.out_vertex_key(g);
 }
 
-#if 0
+#  if 0
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A>& g, edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv) noexcept
       -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
@@ -1002,7 +1039,7 @@ constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&         g,
       -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
-#endif
+#  endif
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A>&                 g,
@@ -1021,15 +1058,15 @@ constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A> const&           g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&              g,
-                          edge_t<ual_graph<VV, EV, GV, IndexT, A>> const&      uv,
+constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                          edge_t<ual_graph<VV, EV, GV, IndexT, A>> const&   uv,
                           vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& source) noexcept
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>  {
+      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return uv.other_vertex_key(g, vertex_key(g, source));
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&              g,
-                          edge_t<ual_graph<VV, EV, GV, IndexT, A>> const&      uv,
+constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&               g,
+                          edge_t<ual_graph<VV, EV, GV, IndexT, A>> const&       uv,
                           vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> const& source_key) noexcept
       -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return uv.other_vertex_key(g, source_key);
@@ -1042,7 +1079,8 @@ constexpr auto find_edge(ual_graph<VV, EV, GV, IndexT, A>&           g,
                          vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& v) noexcept
       -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>(
-        g, to_iterator(g, u), ::ranges::find_if(edges(g, u), [&g, &u, &v](auto& uv) { return &*vertex(g, uv, u) == &v; }));
+        g, to_iterator(g, u),
+        ::ranges::find_if(edges(g, u), [&g, &u, &v](auto& uv) { return &*vertex(g, uv, u) == &v; }));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -1129,6 +1167,39 @@ constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_begin(ual_graph<VV, EV, GV, IndexT, A>& g) noexcept
+      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().begin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_begin(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_end(ual_graph<VV, EV, GV, IndexT, A>& g) noexcept
+      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().end();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_end(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_cend(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }

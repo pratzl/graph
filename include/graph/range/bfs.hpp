@@ -70,14 +70,13 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
     vertex_iterator_t<G> u;
     size_t               depth = 0;
   };
-  using queue_alloc =
-        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
-  using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
+  using queue_alloc = typename allocator_traits<A>::template rebind_alloc<queue_elem>;
+  using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
   bfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
-    if (seed != std::graph::end(graph_)) {
+    if (seed != vertex_end(graph_)) {
       queue_.push(queue_elem{seed, 1});
       visited_[vertex_key(graph_, *seed)] = grey;
     }
@@ -90,8 +89,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_vertex_range& bfs, bool end_iter = false)
-          : bfs_(&bfs), elem_{std::graph::end(bfs.graph_)} {
+    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{vertex_end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -103,7 +101,7 @@ public:
     const_vertex_iterator_t<G> operator->() const { return elem_.u; }
 
     const_iterator& operator++() {
-      queue_elem elem_ = bfs_->advance();
+      elem_ = bfs_->advance();
       return *this;
     }
 
@@ -179,8 +177,8 @@ protected:
       queue_.pop();
 
       while (!queue_.empty()) {
-        auto [u, depth]       = queue_.front();
-        vertex_key_t<G> u_key = vertex_key(graph_, *u);
+        u     = queue_.front().u;
+        u_key = vertex_key(graph_, *u);
 
         if (visited_[u_key] == grey)
           return queue_.front(); // visit it
@@ -191,12 +189,12 @@ protected:
         queue_.pop();
       }
     }
-    return queue_elem{std::graph::end(graph_), 0};
+    return queue_elem{vertex_end(graph_), 0};
   }
 
   void push_neighbors(vertex_iterator_t<G> u, size_t depth) {
-    vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
-    for (vertex_edge_iterator_t<G> uv = std::graph::begin(graph_, *u); uv != uv_end; ++uv) {
+    vertex_edge_iterator_t<G> uv_end = edge_end(graph_, *u);
+    for (vertex_edge_iterator_t<G> uv = edge_begin(graph_, *u); uv != uv_end; ++uv) {
       vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
       vertex_key_t<G>      v_key = vertex_key(graph_, *v);
       if (visited_[v_key] == white) {
@@ -233,15 +231,14 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
     vertex_edge_iterator_t<G> uv;
     size_t                    depth = 0;
   };
-  using queue_alloc =
-        typename allocator_traits<typename A>::template rebind_alloc<queue_elem>;
-  using queue_type = queue<queue_elem, deque<queue_elem, queue_alloc>>;
+  using queue_alloc = typename allocator_traits<A>::template rebind_alloc<queue_elem>;
+  using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
   bfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
-    if (seed != std::graph::end(graph_)) {
-      push_neighbors(std::graph::end(graph_), seed, 1);
+    if (seed != vertex_end(graph_)) {
+      push_neighbors(vertex_end(graph_), seed, 1);
     }
   }
 
@@ -263,7 +260,7 @@ public:
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
     const_iterator(bfs_edge_range& bfs, bool end_iter = false)
-          : bfs_(&bfs), elem_{std::graph::end(bfs.graph_), vertex_edge_iterator_t<G>()} {
+          : bfs_(&bfs), elem_{vertex_end(bfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -275,7 +272,7 @@ public:
     vertex_edge_iterator_type operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
-      queue_elem elem_ = bfs_->advance();
+      elem_ = bfs_->advance();
       return *this;
     }
 
@@ -360,7 +357,7 @@ public:
 
 protected:
   bool out_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return uv != std::graph::end(graph_, *u);
+    return uv != edge_end(graph_, *u);
   }
 
   bool is_out_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
@@ -383,9 +380,9 @@ protected:
   }
 
   void push_neighbors(vertex_iterator_t<G> u, vertex_iterator_t<G> v, size_t depth) {
-    vertex_edge_iterator_t<G> vw     = std::graph::begin(graph_, *v);
-    vertex_edge_iterator_t<G> vw_end = std::graph::end(graph_, *v);
-    if (vw == vw_end || (edges_size(graph_,*v)==1 && vertex(graph_, *vw, *v) == u)) {
+    vertex_edge_iterator_t<G> vw     = edge_begin(graph_, *v);
+    vertex_edge_iterator_t<G> vw_end = edge_end(graph_, *v);
+    if (vw == vw_end || (edges_size(graph_, *v) == 1 && vertex(graph_, *vw, *v) == u)) {
       queue_.push({v, vw_end, depth});
     } else {
       for (; vw != vw_end; ++vw) {
@@ -400,9 +397,9 @@ protected:
   queue_elem advance() {
     while (!queue_.empty()) {
       auto [u, uv, d] = queue_.front();
-#    ifdef _DEBUG
+#  ifdef _DEBUG
       vertex_key_t<G> u_key = vertex_key(graph_, *u);
-#    endif
+#  endif
       queue_.pop();
       if (queue_.empty())
         break;
@@ -411,15 +408,15 @@ protected:
         visit(u, black);
         return queue_.front(); // next sibling/cousin of uv, or next generation (whatever is in the queue)
       } else {
-#    ifdef _DEBUG
+#  ifdef _DEBUG
         vertex_key_t<G> v_key = vertex_key(graph_, *uv, *u);
-#    endif
+#  endif
         if (!is_out_visited(u, uv)) {
           vertex_iterator_t<G> v = vertex(graph_, *uv, *u);
           push_neighbors(u, v, d + 1);
         }
 
-        vertex_edge_iterator_t<G> uv_last = --std::graph::end(graph_, *u);
+        vertex_edge_iterator_t<G> uv_last = --edge_end(graph_, *u);
         if (uv == uv_last) // last edge of u?
           visit(u, black);
 
@@ -427,7 +424,7 @@ protected:
       }
     }
 
-    return queue_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>(), 0};
+    return queue_elem{vertex_end(graph_), vertex_edge_iterator_t<G>(), 0};
   }
 
 private:

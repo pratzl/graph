@@ -1,16 +1,23 @@
-﻿#include "pch.h"
+﻿//#include "pch.h"
 #include "graph/compressed_adj_array.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
 #include "graph//algorithm/transitive_closure.hpp"
 #include "data_routes.hpp"
+#include <iostream>
+#include <catch2/catch.hpp>
 
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
 #define TEST_OPTION TEST_OPTION_TEST
 
+
+#define EXPECT_EQ(a, b) REQUIRE((a) == (b))
+#define EXPECT_NE(a, b) REQUIRE((a) != (b))
+#define EXPECT_FALSE(a) REQUIRE(!(a))
+#define EXPECT_TRUE(a) REQUIRE(a);
 
 using std::vector;
 using std::string;
@@ -35,9 +42,7 @@ vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
-static Graph create_germany_routes_graph() {
-  return germany_routes_directed_graph.create_graph();
-}
+static Graph                      create_germany_routes_graph() { return germany_routes_directed_graph.create_graph(); }
 static vector<std::string> const& germany_cities() { return germany_routes_directed_graph.vertex_values(); }
 
 template <class OStream>
@@ -56,13 +61,13 @@ OStream& operator<<(OStream& os, Graph const& g) {
 }
 
 
-TEST(TestCAAGraph, TestMinObjSize) {
+TEST_CASE("caa minsize", "[caa][minsize]") {
   using G = std::graph::compressed_adjacency_array<>;
   EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
   EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
-TEST(TestCAAGraph, TestEmptyGraph) {
+TEST_CASE("caa empty", "[caa][empty]") {
   Graph g;
   EXPECT_EQ(0, vertices_size(g));
   EXPECT_EQ(0, edges_size(g));
@@ -70,7 +75,7 @@ TEST(TestCAAGraph, TestEmptyGraph) {
   //EXPECT_EQ(sizeof(Graph::vertex_size_type) + sizeof(weight_value), sizeof(Graph::edge_type));
 }
 
-TEST(TestCAAGraph, TestGraphInit) {
+TEST_CASE("caa init", "[caa][init]") {
 #if 0
   vector<Graph::edge_value_type> caa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, caa_germany_edge_routes);
@@ -260,7 +265,7 @@ TEST(TestCAAGraph, TestGraphInit) {
 #endif
 }
 
-TEST(TestCAAGraph, AllGraphFunctions) {
+TEST_CASE("caa graph functions", "[caa][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = create_germany_routes_graph();
 
@@ -271,20 +276,17 @@ TEST(TestCAAGraph, AllGraphFunctions) {
   EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
 
   size_t cnt = 0;
-  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g);
-       u != std::graph::end(g); ++u, ++cnt)
+  for (std::graph::vertex_iterator_t<Graph> u = std::graph::begin(g); u != std::graph::end(g); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc);
-       u != std::graph::end(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::begin(gc); u != std::graph::end(gc); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc);
-       u != std::graph::cend(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::cbegin(gc); u != std::graph::cend(gc); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
@@ -305,7 +307,7 @@ TEST(TestCAAGraph, AllGraphFunctions) {
 #endif
 }
 
-TEST(TestCAAGraph, AllVertexFunctions) {
+TEST_CASE("caa vertex functions", "[caa][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
 
@@ -322,8 +324,7 @@ TEST(TestCAAGraph, AllVertexFunctions) {
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
   EXPECT_EQ(f1, f2);
 
-  vertex_iterator_t<Graph> f3 =
-        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
   EXPECT_NE(f3, g.vertices().end());
   EXPECT_EQ(2, vertex_key(g, *f3));
 
@@ -341,32 +342,26 @@ TEST(TestCAAGraph, AllVertexFunctions) {
   }
 
   {
-    std::graph::vertex_out_edge_range_t<Graph>       uvr   = std::graph::out_edges(g, u);
-    std::graph::const_vertex_out_edge_range_t<Graph> uvrc  = std::graph::out_edges(g, uc);
-    std::graph::vertex_out_edge_iterator_t<Graph> uvi_beg1 = std::graph::out_begin(g, u);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 =
-          std::graph::out_begin(g, uc);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 =
-          std::graph::out_cbegin(g, u);
-    std::graph::vertex_out_edge_iterator_t<Graph> uvi_end1 = std::graph::out_end(g, u);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 =
-          std::graph::out_end(g, uc);
-    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 =
-          std::graph::out_cend(g, u);
+    std::graph::vertex_out_edge_range_t<Graph>          uvr      = std::graph::out_edges(g, u);
+    std::graph::const_vertex_out_edge_range_t<Graph>    uvrc     = std::graph::out_edges(g, uc);
+    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_beg1 = std::graph::out_begin(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg2 = std::graph::out_begin(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_beg3 = std::graph::out_cbegin(g, u);
+    std::graph::vertex_out_edge_iterator_t<Graph>       uvi_end1 = std::graph::out_end(g, u);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 = std::graph::out_end(g, uc);
+    std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
     EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
     EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
   }
 }
 
-TEST(TestCAAGraph, AllEdgeFunctions) {
+TEST_CASE("caa edge functions", "[caa][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
 
-  vertex_iterator_t<Graph> u =
-        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
-  vertex_iterator_t<Graph> v =
-        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Mannheim"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Mannheim"; });
   EXPECT_NE(end(g), u);
   EXPECT_NE(end(g), v);
 
@@ -385,7 +380,7 @@ TEST(TestCAAGraph, AllEdgeFunctions) {
   EXPECT_EQ(uv, uv3);
 }
 
-TEST(TestCAAGraph, DFSVertex) {
+TEST_CASE("caa dfs vertex", "[caa][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -449,7 +444,7 @@ TEST(TestCAAGraph, DFSVertex) {
 #endif
 }
 
-TEST(TestCAAGraph, DFSEdge) {
+TEST_CASE("caa dfs edge", "[caa][dfs][edge]") {
   Graph          g = create_germany_routes_graph();
   dfs_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -615,7 +610,7 @@ TEST(TestCAAGraph, DFSEdge) {
 #endif
 }
 
-TEST(TestCAAGraph, BFSVertex) {
+TEST_CASE("caa bfs vertex", "[caa][bfs][vertex]") {
   Graph            g = create_germany_routes_graph();
   bfs_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
@@ -661,7 +656,7 @@ TEST(TestCAAGraph, BFSVertex) {
 #endif
 }
 
-TEST(TestCAAGraph, BFSEdge) {
+TEST_CASE("cass bfs edge", "[caa][bfs][edge]") {
   Graph          g = create_germany_routes_graph();
   bfs_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -831,19 +826,18 @@ TEST(TestCAAGraph, BFSEdge) {
 #endif
 }
 
-TEST(TestCAAGraph, DijkstraShortestDistances) {
+TEST_CASE("caa dijkstra distance", "[caa][dikjstra][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u =
-        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), false, weight_fnc);
+  dijkstra_shortest_distances(g, u, back_inserter(short_dists), false, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
   /* Output: source = Frankfurt
@@ -861,7 +855,7 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
 
   cout << "\n";
   short_dists.clear();
-  dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), true, weight_fnc);
+  dijkstra_shortest_distances(g, u, back_inserter(short_dists), true, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
     /* Output: source = Frankfurt
@@ -872,7 +866,7 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
   {
-    dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), false, weight_fnc);
+    dijkstra_shortest_distances(g, u, back_inserter(short_dists), false, weight_fnc);
     EXPECT_EQ("Frankfürt", short_dists[0].first->name);
     EXPECT_EQ("Augsburg", short_dists[0].last->name);
     EXPECT_EQ(415, short_dists[0].distance);
@@ -915,7 +909,7 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
   }
   {
     short_dists.clear();
-    dijkstra_shortest_distances<int>(g, u, back_inserter(short_dists), true, weight_fnc);
+    dijkstra_shortest_distances(g, u, back_inserter(short_dists), true, weight_fnc);
 
     EXPECT_EQ("Frankfürt", short_dists[0].first->name);
     EXPECT_EQ("Erfurt", short_dists[0].last->name);
@@ -932,20 +926,18 @@ TEST(TestCAAGraph, DijkstraShortestDistances) {
 #endif
 }
 
-TEST(TestCAAGraph, BellmanFordShortestDistances) {
+TEST_CASE("caa bellman-ford distance", "[caa][bellman-ford][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u =
-        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true,
-                                       weight_fnc);
+  bellman_ford_shortest_distances(g, u, back_inserter(short_dists), false, true, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
   /* Output: source = Frankfürt
@@ -963,8 +955,7 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 
   cout << "\n";
   short_dists.clear();
-  bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true,
-                                       weight_fnc);
+  bellman_ford_shortest_distances(g, u, back_inserter(short_dists), true, true, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
     /* Output: source = Frankfürt
@@ -975,7 +966,7 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
   {
-    bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), false, true, weight_fnc);
+    bellman_ford_shortest_distances(g, u, back_inserter(short_dists), false, true, weight_fnc);
 
     EXPECT_EQ("Frankfürt", short_dists[0].first->name);
     EXPECT_EQ("Augsburg", short_dists[0].last->name);
@@ -1019,7 +1010,7 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
   }
   {
     short_dists.clear();
-    bellman_ford_shortest_distances<int>(g, u, back_inserter(short_dists), true, true, weight_fnc);
+    bellman_ford_shortest_distances(g, u, back_inserter(short_dists), true, true, weight_fnc);
 
     EXPECT_EQ("Frankfürt", short_dists[0].first->name);
     EXPECT_EQ("Erfurt", short_dists[0].last->name);
@@ -1036,7 +1027,7 @@ TEST(TestCAAGraph, BellmanFordShortestDistances) {
 #endif
 }
 
-TEST(TestCAAGraph, DijkstraShortestPaths) {
+TEST_CASE("caa dijkstra shortest path", "[caa][dikjstra][path]") {
   using std::graph::dijkstra_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1045,13 +1036,12 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u =
-        ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
+  dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -1075,7 +1065,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 
   cout << "\n";
   short_paths.clear();
-  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+  dijkstra_shortest_paths(g, u, back_inserter(short_paths), true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -1092,8 +1082,8 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 #elif TEST_OPTION == TEST_OPTION_GEN
   {
     cout << "{\n";
-    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
-    cout << "  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, "
+    dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, weight_fnc);
+    cout << "  dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, "
             "weight_fnc);\n";
     for (size_t spi = 0; spi < short_paths.size(); ++spi) {
       cout << "\n";
@@ -1109,10 +1099,10 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 
   {
     short_paths.clear();
-    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+    dijkstra_shortest_paths(g, u, back_inserter(short_paths), true, weight_fnc);
     cout << "{\n";
     cout << "  short_paths.clear();\n";
-    cout << "  dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, "
+    cout << "  dijkstra_shortest_paths(g, u, back_inserter(short_paths), true, "
             "weight_fnc);\n";
     for (size_t spi = 0; spi < short_paths.size(); ++spi) {
       cout << "\n";
@@ -1128,7 +1118,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 
 #elif TEST_OPTION == TEST_OPTION_TEST
   {
-    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), false, weight_fnc);
+    dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, weight_fnc);
 
     EXPECT_EQ(415, short_paths[0].distance);
     EXPECT_EQ(4, short_paths[0].path.size());
@@ -1190,7 +1180,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
   }
   {
     short_paths.clear();
-    dijkstra_shortest_paths<int>(g, u, back_inserter(short_paths), true, weight_fnc);
+    dijkstra_shortest_paths(g, u, back_inserter(short_paths), true, weight_fnc);
 
     EXPECT_EQ(403, short_paths[0].distance);
     EXPECT_EQ(3, short_paths[0].path.size());
@@ -1215,7 +1205,7 @@ TEST(TestCAAGraph, DijkstraShortestPaths) {
 #endif
 }
 
-TEST(TestCAAGraph, BellmanFordShortestPaths) {
+TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
   using std::graph::bellman_ford_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1224,13 +1214,13 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   bool neg_edge_cycle_exists =
-        bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), false, true, weight_fnc);
+        bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -1254,7 +1244,7 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
 
   cout << "\n";
   short_paths.clear();
-  neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), true, true, weight_fnc);
+  neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -1272,8 +1262,8 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   {
     cout << "{\n";
     bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), false, true, weight_fnc);
-    cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), false, "
+          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+    cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, "
             "true, weight_fnc);\n ";
     cout << "  EXPECT_FALSE(neg_edge_cycle_exists);\n";
     for (size_t spi = 0; spi < short_paths.size(); ++spi) {
@@ -1291,10 +1281,10 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   {
     short_paths.clear();
     bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), true, true, weight_fnc);
+          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
     cout << "{\n";
     cout << "  short_paths.clear();\n";
-    cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), true, "
+    cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, "
             "true, weight_fnc);\n ";
     cout << "  EXPECT_FALSE(neg_edge_cycle_exists);\n";
     for (size_t spi = 0; spi < short_paths.size(); ++spi) {
@@ -1311,7 +1301,7 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
 #elif TEST_OPTION == TEST_OPTION_TEST
   {
     bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), false, true, weight_fnc);
+          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
 
     EXPECT_EQ(415, short_paths[0].distance);
@@ -1375,7 +1365,7 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
   {
     short_paths.clear();
     bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths<int>(g, u, back_inserter(short_paths), true, true, weight_fnc);
+          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
 
     EXPECT_EQ(403, short_paths[0].distance);
@@ -1402,7 +1392,7 @@ TEST(TestCAAGraph, BellmanFordShortestPaths) {
 }
 
 
-TEST(TestCAAGraph, bfs_transitive_closure) {
+TEST_CASE("caa dfs transitive closure", "[caa][dfs][transitive closure]") {
   using std::graph::dfs_transitive_closure;
   using std::graph::reaches;
 
@@ -1411,7 +1401,7 @@ TEST(TestCAAGraph, bfs_transitive_closure) {
   reaches_vec_t reaches_vec;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   dfs_transitive_closure(g, back_inserter(reaches_vec));
@@ -1533,7 +1523,7 @@ TEST(TestCAAGraph, bfs_transitive_closure) {
 }
 
 
-TEST(TestCAAGraph, warshall_transitive_closure) {
+TEST_CASE("caa warshall transitive closure", "[caa][warshall][transitive closure]") {
   using std::graph::warshall_transitive_closure;
   using std::graph::reaches;
 
@@ -1542,7 +1532,7 @@ TEST(TestCAAGraph, warshall_transitive_closure) {
   reaches_vec_t reaches_vec;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u) { return u.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   warshall_transitive_closure(g, back_inserter(reaches_vec));

@@ -1,4 +1,5 @@
 #include "graph_fwd.hpp"
+#include <string>
 
 #ifndef GRAPH_UTILITY_HPP
 #  define GRAPH_UTILITY_HPP
