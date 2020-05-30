@@ -909,6 +909,43 @@ constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const&           g,
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_begin(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_begin(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_begin(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                          vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_begin(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_cbegin(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                           vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_cbegin(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_end(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_end(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_end(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                        vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_end(g);
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_cend(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                         vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return u.edge_cend(g);
+}
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const&           g,
                           vertex_t<ual_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
       -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
@@ -1130,6 +1167,39 @@ constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_begin(ual_graph<VV, EV, GV, IndexT, A>& g) noexcept
+      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().begin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_begin(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_end(ual_graph<VV, EV, GV, IndexT, A>& g) noexcept
+      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().end();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_end(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_cend(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }

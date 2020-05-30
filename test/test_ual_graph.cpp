@@ -83,9 +83,16 @@ OStream& operator<<(OStream& os, Graph const& g) {
 
 
 TEST_CASE("ual minsize", "[ual][minsize]") {
-  using G = std::graph::undirected_adjacency_list<>;
-  EXPECT_EQ(24, sizeof(G::vertex_type)); // vertex size = 4 bytes
-  EXPECT_EQ(48, sizeof(G::edge_type));   // edge size = 8 bytes
+  using G      = std::graph::undirected_adjacency_list<>;
+  size_t vsize = sizeof(typename G::vertex_type);
+  size_t esize = sizeof(typename G::edge_type);
+#ifdef _MSC_VER
+  EXPECT_EQ(12, sizeof(typename G::vertex_type)); // vertex size = 4 bytes
+  EXPECT_EQ(24, sizeof(typename G::edge_type));   // edge size = 8 bytes
+#else
+  EXPECT_EQ(24, sizeof(typename G::vertex_type)); // vertex size = 4 bytes
+  EXPECT_EQ(48, sizeof(typename G::edge_type));   // edge size = 8 bytes
+#endif
 }
 
 TEST_CASE("ual empty", "[ual][empty]") {
@@ -1309,8 +1316,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  bool neg_edge_cycle_exists =
-        bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -1351,8 +1357,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
 #elif TEST_OPTION == TEST_OPTION_GEN
   {
     cout << "{\n";
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
     cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, "
             "true, weight_fnc);\n ";
     cout << "  EXPECT_FALSE(neg_edge_cycle_exists);\n";
@@ -1370,8 +1375,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
 
   {
     short_paths.clear();
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
     cout << "{\n";
     cout << "  short_paths.clear();\n";
     cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, "
@@ -1390,8 +1394,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
   {
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
 
     EXPECT_EQ(415, short_paths[0].distance);
@@ -1454,8 +1457,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
   }
   {
     short_paths.clear();
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
 
     EXPECT_EQ(403, short_paths[0].distance);
@@ -1480,4 +1482,3 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
   }
 #endif
 }
-

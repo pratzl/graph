@@ -3,7 +3,7 @@
 #include <concepts>
 //#include <range/v3/range/concepts.hpp>
 #include <type_traits>
-#include <utility>     // pair
+#include <utility> // pair
 
 /* 
     This header's organization
@@ -186,6 +186,20 @@ constexpr auto end(G const& g) noexcept -> const_vertex_iterator_t<G>;
 template <typename G>
 constexpr auto cend(G const& g) noexcept -> const_vertex_iterator_t<G>;
 
+template <typename G>
+constexpr auto vertex_begin(G& g) noexcept -> vertex_iterator_t<G>;
+template <typename G>
+constexpr auto vertex_begin(G const& g) noexcept -> const_vertex_iterator_t<G>;
+template <typename G>
+constexpr auto vertex_cbegin(G const& g) noexcept -> const_vertex_iterator_t<G>;
+
+template <typename G>
+constexpr auto vertex_end(G& g) noexcept -> vertex_iterator_t<G>;
+template <typename G>
+constexpr auto vertex_end(G const& g) noexcept -> const_vertex_iterator_t<G>;
+template <typename G>
+constexpr auto vertex_cend(G const& g) noexcept -> const_vertex_iterator_t<G>;
+
 
 template <typename G>
 constexpr auto find_vertex(G& g, vertex_key_t<G> const&) noexcept -> vertex_iterator_t<G>;
@@ -266,6 +280,20 @@ template <typename G>
 constexpr auto end(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
 template <typename G>
 constexpr auto cend(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+
+template <typename G>
+constexpr auto edge_begin(G& g, vertex_t<G>& u) noexcept -> vertex_edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_begin(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_cbegin(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+
+template <typename G>
+constexpr auto edge_end(G& g, vertex_t<G>& u) noexcept -> vertex_edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_end(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_cend(G const& g, vertex_t<G> const& u) noexcept -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto create_vertex(G& g) -> pair<vertex_iterator_t<G>, bool>;

@@ -86,10 +86,10 @@ public:
   dfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph)
         , stack_(alloc)
-        , visited_(vertices_size(graph), white, alloc)
-        , parent_(vertices_size(graph), std::graph::end(graph), alloc) {
-    if (seed != std::graph::end(graph_)) {
-      stack_.push(stack_elem{seed, std::graph::begin(graph_, *seed)});
+        , visited_(vertices_size(graph_), white, alloc)
+        , parent_(vertices_size(graph_), vertex_end(graph_), alloc) {
+    if (seed != vertex_end(graph_)) {
+      stack_.push(stack_elem{seed, edge_begin(graph_, *seed)});
       visited_[vertex_key(graph_, *seed)] = grey;
     }
   }
@@ -104,7 +104,7 @@ public:
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
     const_iterator(dfs_vertex_range& dfs, bool end_iter = false)
-          : dfs_(&dfs), elem_{std::graph::end(dfs.graph_), vertex_edge_iterator_t<G>()} {
+          : dfs_(&dfs), elem_{vertex_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
         elem_ = dfs.stack_.top();
     }
@@ -188,7 +188,7 @@ protected:
       stack_.pop();
 
       // advance uv to next unvisited v vertex
-      vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
+      vertex_edge_iterator_t<G> uv_end = edge_end(graph_, *u);
       vertex_iterator_t<G>      v      = vertex_iterator_t<G>();
       vertex_key_t<G>           v_key  = vertex_key_t<G>();
       for (; uv != uv_end; ++uv) {
@@ -201,16 +201,16 @@ protected:
       if (uv == uv_end) {
         vertex_key_t<G> u_key = vertex_key(graph_, *u);
         visited_[u_key]       = black;
-      } else {                                                        // (visited_[v_key] == white)
-        stack_.push(stack_elem{u, uv});                               // remember next edge to resume on for u
-        vertex_edge_iterator_t<G> vw = std::graph::begin(graph_, *v); // may ==end(graph_,*v)
-        stack_.push(stack_elem{v, vw});                               // go level deaper in traversal
+      } else {                                                 // (visited_[v_key] == white)
+        stack_.push(stack_elem{u, uv});                        // remember next edge to resume on for u
+        vertex_edge_iterator_t<G> vw = edge_begin(graph_, *v); // may ==end(graph_,*v)
+        stack_.push(stack_elem{v, vw});                        // go level deaper in traversal
         visited_[v_key] = grey;
         parent_[v_key]  = u;
         return stack_.top();
       }
     }
-    return stack_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>()};
+    return stack_elem{vertex_end(graph_), vertex_edge_iterator_t<G>()};
   }
 
 private:
@@ -249,9 +249,9 @@ public:
         : graph_(graph)
         , stack_(alloc)
         , visited_(vertices_size(graph), white, alloc)
-        , parent_(vertices_size(graph), std::graph::end(graph), alloc) {
-    if (seed != std::graph::end(graph_)) {
-      stack_.push({seed, std::graph::begin(graph_, *seed)});
+        , parent_(vertices_size(graph), vertex_end(graph), alloc) {
+    if (seed != vertex_end(graph_)) {
+      stack_.push({seed, edge_begin(graph_, *seed)});
       visit(seed, grey);
     }
   }
@@ -275,7 +275,7 @@ public:
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
     const_iterator(dfs_edge_range& dfs, bool end_iter = false)
-          : dfs_(&dfs), elem_{std::graph::end(dfs.graph_), vertex_edge_iterator_t<G>()} {
+          : dfs_(&dfs), elem_{vertex_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
         elem_ = dfs.stack_.top();
     }
@@ -379,7 +379,7 @@ public:
 
 protected:
   bool out_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return uv != std::graph::end(graph_, *u);
+    return uv != edge_end(graph_, *u);
   }
 
   bool is_out_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
@@ -410,7 +410,7 @@ protected:
         continue;
       } else if (is_out_visited(stack_.top())) { // back edge?
         auto [u, uv]                     = stack_.top();
-        vertex_edge_iterator_t<G> uv_end = std::graph::end(graph_, *u);
+        vertex_edge_iterator_t<G> uv_end = edge_end(graph_, *u);
         stack_.pop();
         for (++uv; uv != uv_end && is_parent(u, uv); ++uv)
           ;
@@ -424,8 +424,8 @@ protected:
       } else { // go down a level
         auto [u, uv]                     = stack_.top();
         vertex_iterator_t<G>      v      = vertex(graph_, *uv, *u);
-        vertex_edge_iterator_t<G> vw     = std::graph::begin(graph_, *v);
-        vertex_edge_iterator_t<G> vw_end = std::graph::end(graph_, *v);
+        vertex_edge_iterator_t<G> vw     = edge_begin(graph_, *v);
+        vertex_edge_iterator_t<G> vw_end = edge_end(graph_, *v);
 
         // scan past parent of v (we have enough info so parent_[] isn't needed)
         for (; vw != vw_end && vertex(graph_, *vw, *v) == u; ++vw)
@@ -454,7 +454,7 @@ protected:
     parent_[u_key]        = parent;
   }
 
-  stack_elem empty_elem() const { return stack_elem{std::graph::end(graph_), vertex_edge_iterator_t<G>()}; }
+  stack_elem empty_elem() const { return stack_elem{vertex_end(graph_), vertex_edge_iterator_t<G>()}; }
 
 
 private:
