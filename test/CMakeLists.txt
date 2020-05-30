@@ -16,6 +16,8 @@ target_link_libraries(tests PRIVATE CONAN_PKG::fmt)
 target_link_libraries(tests PRIVATE graph)
 
 if(ENABLE_BGL17)
+  target_link_libraries(catch_main PUBLIC CONAN_PKG::tbb)
+
   target_include_directories(graph INTERFACE "${CMAKE_SOURCE_DIR}/../bgl17/src/")
   target_sources(tests PRIVATE test_vov_adaptor)
   #target_compile_options(tests PRIVATE -Wno-pedantic -Wno-shadow)

@@ -26,6 +26,7 @@ conan_cmake_run(
   fmt/6.2.1
   spdlog/1.6.0
   range-v3/0.10.0
+  tbb/2020.1
   OPTIONS
   ${CONAN_EXTRA_OPTIONS}
   SETTINGS compiler.cppstd=20 
