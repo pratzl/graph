@@ -21,7 +21,7 @@ GraphXlate<ual_routes_edge_mapper> germany_routes_undirected_graph(ual_routes_ed
  * a1 -------- b1 -------- c1
  *            ^  \  
  *           /    \  
- *  	     |    |
+ *           |    |
  *           \    /     
  *            \  v  
  * a2 -------- b2 -------- c2

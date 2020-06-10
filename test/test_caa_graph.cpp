@@ -14,6 +14,7 @@
 #define TEST_OPTION TEST_OPTION_TEST
 
 
+// Google Test compatibility
 #define EXPECT_EQ(a, b) REQUIRE((a) == (b))
 #define EXPECT_NE(a, b) REQUIRE((a) != (b))
 #define EXPECT_FALSE(a) REQUIRE(!(a))
