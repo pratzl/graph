@@ -12,7 +12,7 @@
 namespace std::graph {
 
 ///-------------------------------------------------------------------------------------
-/// compressed_adjacency_array forward declarations
+/// directed_adjacency_array forward declarations
 ///
 /// All vertices are kept in a single vector with an index for the first outgoing edge.
 ///
@@ -26,24 +26,24 @@ template <typename VV     = empty_value,
           typename GV     = empty_value,
           typename IndexT = uint32_t,
           typename A      = allocator<char>>
-class caa_graph;
+class daa_graph;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class caa_vertex;
+class daa_vertex;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class caa_edge;
+class daa_edge;
 
 template <typename VV     = empty_value,
           typename EV     = empty_value,
           typename GV     = empty_value,
           typename IndexT = uint32_t,
           typename A      = allocator<char>>
-using compressed_adjacency_array = caa_graph<VV, EV, GV, IndexT, A>;
+using directed_adjacency_array = daa_graph<VV, EV, GV, IndexT, A>;
 
 
 ///-------------------------------------------------------------------------------------
-/// caa_edge
+/// daa_edge
 ///
 /// @tparam VV     Vertex Value type. default = empty_value.
 /// @tparam EV     Edge Value type. default = empty_value.
@@ -52,13 +52,13 @@ using compressed_adjacency_array = caa_graph<VV, EV, GV, IndexT, A>;
 /// @tparam A      Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class caa_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
+class daa_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
 public:
-  using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
+  using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
   using base_t                = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
-  using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -68,7 +68,7 @@ public:
   using vertex_key_type        = vertex_index;
 
   using edge_user_value_type = EV;
-  using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
+  using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_iterator        = typename edge_set::iterator;
@@ -76,19 +76,19 @@ public:
   using edge_index           = IndexT;
 
 public:
-  caa_edge()                    = default;
-  caa_edge(caa_edge const&)     = default;
-  caa_edge(caa_edge&&) noexcept = default;
-  ~caa_edge()                   = default;
-  caa_edge& operator=(caa_edge&) = default;
-  caa_edge& operator=(caa_edge&&) = default;
+  daa_edge()                    = default;
+  daa_edge(daa_edge const&)     = default;
+  daa_edge(daa_edge&&) noexcept = default;
+  ~daa_edge()                   = default;
+  daa_edge& operator=(daa_edge&) = default;
+  daa_edge& operator=(daa_edge&&) = default;
 
-  caa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex);
-  caa_edge(vertex_set const& vertices,
+  daa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex);
+  daa_edge(vertex_set const& vertices,
            vertex_iterator   in_vertex,
            vertex_iterator   out_vertex,
            edge_user_value_type const&);
-  caa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex, edge_user_value_type&&);
+  daa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex, edge_user_value_type&&);
 
   vertex_iterator       in_vertex(graph_type&);
   const_vertex_iterator in_vertex(graph_type const&) const;
@@ -104,7 +104,7 @@ private:
 };
 
 ///-------------------------------------------------------------------------------------
-/// caa_vertex
+/// daa_vertex
 ///
 /// @tparam VV     Vertex Value type. default = empty_value.
 /// @tparam EV     Edge Value type. default = empty_value.
@@ -113,13 +113,13 @@ private:
 /// @tparam A      Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class caa_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
+class daa_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
 public:
-  using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
+  using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
   using base_t                = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
-  using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -129,7 +129,7 @@ public:
   using vertex_key_type        = vertex_index;
 
   using edge_user_value_type = EV;
-  using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
+  using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_index           = IndexT;
@@ -146,16 +146,16 @@ public:
   using const_vertex_out_edge_iterator = const_edge_iterator;
 
 public:
-  caa_vertex()                      = default;
-  caa_vertex(caa_vertex const&)     = default;
-  caa_vertex(caa_vertex&&) noexcept = default;
-  ~caa_vertex()                     = default;
-  caa_vertex& operator=(caa_vertex const&) = default;
-  caa_vertex& operator=(caa_vertex&&) = default;
+  daa_vertex()                      = default;
+  daa_vertex(daa_vertex const&)     = default;
+  daa_vertex(daa_vertex&&) noexcept = default;
+  ~daa_vertex()                     = default;
+  daa_vertex& operator=(daa_vertex const&) = default;
+  daa_vertex& operator=(daa_vertex&&) = default;
 
-  caa_vertex(vertex_set& vertices, vertex_index index);
-  caa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type const&);
-  caa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&);
+  daa_vertex(vertex_set& vertices, vertex_index index);
+  daa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type const&);
+  daa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&);
 
   void set_edge_begin(graph_type&, edge_iterator);
 
@@ -175,7 +175,7 @@ private:
 
 /// A simple semi-mutable graph emphasizing performance and space.
 ///
-/// caa_graph is a compressed adjacency array graph with the following characteristics:
+/// daa_graph is a compressed adjacency array graph with the following characteristics:
 ///		1.	a forward-only directed graph
 ///		2.	user-defined value types for vertices, edges and the graph.
 ///		3.	iterating over vertices occurs in O(V) and over edges in O(E) time.
@@ -189,7 +189,7 @@ private:
 /// time to identify the largest vertex index referenced (so the internal vertex vector is
 /// allocated only once), and the second time to build the internal edges vector.
 ///
-/// When constructing the caa_graph, vertices are identified by their index in the vertex
+/// When constructing the daa_graph, vertices are identified by their index in the vertex
 /// container passed. Edges refer to their in/out vertices using the vertex index. If more
 /// vertices are referred to in the edges container in the constructor, then the internal
 /// vertex vector will be sized to accomodate the largest vertex index used by the edges.
@@ -211,15 +211,15 @@ private:
 /// @tparam A      Allocator. default = std::allocator
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class caa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
+class daa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
-  using graph_type            = caa_graph<VV, EV, GV, IndexT, A>;
+  using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
   using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
   using graph_category        = sparse_graph_tag;
 
-  using vertex_type            = caa_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type      = const vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
@@ -233,7 +233,7 @@ public:
   using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
 
   using edge_user_value_type = EV;
-  using edge_type            = caa_edge<VV, EV, GV, IndexT, A>;
+  using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
   using const_edge_type      = const edge_type;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
@@ -261,16 +261,16 @@ public:
   using vertex_edge_size_type      = vertex_out_edge_size_type;
 
 public:
-  caa_graph()                 = default;
-  caa_graph(caa_graph&& rhs)  = default;
-  caa_graph(caa_graph const&) = default;
+  daa_graph()                 = default;
+  daa_graph(daa_graph&& rhs)  = default;
+  daa_graph(daa_graph const&) = default;
 
-  caa_graph(allocator_type alloc);
-  caa_graph(graph_user_value_type const&, allocator_type alloc = allocator_type());
-  caa_graph(graph_user_value_type&&, allocator_type alloc = allocator_type());
+  daa_graph(allocator_type alloc);
+  daa_graph(graph_user_value_type const&, allocator_type alloc = allocator_type());
+  daa_graph(graph_user_value_type&&, allocator_type alloc = allocator_type());
 
-  caa_graph& operator=(caa_graph const&) = default;
-  caa_graph& operator=(caa_graph&&) = default;
+  daa_graph& operator=(daa_graph const&) = default;
+  daa_graph& operator=(daa_graph&&) = default;
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -309,7 +309,7 @@ public:
   /// @param alloc     The allocator to use for internal containers for vertices & edges.
   ///
   template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
-  caa_graph(
+  daa_graph(
         ERng const&     erng,
         VRng const&     vrng,
         EKeyFnc const&  ekey_fnc  = [](typename ERng::value_type const&) { return edge_key_type(); },
@@ -332,7 +332,7 @@ public:
   /// @param alloc     The allocator to use for internal containers for vertices & edges.
   ///
   template <typename ERng, typename EKeyFnc, typename EPropFnc>
-  caa_graph(
+  daa_graph(
         ERng const&     erng,
         EKeyFnc const&  ekey_fnc  = [](typename ERng::value_type const&) { return edge_key_type(); },
         EPropFnc const& eprop_fnc = [](typename ERng::value_type const&) { return empty_value(); },
@@ -396,4 +396,4 @@ private:
 
 #endif // COMPRESSED_ADJ_ARRAY_HPP
 
-#include "detail/compressed_adj_array_impl.hpp"
+#include "detail/directed_adjacency_array_impl.hpp"
