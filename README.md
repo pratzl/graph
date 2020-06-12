@@ -14,7 +14,7 @@ Build & Run Requirements
 	a. MSVC 2019 16.5 with following build settings
 		/std:c++latest
 		/permissive-
-		/experimental:preprocessor (compliant pre-processor release in 16.6)
+		/Zc:preprocessor (compliant pre-processor release in 16.6)
 		precompiled headers (enbled; optional)
 	b. g++-10 with following build settings
 
@@ -25,15 +25,15 @@ C++20 requirements
 
 ORIENTATION
 1.	./test/ contains unit tests. 
-	test_* are test files
-	data_* hold data to be used for tests
+		test_* are test files
+		data_* hold data to be used for tests
 2.	graph/include holds the graph implementation
-	./graph_fwd.hpp is the primary header that contains prototypes in the paper
-	./compressed_adj_array.hpp is the directed graph interface
-	./undirected_adj_list.hpp is the undirected graph interface
-	./algorithm/ holds algorithm implementation
-	./range/ holds range definitions
-	./detail/ hold the implementation details for the graphs
+		./graph.hpp is the primary header that contains prototypes in the paper
+		./compressed_adj_array.hpp is the directed graph interface
+		./undirected_adj_list.hpp is the undirected graph interface
+		./algorithm/ holds algorithm implementation
+		./range/ holds range definitions
+		./detail/ hold the implementation details for the graphs
 
 NOTES (OTHER)
 Range requirement for container
@@ -88,7 +88,7 @@ TODO
 	m.	data structure(s)
 		i	required typedefs
 5.	Unit Tests
-	a.	Replace EXPECT_EQ(), etc. --> REQUIRE()
+	a.	Replace REQUIRE(), etc. --> REQUIRE()
 6.	Algorithms
 	a.	shortest paths
 		i	Review template arguments

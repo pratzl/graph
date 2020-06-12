@@ -2,7 +2,7 @@
 // Author: Phil Ratzloff
 //
 
-#include "../graph_fwd.hpp"
+#include "../graph.hpp"
 #include <vector>
 
 #ifndef GRAPH_COMPONENTS_HPP
@@ -30,8 +30,7 @@ struct component {
 // Connected Components (for undirected graphs)
 //
 template <undirected_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> 
-class con_comp_fn {
+requires output_iterator<OutIter, component<G, CompT>> class con_comp_fn {
 public:
   using graph_type            = G;
   using allocator_type        = A;
@@ -57,7 +56,7 @@ public:
 
   void operator()(vertex_range_t<G> rng, OutIter result_iter) {
     for (vertex_iterator_t<G> u = begin(rng); u != end(rng); ++u)
-      if (!visited_[vertex_key(graph_,*u)])
+      if (!visited_[vertex_key(graph_, *u)])
         eval_cc(u, result_iter);
   }
 
@@ -91,14 +90,14 @@ protected:
 };
 
 template <undirected_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-  requires output_iterator<OutIter, component<G, CompT>> void
+requires output_iterator<OutIter, component<G, CompT>> void
 connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A()) {
   con_comp_fn cc(g, alloc);
   cc(start, result_iter);
 }
 
 template <undirected_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-  requires output_iterator<OutIter, component<G, CompT>> void
+requires output_iterator<OutIter, component<G, CompT>> void
 connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A()) {
   con_comp_fn cc(g, alloc);
   cc(rng, result_iter);
@@ -117,7 +116,11 @@ public:
 
 public:
   tarjen_scc_fn(graph_type& g, allocator_type alloc = A())
-        : graph_(g), alloc_(alloc), stack_(alloc), visited_(vertex_size(g), alloc), in_stack_(vertex_size(g), alloc) {}
+        : graph_(g)
+        , alloc_(alloc)
+        , stack_(alloc)
+        , visited_(vertices_size(g), alloc)
+        , in_stack_(vertices_size(g), alloc) {}
 
   void operator()(vertex_iterator_t<G> start, OutIter result_iter) { eval_scc(start, result_iter); }
 
@@ -136,7 +139,7 @@ protected:
     visit_elem& operator=(visit_elem const&) = default;
   };
   using visited_alloc = typename allocator_traits<A>::template rebind_alloc<visit_elem>;
-  using visited_type  = vector<CompT, visited_alloc>;
+  using visited_type  = vector<visit_elem, visited_alloc>;
 
   using stack_elem  = vertex_iterator_t<G>;
   using stack_alloc = typename allocator_traits<A>::template rebind_alloc<stack_elem>;
@@ -146,10 +149,10 @@ protected:
   using in_stack_type  = vector<bool, in_stack_alloc>;
 
 protected:
-  constexpr CompT undiscovered() const { return numeric_limits<CompT>::max(); }
+  constexpr static CompT undiscovered() { return numeric_limits<CompT>::max(); }
 
   void eval_scc(vertex_iterator_t<G> u, OutIter result_iter) {
-    component_number_type const u_key = static_cast<component_number_type>(vertex_key(*u));
+    component_number_type const u_key = static_cast<component_number_type>(vertex_key(graph_, *u));
     if (visited_[u_key].discovered != undiscovered())
       return;
 
@@ -157,10 +160,10 @@ protected:
     stack_.push(u);
     in_stack_[u_key] = true;
 
-    for (edge_t<G> const& uv : vertex_edges(graph_, *u)) {
-      vertex_key_t<G> v_key = vertex_key(graph_, *uv);
-      if (visited_[v_key].discovered = undiscovered()) {
-        eval_scc(vertex(graph_, *uv));
+    for (edge_t<G>& uv : edges(graph_, *u)) {
+      vertex_key_t<G> v_key = vertex_key(graph_, uv, *u);
+      if (visited_[v_key].discovered == undiscovered()) {
+        eval_scc(vertex(graph_, uv, *u), result_iter);
         visited_[v_key].low = std::min(visited_[v_key].low, visited_[u_key].low);
       } else if (in_stack_[v_key])
         visited_[v_key].low = std::min(visited_[v_key].low, visited_[u_key].discovered);
@@ -197,14 +200,14 @@ protected:
 template <directed_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> void
 strongly_connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A()) {
-  tarjen_scc_fn<G, CompT, A> scc(g, alloc);
+  tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
   scc(start, result_iter);
 }
 
 template <directed_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> void
 strongly_connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A()) {
-  tarjen_scc_fn<G, CompT, A> scc(g, alloc);
+  tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
   scc(rng, result_iter);
 }
 

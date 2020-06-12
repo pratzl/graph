@@ -3,7 +3,7 @@
 //
 //
 
-#include "../graph_fwd.hpp"
+#include "../graph.hpp"
 #include <stack>
 #include <vector>
 

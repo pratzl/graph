@@ -1,9 +1,9 @@
 ﻿//#include "pch.h"
-#include "graph/compressed_adj_array.hpp"
+#include "graph/directed_adjacency_array.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
-#include "graph//algorithm/transitive_closure.hpp"
+#include "graph/algorithm/transitive_closure.hpp"
 #include "data_routes.hpp"
 #include <iostream>
 #include <catch2/catch.hpp>
@@ -14,6 +14,7 @@
 #define TEST_OPTION TEST_OPTION_TEST
 
 
+// Google Test compatibility
 #define EXPECT_EQ(a, b) REQUIRE((a) == (b))
 #define EXPECT_NE(a, b) REQUIRE((a) != (b))
 #define EXPECT_FALSE(a) REQUIRE(!(a))
@@ -29,14 +30,14 @@ using std::endl;
 using std::is_same;
 
 using namespace std::graph; // Bring graph functions into global namespace
-using Graph      = std::graph::compressed_adjacency_array<name_value, weight_value>;
+using Graph      = std::graph::directed_adjacency_array<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 
 struct route;
 using Routes = routes_t;
 
-vector<Graph::edge_value_type> const& caa_germany_edge_routes = germany_routes_directed_graph.edge_values();
+vector<Graph::edge_value_type> const& daa_germany_edge_routes = germany_routes_directed_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
@@ -61,13 +62,13 @@ OStream& operator<<(OStream& os, Graph const& g) {
 }
 
 
-TEST_CASE("caa minsize", "[caa][minsize]") {
-  using G = std::graph::compressed_adjacency_array<>;
+TEST_CASE("daa minsize", "[daa][minsize]") {
+  using G = std::graph::directed_adjacency_array<>;
   EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
   EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
-TEST_CASE("caa empty", "[caa][empty]") {
+TEST_CASE("daa empty", "[daa][empty]") {
   Graph g;
   EXPECT_EQ(0, vertices_size(g));
   EXPECT_EQ(0, edges_size(g));
@@ -75,14 +76,14 @@ TEST_CASE("caa empty", "[caa][empty]") {
   //EXPECT_EQ(sizeof(Graph::vertex_size_type) + sizeof(weight_value), sizeof(Graph::edge_type));
 }
 
-TEST_CASE("caa init", "[caa][init]") {
+TEST_CASE("daa init", "[daa][init]") {
 #if 0
-  vector<Graph::edge_value_type> caa_germany_edge_routes = to_edge_values(routes, germany_cities);
-  Graph                          g(germany_cities, caa_germany_edge_routes);
+  vector<Graph::edge_value_type> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
+  Graph                          g(germany_cities, daa_germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
   EXPECT_EQ(germany_cities().size(), vertices_size(g));
-  EXPECT_EQ(caa_germany_edge_routes.size(), edges_size(g));
+  EXPECT_EQ(daa_germany_edge_routes.size(), edges_size(g));
 
 #if 0
   cout << endl << "Cities:" << endl;
@@ -90,7 +91,7 @@ TEST_CASE("caa init", "[caa][init]") {
     cout << "  " << (&city - germany_cities.data()) << ". " << city << endl;
 
   cout << endl << "Routes:" << endl;
-  for (auto& r : caa_germany_edge_routes)
+  for (auto& r : daa_germany_edge_routes)
     cout << "  " << germany_cities[r.first.first] << " --> " << germany_cities[r.first.second] << " " << r.second.weight << "km" << endl;
 #endif
 
@@ -111,13 +112,13 @@ TEST_CASE("caa init", "[caa][init]") {
     nEdges += n1;
   }
   EXPECT_EQ(germany_cities().size(), nVertices);
-  EXPECT_EQ(caa_germany_edge_routes.size(), nEdges);
+  EXPECT_EQ(daa_germany_edge_routes.size(), nEdges);
 
   // iterate thru edges range
   size_t n = 0;
   for (auto& uv : edges(g))
     ++n;
-  EXPECT_EQ(caa_germany_edge_routes.size(), n);
+  EXPECT_EQ(daa_germany_edge_routes.size(), n);
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
@@ -265,7 +266,7 @@ TEST_CASE("caa init", "[caa][init]") {
 #endif
 }
 
-TEST_CASE("caa graph functions", "[caa][graph][functions]") {
+TEST_CASE("daa graph functions", "[daa][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = create_germany_routes_graph();
 
@@ -307,7 +308,7 @@ TEST_CASE("caa graph functions", "[caa][graph][functions]") {
 #endif
 }
 
-TEST_CASE("caa vertex functions", "[caa][vertex][functions]") {
+TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
 
@@ -355,7 +356,7 @@ TEST_CASE("caa vertex functions", "[caa][vertex][functions]") {
   }
 }
 
-TEST_CASE("caa edge functions", "[caa][edge][functions]") {
+TEST_CASE("daa edge functions", "[daa][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   Graph const& gc = g;
@@ -380,7 +381,7 @@ TEST_CASE("caa edge functions", "[caa][edge][functions]") {
   EXPECT_EQ(uv, uv3);
 }
 
-TEST_CASE("caa dfs vertex", "[caa][dfs][vertex]") {
+TEST_CASE("daa dfs vertex", "[daa][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -444,7 +445,7 @@ TEST_CASE("caa dfs vertex", "[caa][dfs][vertex]") {
 #endif
 }
 
-TEST_CASE("caa dfs edge", "[caa][dfs][edge]") {
+TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
   Graph          g = create_germany_routes_graph();
   dfs_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -610,7 +611,7 @@ TEST_CASE("caa dfs edge", "[caa][dfs][edge]") {
 #endif
 }
 
-TEST_CASE("caa bfs vertex", "[caa][bfs][vertex]") {
+TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
   Graph            g = create_germany_routes_graph();
   bfs_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
@@ -656,7 +657,7 @@ TEST_CASE("caa bfs vertex", "[caa][bfs][vertex]") {
 #endif
 }
 
-TEST_CASE("cass bfs edge", "[caa][bfs][edge]") {
+TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
   Graph          g = create_germany_routes_graph();
   bfs_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -826,7 +827,7 @@ TEST_CASE("cass bfs edge", "[caa][bfs][edge]") {
 #endif
 }
 
-TEST_CASE("caa dijkstra distance", "[caa][dikjstra][distance]") {
+TEST_CASE("daa dijkstra distance", "[daa][dikjstra][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -926,7 +927,7 @@ TEST_CASE("caa dijkstra distance", "[caa][dikjstra][distance]") {
 #endif
 }
 
-TEST_CASE("caa bellman-ford distance", "[caa][bellman-ford][distance]") {
+TEST_CASE("daa bellman-ford distance", "[daa][bellman-ford][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -1027,7 +1028,7 @@ TEST_CASE("caa bellman-ford distance", "[caa][bellman-ford][distance]") {
 #endif
 }
 
-TEST_CASE("caa dijkstra shortest path", "[caa][dikjstra][path]") {
+TEST_CASE("daa dijkstra shortest path", "[daa][dikjstra][path]") {
   using std::graph::dijkstra_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1205,7 +1206,7 @@ TEST_CASE("caa dijkstra shortest path", "[caa][dikjstra][path]") {
 #endif
 }
 
-TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
+TEST_CASE("daa bellman-fort shortest path", "[daa][bellman-ford][path]") {
   using std::graph::bellman_ford_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1219,8 +1220,7 @@ TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  bool neg_edge_cycle_exists =
-        bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
       if (i > 0)
@@ -1261,8 +1261,7 @@ TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
 #elif TEST_OPTION == TEST_OPTION_GEN
   {
     cout << "{\n";
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
     cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, "
             "true, weight_fnc);\n ";
     cout << "  EXPECT_FALSE(neg_edge_cycle_exists);\n";
@@ -1280,8 +1279,7 @@ TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
 
   {
     short_paths.clear();
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
     cout << "{\n";
     cout << "  short_paths.clear();\n";
     cout << "  bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, "
@@ -1300,8 +1298,7 @@ TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
   {
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
 
     EXPECT_EQ(415, short_paths[0].distance);
@@ -1364,8 +1361,7 @@ TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
   }
   {
     short_paths.clear();
-    bool neg_edge_cycle_exists =
-          bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
+    bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), true, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
 
     EXPECT_EQ(403, short_paths[0].distance);
@@ -1392,7 +1388,7 @@ TEST_CASE("caa bellman-fort shortest path", "[caa][bellman-ford][path]") {
 }
 
 
-TEST_CASE("caa dfs transitive closure", "[caa][dfs][transitive closure]") {
+TEST_CASE("daa dfs transitive closure", "[daa][dfs][transitive closure]") {
   using std::graph::dfs_transitive_closure;
   using std::graph::reaches;
 
@@ -1523,7 +1519,7 @@ TEST_CASE("caa dfs transitive closure", "[caa][dfs][transitive closure]") {
 }
 
 
-TEST_CASE("caa warshall transitive closure", "[caa][warshall][transitive closure]") {
+TEST_CASE("daa warshall transitive closure", "[daa][warshall][transitive closure]") {
   using std::graph::warshall_transitive_closure;
   using std::graph::reaches;
 

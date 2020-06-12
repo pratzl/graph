@@ -47,7 +47,7 @@
 
 #include <queue>
 #include <vector>
-#include "../graph_fwd.hpp"
+#include "../graph.hpp"
 #include "range/v3/algorithm/reverse.hpp"
 
 #define SHORTEST_RANGE

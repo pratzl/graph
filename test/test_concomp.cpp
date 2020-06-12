@@ -1,5 +1,5 @@
 //#include "pch.h"
-#include "graph/compressed_adj_array.hpp"
+#include "graph/directed_adjacency_array.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/components.hpp"
@@ -12,6 +12,7 @@
 #define EXPECT_FALSE(a) REQUIRE(!(a))
 #define EXPECT_TRUE(a) REQUIRE(a);
 
+// Google Test compatibility
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
@@ -28,10 +29,10 @@ using std::is_same;
 
 using namespace std::graph; // Bring graph functions into global namespace
 
-using DollarGraph = GraphXlate<caa_data_edge_mapper>::target_graph_t;
+using DollarGraph = GraphXlate<daa_data_edge_mapper>::target_graph_t;
 
 
-TEST_CASE("caa dollar structure", "[caa][dollar][structure]") {
+TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   DollarGraph g = dollar_directed_graph.create_graph();
   EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));
@@ -46,9 +47,9 @@ TEST_CASE("caa dollar structure", "[caa][dollar][structure]") {
     string const&             u_name = value(u).name;
     cout << "[" << u_key << "] " << u_name << "\n";
     for (edge_t<DollarGraph>& uv : edges(g, u)) {
-      vertex_iterator_t<DollarGraph>  vi     = vertex(g, uv, u);
-      vertex_key_t<DollarGraph>       v_key  = vertex_key(g, *vi);
-      string const&                   v_name = value(*vi).name;
+      vertex_iterator_t<DollarGraph> vi     = vertex(g, uv, u);
+      vertex_key_t<DollarGraph>      v_key  = vertex_key(g, *vi);
+      string const&                  v_name = value(*vi).name;
       cout << "  --> [" << v_key << " " << v_name << "] weight=" << value(uv).weight << "\n";
     }
   }
@@ -144,5 +145,34 @@ TEST_CASE("caa dollar structure", "[caa][dollar][structure]") {
   EXPECT_EQ("c2", u->name);
   EXPECT_EQ(0, edges_size(g, *u));
   uv = begin(g, *u);
+#endif
+}
+
+TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][connected]") {
+
+  DollarGraph g = dollar_directed_graph.create_graph();
+  EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));
+  EXPECT_EQ(dollar_directed_graph.edge_values().size(), edges_size(g));
+
+  EXPECT_EQ(6, vertices_size(g));
+  EXPECT_EQ(6, edges_size(g));
+
+  using comp_t  = std::graph::component<DollarGraph>;
+  using comps_t = std::vector<comp_t>;
+  comps_t comps;
+
+  //strongly_connected_components(g, vertices(g), std::back_inserter(comps));
+  strongly_connected_components(g, begin(vertices(g)) + 2, std::back_inserter(comps));
+
+#if TEST_OPTION == TEST_OPTION_OUTPUT
+  cout << "Dollar strongly connected components\n";
+  for (comp_t const& comp : comps) {
+    cout << "[" << comp.component_number << "] " << comp.vertex->name << "\n";
+  }
+
+  /* Output
+  */
+#elif TEST_OPTION == TEST_OPTION_GEN
+#elif TEST_OPTION == TEST_OPTION_TEST
 #endif
 }
