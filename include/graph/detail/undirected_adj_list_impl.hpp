@@ -589,8 +589,9 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             EKeyFnc const&  ekey_fnc,
                                             EPropFnc const& eprop_fnc,
                                             VPropFnc const& vprop_fnc,
+                                            GV const&       gv,
                                             A               alloc)
-      : vertices_(alloc), edge_alloc_(alloc) {
+      : base_t(gv), vertices_(alloc), edge_alloc_(alloc) {
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = static_cast<vertex_key_type>(vrng.size() - 1);
   for (auto& e : erng) {
@@ -637,9 +638,10 @@ template <typename ERng, typename EKeyFnc, typename EPropFnc>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             EKeyFnc const&  ekey_fnc,
                                             EPropFnc const& eprop_fnc,
+                                            GV const&       gv,
                                             A               alloc)
       : ual_graph(
-              erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, alloc) {}
+              erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, gv, alloc) {}
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
