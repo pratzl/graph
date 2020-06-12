@@ -46,7 +46,7 @@
 //  3.  Is there any additional work require to make this more compatible with Ranges?
 //
 
-#include "../graph_fwd.hpp"
+#include "../graph.hpp"
 #include <queue>
 #include <vector>
 

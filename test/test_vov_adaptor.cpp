@@ -1,5 +1,5 @@
 //#include "pch.h"
-#include "graph/graph_fwd.hpp"
+#include "graph/graph.hpp"
 #include "graph/graph_utility.hpp"
 
 #include "edge_list.hpp"

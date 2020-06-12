@@ -2,7 +2,7 @@
 // Author: Phil Ratzloff
 //
 
-#include "../graph_fwd.hpp"
+#include "../graph.hpp"
 #include <vector>
 
 #ifndef GRAPH_COMPONENTS_HPP

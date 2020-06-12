@@ -7,7 +7,7 @@
 // ISSUES / QUESTIONS
 //
 
-#include "../graph_fwd.hpp"
+#include "../graph.hpp"
 #include "../range/dfs.hpp"
 #include <vector>
 

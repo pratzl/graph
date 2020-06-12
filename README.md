@@ -28,7 +28,7 @@ ORIENTATION
 		test_* are test files
 		data_* hold data to be used for tests
 2.	graph/include holds the graph implementation
-		./graph_fwd.hpp is the primary header that contains prototypes in the paper
+		./graph.hpp is the primary header that contains prototypes in the paper
 		./compressed_adj_array.hpp is the directed graph interface
 		./undirected_adj_list.hpp is the undirected graph interface
 		./algorithm/ holds algorithm implementation
