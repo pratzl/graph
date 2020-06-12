@@ -22,22 +22,22 @@ struct route;
 using routes_t     = std::vector<route>;
 using route_city_t = std::vector<std::string>;
 
-struct caa_routes_edge_mapper;
+struct daa_routes_edge_mapper;
 struct ual_routes_edge_mapper;
 
-struct caa_data_edge_mapper;
+struct daa_data_edge_mapper;
 struct ual_data_edge_mapper;
 
 //---------------------------------------------------------------------------------------
 // data
 //
-extern GraphXlate<caa_routes_edge_mapper> germany_routes_directed_graph;
+extern GraphXlate<daa_routes_edge_mapper> germany_routes_directed_graph;
 extern GraphXlate<ual_routes_edge_mapper> germany_routes_undirected_graph;
 
-extern GraphXlate<caa_data_edge_mapper> dollar_directed_graph;
+extern GraphXlate<daa_data_edge_mapper> dollar_directed_graph;
 extern GraphXlate<ual_data_edge_mapper> dollar_undirected_graph;
 
-extern GraphXlate<caa_data_edge_mapper> candle_directed_graph;
+extern GraphXlate<daa_data_edge_mapper> candle_directed_graph;
 extern GraphXlate<ual_data_edge_mapper> candle_undirected_graph;
 
 
@@ -59,7 +59,7 @@ struct route {
   ~route()                  = default;
 };
 
-struct caa_routes_edge_mapper {
+struct daa_routes_edge_mapper {
   using target_graph_t      = std::graph::directed_adjacency_array<std::graph::name_value, std::graph::weight_value>;
   using source_edge_range_t = routes_t;
   using source_edge_t       = source_edge_range_t::value_type;
@@ -115,7 +115,7 @@ struct data_edge {
 using data_edges_t    = std::vector<data_edge>;
 using vertex_labels_t = std::vector<std::string>;
 
-struct caa_data_edge_mapper {
+struct daa_data_edge_mapper {
   using target_graph_t      = std::graph::directed_adjacency_array<std::graph::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;

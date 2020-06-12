@@ -16,7 +16,7 @@
 #define TEST_OPTION_OUTPUT (1)
 #define TEST_OPTION_GEN (2)
 #define TEST_OPTION_TEST (3)
-#define TEST_OPTION TEST_OPTION_OUTPUT
+#define TEST_OPTION TEST_OPTION_TEST
 
 using std::vector;
 using std::string;
@@ -29,10 +29,10 @@ using std::is_same;
 
 using namespace std::graph; // Bring graph functions into global namespace
 
-using DollarGraph = GraphXlate<caa_data_edge_mapper>::target_graph_t;
+using DollarGraph = GraphXlate<daa_data_edge_mapper>::target_graph_t;
 
 
-TEST_CASE("caa dollar structure", "[caa][dollar][structure]") {
+TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   DollarGraph g = dollar_directed_graph.create_graph();
   EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));
@@ -148,7 +148,7 @@ TEST_CASE("caa dollar structure", "[caa][dollar][structure]") {
 #endif
 }
 
-TEST_CASE("caa dollar stongly connected components", "[caa][dollar][components][connected]") {
+TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][connected]") {
 
   DollarGraph g = dollar_directed_graph.create_graph();
   EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));

@@ -104,8 +104,8 @@ TEST_CASE("ual empty", "[ual][empty]") {
 
 TEST_CASE("ual init", "[ual][init]") {
 #if 0
-  vector<Graph::edge_value_type> caa_germany_edge_routes = to_edge_values(routes, germany_cities);
-  Graph                          g(germany_cities, caa_germany_edge_routes);
+  vector<Graph::edge_value_type> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
+  Graph                          g(germany_cities, daa_germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
   EXPECT_EQ(germany_cities().size(), vertices_size(g));
@@ -117,7 +117,7 @@ TEST_CASE("ual init", "[ual][init]") {
     cout << "  " << (&city - germany_cities.data()) << ". " << city << endl;
 
   cout << endl << "Routes:" << endl;
-  for (auto& r : caa_germany_edge_routes)
+  for (auto& r : daa_germany_edge_routes)
     cout << "  " << germany_cities[r.first.first] << " --> " << germany_cities[r.first.second] << " " << r.second.weight << "km" << endl;
 #endif
 

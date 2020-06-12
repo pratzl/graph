@@ -558,14 +558,14 @@ using vov_germany_t      = ::vov<double>;
 using vov_germany_wrap_t = vov_graph<double>;
 
 vov_germany_t get_germany_routes() {
-  using directed_graph_t = typename GraphXlate<caa_routes_edge_mapper>::target_graph_t;
-  directed_graph_t caa_routes_graph(
+  using directed_graph_t = typename GraphXlate<daa_routes_edge_mapper>::target_graph_t;
+  directed_graph_t daa_routes_graph(
         germany_routes_directed_graph.create_graph()); // translates string labels to indexes
 
-  vov_germany_t routes(vertices_size(caa_routes_graph));
-  for (std::graph::edge_t<directed_graph_t>& uv : edges(caa_routes_graph)) {
-    std::graph::vertex_key_t<directed_graph_t> u_key = in_vertex_key(caa_routes_graph, uv);
-    std::graph::vertex_key_t<directed_graph_t> v_key = out_vertex_key(caa_routes_graph, uv);
+  vov_germany_t routes(vertices_size(daa_routes_graph));
+  for (std::graph::edge_t<directed_graph_t>& uv : edges(daa_routes_graph)) {
+    std::graph::vertex_key_t<directed_graph_t> u_key = in_vertex_key(daa_routes_graph, uv);
+    std::graph::vertex_key_t<directed_graph_t> v_key = out_vertex_key(daa_routes_graph, uv);
     routes.push_back(u_key, v_key, uv.weight);
   }
   return routes;

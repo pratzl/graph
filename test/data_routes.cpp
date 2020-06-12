@@ -12,7 +12,7 @@ routes_t const germany_routes{
       {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
       {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
 
-GraphXlate<caa_routes_edge_mapper> germany_routes_directed_graph(caa_routes_edge_mapper(), germany_routes);
+GraphXlate<daa_routes_edge_mapper> germany_routes_directed_graph(daa_routes_edge_mapper(), germany_routes);
 GraphXlate<ual_routes_edge_mapper> germany_routes_undirected_graph(ual_routes_edge_mapper(), germany_routes);
 
 /**
@@ -37,7 +37,7 @@ GraphXlate<ual_routes_edge_mapper> germany_routes_undirected_graph(ual_routes_ed
 data_edges_t const dollar_edges = {{"a1", "b1", 100.0}, {"a2", "b2", 100.0}, {"b1", "c1", 50.0},
                                    {"b2", "c2", 90.0},  {"b1", "b2", 50.0},  {"b2", "b1", 10.0}};
 
-GraphXlate<caa_data_edge_mapper> dollar_directed_graph(caa_data_edge_mapper(), dollar_edges);
+GraphXlate<daa_data_edge_mapper> dollar_directed_graph(daa_data_edge_mapper(), dollar_edges);
 GraphXlate<ual_data_edge_mapper> dollar_undirected_graph(ual_data_edge_mapper(), dollar_edges);
 
 
@@ -95,5 +95,5 @@ data_edges_t const candle_edges = {
       {"Decorate Rough", "Box Decorated", 1.0}, // a6 --> c3
 };
 
-GraphXlate<caa_data_edge_mapper> candle_directed_graph(caa_data_edge_mapper(), candle_edges);
+GraphXlate<daa_data_edge_mapper> candle_directed_graph(daa_data_edge_mapper(), candle_edges);
 GraphXlate<ual_data_edge_mapper> candle_undirected_graph(ual_data_edge_mapper(), candle_edges);
