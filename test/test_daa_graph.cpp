@@ -3,7 +3,7 @@
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
-#include "graph//algorithm/transitive_closure.hpp"
+#include "graph/algorithm/transitive_closure.hpp"
 #include "data_routes.hpp"
 #include <iostream>
 #include <catch2/catch.hpp>
