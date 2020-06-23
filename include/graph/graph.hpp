@@ -219,6 +219,21 @@ template <typename G>
 constexpr auto edges(G const& g) noexcept -> const_edge_range_t<G>;
 
 template <typename G>
+constexpr auto edge_begin(G& g) noexcept -> edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_begin(G const& g) noexcept -> const_edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_cbegin(G const& g) noexcept -> const_edge_iterator_t<G>;
+
+template <typename G>
+constexpr auto edge_end(G& g) noexcept -> edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_end(G const& g) noexcept -> const_edge_iterator_t<G>;
+template <typename G>
+constexpr auto edge_cend(G const& g) noexcept -> const_edge_iterator_t<G>;
+
+
+template <typename G>
 constexpr auto edges_size(G const& g) noexcept -> edge_size_t<G>;
 
 template <typename G>

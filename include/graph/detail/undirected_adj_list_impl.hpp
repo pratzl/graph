@@ -1260,6 +1260,38 @@ constexpr auto edges(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_begin(ual_graph<VV, EV, GV, IndexT, A>& g) noexcept
+      -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.edges().begin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_begin(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.edges().begin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.edges().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_end(ual_graph<VV, EV, GV, IndexT, A>& g) noexcept
+      -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.edges().end();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_end(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.edges().end();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edge_cend(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.edges().cend();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const& g) noexcept
       -> edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return g.edges_size();
