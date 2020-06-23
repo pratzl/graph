@@ -629,8 +629,8 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename T>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(initializer_list<T> const& ilist, A alloc)
+ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
+      initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist, A alloc)
       : base_type(), vertices_(alloc), edge_alloc_(alloc) {
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = vertex_key_type();

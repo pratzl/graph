@@ -234,8 +234,8 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename T>
-daa_graph<VV, EV, GV, IndexT, A>::daa_graph(initializer_list<T> const& ilist, A alloc)
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
+      initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist, A alloc)
       : base_type(), vertices_(alloc), edges_(alloc), alloc_(alloc) {
 
   // Evaluate max vertex key needed

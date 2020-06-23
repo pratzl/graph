@@ -347,17 +347,15 @@ public:
             A               alloc = A());
 
   /// Constructor for easy creation of a graph that takes an initializer
-  /// list with a struct/class/tuple with 3 edge elements: in_vertex_key,
-  /// out_vertex_key, edge_value.
-  /// Values must be convertible to vertex_key_t<G> & edge_value_t<G>.
+  /// list with a tuple with 3 edge elements: in_vertex_key,
+  /// out_vertex_key and edge_value.
   ///
-  /// @tparam T The struct/class type used.
-  ///
-  /// @param ilist Initializer list of T
+  /// @param ilist Initializer list of tuples with in_vertex_key,
+  ///              out_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
-  template <typename T>
-  daa_graph(initializer_list<T> const& ilist, A alloc = A());
+  daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
+            A                                                                                      alloc = A());
 
 public:
   constexpr vertex_set&       vertices();
