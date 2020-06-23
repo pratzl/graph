@@ -15,7 +15,7 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_edge<VV, EV, GV, IndexT, A>::daa_edge(vertex_set const& vertices,
                                           vertex_iterator   in_vertex,
                                           vertex_iterator   out_vertex)
-      : base_t()
+      : base_type()
       , in_vertex_(static_cast<vertex_key_type>(in_vertex - vertices.begin()))
       , out_vertex_(static_cast<vertex_key_type>(out_vertex - vertices.begin())) {}
 
@@ -24,7 +24,7 @@ daa_edge<VV, EV, GV, IndexT, A>::daa_edge(vertex_set const&           vertices,
                                           vertex_iterator             in_vertex,
                                           vertex_iterator             out_vertex,
                                           edge_user_value_type const& val)
-      : base_t(val)
+      : base_type(val)
       , in_vertex_(static_cast<vertex_key_type>(in_vertex - vertices.begin()))
       , out_vertex_(static_cast<vertex_key_type>(out_vertex - vertices.begin())) {}
 
@@ -33,7 +33,7 @@ daa_edge<VV, EV, GV, IndexT, A>::daa_edge(vertex_set const&      vertices,
                                           vertex_iterator        in_vertex,
                                           vertex_iterator        out_vertex,
                                           edge_user_value_type&& val)
-      : base_t(move(val))
+      : base_type(move(val))
       , in_vertex_(static_cast<vertex_key_type>(in_vertex - vertices.begin()))
       , out_vertex_(static_cast<vertex_key_type>(out_vertex - vertices.begin())) {}
 
@@ -82,10 +82,10 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_vertex<VV, EV, GV, IndexT, A>::daa_vertex(vertex_set&                   vertices,
                                               vertex_index                  index,
                                               vertex_user_value_type const& val)
-      : base_t(val) {}
+      : base_type(val) {}
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_vertex<VV, EV, GV, IndexT, A>::daa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&& val)
-      : base_t(move(val)) {}
+      : base_type(move(val)) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void daa_vertex<VV, EV, GV, IndexT, A>::set_edge_begin(graph_type& g, edge_iterator uv) {
@@ -159,11 +159,11 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(allocator_type alloc) : vertices_(al
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type const& val, allocator_type alloc)
-      : vertices_(alloc), edges_(alloc), base_t(val), alloc_(alloc) {}
+      : vertices_(alloc), edges_(alloc), base_type(val), alloc_(alloc) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type&& val, allocator_type alloc)
-      : vertices_(alloc), edges_(alloc), base_t(move(val)), alloc_(alloc) {}
+      : vertices_(alloc), edges_(alloc), base_type(move(val)), alloc_(alloc) {}
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -175,7 +175,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
                                             VPropFnc const& vprop_fnc,
                                             GV const&       gv,
                                             A               alloc)
-      : base_t(gv), vertices_(alloc), edges_(alloc), alloc_(alloc) {
+      : base_type(gv), vertices_(alloc), edges_(alloc), alloc_(alloc) {
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = static_cast<vertex_key_type>(vrng.size() - 1);
   for (auto& e : erng) {
@@ -192,14 +192,13 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
   vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
 
   // add edges
-  if (!erng.empty()) {
+  if (erng.size() > 0) {
     edges_.reserve(erng.size());
     edge_key_type   tu_key = ekey_fnc(*::ranges::begin(erng));
     vertex_iterator t      = to_iterator(*this, vertices_[tu_key.first]);
     for (auto& edge_data : erng) {
-      edge_key_type uv_key = ekey_fnc(edge_data);
-      //auto            edge_val = eprop_fnc(edge_data);
-      vertex_iterator u = to_iterator(*this, vertices_[uv_key.first]);
+      edge_key_type   uv_key = ekey_fnc(edge_data);
+      vertex_iterator u      = to_iterator(*this, vertices_[uv_key.first]);
       if (u < t)
         throw_unordered_edges();
 
@@ -222,13 +221,54 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EPropFnc>
-daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
-                                            EKeyFnc const&  ekey_fnc,
-                                            EPropFnc const& eprop_fnc,
-                                            GV const&       gv,
-                                            A               alloc)
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
+      ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
       : daa_graph(
-              erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, gv, alloc) {}
+              erng,
+              vector<vertex_key_type>(),
+              ekey_fnc,
+              eprop_fnc,
+              [](vertex_key_type const&) { return empty_value(); },
+              gv,
+              alloc) {}
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+template <typename T>
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(initializer_list<T> const& ilist, A alloc)
+      : base_type(), vertices_(alloc), edges_(alloc), alloc_(alloc) {
+
+  // Evaluate max vertex key needed
+  vertex_key_type max_vtx_key = vertex_key_type();
+  for (auto& edge_data : ilist) {
+    auto const& [ukey, vkey, uv_val] = edge_data;
+    max_vtx_key                      = max(max_vtx_key, max(ukey, vkey));
+  }
+  vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
+
+  if (ilist.size() > 0) {
+    edges_.reserve(ilist.size());
+    auto const& [tkey, uukey, tu_val] = *::ranges::begin(ilist);
+
+    vertex_iterator t = to_iterator(*this, vertices_[tkey]);
+    for (auto& edge_data : ilist) {
+      auto const& [ukey, vkey, uv_val] = edge_data;
+      vertex_iterator u                = to_iterator(*this, vertices_[ukey]);
+      if (u < t)
+        throw_unordered_edges();
+
+      // assure begin edge is set for vertices w/o edges
+      t = finalize_out_edges(::ranges::make_subrange(t, u));
+
+      edge_iterator uv;
+      uv = create_edge(ukey, vkey, uv_val);
+      u->set_edge_begin(*this, uv);
+    }
+
+    // assure begin edge is set for remaining vertices w/o edges
+    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
+  }
+}
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>

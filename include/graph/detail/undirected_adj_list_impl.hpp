@@ -284,7 +284,7 @@ ual_edge_list<VV, EV, GV, IndexT, A>::cend(graph_type const& g, vertex_type cons
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type& g, vertex_type& u, vertex_type& v) noexcept
-      : base_t()
+      : base_type()
       , edge_list_in_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
       , edge_list_out_link_type(static_cast<vertex_key_type>(&v - g.vertices().vertices.data())) {
   link_back(u, v);
@@ -295,7 +295,7 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&                 g,
                                           vertex_type&                u,
                                           vertex_type&                v,
                                           edge_user_value_type const& val) noexcept
-      : base_t(val)
+      : base_type(val)
       , edge_list_in_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
       , edge_list_out_link_type(static_cast<vertex_key_type>(&v - g.vertices().data())) {
   link_back(u, v);
@@ -306,7 +306,7 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&            g,
                                           vertex_type&           u,
                                           vertex_type&           v,
                                           edge_user_value_type&& val) noexcept
-      : base_t(move(val))
+      : base_type(move(val))
       , edge_list_in_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
       , edge_list_out_link_type(static_cast<vertex_key_type>(&v - g.vertices().data())) {
   link_back(u, v);
@@ -423,12 +423,12 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_vertex<VV, EV, GV, IndexT, A>::ual_vertex(vertex_set&                   vertices,
                                               vertex_index                  index,
                                               vertex_user_value_type const& val)
-      : base_t(val) {}
+      : base_type(val) {}
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_vertex<VV, EV, GV, IndexT, A>::ual_vertex(vertex_set&              vertices,
                                               vertex_index             index,
                                               vertex_user_value_type&& val) noexcept
-      : base_t(move(val)) {}
+      : base_type(move(val)) {}
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -575,11 +575,11 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(allocator_type alloc) : vertices_(al
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type const& val, allocator_type alloc)
-      : vertices_(alloc), base_t(val), edge_alloc_(alloc) {}
+      : vertices_(alloc), base_type(val), edge_alloc_(alloc) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type&& val, allocator_type alloc) noexcept
-      : vertices_(alloc), base_t(move(val)), edge_alloc_(alloc) {}
+      : vertices_(alloc), base_type(move(val)), edge_alloc_(alloc) {}
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -591,7 +591,7 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             VPropFnc const& vprop_fnc,
                                             GV const&       gv,
                                             A               alloc)
-      : base_t(gv), vertices_(alloc), edge_alloc_(alloc) {
+      : base_type(gv), vertices_(alloc), edge_alloc_(alloc) {
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = static_cast<vertex_key_type>(vrng.size() - 1);
   for (auto& e : erng) {
@@ -608,7 +608,7 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
   vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
 
   // add edges
-  if (!erng.empty()) {
+  if (erng.size() > 0) {
     //edges_.reserve(erng.size());
     edge_key_type   tu_key = ekey_fnc(*::ranges::begin(erng)); // first edge
     vertex_key_type tkey   = tu_key.first;                     // last in-vertex key
@@ -629,17 +629,41 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+template <typename T>
+ual_graph<VV, EV, GV, IndexT, A>::ual_graph(initializer_list<T> const& ilist, A alloc)
+      : base_type(), vertices_(alloc), edge_alloc_(alloc) {
+  // Evaluate max vertex key needed
+  vertex_key_type max_vtx_key = vertex_key_type();
+  for (auto& edge_data : ilist) {
+    auto const& [ukey, vkey, uv_val] = edge_data;
+    max_vtx_key                      = max(max_vtx_key, max(ukey, vkey));
+  }
+  vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
+
+  // add edges
+  if (ilist.size() > 0) {
+    auto [tkey, uukey, tu_val] = *::ranges::begin(ilist);
+    for (auto& edge_data : ilist) {
+      auto const& [ukey, vkey, uv_val] = edge_data;
+      if (ukey < tkey)
+        throw_unordered_edges();
+
+      edge_iterator uv;
+      uv   = create_edge(ukey, vkey, uv_val);
+      tkey = ukey;
+    }
+  }
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_graph<VV, EV, GV, IndexT, A>::~ual_graph() {
   clear(); // assure edges are deleted using edge_alloc_
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EPropFnc>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
-                                            EKeyFnc const&  ekey_fnc,
-                                            EPropFnc const& eprop_fnc,
-                                            GV const&       gv,
-                                            A               alloc)
+ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
+      ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
       : ual_graph(
               erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, gv, alloc) {}
 

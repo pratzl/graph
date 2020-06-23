@@ -102,6 +102,26 @@ TEST_CASE("ual empty", "[ual][empty]") {
   EXPECT_EQ(0, edges_size(g));
 }
 
+TEST_CASE("ual initializer list", "[ual][init][initializer list]") {
+  {
+    struct edge_key_val {
+      vertex_key_t<Graph> u_key;
+      vertex_key_t<Graph> v_key;
+      edge_value_t<Graph> val;
+    };
+    Graph g0{};                                             // empty graph
+    Graph g1{edge_key_val{1, 2, 3}};                        // one edge
+    Graph g2{edge_key_val{1, 2, 3}, edge_key_val{4, 5, 6}}; // two edges
+  }
+
+  {
+    using edge_key_val = std::tuple<vertex_key_t<Graph>, vertex_key_t<Graph>, edge_value_t<Graph>>;
+    Graph g0{};                                             // empty graph
+    Graph g1{edge_key_val{1, 2, 3}};                        // one edge
+    Graph g2{edge_key_val{1, 2, 3}, edge_key_val{4, 5, 6}}; // two edges
+  }
+}
+
 TEST_CASE("ual init", "[ual][init]") {
 #if 0
   vector<Graph::edge_value_type> daa_germany_edge_routes = to_edge_values(routes, germany_cities);

@@ -56,7 +56,7 @@ class daa_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_v
 public:
   using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
-  using base_t                = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
   using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -117,7 +117,7 @@ class daa_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph
 public:
   using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
-  using base_t                = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
   using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -214,7 +214,7 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class daa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
   using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
-  using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
   using graph_category        = sparse_graph_tag;
@@ -275,13 +275,13 @@ public:
   // The following constructors will load edges (and vertices) into the graph
   //
   // The number of vertices is guaranteed to match the highest vertex key in
-  // the edges. Edges are scanned first to determine the highest number and   
+  // the edges. Edges are scanned first to determine the highest number and
   // the vertices are resized to match the number.
   //
   // Accessor functions are used to return the edge_key_type,
   // edge_user_value_type and vertex_user_value_type.
   //
-  // The order visited in the vertices determines their index 
+  // The order visited in the vertices determines their index
   // (and key/identity) in the internal vertices vector. The edge keys use
   // those values and are also expected to be ordered by their first (in)
   // vertex key and an exception is thrown if they aren't in
@@ -291,7 +291,7 @@ public:
   /// Constructor that takes edge & vertex ranges to create the graph.
   ///
   /// @tparam ERng     The edge data range.
-  /// @tparam EKeyFnc  Function object to return edge_key_type of the 
+  /// @tparam EKeyFnc  Function object to return edge_key_type of the
   ///                  ERng::value_type.
   /// @tparam EPropFnc Function object to return the edge_user_value_type, or
   ///                  a type that edge_user_value_type is constructible
@@ -314,14 +314,13 @@ public:
   ///                  vertices & edges.
   ///
   template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
-  daa_graph(
-        ERng const&     erng,
-        VRng const&     vrng,
-        EKeyFnc const&  ekey_fnc  = [](typename ERng::value_type const&) { return edge_key_type(); },
-        EPropFnc const& eprop_fnc = [](typename ERng::value_type const&) { return empty_value(); },
-        VPropFnc const& vprop_fnc = [](typename VRng::value_type const&) { return empty_value(); },
-        GV const&       gv        = GV(),
-        A               alloc     = A());
+  daa_graph(ERng const&     erng,
+            VRng const&     vrng,
+            EKeyFnc const&  ekey_fnc,  //= [](typename ERng::value_type const&) { return edge_key_type(); },
+            EPropFnc const& eprop_fnc, //= [](typename ERng::value_type const&) { return empty_value(); },
+            VPropFnc const& vprop_fnc, //= [](typename VRng::value_type const&) { return empty_value(); },
+            GV const&       gv    = GV(),
+            A               alloc = A());
 
   /// Constructor that takes edge & vertex ranges to create the graph.
   ///
@@ -341,12 +340,24 @@ public:
   ///                  vertices & edges.
   ///
   template <typename ERng, typename EKeyFnc, typename EPropFnc>
-  daa_graph(
-        ERng const&     erng,
-        EKeyFnc const&  ekey_fnc  = [](typename ERng::value_type const&) { return edge_key_type(); },
-        EPropFnc const& eprop_fnc = [](typename ERng::value_type const&) { return empty_value(); },
-        GV const&       gv        = GV(),
-        A               alloc     = A());
+  daa_graph(ERng const&     erng,
+            EKeyFnc const&  ekey_fnc,  // = [](typename ERng::value_type const&) { return edge_key_type(); },
+            EPropFnc const& eprop_fnc, // = [](typename ERng::value_type const&) { return empty_value(); },
+            GV const&       gv    = GV(),
+            A               alloc = A());
+
+  /// Constructor for easy creation of a graph that takes an initializer
+  /// list with a struct/class/tuple with 3 edge elements: in_vertex_key,
+  /// out_vertex_key, edge_value.
+  /// Values must be convertible to vertex_key_t<G> & edge_value_t<G>.
+  ///
+  /// @tparam T The struct/class type used.
+  ///
+  /// @param ilist Initializer list of T
+  /// @param alloc Allocator.
+  ///
+  template <typename T>
+  daa_graph(initializer_list<T> const& ilist, A alloc = A());
 
 public:
   constexpr vertex_set&       vertices();

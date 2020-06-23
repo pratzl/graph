@@ -44,7 +44,7 @@ class vov_graph : public std::graph::empty_value {
 public:
   using graph_type            = ::vov<Attributes...>;
   using graph_user_value_type = std::graph::empty_value;
-  using base_t                = std::graph::empty_value;
+  using base_type             = std::graph::empty_value;
   using difference_type       = typename graph_type::difference_type;
 
   using vertex_set             = graph_type;

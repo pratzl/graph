@@ -303,7 +303,7 @@ class ual_edge
 public:
   using graph_type            = ual_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
-  using base_t                = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
   using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -382,7 +382,7 @@ class ual_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph
 public:
   using graph_type            = ual_graph<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
-  using base_t                = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
   using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -474,7 +474,7 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class ual_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
   using graph_type            = ual_graph<VV, EV, GV, IndexT, A>;
-  using base_t                = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
   using graph_category        = sparse_graph_tag;
@@ -659,14 +659,13 @@ public:
   ///                  vertices & edges.
   ///
   template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
-  ual_graph(
-        ERng const&     erng,
-        VRng const&     vrng,
-        EKeyFnc const&  ekey_fnc  = [](typename ERng::value_type const&) { return edge_key_type(); },
-        EPropFnc const& eprop_fnc = [](typename ERng::value_type const&) { return empty_value(); },
-        VPropFnc const& vprop_fnc = [](typename VRng::value_type const&) { return empty_value(); },
-        GV const&       gv        = GV(),
-        A               alloc     = A());
+  ual_graph(ERng const&     erng,
+            VRng const&     vrng,
+            EKeyFnc const&  ekey_fnc,  // = [](typename ERng::value_type const&) { return edge_key_type(); },
+            EPropFnc const& eprop_fnc, // = [](typename ERng::value_type const&) { return empty_value(); },
+            VPropFnc const& vprop_fnc, // = [](typename VRng::value_type const&) { return empty_value(); },
+            GV const&       gv    = GV(),
+            A               alloc = A());
 
   /// Constructor that takes edge & vertex ranges to create the graph.
   ///
@@ -686,12 +685,24 @@ public:
   ///                  vertices & edges.
   ///
   template <typename ERng, typename EKeyFnc, typename EPropFnc>
-  ual_graph(
-        ERng const&     erng,
-        EKeyFnc const&  ekey_fnc  = [](typename ERng::value_type const&) { return edge_key_type(); },
-        EPropFnc const& eprop_fnc = [](typename ERng::value_type const&) { return empty_value(); },
-        GV const&       gv        = GV(),
-        A               alloc     = A());
+  ual_graph(ERng const&     erng,
+            EKeyFnc const&  ekey_fnc,  // = [](typename ERng::value_type const&) { return edge_key_type(); },
+            EPropFnc const& eprop_fnc, // = [](typename ERng::value_type const&) { return empty_value(); },
+            GV const&       gv    = GV(),
+            A               alloc = A());
+
+  /// Constructor for easy creation of a graph that takes an initializer
+  /// list with a struct/class/tuple with 3 edge elements: in_vertex_key,
+  /// out_vertex_key, edge_value.
+  /// Values must be convertible to vertex_key_t<G> & edge_value_t<G>.
+  ///
+  /// @tparam T The struct/class type used.
+  ///
+  /// @param ilist Initializer list of T
+  /// @param alloc Allocator.
+  ///
+  template <typename T>
+  ual_graph(initializer_list<T> const& ilist, A alloc = A());
 
 public:
   constexpr edge_allocator_type edge_allocator() const noexcept;
