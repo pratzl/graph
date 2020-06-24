@@ -582,8 +582,10 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type&& val, allocat
       : vertices_(alloc), base_type(move(val)), edge_alloc_(alloc) {}
 
 
+// clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
+  requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc> && ual_vertex_data_c<VRng, VPropFnc>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
@@ -591,7 +593,9 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             VPropFnc const& vprop_fnc,
                                             GV const&       gv,
                                             A               alloc)
-      : base_type(gv), vertices_(alloc), edge_alloc_(alloc) {
+      : base_type(gv), vertices_(alloc), edge_alloc_(alloc)
+// clang-format on
+{
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = static_cast<vertex_key_type>(vrng.size() - 1);
   for (auto& e : erng) {
@@ -628,6 +632,15 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
   }
 }
 
+// clang-format off
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+template <typename ERng, typename EKeyFnc, typename EPropFnc>
+  requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc> 
+ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
+      : ual_graph(erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, gv, alloc)
+// clang-format on
+{}
+
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
       initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist, A alloc)
@@ -659,13 +672,6 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_graph<VV, EV, GV, IndexT, A>::~ual_graph() {
   clear(); // assure edges are deleted using edge_alloc_
 }
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename ERng, typename EKeyFnc, typename EPropFnc>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
-      ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
-      : ual_graph(
-              erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, gv, alloc) {}
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>

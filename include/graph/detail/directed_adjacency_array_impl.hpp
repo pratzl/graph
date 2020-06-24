@@ -166,8 +166,10 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type&& val, allocat
       : vertices_(alloc), edges_(alloc), base_type(move(val)), alloc_(alloc) {}
 
 
+// clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
+  requires daa_edge_data_c<ERng, EKeyFnc, EPropFnc> && daa_vertex_data_c<VRng, VPropFnc>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
@@ -175,7 +177,9 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
                                             VPropFnc const& vprop_fnc,
                                             GV const&       gv,
                                             A               alloc)
-      : base_type(gv), vertices_(alloc), edges_(alloc), alloc_(alloc) {
+      : base_type(gv), vertices_(alloc), edges_(alloc), alloc_(alloc)
+// clang-format on
+{
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = static_cast<vertex_key_type>(vrng.size() - 1);
   for (auto& e : erng) {
@@ -221,6 +225,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EPropFnc>
+requires daa_edge_data_c<ERng, EKeyFnc, EPropFnc> //
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
       ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
       : daa_graph(
@@ -262,6 +267,43 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
 
       edge_iterator uv;
       uv = create_edge(ukey, vkey, uv_val);
+      u->set_edge_begin(*this, uv);
+    }
+
+    // assure begin edge is set for remaining vertices w/o edges
+    finalize_out_edges(::ranges::make_subrange(t, vertices_.end()));
+  }
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
+                                            A                                                                alloc)
+      : base_type(), vertices_(alloc), edges_(alloc), alloc_(alloc) {
+
+  // Evaluate max vertex key needed
+  vertex_key_type max_vtx_key = vertex_key_type();
+  for (auto& edge_data : ilist) {
+    auto const& [ukey, vkey] = edge_data;
+    max_vtx_key              = max(max_vtx_key, max(ukey, vkey));
+  }
+  vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
+
+  if (ilist.size() > 0) {
+    edges_.reserve(ilist.size());
+    auto const& [tkey, uukey] = *::ranges::begin(ilist);
+
+    vertex_iterator t = to_iterator(*this, vertices_[tkey]);
+    for (auto& edge_data : ilist) {
+      auto const& [ukey, vkey, uv_val] = edge_data;
+      vertex_iterator u                = to_iterator(*this, vertices_[ukey]);
+      if (u < t)
+        throw_unordered_edges();
+
+      // assure begin edge is set for vertices w/o edges
+      t = finalize_out_edges(::ranges::make_subrange(t, u));
+
+      edge_iterator uv;
+      uv = create_edge(ukey, vkey);
       u->set_edge_begin(*this, uv);
     }
 

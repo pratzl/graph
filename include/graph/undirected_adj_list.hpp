@@ -11,6 +11,21 @@
 
 namespace std::graph {
 
+// clang-format off
+// input vertex data requires a range of data & a function to extract & return 
+// the vertex value
+template <typename VRng, typename VPropFnc>
+concept ual_vertex_data_c = ::ranges::input_range<VRng>
+                        && invocable<VPropFnc, typename VRng::value_type>;
+
+// input edge data requires a range of data & functions to extract & return 
+// the edge key and edge value
+template <typename ERng, typename EKeyFnc, typename EPropFnc>
+concept ual_edge_data_c = ::ranges::forward_range<ERng>
+                        && invocable<EKeyFnc, typename ERng::value_type>
+                        && invocable<EPropFnc, typename ERng::value_type>;
+// clang-format on
+
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list forward declarations
 ///
@@ -652,20 +667,26 @@ public:
   ///
   /// @param erng      The container of edge data.
   /// @param vrng      The container of vertex data.
-  /// @param ekey_fnc  The edge key extractor function object.
-  /// @param eprop_fnc The edge value extractor function object.
-  /// @param vprop_fnc The vertex value extractor function object.
+  /// @param ekey_fnc  The edge key extractor functor:
+  ///                  ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
+  /// @param eprop_fnc The edge value extractor functor:
+  ///                  eprop_fnc(ERng::value_type) -> edge_value_t<G>.
+  /// @param vprop_fnc The vertex value extractor functor:
+  ///                  vprop_fnc(VRng::value_type) -> vertex_value_t<G>.
   /// @param alloc     The allocator to use for internal containers for
   ///                  vertices & edges.
   ///
+  // clang-format off
   template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
+    requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc> && ual_vertex_data_c<VRng, VPropFnc>
   ual_graph(ERng const&     erng,
             VRng const&     vrng,
-            EKeyFnc const&  ekey_fnc,  // = [](typename ERng::value_type const&) { return edge_key_type(); },
-            EPropFnc const& eprop_fnc, // = [](typename ERng::value_type const&) { return empty_value(); },
-            VPropFnc const& vprop_fnc, // = [](typename VRng::value_type const&) { return empty_value(); },
+            EKeyFnc const&  ekey_fnc,
+            EPropFnc const& eprop_fnc,
+            VPropFnc const& vprop_fnc,
             GV const&       gv    = GV(),
             A               alloc = A());
+  // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
   ///
@@ -679,17 +700,18 @@ public:
   ///                  to initialize the value.
   ///
   /// @param erng      The container of edge data.
-  /// @param ekey_fnc  The edge key extractor function object.
-  /// @param eprop_fnc The edge value extractor function object.
+  /// @param ekey_fnc  The edge key extractor functor:
+  ///                  ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
+  /// @param eprop_fnc The edge value extractor functor:
+  ///                  eprop_fnc(ERng::value_type) -> edge_value_t<G>.
   /// @param alloc     The allocator to use for internal containers for
   ///                  vertices & edges.
   ///
+  // clang-format off
   template <typename ERng, typename EKeyFnc, typename EPropFnc>
-  ual_graph(ERng const&     erng,
-            EKeyFnc const&  ekey_fnc,  // = [](typename ERng::value_type const&) { return edge_key_type(); },
-            EPropFnc const& eprop_fnc, // = [](typename ERng::value_type const&) { return empty_value(); },
-            GV const&       gv    = GV(),
-            A               alloc = A());
+    requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc>
+  ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv = GV(), A alloc = A());
+  // clang-format ofn
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
