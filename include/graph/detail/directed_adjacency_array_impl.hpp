@@ -168,13 +168,13 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type&& val, allocat
 
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
-  requires daa_edge_data_c<ERng, EKeyFnc, EPropFnc> && daa_vertex_data_c<VRng, VPropFnc>
+template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
+  requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc> && daa_vertex_data_c<VRng, VValueFnc>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
-                                            EPropFnc const& eprop_fnc,
-                                            VPropFnc const& vprop_fnc,
+                                            EValueFnc const& evalue_fnc,
+                                            VValueFnc const& vvalue_fnc,
                                             GV const&       gv,
                                             A               alloc)
       : base_type(gv), vertices_(alloc), edges_(alloc), alloc_(alloc)
@@ -189,9 +189,9 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
 
   // add vertices
   vertices_.reserve(max_vtx_key + 1);
-  if constexpr (!same_as<decltype(vprop_fnc(*::ranges::begin(vrng))), void>) {
+  if constexpr (!same_as<decltype(vvalue_fnc(*::ranges::begin(vrng))), void>) {
     for (auto& vtx : vrng)
-      create_vertex(vprop_fnc(vtx));
+      create_vertex(vvalue_fnc(vtx));
   }
   vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
 
@@ -210,10 +210,10 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
       t = finalize_out_edges(::ranges::make_subrange(t, u));
 
       edge_iterator uv;
-      if constexpr (same_as<decltype(eprop_fnc(edge_data)), void>) {
+      if constexpr (same_as<decltype(evalue_fnc(edge_data)), void>) {
         uv = create_edge(uv_key.first, uv_key.second);
       } else {
-        uv = create_edge(uv_key.first, uv_key.second, eprop_fnc(edge_data));
+        uv = create_edge(uv_key.first, uv_key.second, evalue_fnc(edge_data));
       }
       u->set_edge_begin(*this, uv);
     }
@@ -224,15 +224,15 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename ERng, typename EKeyFnc, typename EPropFnc>
-requires daa_edge_data_c<ERng, EKeyFnc, EPropFnc> //
+template <typename ERng, typename EKeyFnc, typename EValueFnc>
+requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc> //
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
-      ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
+      ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A alloc)
       : daa_graph(
               erng,
               vector<vertex_key_type>(),
               ekey_fnc,
-              eprop_fnc,
+              evalue_fnc,
               [](vertex_key_type const&) { return empty_value(); },
               gv,
               alloc) {}

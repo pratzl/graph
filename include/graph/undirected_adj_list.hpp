@@ -12,18 +12,20 @@
 namespace std::graph {
 
 // clang-format off
-// input vertex data requires a range of data & a function to extract & return 
-// the vertex value
-template <typename VRng, typename VPropFnc>
+// Input vertex data requires a range of data & a function to extract & return 
+// the vertex value.
+template <typename VRng, typename VValueFnc>
 concept ual_vertex_data_c = ::ranges::input_range<VRng>
-                        && invocable<VPropFnc, typename VRng::value_type>;
+                        && invocable<VValueFnc, typename VRng::value_type>;
 
-// input edge data requires a range of data & functions to extract & return 
-// the edge key and edge value
-template <typename ERng, typename EKeyFnc, typename EPropFnc>
+// Input edge data requires a range of data & functions to extract & return 
+// the edge key and edge value. ERng is a forward_range because it is 
+// is traversed twice; once to get the max vertex_key and a second time to
+// load the edges.
+template <typename ERng, typename EKeyFnc, typename EValueFnc>
 concept ual_edge_data_c = ::ranges::forward_range<ERng>
                         && invocable<EKeyFnc, typename ERng::value_type>
-                        && invocable<EPropFnc, typename ERng::value_type>;
+                        && invocable<EValueFnc, typename ERng::value_type>;
 // clang-format on
 
 ///-------------------------------------------------------------------------------------
@@ -650,67 +652,67 @@ public:
 
   /// Constructor that takes edge & vertex ranges to create the graph.
   ///
-  /// @tparam ERng     The edge data range.
-  /// @tparam EKeyFnc  Function object to return edge_key_type of the
-  ///                  ERng::value_type.
-  /// @tparam EPropFnc Function object to return the edge_user_value_type, or
-  ///                  a type that edge_user_value_type is constructible
-  ///                  from. If the return type is void or empty_value the
-  ///                  edge_user_value_type default constructor
-  ///                  will be used to initialize the value.
-  /// @tparam VRng     The vertex data range.
-  /// @tparam VPropFnc Function object to return the vertex_user_value_type,
-  ///                  or a type that vertex_user_value_type is constructible
-  ///                  from. If the return type is void or empty_value the
-  ///                  vertex_user_value_type default constructor will be
-  ///                  used to initialize the value.
+  /// @tparam ERng      The edge data range.
+  /// @tparam EKeyFnc   Function object to return edge_key_type of the
+  ///                   ERng::value_type.
+  /// @tparam EValueFnc Function object to return the edge_user_value_type, or
+  ///                   a type that edge_user_value_type is constructible
+  ///                   from. If the return type is void or empty_value the
+  ///                   edge_user_value_type default constructor
+  ///                   will be used to initialize the value.
+  /// @tparam VRng      The vertex data range.
+  /// @tparam VValueFnc Function object to return the vertex_user_value_type,
+  ///                   or a type that vertex_user_value_type is constructible
+  ///                   from. If the return type is void or empty_value the
+  ///                   vertex_user_value_type default constructor will be
+  ///                   used to initialize the value.
   ///
-  /// @param erng      The container of edge data.
-  /// @param vrng      The container of vertex data.
-  /// @param ekey_fnc  The edge key extractor functor:
-  ///                  ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
-  /// @param eprop_fnc The edge value extractor functor:
-  ///                  eprop_fnc(ERng::value_type) -> edge_value_t<G>.
-  /// @param vprop_fnc The vertex value extractor functor:
-  ///                  vprop_fnc(VRng::value_type) -> vertex_value_t<G>.
-  /// @param alloc     The allocator to use for internal containers for
-  ///                  vertices & edges.
+  /// @param erng       The container of edge data.
+  /// @param vrng       The container of vertex data.
+  /// @param ekey_fnc   The edge key extractor functor:
+  ///                   ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
+  /// @param evalue_fnc The edge value extractor functor:
+  ///                   evalue_fnc(ERng::value_type) -> edge_value_t<G>.
+  /// @param vvalue_fnc The vertex value extractor functor:
+  ///                   vvalue_fnc(VRng::value_type) -> vertex_value_t<G>.
+  /// @param alloc      The allocator to use for internal containers for
+  ///                   vertices & edges.
   ///
   // clang-format off
-  template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
-    requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc> && ual_vertex_data_c<VRng, VPropFnc>
-  ual_graph(ERng const&     erng,
-            VRng const&     vrng,
-            EKeyFnc const&  ekey_fnc,
-            EPropFnc const& eprop_fnc,
-            VPropFnc const& vprop_fnc,
-            GV const&       gv    = GV(),
-            A               alloc = A());
+  template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
+    requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data_c<VRng, VValueFnc>
+  ual_graph(ERng const&      erng,
+            VRng const&      vrng,
+            EKeyFnc const&   ekey_fnc,
+            EValueFnc const& evalue_fnc,
+            VValueFnc const& vvalue_fnc,
+            GV const&        gv    = GV(),
+            A                alloc = A());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
   ///
-  /// @tparam ERng     The edge data range.
-  /// @tparam EKeyFnc  Function object to return edge_key_type of the
-  ///                  ERng::value_type.
-  /// @tparam EPropFnc Function object to return the edge_user_value_type, or
-  ///                  a type that edge_user_value_type is constructible
-  ///                  from. If the return type is void or empty_value the
-  ///                  edge_user_value_type default constructor will be used
-  ///                  to initialize the value.
+  /// @tparam ERng      The edge data range.
+  /// @tparam EKeyFnc   Function object to return edge_key_type of the
+  ///                   ERng::value_type.
+  /// @tparam EValueFnc Function object to return the edge_user_value_type, or
+  ///                   a type that edge_user_value_type is constructible
+  ///                   from. If the return type is void or empty_value the
+  ///                   edge_user_value_type default constructor will be used
+  ///                   to initialize the value.
   ///
-  /// @param erng      The container of edge data.
-  /// @param ekey_fnc  The edge key extractor functor:
-  ///                  ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
-  /// @param eprop_fnc The edge value extractor functor:
-  ///                  eprop_fnc(ERng::value_type) -> edge_value_t<G>.
-  /// @param alloc     The allocator to use for internal containers for
-  ///                  vertices & edges.
+  /// @param erng       The container of edge data.
+  /// @param ekey_fnc   The edge key extractor functor:
+  ///                   ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
+  /// @param evalue_fnc The edge value extractor functor:
+  ///                   evalue_fnc(ERng::value_type) -> edge_value_t<G>.
+  /// @param alloc      The allocator to use for internal containers for
+  ///                   vertices & edges.
   ///
   // clang-format off
-  template <typename ERng, typename EKeyFnc, typename EPropFnc>
-    requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc>
-  ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv = GV(), A alloc = A());
+  template <typename ERng, typename EKeyFnc, typename EValueFnc>
+    requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc>
+  ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A alloc = A());
   // clang-format ofn
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -722,6 +724,16 @@ public:
   ///
   ual_graph(initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
             A                                                                                      alloc = A());
+
+  /// Constructor for easy creation of a graph that takes an initializer
+  /// list with edge values.
+  ///
+  /// @param ilist Initializer list of tuples with in_vertex_key and
+  ///              out_vertex_key.
+  /// @param alloc Allocator.
+  ///
+  ual_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
+            A                                                                alloc = A());
 
 public:
   constexpr edge_allocator_type edge_allocator() const noexcept;

@@ -584,13 +584,13 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type&& val, allocat
 
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename ERng, typename EKeyFnc, typename EPropFnc, typename VRng, typename VPropFnc>
-  requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc> && ual_vertex_data_c<VRng, VPropFnc>
+template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
+  requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data_c<VRng, VValueFnc>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
-                                            EPropFnc const& eprop_fnc,
-                                            VPropFnc const& vprop_fnc,
+                                            EValueFnc const& evalue_fnc,
+                                            VValueFnc const& vvalue_fnc,
                                             GV const&       gv,
                                             A               alloc)
       : base_type(gv), vertices_(alloc), edge_alloc_(alloc)
@@ -605,9 +605,9 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
 
   // add vertices
   vertices_.reserve(max_vtx_key + 1);
-  if constexpr (!same_as<decltype(vprop_fnc(*::ranges::begin(vrng))), void>) {
+  if constexpr (!same_as<decltype(vvalue_fnc(*::ranges::begin(vrng))), void>) {
     for (auto& vtx : vrng)
-      create_vertex(vprop_fnc(vtx));
+      create_vertex(vvalue_fnc(vtx));
   }
   vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
 
@@ -622,10 +622,10 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
         throw_unordered_edges();
 
       edge_iterator uv;
-      if constexpr (same_as<decltype(eprop_fnc(edge_data)), void>) {
+      if constexpr (same_as<decltype(evalue_fnc(edge_data)), void>) {
         uv = create_edge(uv_key.first, uv_key.second);
       } else {
-        uv = create_edge(uv_key.first, uv_key.second, eprop_fnc(edge_data));
+        uv = create_edge(uv_key.first, uv_key.second, evalue_fnc(edge_data));
       }
       tkey = uv_key.first;
     }
@@ -634,10 +634,10 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
 
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-template <typename ERng, typename EKeyFnc, typename EPropFnc>
-  requires ual_edge_data_c<ERng, EKeyFnc, EPropFnc> 
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EPropFnc const& eprop_fnc, GV const& gv, A alloc)
-      : ual_graph(erng, vector<int>(), ekey_fnc, eprop_fnc, [](empty_value) { return empty_value(); }, gv, alloc)
+template <typename ERng, typename EKeyFnc, typename EValueFnc>
+  requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> 
+ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A alloc)
+      : ual_graph(erng, vector<int>(), ekey_fnc, evalue_fnc, [](empty_value) { return empty_value(); }, gv, alloc)
 // clang-format on
 {}
 
@@ -663,6 +663,33 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
 
       edge_iterator uv;
       uv   = create_edge(ukey, vkey, uv_val);
+      tkey = ukey;
+    }
+  }
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+ual_graph<VV, EV, GV, IndexT, A>::ual_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
+                                            A                                                                alloc)
+      : base_type(), vertices_(alloc), edge_alloc_(alloc) {
+  // Evaluate max vertex key needed
+  vertex_key_type max_vtx_key = vertex_key_type();
+  for (auto& edge_data : ilist) {
+    auto const& [ukey, vkey] = edge_data;
+    max_vtx_key              = max(max_vtx_key, max(ukey, vkey));
+  }
+  vertices_.resize(max_vtx_key + 1); // assure expected vertices exist
+
+  // add edges
+  if (ilist.size() > 0) {
+    auto [tkey, uukey, tu_val] = *::ranges::begin(ilist);
+    for (auto& edge_data : ilist) {
+      auto const& [ukey, vkey] = edge_data;
+      if (ukey < tkey)
+        throw_unordered_edges();
+
+      edge_iterator uv;
+      uv   = create_edge(ukey, vkey);
       tkey = ukey;
     }
   }
