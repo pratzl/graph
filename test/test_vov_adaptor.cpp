@@ -603,29 +603,29 @@ TEST_CASE("vov graph", "[vov]") {
     }
   }
 #endif
-  /* Output: seed = Frankfürt
+  /* Output: seed = Frankfurt
     Germany Routes
     -------------------------------
     [0] Augsburg
-      --> [6 München] 84km
+      --> [6 Munchen] 84km
     [1] Erfurt
-    [2] Frankfürt
+    [2] Frankfurt
       --> [4 Kassel] 173km
-      --> [9 Würzburg] 217km
+      --> [9 Wurzburg] 217km
       --> [5 Mannheim] 85km
     [3] Karlsruhe
       --> [0 Augsburg] 250km
     [4] Kassel
-      --> [6 München] 502km
+      --> [6 Munchen] 502km
     [5] Mannheim
       --> [3 Karlsruhe] 80km
-    [6] München
-    [7] Nürnberg
-      --> [6 München] 167km
+    [6] Munchen
+    [7] Nurnberg
+      --> [6 Munchen] 167km
       --> [8 Stuttgart] 183km
     [8] Stuttgart
-    [9] Würzburg
-      --> [7 Nürnberg] 103km
+    [9] Wurzburg
+      --> [7 Nurnberg] 103km
       --> [1 Erfurt] 186km
   */
 }
@@ -639,12 +639,12 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   Graph                                g           = Graph(vov_germany);
   std::graph::vertex_iterator_t<Graph> i1          = begin(g);
 
-  dfs_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
+  dfs_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfurt"
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << vertex_key(g, *u) << endl;
 
-  /* Output: seed = Frankfürt
+  /* Output: seed = Frankfurt
     2 
       4
         6
@@ -659,9 +659,9 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
 
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
-  for (std::graph::vertex_t<Graph>& u : dfs_vertex_range(g, begin(g) + 2)) // Frankfürt
+  for (std::graph::vertex_t<Graph>& u : dfs_vertex_range(g, begin(g) + 2)) // Frankfurt
     cout << vertex_key(g, u) << endl;
-    /* Output: seed = Frankfürt
+    /* Output: seed = Frankfurt
       2
       4
       6

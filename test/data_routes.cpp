@@ -7,10 +7,10 @@ using std::vector;
 using std::string;
 
 routes_t const germany_routes{
-      {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
-      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
-      {"Würzburg", "Erfurt", 186},   {"Würzburg", "Nürnberg", 103},  {"Nürnberg", "Stuttgart", 183},
-      {"Nürnberg", "München", 167},  {"Kassel", "München", 502}};
+      {"Frankfurt", "Mannheim", 85}, {"Frankfurt", "Wurzburg", 217}, {"Frankfurt", "Kassel", 173},
+      {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "Munchen", 84},
+      {"Wurzburg", "Erfurt", 186},   {"Wurzburg", "Nurnberg", 103},  {"Nurnberg", "Stuttgart", 183},
+      {"Nurnberg", "Munchen", 167},  {"Kassel", "Munchen", 502}};
 
 GraphXlate<daa_routes_edge_mapper> germany_routes_directed_graph(daa_routes_edge_mapper(), germany_routes);
 GraphXlate<ual_routes_edge_mapper> germany_routes_undirected_graph(ual_routes_edge_mapper(), germany_routes);
