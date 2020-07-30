@@ -63,9 +63,14 @@ namespace std::graph {
 /// depth-first search range for vertices, given a single seed vertex.
 ///
 
+// clang-format off
 template <searchable_graph_c G, typename A = allocator<char>>
-requires uniform_graph_c<G>&&
-      integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class dfs_vertex_range {
+  requires uniform_graph_c<G>
+        && integral<vertex_key_t<G>>
+        && ::ranges::random_access_range<vertex_range_t<G>> 
+class dfs_vertex_range
+// clang-format on
+{
 
   enum colors : int8_t { white, grey, black };
 
@@ -96,9 +101,11 @@ public:
 
   class const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
     using value_type        = vertex_t<G>;
+    using pointer           = const_vertex_iterator_t<G>;
     using reference         = const value_type&;
+    using difference_type   = typename iterator_traits<const_vertex_iterator_t<G>>::difference_type;
 
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
@@ -112,8 +119,8 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    reference                  operator*() const { return *elem_.u; }
-    const_vertex_iterator_t<G> operator->() const { return elem_.u; }
+    reference operator*() const { return *elem_.u; }
+    pointer   operator->() const { return elem_.u; }
 
     const_iterator& operator++() {
       elem_ = dfs_->advance();
@@ -129,8 +136,8 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    size_t               depth() const { return dfs_->stack_.size(); }
-    vertex_iterator_t<G> parent() const { return parent_[vertex_key(graph_, *elem_.u)]; }
+    size_t  depth() const { return dfs_->stack_.size(); }
+    pointer parent() const { return parent_[vertex_key(graph_, *elem_.u)]; }
 
   protected:
     dfs_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
@@ -139,9 +146,11 @@ public:
 
   class iterator : public const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
     using value_type        = vertex_t<G>;
+    using pointer           = vertex_iterator_t<G>;
     using reference         = value_type&;
+    using difference_type   = typename iterator_traits<vertex_iterator_t<G>>::difference_type;
 
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
@@ -157,8 +166,8 @@ public:
       return *this;
     }
 
-    reference            operator*() { return *this->elem_.u; }
-    vertex_iterator_t<G> operator->() const { return this->elem_.u; }
+    reference operator*() { return *this->elem_.u; }
+    pointer   operator->() const { return this->elem_.u; }
 
     iterator& operator++() {
       this->elem_ = this->dfs_->advance();
@@ -170,6 +179,8 @@ public:
       ++(*this);
       return tmp;
     }
+
+    pointer parent() { return this->parent_[vertex_key(graph_, *this->elem_.u)]; }
   };
 
 public:
@@ -224,9 +235,14 @@ private:
 //---------------------------------------------------------------------------------------
 /// depth-first search range for edges, given a single seed vertex.
 ///
+// clang-format off
 template <searchable_graph_c G, typename A = allocator<char>>
-requires uniform_graph_c<G> /*directed_graph_c<G> */&&
-      integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class dfs_edge_range {
+requires uniform_graph_c<G> /*directed_graph_c<G> */
+      && integral<vertex_key_t<G>>
+      && ::ranges::random_access_range<vertex_range_t<G>> 
+class dfs_edge_range
+// clang-format on
+{
 
   enum colors : int8_t { white, grey, black };
 
@@ -259,9 +275,11 @@ public:
 public:
   class const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
     using value_type        = edge_t<G>;
+    using pointer           = const_vertex_edge_iterator_t<G>;
     using reference         = value_type const&;
+    using difference_type   = typename iterator_traits<const_vertex_edge_iterator_t<G>>::difference_type;
 
     using vertex_type           = const_vertex_t<G>;
     using vertex_reference_type = vertex_type&;
@@ -283,8 +301,8 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    edge_reference_type       operator*() const { return *elem_.uv; }
-    vertex_edge_iterator_type operator->() const { return elem_.uv; }
+    reference operator*() const { return *elem_.uv; }
+    pointer   operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
       elem_ = dfs_->advance();
@@ -307,7 +325,8 @@ public:
     size_t depth() const { return dfs_->stack_.size(); }
 
     bool is_path_end() const { return !out_exists(); }
-    bool is_back_edge() const { // No outgoing edge, or outgoing vertex has been visised (undirected, or directed cycle)
+    bool is_back_edge() const {
+      // No outgoing edge, or outgoing vertex has been visited (undirected, or directed cycle)
       return !out_exists() || (out_exists() && is_out_visited());
     }
 
@@ -323,9 +342,11 @@ public:
 
   class iterator : public const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
     using value_type        = edge_t<G>;
     using reference         = value_type&;
+    using pointer           = vertex_edge_iterator_t<G>;
+    using difference_type   = typename iterator_traits<vertex_edge_iterator_t<G>>::difference_type;
 
     using vertex_type           = vertex_t<G>;
     using vertex_reference_type = vertex_type&;
@@ -338,7 +359,7 @@ public:
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
-    iterator(dfs_edge_range& dfs) : const_iterator(dfs) {}
+    iterator(dfs_edge_range& dfs, bool end_iter = false) : const_iterator(dfs, end_iter) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));
@@ -349,8 +370,8 @@ public:
       return *this;
     }
 
-    edge_reference_type       operator*() { return *this->elem_.uv; }
-    vertex_edge_iterator_type operator->() const { return this->elem_.uv; }
+    reference operator*() { return *this->elem_.uv; }
+    pointer   operator->() const { return this->elem_.uv; }
 
     iterator& operator++() {
       this->elem_ = this->dfs_->advance();

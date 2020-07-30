@@ -155,14 +155,15 @@ daa_vertex<VV, EV, GV, IndexT, A>::edge_size(graph_type const& g) const {
 ///
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-daa_graph<VV, EV, GV, IndexT, A>::daa_graph(allocator_type alloc) : vertices_(alloc), edges_(alloc), alloc_(alloc) {}
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(allocator_type const& alloc) noexcept
+      : vertices_(alloc), edges_(alloc), alloc_(alloc) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type const& val, allocator_type alloc)
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type const& val, allocator_type const& alloc)
       : vertices_(alloc), edges_(alloc), base_type(val), alloc_(alloc) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type&& val, allocator_type alloc)
+daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type&& val, allocator_type const& alloc)
       : vertices_(alloc), edges_(alloc), base_type(move(val)), alloc_(alloc) {}
 
 
@@ -176,7 +177,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
                                             EValueFnc const& evalue_fnc,
                                             VValueFnc const& vvalue_fnc,
                                             GV const&       gv,
-                                            A               alloc)
+                                            A const&        alloc)
       : base_type(gv), vertices_(alloc), edges_(alloc), alloc_(alloc)
 // clang-format on
 {
@@ -227,7 +228,7 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
 requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc> //
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
-      ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A alloc)
+      ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A const& alloc)
       : daa_graph(
               erng,
               vector<vertex_key_type>(),
@@ -240,7 +241,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
-      initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist, A alloc)
+      initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist, A const& alloc)
       : base_type(), vertices_(alloc), edges_(alloc), alloc_(alloc) {
 
   // Evaluate max vertex key needed
@@ -277,7 +278,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
-                                            A                                                                alloc)
+                                            A const&                                                         alloc)
       : base_type(), vertices_(alloc), edges_(alloc), alloc_(alloc) {
 
   // Evaluate max vertex key needed
@@ -455,7 +456,7 @@ typename daa_graph<VV, EV, GV, IndexT, A>::edge_iterator daa_graph<VV, EV, GV, I
   vertex_iterator from = find_vertex(from_key);
   vertex_iterator to   = find_vertex(to_key);
   edges_.emplace_back(edge_type(vertices_, from, to, val));
-  return edges_.begin() + (edges_.size() - 1);
+  return edges_.begin() + (static_cast<ptrdiff_t>(edges_.size()) - 1);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -482,7 +483,7 @@ void daa_graph<VV, EV, GV, IndexT, A>::throw_unordered_edges() const {
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return static_cast<vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>>>(&u - g.vertices().data());
 }
@@ -509,7 +510,7 @@ constexpr auto to_iterator(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_edges(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto out_edges(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_out_edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   if (&u < &g.vertices().back()) {
     auto v = to_iterator(g, u) + 1;
@@ -520,8 +521,7 @@ constexpr auto out_edges(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_edges(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto out_edges(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_out_edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   if (&u < &g.vertices().back()) {
     auto v = to_iterator(g, u) + 1;
@@ -532,151 +532,140 @@ constexpr auto out_edges(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_begin(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto out_begin(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_begin(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_begin(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto out_begin(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_begin(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_cbegin(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_cbegin(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_end(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto out_end(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_end(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_end(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                       vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto out_end(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_end(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_cend(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                        vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto out_cend(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_cend(g);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_size(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                        vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto out_size(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> vertex_out_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_size(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_degree(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> vertex_out_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_size(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_edges(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                     vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_edges(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_begin(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                     vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_begin(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                      vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_cbegin(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto end(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_end(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                   vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto end(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_end(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                    vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_cend(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_begin(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_begin(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edge_cbegin(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                           vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                           vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_cbegin(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u) noexcept
+constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A>& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_end(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                        vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_end(g, u);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_cend(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+constexpr auto edge_cend(daa_graph<VV, EV, GV, IndexT, A> const& g, vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return out_cend(g, u);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> vertex_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return static_cast<vertex_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>>>(u.edge_end(g) - u.edge_begin(g));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_degree(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                            vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u) noexcept
+                            vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
       -> vertex_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return static_cast<vertex_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>>>(u.edge_end(g) - u.edge_begin(g));
 }
@@ -684,14 +673,14 @@ constexpr auto edges_degree(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex(daa_graph<VV, EV, GV, IndexT, A>&                     g,
-                           vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& key) noexcept
+                           vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& key)
       -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.find_vertex(key);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex(daa_graph<VV, EV, GV, IndexT, A> const&               g,
-                           vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& key) noexcept
+                           vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& key)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.find_vertex(key);
 }
@@ -702,41 +691,39 @@ constexpr auto find_vertex(daa_graph<VV, EV, GV, IndexT, A> const&              
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex(daa_graph<VV, EV, GV, IndexT, A>& g, edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv) noexcept
+constexpr auto in_vertex(daa_graph<VV, EV, GV, IndexT, A>& g, edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex(daa_graph<VV, EV, GV, IndexT, A> const&         g,
-                         edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv) noexcept
+constexpr auto in_vertex(daa_graph<VV, EV, GV, IndexT, A> const& g, edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto in_vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&         g,
-                             edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv) noexcept
+                             edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex(daa_graph<VV, EV, GV, IndexT, A>& g, edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv) noexcept
+constexpr auto out_vertex(daa_graph<VV, EV, GV, IndexT, A>& g, edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex(daa_graph<VV, EV, GV, IndexT, A> const&         g,
-                          edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv) noexcept
+constexpr auto out_vertex(daa_graph<VV, EV, GV, IndexT, A> const& g, edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&         g,
-                              edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv) noexcept
+                              edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
@@ -744,7 +731,7 @@ constexpr auto out_vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&         g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(daa_graph<VV, EV, GV, IndexT, A>&           g,
                       edge_t<daa_graph<VV, EV, GV, IndexT, A>>&   uv,
-                      vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& source) noexcept
+                      vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& source)
       -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
@@ -752,7 +739,7 @@ constexpr auto vertex(daa_graph<VV, EV, GV, IndexT, A>&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(daa_graph<VV, EV, GV, IndexT, A> const&           g,
                       edge_t<daa_graph<VV, EV, GV, IndexT, A>> const&   uv,
-                      vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& source) noexcept
+                      vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& source)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
@@ -760,7 +747,7 @@ constexpr auto vertex(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&           g,
                           edge_t<daa_graph<VV, EV, GV, IndexT, A>> const&   uv,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& source) noexcept
+                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& source)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
@@ -768,7 +755,7 @@ constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&               g,
                           edge_t<daa_graph<VV, EV, GV, IndexT, A>> const&       uv,
-                          vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& source_key) noexcept
+                          vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& source_key)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
@@ -777,7 +764,7 @@ constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&               
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A>&           g,
                              vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u,
-                             vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& v) noexcept
+                             vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& v)
       -> vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
@@ -785,7 +772,7 @@ constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A>&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A> const&           g,
                              vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u,
-                             vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& v) noexcept
+                             vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& v)
       -> const_vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
@@ -793,7 +780,7 @@ constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A> const&           g
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A>&                     g,
                              vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& ukey,
-                             vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
+                             vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey)
       -> vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
@@ -801,7 +788,7 @@ constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A>&                  
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A> const&               g,
                              vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& ukey,
-                             vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
+                             vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey)
       -> const_vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
@@ -810,7 +797,7 @@ constexpr auto find_out_edge(daa_graph<VV, EV, GV, IndexT, A> const&            
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A>&           g,
                                 vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u,
-                                vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& v) noexcept
+                                vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& v)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, u, v);
 }
@@ -818,7 +805,7 @@ constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A>&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A> const&           g,
                                 vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u,
-                                vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& v) noexcept
+                                vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& v)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, u, v);
 }
@@ -826,7 +813,7 @@ constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A> const&         
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A>&                     g,
                                 vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& ukey,
-                                vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
+                                vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey)
       -> vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, ukey, vkey);
 }
@@ -834,7 +821,7 @@ constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A>&               
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A> const&               g,
                                 vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& ukey,
-                                vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
+                                vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey)
       -> const_vertex_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, ukey, vkey);
 }
@@ -843,7 +830,7 @@ constexpr auto find_vertex_edge(daa_graph<VV, EV, GV, IndexT, A> const&         
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A>&           g,
                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u,
-                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& v) noexcept
+                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& v)
       -> vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
@@ -851,7 +838,7 @@ constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A>&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A> const&           g,
                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u,
-                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& v) noexcept
+                         vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& v)
       -> const_vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
@@ -859,7 +846,7 @@ constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A>&                     g,
                          vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& ukey,
-                         vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
+                         vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey)
       -> vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
@@ -867,7 +854,7 @@ constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A>&                     g
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A> const&               g,
                          vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& ukey,
-                         vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey) noexcept
+                         vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& vkey)
       -> const_vertex_out_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return find_out_edge(g, find_vertex(g, ukey), find_vertex(g, vkey));
 }
@@ -878,84 +865,80 @@ constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A> const&               g
 //
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
-      -> vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return ::ranges::make_subrange(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return ::ranges::make_subrange(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_size(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto vertices_size(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().size();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
+constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().begin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().end();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_begin(daa_graph<VV, EV, GV, IndexT, A>& g)
       -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto vertex_begin(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().cbegin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto vertex_cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
-      -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex_end(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto vertex_end(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cend();
-}
-
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_begin(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
-      -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().begin();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_begin(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cbegin();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cbegin();
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_end(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
-      -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().end();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_end(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cend();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_cend(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto vertex_cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }
@@ -979,51 +962,48 @@ void resize_vertices(daa_graph<VV, EV, GV, IndexT, A>&                       g,
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept -> edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A>& g) -> edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto edges(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_edge_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
-      -> edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A>& g) -> edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto edge_begin(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto edge_cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A>& g) noexcept
-      -> edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A>& g) -> edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto edge_end(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edge_cend(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
+constexpr auto edge_cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
       -> const_edge_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().cend();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_size(daa_graph<VV, EV, GV, IndexT, A> const& g) noexcept
-      -> edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_size(daa_graph<VV, EV, GV, IndexT, A> const& g) -> edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().size();
 }
 

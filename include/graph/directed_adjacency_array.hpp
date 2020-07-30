@@ -96,7 +96,7 @@ public:
   daa_edge()                    = default;
   daa_edge(daa_edge const&)     = default;
   daa_edge(daa_edge&&) noexcept = default;
-  ~daa_edge()                   = default;
+  ~daa_edge() noexcept          = default;
   daa_edge& operator=(daa_edge&) = default;
   daa_edge& operator=(daa_edge&&) = default;
 
@@ -163,10 +163,10 @@ public:
   using const_vertex_out_edge_iterator = const_edge_iterator;
 
 public:
-  daa_vertex()                      = default;
+  daa_vertex() noexcept             = default;
   daa_vertex(daa_vertex const&)     = default;
   daa_vertex(daa_vertex&&) noexcept = default;
-  ~daa_vertex()                     = default;
+  ~daa_vertex() noexcept            = default;
   daa_vertex& operator=(daa_vertex const&) = default;
   daa_vertex& operator=(daa_vertex&&) = default;
 
@@ -246,8 +246,8 @@ public:
   using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
-  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
+  using vertex_range           = decltype(::ranges::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range     = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
 
   using edge_user_value_type = EV;
   using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
@@ -262,8 +262,8 @@ public:
   using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type = pair<edge_key_type, edge_user_value_type>;
 
-  using edge_range       = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set*>(0)));
-  using const_edge_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_set const*>(0)));
+  using edge_range       = decltype(::ranges::make_subrange(declval<edge_set&>()));
+  using const_edge_range = decltype(::ranges::make_subrange(declval<edge_set const&>()));
 
   using vertex_out_edge_range          = edge_range;
   using const_vertex_out_edge_range    = const_edge_range;
@@ -278,13 +278,14 @@ public:
   using vertex_edge_size_type      = vertex_out_edge_size_type;
 
 public:
-  daa_graph()                 = default;
-  daa_graph(daa_graph&& rhs)  = default;
-  daa_graph(daa_graph const&) = default;
+  daa_graph() noexcept(noexcept(allocator_type())) = default;
+  daa_graph(daa_graph&& rhs) noexcept              = default;
+  daa_graph(daa_graph const&)                      = default;
+  ~daa_graph()                                     = default;
 
-  daa_graph(allocator_type alloc);
-  daa_graph(graph_user_value_type const&, allocator_type alloc = allocator_type());
-  daa_graph(graph_user_value_type&&, allocator_type alloc = allocator_type());
+  daa_graph(allocator_type const& alloc) noexcept;
+  daa_graph(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
+  daa_graph(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
 
   daa_graph& operator=(daa_graph const&) = default;
   daa_graph& operator=(daa_graph&&) = default;
@@ -342,7 +343,7 @@ public:
             EValueFnc const& evalue_fnc,
             VValueFnc const& vvalue_fnc,
             GV const&        gv    = GV(),
-            A                alloc = A());
+            A const&         alloc = A());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -366,8 +367,8 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
-  requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc>
-  daa_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A alloc = A());
+    requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc>
+  daa_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A const& alloc = A());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -379,7 +380,7 @@ public:
   /// @param alloc Allocator.
   ///
   daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
-            A                                                                                      alloc = A());
+            A const&                                                                               alloc = A());
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
@@ -388,7 +389,7 @@ public:
   ///              out_vertex_key.
   /// @param alloc Allocator.
   ///
-  daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist, A alloc = A());
+  daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist, A const& alloc = A());
 
 public:
   constexpr vertex_set&       vertices();

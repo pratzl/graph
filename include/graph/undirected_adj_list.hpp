@@ -33,11 +33,8 @@ concept ual_edge_data_c = ::ranges::forward_range<ERng>
 ///
 /// All vertices are kept in a single vector with an index for the first outgoing edge.
 ///
-/// All edges are kept in a single vector in the graph. Outgoing edges for a vertex are
-/// stored contiguously. Edges for vertex v must come after the previous vertex's edges.
-/// An edge holds the index for its outgoing vertex in the vertices vector, plus any
-/// user-defined values.
-
+/// All edges are kept in doubly-linked lists for both the source and target vertices.
+///
 template <typename VV     = empty_value,
           typename EV     = empty_value,
           typename GV     = empty_value,
@@ -179,7 +176,7 @@ public:
 
     iterator() noexcept                    = default;
     iterator(iterator const& rhs) noexcept = default;
-    ~iterator()                            = default;
+    ~iterator() noexcept                   = default;
 
     iterator& operator=(iterator const& rhs) = default;
 
@@ -280,6 +277,7 @@ public:
   ual_edge_list_link() noexcept                          = default;
   ual_edge_list_link(ual_edge_list_link const&) noexcept = default;
   ual_edge_list_link(ual_edge_list_link&&) noexcept      = default;
+  ~ual_edge_list_link() noexcept                         = default;
   ual_edge_list_link& operator=(ual_edge_list_link const&) noexcept = default;
   ual_edge_list_link& operator=(ual_edge_list_link&&) noexcept = default;
 
@@ -348,10 +346,11 @@ public:
 protected:
   // noexcept is only defined for move ctor & assignment b/c the user-defined value type could
   // throw an exception in other cases
-  ual_edge()                    = default;
-  ual_edge(ual_edge const&)     = default;
-  ual_edge(ual_edge&&) noexcept = default;
-  ual_edge& operator=(ual_edge&) = default;
+  ual_edge() noexcept                = default;
+  ual_edge(ual_edge const&) noexcept = default;
+  ual_edge(ual_edge&&) noexcept      = default;
+  ~ual_edge() noexcept;
+  ual_edge& operator=(ual_edge&) noexcept = default;
   ual_edge& operator=(ual_edge&&) noexcept = default;
 
   ual_edge(graph_type&, vertex_type& u, vertex_type& v) noexcept;
@@ -362,11 +361,9 @@ protected:
   ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, edge_user_value_type const&) noexcept;
   ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, edge_user_value_type&&) noexcept;
 
-  ~ual_edge() noexcept;
-
-  void link_front(vertex_type&, vertex_type&);
-  void link_back(vertex_type&, vertex_type&);
-  void unlink(vertex_type&, vertex_type&);
+  void link_front(vertex_type&, vertex_type&) noexcept;
+  void link_back(vertex_type&, vertex_type&) noexcept;
+  void unlink(vertex_type&, vertex_type&) noexcept;
 
 public:
   vertex_iterator       in_vertex(graph_type&) noexcept;
@@ -430,7 +427,7 @@ public:
   ual_vertex()                      = default;
   ual_vertex(ual_vertex const&)     = default;
   ual_vertex(ual_vertex&&) noexcept = default;
-  ~ual_vertex()                     = default;
+  ~ual_vertex() noexcept            = default;
   ual_vertex& operator=(ual_vertex const&) = default;
   ual_vertex& operator=(ual_vertex&&) noexcept = default;
 
@@ -506,8 +503,8 @@ public:
   using vertex_index           = IndexT;
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
-  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
+  using vertex_range           = decltype(::ranges::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range     = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
 
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
@@ -628,10 +625,10 @@ public:
   };
 
 public:
-  ual_graph() = default;
-  ual_graph(allocator_type alloc);
-  ual_graph(graph_user_value_type const&, allocator_type alloc = allocator_type());
-  ual_graph(graph_user_value_type&&, allocator_type alloc = allocator_type()) noexcept;
+  ual_graph() noexcept(noexcept(allocator_type())) = default;
+  ual_graph(allocator_type const& alloc) noexcept;
+  ual_graph(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
+  ual_graph(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
   ~ual_graph();
 
   // The following constructors will load edges (and vertices) into the graph
@@ -687,7 +684,7 @@ public:
             EValueFnc const& evalue_fnc,
             VValueFnc const& vvalue_fnc,
             GV const&        gv    = GV(),
-            A                alloc = A());
+            A const&         alloc = A());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -712,7 +709,7 @@ public:
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
     requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc>
-  ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A alloc = A());
+  ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A const& alloc = A());
   // clang-format ofn
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -723,7 +720,7 @@ public:
   /// @param alloc Allocator.
   ///
   ual_graph(initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
-            A                                                                                      alloc = A());
+            A const&                                                                               alloc = A());
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
@@ -733,21 +730,21 @@ public:
   /// @param alloc Allocator.
   ///
   ual_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
-            A                                                                alloc = A());
+            A const&                                                         alloc = A());
 
 public:
   constexpr edge_allocator_type edge_allocator() const noexcept;
 
-  constexpr vertex_set&       vertices() noexcept;
-  constexpr vertex_set const& vertices() const noexcept;
+  constexpr vertex_set&       vertices();
+  constexpr vertex_set const& vertices() const;
 
-  constexpr vertex_iterator       begin() noexcept;
-  constexpr const_vertex_iterator begin() const noexcept;
-  constexpr const_vertex_iterator cbegin() const noexcept;
+  constexpr vertex_iterator       begin();
+  constexpr const_vertex_iterator begin() const;
+  constexpr const_vertex_iterator cbegin() const;
 
-  constexpr vertex_iterator       end() noexcept;
-  constexpr const_vertex_iterator end() const noexcept;
-  constexpr const_vertex_iterator cend() const noexcept;
+  constexpr vertex_iterator       end();
+  constexpr const_vertex_iterator end() const;
+  constexpr const_vertex_iterator cend() const;
 
   vertex_iterator       find_vertex(vertex_key_type const&);
   const_vertex_iterator find_vertex(vertex_key_type const&) const;
