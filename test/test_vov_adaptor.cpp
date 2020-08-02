@@ -57,9 +57,12 @@ public:
   using vertex_index           = size_t;
   using vertex_user_value_type = std::graph::empty_value;
   using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
-  using const_vertex_range     = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
-  using vertex_size_type       = typename vertex_set::size_type;
+
+  // prefer to use decltype(::ranges::make_subrange(declval<vertex_set&>())); but getting error:
+  // error: there are no arguments to 'declval' that depend on a template parameter, so a declaration of 'declval' must be available [-fpermissive]
+  using vertex_range       = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set*>(0)));
+  using const_vertex_range = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_set const*>(0)));
+  using vertex_size_type   = typename vertex_set::size_type;
 
   using edge_type       = std::tuple<size_t, Attributes...>; //typename graph_type::inner_container::value_type;
   using const_edge_type = const edge_type;
@@ -101,13 +104,13 @@ public:
   vov_graph& operator=(vov_graph const&) = delete;
   vov_graph& operator=(vov_graph&&) = default;
 
-  constexpr vertex_iterator       begin() noexcept { return graph_.begin(); }
-  constexpr const_vertex_iterator begin() const noexcept { return graph_.begin(); }
-  constexpr const_vertex_iterator cbegin() const noexcept { return graph_.cbegin(); }
+  constexpr vertex_iterator       begin() { return graph_.begin(); }
+  constexpr const_vertex_iterator begin() const { return graph_.begin(); }
+  constexpr const_vertex_iterator cbegin() const { return graph_.cbegin(); }
 
-  constexpr vertex_iterator       end() noexcept { return graph_.end(); }
-  constexpr const_vertex_iterator end() const noexcept { return graph_.end(); }
-  constexpr const_vertex_iterator cend() const noexcept { return graph_.cend(); }
+  constexpr vertex_iterator       end() { return graph_.end(); }
+  constexpr const_vertex_iterator end() const { return graph_.end(); }
+  constexpr const_vertex_iterator cend() const { return graph_.cend(); }
 
 #if 0
   edge_iterator       edge_begin(graph_type&);
@@ -146,30 +149,27 @@ constexpr auto value(::std::graph::edge_t<vov_graph<Attributes...>>& uv)
 }
 
 template <typename... Attributes>
-constexpr auto vertices(vov_graph<Attributes...>& g) noexcept -> std::graph::vertex_range_t<vov_graph<Attributes...>> {
+constexpr auto vertices(vov_graph<Attributes...>& g) -> std::graph::vertex_range_t<vov_graph<Attributes...>> {
   return g.vertices();
 }
 template <typename... Attributes>
-constexpr auto vertices(vov_graph<Attributes...> const& g) noexcept
-      -> std::graph::vertex_range_t<vov_graph<Attributes...>> {
+constexpr auto vertices(vov_graph<Attributes...> const& g) -> std::graph::vertex_range_t<vov_graph<Attributes...>> {
   return g.vertices();
 }
 
 template <typename... Attributes>
-constexpr auto vertices_size(vov_graph<Attributes...> const& g) noexcept
-      -> std::graph::vertex_size_t<vov_graph<Attributes...>> {
+constexpr auto vertices_size(vov_graph<Attributes...> const& g) -> std::graph::vertex_size_t<vov_graph<Attributes...>> {
   return g.graph().size();
 }
 
 template <typename... Attributes>
-constexpr auto out_vertex(vov_graph<Attributes...>& g, std::graph::edge_t<vov_graph<Attributes...>>& uv) noexcept
+constexpr auto out_vertex(vov_graph<Attributes...>& g, std::graph::edge_t<vov_graph<Attributes...>>& uv)
       -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return g.graph().begin() + static_cast<typename vov_graph<Attributes...>::difference_type>(vertex_key(g, uv));
 }
 
 template <typename... Attributes>
-constexpr auto out_vertex(vov_graph<Attributes...> const&                     g,
-                          std::graph::edge_t<vov_graph<Attributes...>> const& uv) noexcept
+constexpr auto out_vertex(vov_graph<Attributes...> const& g, std::graph::edge_t<vov_graph<Attributes...>> const& uv)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.graph().begin() + vertex_key(g, uv);
 }
@@ -184,7 +184,7 @@ constexpr auto out_vertex_key(vov_graph<Attributes...> const&                   
 template <typename... Attributes>
 constexpr auto vertex(vov_graph<Attributes...>&                       g,
                       std::graph::edge_t<vov_graph<Attributes...>>&   uv,
-                      std::graph::vertex_t<vov_graph<Attributes...>>& source) noexcept
+                      std::graph::vertex_t<vov_graph<Attributes...>>& source)
       -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return out_vertex(g, uv);
 }
@@ -192,7 +192,7 @@ constexpr auto vertex(vov_graph<Attributes...>&                       g,
 template <typename... Attributes>
 constexpr auto vertex(vov_graph<Attributes...> const&                       g,
                       std::graph::edge_t<vov_graph<Attributes...>> const&   uv,
-                      std::graph::vertex_t<vov_graph<Attributes...>> const& source) noexcept
+                      std::graph::vertex_t<vov_graph<Attributes...>> const& source)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return out_vertex(g, uv);
 }
@@ -228,78 +228,74 @@ constexpr auto vertex_key(vov_graph<Attributes...> const&                       
 }
 
 template <typename... Attributes>
-constexpr auto begin(vov_graph<Attributes...>& g) noexcept -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
+constexpr auto begin(vov_graph<Attributes...>& g) -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return g.begin();
 }
 template <typename... Attributes>
-constexpr auto begin(vov_graph<Attributes...> const& g) noexcept
+constexpr auto begin(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.begin();
 }
 template <typename... Attributes>
-constexpr auto cbegin(vov_graph<Attributes...> const& g) noexcept
+constexpr auto cbegin(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.cbegin();
 }
 
 template <typename... Attributes>
-constexpr auto end(vov_graph<Attributes...>& g) noexcept -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
+constexpr auto end(vov_graph<Attributes...>& g) -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return g.end();
 }
 template <typename... Attributes>
-constexpr auto end(vov_graph<Attributes...> const& g) noexcept
-      -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
+constexpr auto end(vov_graph<Attributes...> const& g) -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.end();
 }
 template <typename... Attributes>
-constexpr auto cend(vov_graph<Attributes...> const& g) noexcept
+constexpr auto cend(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.end();
 }
 
 
 template <typename... Attributes>
-constexpr auto vertex_begin(vov_graph<Attributes...>& g) noexcept
-      -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
+constexpr auto vertex_begin(vov_graph<Attributes...>& g) -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return g.begin();
 }
 template <typename... Attributes>
-constexpr auto vertex_begin(vov_graph<Attributes...> const& g) noexcept
+constexpr auto vertex_begin(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.begin();
 }
 template <typename... Attributes>
-constexpr auto vertex_cbegin(vov_graph<Attributes...> const& g) noexcept
+constexpr auto vertex_cbegin(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.cbegin();
 }
 
 template <typename... Attributes>
-constexpr auto vertex_end(vov_graph<Attributes...>& g) noexcept
-      -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
+constexpr auto vertex_end(vov_graph<Attributes...>& g) -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return g.end();
 }
 template <typename... Attributes>
-constexpr auto vertex_end(vov_graph<Attributes...> const& g) noexcept
+constexpr auto vertex_end(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.end();
 }
 template <typename... Attributes>
-constexpr auto vertex_cend(vov_graph<Attributes...> const& g) noexcept
+constexpr auto vertex_cend(vov_graph<Attributes...> const& g)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return g.end();
 }
 
 
 template <typename... Attributes>
-constexpr auto find_vertex(vov_graph<Attributes...>&                                 g,
-                           std::graph::vertex_key_t<vov_graph<Attributes...>> const& key) noexcept
+constexpr auto find_vertex(vov_graph<Attributes...>& g, std::graph::vertex_key_t<vov_graph<Attributes...>> const& key)
       -> std::graph::vertex_iterator_t<vov_graph<Attributes...>> {
   return key < vertices_size(g) ? (g.graph().begin() + key) : g.graph.end();
 }
 template <typename... Attributes>
 constexpr auto find_vertex(vov_graph<Attributes...> const&                           g,
-                           std::graph::vertex_key_t<vov_graph<Attributes...>> const& key) noexcept
+                           std::graph::vertex_key_t<vov_graph<Attributes...>> const& key)
       -> std::graph::const_vertex_iterator_t<vov_graph<Attributes...>> {
   return key < vertices_size(g) ? (g.graph().begin() + key) : g.graph.end();
 }
@@ -315,26 +311,23 @@ void resize_vertices(vov_graph<Attributes...>& g, std::graph::vertex_size_t<vov_
 }
 
 template <typename... Attributes>
-constexpr auto edges(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto edges(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_out_edge_range_t<vov_graph<Attributes...>> {
   return out_edges(g, u);
 }
 template <typename... Attributes>
-constexpr auto edges(vov_graph<Attributes...> const&                       g,
-                     std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto edges(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_out_edge_range_t<vov_graph<Attributes...>> {
   return out_edges(g, u);
 }
 
 template <typename... Attributes>
-constexpr auto edges_size(vov_graph<Attributes...> const& g) noexcept
-      -> std::graph::edge_size_t<vov_graph<Attributes...>> {
+constexpr auto edges_size(vov_graph<Attributes...> const& g) -> std::graph::edge_size_t<vov_graph<Attributes...>> {
   return g.edges_size();
 }
 
 template <typename... Attributes>
-constexpr auto edges_size(vov_graph<Attributes...> const&                       g,
-                          std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto edges_size(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::vertex_edge_size_t<vov_graph<Attributes...>> {
   return u.size();
 }
@@ -342,14 +335,14 @@ constexpr auto edges_size(vov_graph<Attributes...> const&                       
 template <typename... Attributes>
 constexpr auto find_edge(vov_graph<Attributes...>&                       g,
                          std::graph::vertex_t<vov_graph<Attributes...>>& u,
-                         std::graph::vertex_t<vov_graph<Attributes...>>& v) noexcept
+                         std::graph::vertex_t<vov_graph<Attributes...>>& v)
       -> std::graph::edge_iterator_t<vov_graph<Attributes...>> {
   return find_out_edge(g, u, v);
 }
 template <typename... Attributes>
 constexpr auto find_edge(vov_graph<Attributes...> const&                       g,
                          std::graph::vertex_t<vov_graph<Attributes...>> const& u,
-                         std::graph::vertex_t<vov_graph<Attributes...>> const& v) noexcept
+                         std::graph::vertex_t<vov_graph<Attributes...>> const& v)
       -> std::graph::const_edge_iterator_t<vov_graph<Attributes...>> {
   return find_out_edge(g, u, v);
 }
@@ -357,148 +350,135 @@ constexpr auto find_edge(vov_graph<Attributes...> const&                       g
 template <typename... Attributes>
 constexpr auto find_edge(vov_graph<Attributes...>&                           g,
                          std::graph::vertex_key_t<vov_graph<Attributes...>>& ukey,
-                         std::graph::vertex_key_t<vov_graph<Attributes...>>& vkey) noexcept
+                         std::graph::vertex_key_t<vov_graph<Attributes...>>& vkey)
       -> std::graph::edge_iterator_t<vov_graph<Attributes...>> {
   return find_out_edge(g, vertices(g)[ukey], vertices(g)[vkey]);
 }
 template <typename... Attributes>
 constexpr auto find_edge(vov_graph<Attributes...> const&                           g,
                          std::graph::vertex_key_t<vov_graph<Attributes...>> const& ukey,
-                         std::graph::vertex_key_t<vov_graph<Attributes...>> const& vkey) noexcept
+                         std::graph::vertex_key_t<vov_graph<Attributes...>> const& vkey)
       -> std::graph::const_edge_iterator_t<vov_graph<Attributes...>> {
   return find_out_edge(g, vertices(g)[ukey], vertices(g)[vkey]);
 }
 
 // Directed API (outgoing): Vertex functions
 template <typename... Attributes>
-constexpr auto out_edges(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto out_edges(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_out_edge_range_t<vov_graph<Attributes...>> {
   return u;
 }
 template <typename... Attributes>
-constexpr auto out_edges(vov_graph<Attributes...> const&                       g,
-                         std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_edges(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_out_edge_range_t<vov_graph<Attributes...>> {
   return u;
 }
 
 template <typename... Attributes>
-constexpr auto begin(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto begin(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto begin(vov_graph<Attributes...> const&                       g,
-                     std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto begin(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto cbegin(vov_graph<Attributes...> const&                       g,
-                      std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto cbegin(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 
 template <typename... Attributes>
-constexpr auto end(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto end(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto end(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto end(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto cend(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto cend(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 
 
 template <typename... Attributes>
-constexpr auto edge_begin(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto edge_begin(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto edge_begin(vov_graph<Attributes...> const&                       g,
-                          std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto edge_begin(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto edge_cbegin(vov_graph<Attributes...> const&                       g,
-                           std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto edge_cbegin(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 
 template <typename... Attributes>
-constexpr auto edge_end(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto edge_end(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto edge_end(vov_graph<Attributes...> const&                       g,
-                        std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto edge_end(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto edge_cend(vov_graph<Attributes...> const&                       g,
-                         std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto edge_cend(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 
 
 template <typename... Attributes>
-constexpr auto out_begin(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto out_begin(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto out_begin(vov_graph<Attributes...> const&                       g,
-                         std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_begin(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto out_cbegin(vov_graph<Attributes...> const&                       g,
-                          std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_cbegin(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return u.begin();
 }
 
 template <typename... Attributes>
-constexpr auto out_end(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u) noexcept
+constexpr auto out_end(vov_graph<Attributes...>& g, std::graph::vertex_t<vov_graph<Attributes...>>& u)
       -> std::graph::vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto out_end(vov_graph<Attributes...> const&                       g,
-                       std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_end(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto out_cend(vov_graph<Attributes...> const&                       g,
-                        std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_cend(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::const_vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return u.end();
 }
 
 template <typename... Attributes>
-constexpr auto out_size(vov_graph<Attributes...> const&                       g,
-                        std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_size(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::vertex_out_edge_size_t<vov_graph<Attributes...>> {
   return u.size();
 }
 template <typename... Attributes>
-constexpr auto out_degree(vov_graph<Attributes...> const&                       g,
-                          std::graph::vertex_t<vov_graph<Attributes...>> const& u) noexcept
+constexpr auto out_degree(vov_graph<Attributes...> const& g, std::graph::vertex_t<vov_graph<Attributes...>> const& u)
       -> std::graph::vertex_out_edge_size_t<vov_graph<Attributes...>> {
   return u.size();
 }
@@ -506,14 +486,14 @@ constexpr auto out_degree(vov_graph<Attributes...> const&                       
 template <typename... Attributes>
 constexpr auto find_out_edge(vov_graph<Attributes...>&                       g,
                              std::graph::vertex_t<vov_graph<Attributes...>>& u,
-                             std::graph::vertex_t<vov_graph<Attributes...>>& v) noexcept
+                             std::graph::vertex_t<vov_graph<Attributes...>>& v)
       -> std::graph::vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
 template <typename... Attributes>
 constexpr auto find_out_edge(vov_graph<Attributes...> const&                       g,
                              std::graph::vertex_t<vov_graph<Attributes...>> const& u,
-                             std::graph::vertex_t<vov_graph<Attributes...>> const& v) noexcept
+                             std::graph::vertex_t<vov_graph<Attributes...>> const& v)
       -> std::graph::const_vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
@@ -521,14 +501,14 @@ constexpr auto find_out_edge(vov_graph<Attributes...> const&                    
 template <typename... Attributes>
 constexpr auto find_out_edge(vov_graph<Attributes...>&                                 g,
                              std::graph::vertex_key_t<vov_graph<Attributes...>> const& ukey,
-                             std::graph::vertex_key_t<vov_graph<Attributes...>> const& vkey) noexcept
+                             std::graph::vertex_key_t<vov_graph<Attributes...>> const& vkey)
       -> std::graph::vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return find_out_edge(g, vertices(g)[ukey], vertices(g)[vkey]);
 }
 template <typename... Attributes>
 constexpr auto find_out_edge(vov_graph<Attributes...> const&                           g,
                              std::graph::vertex_key_t<vov_graph<Attributes...>> const& ukey,
-                             std::graph::vertex_key_t<vov_graph<Attributes...>> const& vkey) noexcept
+                             std::graph::vertex_key_t<vov_graph<Attributes...>> const& vkey)
       -> std::graph::const_vertex_out_edge_iterator_t<vov_graph<Attributes...>> {
   return find_out_edge(g, vertices(g)[ukey], vertices(g)[vkey]);
 }

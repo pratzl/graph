@@ -12,14 +12,18 @@
 
 namespace std::graph {
 
+// clang-format off
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
-class vertex_topological_sort {
-    using count_t = vertex_key_t<G>;
-    using visited_t = vector<count_t>;
+  requires integral<vertex_key_t<G>>
+        && ::ranges::random_access_range<vertex_range_t<G>> 
+class vertex_topological_sort
+// clang-format on
+{
+  using count_t   = vertex_key_t<G>;
+  using visited_t = vector<count_t>;
 
 public:
-    vertex_topological_sort() = default;
+  vertex_topological_sort() = default;
   vertex_topological_sort();
 
 public:
@@ -29,7 +33,6 @@ private:
   visited_t visit_count_;
   G&        graph_;
 };
-
 
 
 } // namespace std::graph

@@ -89,13 +89,13 @@ TEST_CASE("daa example 1", "[daa][example][1]") {
   using ::ranges::sort;
   using ::ranges::find;
   using ::ranges::end;
-  struct route {
+  struct route_mi {
     string from;
     string to;
     int    miles;
   };
-  vector<string> cities = {"Apex", "Cary", "Raleigh"};
-  vector<route>  routes = {{"Apex", "Cary", 5}, {"Apex", "Raleigh", 10}};
+  vector<string>   cities = {"Apex", "Cary", "Raleigh"};
+  vector<route_mi> routes = {{"Apex", "Cary", 5}, {"Apex", "Raleigh", 10}};
   sort(cities);
 
   using G          = directed_adjacency_array<name_value, weight_value, name_value>;
@@ -103,8 +103,8 @@ TEST_CASE("daa example 1", "[daa][example][1]") {
 
   auto find_city    = [&cities](string const& city) { return find(cities, city) - begin(cities); };
   auto vertex_value = [](string const& name) { return name; };
-  auto edge_key     = [&cities, &find_city](route const& r) { return edge_key_t(find_city(r.from), find_city(r.to)); };
-  auto edge_value   = [&cities](route const& r) { return r.miles; };
+  auto edge_key   = [&cities, &find_city](route_mi const& r) { return edge_key_t(find_city(r.from), find_city(r.to)); };
+  auto edge_value = [&cities](route_mi const& r) { return r.miles; };
 
   G g(routes, cities, edge_key, edge_value, vertex_value, name_value("NC Routes"));
   REQUIRE(vertices_size(g) == 3);
