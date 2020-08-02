@@ -58,8 +58,13 @@ namespace std::graph {
 //----------------------------------------------------------------------------------------
 /// breadth-first search range for vertices, given a single seed vertex.
 ///
+// clang-format off
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> class bfs_vertex_range {
+  requires integral<vertex_key_t<G>> 
+        && ::ranges::random_access_range<vertex_range_t<G>> 
+class bfs_vertex_range
+// clang-format on
+{
   enum three_colors : int8_t {
     white, // undiscovered
     grey,  // discovered, but not visited (in queue)
@@ -84,7 +89,11 @@ public:
 
   class const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
+    using value_type        = vertex_t<G>;
+    using pointer           = const_vertex_iterator_t<G>;
+    using reference         = value_type const&;
+    using difference_type   = typename iterator_traits<const_vertex_iterator_t<G>>::difference_type;
 
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
@@ -97,8 +106,8 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    vertex_t<G> const&         operator*() const { return *elem_.u; }
-    const_vertex_iterator_t<G> operator->() const { return elem_.u; }
+    reference operator*() const { return *elem_.u; }
+    pointer   operator->() const { return elem_.u; }
 
     const_iterator& operator++() {
       elem_ = bfs_->advance();
@@ -123,12 +132,16 @@ public:
 
   class iterator : public const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
+    using value_type        = vertex_t<G>;
+    using pointer           = vertex_iterator_t<G>;
+    using reference         = value_type&;
+    using difference_type   = typename iterator_traits<vertex_iterator_t<G>>::difference_type;
 
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
-    iterator(bfs_vertex_range& bfs) : const_iterator(bfs) {}
+    iterator(bfs_vertex_range& bfs, bool end_iter = false) : const_iterator(bfs, end_iter) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));
@@ -139,8 +152,8 @@ public:
       return *this;
     }
 
-    vertex_t<G>&         operator*() { return *this->elem_.u; }
-    vertex_iterator_t<G> operator->() const { return this->elem_.u; }
+    reference operator*() { return *this->elem_.u; }
+    pointer   operator->() const { return this->elem_.u; }
 
     iterator& operator++() {
       this->elem_ = this->bfs_->advance();
@@ -217,9 +230,14 @@ private:
 ///
 /// requires bi-directional edges to get last edge on a vertex
 ///
+// clang-format off
 template <searchable_graph_c G, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>>&& ::ranges::bidirectional_range<
-      vertex_edge_range_t<G>> class bfs_edge_range {
+  requires integral<vertex_key_t<G>>
+        && ::ranges::random_access_range<vertex_range_t<G>>
+        && ::ranges::bidirectional_range<vertex_edge_range_t<G>> 
+class bfs_edge_range
+// clang-format on
+{
   enum colors : int8_t {
     white, // undiscovered
     grey,  // discovered (in-process)
@@ -244,8 +262,9 @@ public:
 
   class const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
+    using iterator_category = input_iterator_tag;
     using value_type        = edge_t<G>;
+    using pointer           = const_vertex_edge_iterator_t<G>;
     using reference         = value_type const&;
 
     using vertex_type           = const_vertex_t<G>;
@@ -268,8 +287,8 @@ public:
     const_iterator& operator=(const_iterator&&) = default;
     const_iterator& operator=(const_iterator const&) = default;
 
-    reference                 operator*() const { return *elem_.uv; }
-    vertex_edge_iterator_type operator->() const { return elem_.uv; }
+    reference operator*() const { return *elem_.uv; }
+    pointer   operator->() const { return elem_.uv; }
 
     const_iterator& operator++() {
       elem_ = bfs_->advance();
@@ -302,8 +321,9 @@ public:
 
   class iterator : public const_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
-    using value_type        = vertex_t<G>;
+    using iterator_category = input_iterator_tag;
+    using value_type        = edge_t<G>;
+    using pointer           = vertex_edge_iterator_t<G>;
     using reference         = value_type&;
 
     using vertex_type           = vertex_t<G>;
@@ -328,8 +348,8 @@ public:
       return *this;
     }
 
-    edge_type&                operator*() { return *this->elem_.uv; }
-    vertex_edge_iterator_type operator->() const { return this->elem_.uv; }
+    reference operator*() { return *this->elem_.uv; }
+    pointer   operator->() const { return this->elem_.uv; }
 
     iterator& operator++() {
       this->elem_ = this->bfs_->advance();

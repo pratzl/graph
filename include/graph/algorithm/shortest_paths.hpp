@@ -12,8 +12,8 @@
 //
 // Dijktra's shortest path algorithm runs in O(|E| + |V|log|V|) time and supports non-negative
 // edge weights. Signed weight types are allowed to accomodate real-world situations, and it
-// is the user's responsibility to assure only non-negative weights exist. Outputting leaf-only 
-// distances/paths adds an additional O(|V| + |E|). 
+// is the user's responsibility to assure only non-negative weights exist. Outputting leaf-only
+// distances/paths adds an additional O(|V| + |E|).
 //
 // Bellman-Ford shortest path algorithm runs in O(|V| * |E|) and support negative edge weights.
 // It is slower than Dijktra's algorithm but is more versatile because it supports negative
@@ -63,13 +63,13 @@ template <typename G, typename A = allocator<vertex_iterator_t<G>>>
 using vertex_path_t = vector<vertex_iterator_t<G>, A>;
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
-using vertex_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<vertex_path_t<G, A>*>(0)));
+using vertex_path_range = decltype(::ranges::make_subrange(declval<vertex_path_t<G, A>&>()));
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
 using edge_path_t = vector<edge_iterator_t<G>, A>;
 
 template <typename G, typename A>
-using edge_path_range = decltype(::ranges::make_subrange(*reinterpret_cast<edge_path_t<G, A>*>(0)));
+using edge_path_range = decltype(::ranges::make_subrange(declval<edge_path_t<G, A>&>()));
 
 
 template <typename G, arithmetic_c DistanceT, typename A = allocator<vertex_iterator_t<G>>>
@@ -162,9 +162,9 @@ public:
     // output paths to the output iterator
     using path_t = shortest_path<vertex_iterator_t<G>, DistanceT>;
     using key_t  = vertex_key_t<G>;
-    path_t                spath(alloc_);
-    key_t const           source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
-    vertex_iterator_t<G>  first      = begin(vertices(g_));
+    path_t               spath(alloc_);
+    key_t const          source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
+    vertex_iterator_t<G> first      = begin(vertices(g_));
     for (key_t vkey = 0; vkey < static_cast<key_t>(distances.size()); ++vkey) {
       if (!leaves_only || (leaves_only && leaf[vkey])) {
         spath.distance = distances[vkey].distance;
@@ -325,9 +325,9 @@ public:
     // output paths to the output iterator
     using path_t = shortest_path<vertex_iterator_t<G>, DistanceT>;
     using key_t  = vertex_key_t<G>;
-    path_t                spath(alloc_);
-    key_t const           source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
-    vertex_iterator_t<G>  first      = begin(vertices(g_));
+    path_t               spath(alloc_);
+    key_t const          source_key = static_cast<vertex_key_t<G>>(source - begin(g_));
+    vertex_iterator_t<G> first      = begin(vertices(g_));
     for (key_t vkey = 0; vkey < static_cast<key_t>(distances.size()); ++vkey) {
       if (!leaves_only || (leaves_only && leaf[vkey])) {
         spath.distance = distances[vkey].distance;
@@ -431,8 +431,7 @@ protected:
 //! @param alloc       The allocator to use for internal containers.
 //
 template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
-void dijkstra_shortest_distances(
+requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> void dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
@@ -440,7 +439,7 @@ void dijkstra_shortest_distances(
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
 
-  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g, *begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   fn.shortest_distances(source, result_iter, leaves_only);
 }
@@ -461,20 +460,16 @@ void dijkstra_shortest_distances(
 //!                    vertices on an edge. The default is to return a value of 1.
 //! @param alloc       The allocator to use for internal containers.
 //
-template <typename G,
-          typename OutIter,
-          typename DistFnc,
-          typename A = allocator<char>>
+template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
 //requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic_c; }
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
-void dijkstra_shortest_paths(
+requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> void dijkstra_shortest_paths(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
       bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
-  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g, *begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   fn.shortest_paths(source, result_iter, leaves_only);
 }
@@ -503,8 +498,8 @@ void dijkstra_shortest_paths(
 //!                    detect_neg_edge_cycles is true.
 //
 template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>> 
-bool bellman_ford_shortest_distances(
+requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> bool
+bellman_ford_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
@@ -513,7 +508,7 @@ bool bellman_ford_shortest_distances(
       DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc                  = A()) {
 
-  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g, *begin(g)))));
   bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   return fn.shortest_distances(source, result_iter, leaves_only, detect_neg_edge_cycles);
 }
@@ -542,11 +537,8 @@ bool bellman_ford_shortest_distances(
 //! @return            true if a negateve edge cycle exists, which is only detected if
 //!                    detect_neg_edge_cycles is true.
 //!
-template <typename G,
-          typename OutIter,
-          typename DistFnc,
-          typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G>>
+template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>>
       //requires output_iterator<OutIter, typename OutIter::value_type>
       bool bellman_ford_shortest_paths(
             G&                   g,
@@ -557,7 +549,7 @@ requires integral<vertex_key_t<G>>&& ::ranges::contiguous_range<vertex_range_t<G
             DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
             A                    alloc                  = A()) {
   //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
-  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g,*begin(g)))));
+  using distance_t = decltype(distance_fnc(*::ranges::begin(edges(g, *begin(g)))));
   bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   return fn.shortest_paths(source, result_iter, leaves_only, detect_neg_edge_cycles);
 }

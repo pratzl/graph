@@ -1,97 +1,135 @@
-Proposal for C++ standard graph library
+# Graph Library Proposal for the C++ Standard
 
-This library is in the alpha stage and is not recommended for general use.
+This library is in the alpha stage that may include significant changes to the interface. It is not recommended for general use.
 
-Build & Run Requirements
-1. Package manager: Conan
-2. Build tool: CMake
-3. Test framework: Catch2
-4. Libraries
-   a. range-v3 library (required)
-   b. fmt library: (usused)
-   c. spdlog (unused)
-5. Compilers
-	a. MSVC 2019 16.5 with following build settings
-		/std:c++latest
-		/permissive-
-		/Zc:preprocessor (compliant pre-processor release in 16.6)
-		precompiled headers (enbled; optional)
-	b. g++-10 with following build settings
+## Build & Run Requirements
 
-C++20 requirements
-1. Concepts (language and <concepts> header)
-2. Ranges (range-v3)
-3. [future] Modules
+### Prerequesites
 
-ORIENTATION
-1.	./test/ contains unit tests. 
-		test_* are test files
-		data_* hold data to be used for tests
-2.	graph/include holds the graph implementation
-		./graph.hpp is the primary header that contains prototypes in the paper
-		./compressed_adj_array.hpp is the directed graph interface
-		./undirected_adj_list.hpp is the undirected graph interface
-		./algorithm/ holds algorithm implementation
-		./range/ holds range definitions
-		./detail/ hold the implementation details for the graphs
+1. A C++ compiler that supports Concepts and has the \<concepts\> header (gcc10, MSVC latest)
+1. CMake 3.16 or later
+1. Python3
+1. Conan package manager (Python)
 
-NOTES (OTHER)
-Range requirement for container
-https://stackoverflow.com/questions/35542744/how-to-create-a-custom-container-for-range-v3
+### Cloning & Building
 
-VSCode Notes
-1.	"CMake: Edit User-Local CMake Kits" to add gcc-10 
+```C++
+git clone https://github.com/pratzl/graph.git
+cd graph
+mkdir build
+cd build
+cmake ../???
+make
+```
 
-TODO
-1.	Multi-platform compiler/build support
-	a.	Build with clang in linux
-		i.	Use range-v3 macros for platform-specific concept support
-	b.	use Catch2 hierarchy feature for unit tests
-2.	Tools
-	a.	Add clang-tidy to VSCode 
-3.	bgl17
-	a.	[in process] Add simple adaptor to show dfs_vertex_range iteratation with bgl17 vov graph
-	b.	Add simple adaptor for compressed graph
-4.	Paper / Design
-	a.	Strongly-connected components: impl, test, update paper
-		i	implement & test
-		ii	update paper
-		iii	add example to paper
-	b.	Connected components: impl, test, update paper
-		i	implement & test
-		ii	update paper
-		iii	add example to paper
-	c.	Bi-connected components: impl, test, update paper
-		i	implement & test
-		ii	update paper
-		iii	add example to paper
-	d.	Articulation Points: impl, test, update paper
-		i	implement & test
-		ii	update paper
-		iii	add example to paper
-	e.	Simple test with array<T> for constexpr
-	f.	define graph module (C++20)
-	g.	compare with other libraries (Lemon, ...)
-	h.	algorithms: refine concept requirements
-		i	support map for vertices? for edges?
-		ii	allow non-integer vertex_key?
-	i.	how extensive should graph concepts be, esp when an algo may not need everything?
-	j.	add data structures
-		i	directed data structure
-		ii	unordered data structure
-	k.	concepts
-		i	Add has_edge_set concept?
-		ii	Add has_vertex_set concept?
-	l.	begin/end
-		i	vertex_begin/end --> vertices_begin/end
-		ii	edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
-	m.	data structure(s)
-		i	required typedefs
-5.	Unit Tests
-	a.	Replace REQUIRE(), etc. --> REQUIRE()
-6.	Algorithms
-	a.	shortest paths
-		i	Review template arguments
+If you're using vscode in linux you may need to manually add gcc to the CMake Kits. Enter "CMake: Edit User-Local CMake Kits" in the Command Pallette (Ctrl+Shift+P) vscode to bring up the file.
 
-Thanks to
-Jason Turner for the cpp_starter_project
+The following libraries will automatically be installed by Conan
+
+1. Catch2 unit test framework
+2. range-v3 library
+3. fmt library
+4. spdlog (unused)
+
+Other Useful Tools
+
+1. clang-format
+2. clang-tidy
+
+## Orientation
+
+1. ./cmake contains files used for building
+1. ./include/graph/include holds the graph implementation
+1. ./test/ contains unit tests.
+        test_* are test files
+        data_* hold data to be used for tests
+
+## ToDo
+
+- [ ] Compiler/build support
+  - [ ] Build with clang in linux
+    - [ ] Use range-v3 macros for platform-specific concept support
+  - [ ] use Catch2 hierarchy feature for unit tests
+  - [ ] get github validation to work without error on push
+- [ ] Tools
+  - [ ] Add clang-tidy to VSCode
+- [ ] bgl17
+  - [ ] [in process] Add simple adaptor to show dfs_vertex_range iteratation with bgl17 vov graph
+  - [ ] Add simple adaptor for compressed graph
+  - [ ] Move adaptor code to ./adaptor
+- [ ] Paper / Design
+  - [ ] Strongly-connected components: impl, test, update paper
+    - [x] implement
+    - [ ] test
+    - [ ] update paper
+    - [ ] add example to paper
+  - [ ] Connected components: impl, test, update paper
+    - [x] implement
+    - [ ] test
+    - [ ] update paper
+    - [ ] add example to paper
+  - [ ] Bi-connected components: impl, test, update paper [Baran]
+    - [ ] implement & test
+    - [ ] update paper
+    - [ ] add example to paper
+  - [ ] Articulation Points: impl, test, update paper [Baran]
+    - [ ] implement
+    - [ ] test
+    - [ ] update paper
+    - [ ] add example to paper
+  - [ ] C++20
+    - [ ] define graph module (C++20)
+    - [ ] use spaceship operator
+  - [ ] algorithms: refine concept requirements
+  - [ ] Data structures
+    - [ ] directed data structure
+      - [x] implement with vector
+      - [ ] extend to support constexpr array
+      - [ ] implement with deque?
+      - [ ] implement with map? (non-integer index)
+    - [x] unordered data structure
+      - [x] implement with vector
+      - [ ] extend to support constexpr array
+      - [ ] implement with deque?
+      - [ ] implement with map? (non-integer index)
+    - [ ] use common data structure for directed graph?
+  - [ ] concepts
+    - [ ] Add edge_set concept
+    - [ ] Add vertex_set concept
+  - [ ] begin/end
+    - [ ] vertex_begin/end --> vertices_begin/end
+    - [ ] edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
+  - [x] Miscellaneous
+    - [x] Change contiguous --> random_access for requirements
+  - [ ] compare with other libraries (Lemon, ...)
+- [ ] Unit Tests
+  - [ ] Replace REQUIRE(), etc. --> REQUIRE()
+- [ ] Algorithms
+  - [ ] shortest paths
+    - [ ] Review template arguments
+- [ ] Feedback
+  - [ ] Tomaz Kaminski
+    - [x] BFS & DFS range category --> input_iterator
+    - [x] BFS & DFS iterator return types
+    - [x] replace *reinterpret_cast<T*>(nullptr), with declval<T&>() 
+  - [ ] Jens Mauer
+    - [ ] graph_traits<>
+    - [ ] functions are missing concepts
+    - [x] noexcept shouldn't be on all functions
+    - [ ] (final comment review)
+  - [ ] Andrew Sutton
+    - [ ] Move concepts to beginning of the paper
+    - [ ] Drop _c suffix on concept names
+    - [ ] Add -ward suffice for inward & outward
+    - [ ] Tighten up definition of undirected
+    - [ ] Add new concepts
+      - [ ] Path
+      - [ ] Cycle
+      - [ ] add/delete vertices|edges
+    - [ ] (final comment review)
+
+## Thanks to
+
+Bob Steagal for his [gcc-builder & clang-builder scripts](https://github.com/BobSteagall)
+
+Jason Turner for his [cpp_starter_project](https://github.com/lefticus/cpp_starter_project)
