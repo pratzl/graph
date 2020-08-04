@@ -15,7 +15,7 @@ namespace std::graph {
 // Input vertex data requires a range of data & a function to extract & return 
 // the vertex value.
 template <typename VRng, typename VValueFnc>
-concept daa_vertex_data_c = ::ranges::input_range<VRng>
+concept daa_vertex_data = ::ranges::input_range<VRng>
                         && invocable<VValueFnc, typename VRng::value_type>;
 
 // Input edge data requires a range of data & functions to extract & return 
@@ -23,7 +23,7 @@ concept daa_vertex_data_c = ::ranges::input_range<VRng>
 // is traversed twice; once to get the max vertex_key and a second time to
 // load the edges.
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-concept daa_edge_data_c = ::ranges::forward_range<ERng>
+concept daa_edge_data = ::ranges::forward_range<ERng>
                         && invocable<EKeyFnc, typename ERng::value_type>
                         && invocable<EValueFnc, typename ERng::value_type>;
 // clang-format on
@@ -234,7 +234,6 @@ public:
   using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
-  using graph_category        = sparse_graph_tag;
 
   using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type      = const vertex_type;
@@ -336,7 +335,7 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-    requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc> && daa_vertex_data_c<VRng, VValueFnc>
+    requires daa_edge_data<ERng, EKeyFnc, EValueFnc> && daa_vertex_data<VRng, VValueFnc>
   daa_graph(ERng const&      erng,
             VRng const&      vrng,
             EKeyFnc const&   ekey_fnc,
@@ -367,7 +366,7 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
-    requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc>
+    requires daa_edge_data<ERng, EKeyFnc, EValueFnc>
   daa_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A const& alloc = A());
   // clang-format on
 

@@ -46,67 +46,87 @@ Other Useful Tools
 
 ## ToDo
 
+- [ ] concepts
+  - [ ] vertex_c --> vertex? (name conflict with vertex(g,uv))
+  - [ ] add type traits? (needed when concepts exist?)
+  - [ ] Add edge_set concept
+  - [ ] Add vertex_set concept
+  - [ ] algorithms: refine concept requirements
+  - [ ] [paper] sparse/dense not defined
+- [ ] Algorithms
+  - [ ] Common
+    - [x] Change contiguous --> random_access for requirements
+  - [ ] Strongly-connected components: impl, test, update paper
+    - [x] implement
+    - [ ] test
+    - [ ] [paper] update description with missing info
+    - [ ] [paper] add example
+  - [ ] Connected components: impl, test, update paper
+    - [x] implement
+    - [ ] test
+    - [ ] [paper] update description with missing info
+    - [ ] [paper] add example
+  - [ ] Bi-connected components: impl, test, update paper [Baran]
+    - [ ] implement & test
+    - [ ] [paper] update description with missing info
+    - [ ] [paper] add example
+  - [ ] Articulation Points: impl, test, update paper [Baran]
+    - [ ] implement
+    - [ ] test
+    - [ ] [paper] update description with missing info
+    - [ ] [paper] add example
+  - [ ] shortest paths
+    - [ ] Review template arguments
+- [ ] API
+  - [x] Common
+  - [ ] Uniform API
+    - [ ] vertex_begin/end --> vertices_begin/end
+    - [ ] edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
+  - [x] Outgoing API
+  - [x] Ingoing API
+- [ ] Data structures
+  - [ ] directed adjacency array
+    - [x] implement with vector
+    - [ ] extend to support constexpr array
+    - [ ] implement with deque?
+    - [ ] implement with map? (non-integer index)
+    - [ ] use common data structure for directed graph?
+  - [x] unordered adjacency list
+    - [x] implement with vector
+    - [ ] extend to support constexpr array
+    - [ ] implement with deque?
+    - [ ] implement with map? (non-integer index)
+- [ ] C++20
+  - [ ] review use of sentinal
+  - [ ] define graph module (C++20)
+  - [x] use spaceship operator (n/a b/c <, >, <=, >= isn't needed)
+  - [ ] investigate use of coroutines (stack space limits?)
+- [ ] Unit Tests
+  - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
+- [ ] Other libraries
+  - [ ] bgl17
+    - [ ] [in process] Add simple adaptor to show dfs_vertex_range iteratation with bgl17 vov graph
+    - [ ] Add simple adaptor for compressed graph
+    - [ ] Move adaptor code to ./adaptor
+  - [ ] boost
+    - [ ] [paper] comparison
+  - [ ] lemon
+    - [ ] [paper] comparison
 - [ ] Compiler/build support
   - [ ] Build with clang in linux
     - [ ] Use range-v3 macros for platform-specific concept support
   - [ ] use Catch2 hierarchy feature for unit tests
-  - [ ] get github validation to work without error on push
-- [ ] Tools
+  - [ ] github failing action(s) on push
+  - [ ] validate doxygen output
+  - [ ] validate sanitizer generation
+  - [ ] remove unrelated libraries (imgui, ...)
+- [ ] Other Tools
   - [ ] Add clang-tidy to VSCode
-- [ ] bgl17
-  - [ ] [in process] Add simple adaptor to show dfs_vertex_range iteratation with bgl17 vov graph
-  - [ ] Add simple adaptor for compressed graph
-  - [ ] Move adaptor code to ./adaptor
-- [ ] Paper / Design
-  - [ ] Strongly-connected components: impl, test, update paper
-    - [x] implement
-    - [ ] test
-    - [ ] update paper
-    - [ ] add example to paper
-  - [ ] Connected components: impl, test, update paper
-    - [x] implement
-    - [ ] test
-    - [ ] update paper
-    - [ ] add example to paper
-  - [ ] Bi-connected components: impl, test, update paper [Baran]
-    - [ ] implement & test
-    - [ ] update paper
-    - [ ] add example to paper
-  - [ ] Articulation Points: impl, test, update paper [Baran]
-    - [ ] implement
-    - [ ] test
-    - [ ] update paper
-    - [ ] add example to paper
-  - [ ] C++20
-    - [ ] define graph module (C++20)
-    - [ ] use spaceship operator
-  - [ ] algorithms: refine concept requirements
-  - [ ] Data structures
-    - [ ] directed data structure
-      - [x] implement with vector
-      - [ ] extend to support constexpr array
-      - [ ] implement with deque?
-      - [ ] implement with map? (non-integer index)
-    - [x] unordered data structure
-      - [x] implement with vector
-      - [ ] extend to support constexpr array
-      - [ ] implement with deque?
-      - [ ] implement with map? (non-integer index)
-    - [ ] use common data structure for directed graph?
-  - [ ] concepts
-    - [ ] Add edge_set concept
-    - [ ] Add vertex_set concept
-  - [ ] begin/end
-    - [ ] vertex_begin/end --> vertices_begin/end
-    - [ ] edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
-  - [x] Miscellaneous
-    - [x] Change contiguous --> random_access for requirements
-  - [ ] compare with other libraries (Lemon, ...)
-- [ ] Unit Tests
-  - [ ] Replace REQUIRE(), etc. --> REQUIRE()
-- [ ] Algorithms
-  - [ ] shortest paths
-    - [ ] Review template arguments
+  - [ ] Can VS be configured for development & remote development?
+- [ ] Documentation
+  - [ ] Add full instructions for building in README.md (c.f. range-v3)
+  - [ ] Generate doxygen
+  - [ ] Move todo out of README.md
 - [ ] Feedback
   - [ ] Tomaz Kaminski
     - [x] BFS & DFS range category --> input_iterator
@@ -119,8 +139,8 @@ Other Useful Tools
     - [ ] (final comment review)
   - [ ] Andrew Sutton
     - [ ] Move concepts to beginning of the paper
-    - [ ] Drop _c suffix on concept names
-    - [ ] Add -ward suffice for inward & outward
+    - [ ] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
+    - [ ] Add -ward suffix for inward & outward (or -coming/-going?)
     - [ ] Tighten up definition of undirected
     - [ ] Add new concepts
       - [ ] Path

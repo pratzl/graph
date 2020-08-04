@@ -64,8 +64,8 @@ namespace std::graph {
 ///
 
 // clang-format off
-template <searchable_graph_c G, typename A = allocator<char>>
-  requires uniform_graph_c<G>
+template <searchable_graph G, typename A = allocator<char>>
+  requires uniform_graph<G>
         && integral<vertex_key_t<G>>
         && ::ranges::random_access_range<vertex_range_t<G>> 
 class dfs_vertex_range
@@ -236,8 +236,8 @@ private:
 /// depth-first search range for edges, given a single seed vertex.
 ///
 // clang-format off
-template <searchable_graph_c G, typename A = allocator<char>>
-requires uniform_graph_c<G> /*directed_graph_c<G> */
+template <searchable_graph G, typename A = allocator<char>>
+requires uniform_graph<G> /*directed_graph<G> */
       && integral<vertex_key_t<G>>
       && ::ranges::random_access_range<vertex_range_t<G>> 
 class dfs_edge_range

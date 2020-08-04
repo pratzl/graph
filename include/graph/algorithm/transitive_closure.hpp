@@ -16,44 +16,47 @@
 
 namespace std::graph {
 
-template<directed_graph_c G>
+template <directed_graph G>
 struct reaches {
   vertex_iterator_t<G> from;
   vertex_iterator_t<G> to;
 };
 
-//template <directed_graph_c G, output_iterator<reaches<vertex_iterator_t<G>>> OutIter>
+//template <directed_graph G, output_iterator<reaches<vertex_iterator_t<G>>> OutIter>
 //void transitive_closure(G& g, OutIter result_iter);
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a sparse graph. Complexity is same as DFS: V(VE).
-template <directed_graph_c G, typename OutIter, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> 
-constexpr void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
+template <directed_graph G, typename OutIter, typename A = allocator<char>>
+requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> constexpr void
+dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   using reach_t = reaches<G>;
-  auto first = begin(g);
+  auto first    = begin(g);
   for (auto ui = first; ui != end(g); ++ui) {
     for (auto& v : dfs_vertex_range(g, ui, alloc)) {
-      vertex_iterator_t<G> vi = first + vertex_key(g, v); // dfs should return a vertex_iterator_t? we can't be guaranteed of vertex& --> iterator conversion for all graphs
+      vertex_iterator_t<G> vi =
+            first +
+            vertex_key(
+                  g,
+                  v); // dfs should return a vertex_iterator_t? we can't be guaranteed of vertex& --> iterator conversion for all graphs
       if (vi != ui)
         *result_iter = reach_t{ui, vi};
     }
   }
 }
 
-template <typename ExecutionPolicy, directed_graph_c G, typename OutIter, typename A = allocator<bool>>
+template <typename ExecutionPolicy, directed_graph G, typename OutIter, typename A = allocator<bool>>
 requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> constexpr void
 warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
 
-  /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
+/// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a dense graph using Warshall's algorithm.
 /// Complexity is O(n^3).
 //
 /// ToDo: Implement parallel option
 ///
-template <directed_graph_c G, typename OutIter, typename A = allocator<bool>>
-requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> 
-constexpr void
+template <directed_graph G, typename OutIter, typename A = allocator<bool>>
+requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> constexpr void
 warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   size_t const V = vertices_size(g);
 

@@ -15,7 +15,7 @@ namespace std::graph {
 // Input vertex data requires a range of data & a function to extract & return 
 // the vertex value.
 template <typename VRng, typename VValueFnc>
-concept ual_vertex_data_c = ::ranges::input_range<VRng>
+concept ual_vertex_data = ::ranges::input_range<VRng>
                         && invocable<VValueFnc, typename VRng::value_type>;
 
 // Input edge data requires a range of data & functions to extract & return 
@@ -491,7 +491,6 @@ public:
   using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
-  using graph_category        = sparse_graph_tag;
 
   using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type      = const vertex_type;
@@ -677,7 +676,7 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-    requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data_c<VRng, VValueFnc>
+    requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data<VRng, VValueFnc>
   ual_graph(ERng const&      erng,
             VRng const&      vrng,
             EKeyFnc const&   ekey_fnc,

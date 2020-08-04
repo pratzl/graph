@@ -586,7 +586,7 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type&& val, allocat
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-  requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data_c<VRng, VValueFnc>
+  requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data<VRng, VValueFnc>
 ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,

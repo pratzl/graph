@@ -59,7 +59,7 @@ namespace std::graph {
 /// breadth-first search range for vertices, given a single seed vertex.
 ///
 // clang-format off
-template <searchable_graph_c G, typename A = allocator<char>>
+template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>> 
         && ::ranges::random_access_range<vertex_range_t<G>> 
 class bfs_vertex_range
@@ -231,7 +231,7 @@ private:
 /// requires bi-directional edges to get last edge on a vertex
 ///
 // clang-format off
-template <searchable_graph_c G, typename A = allocator<char>>
+template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
         && ::ranges::random_access_range<vertex_range_t<G>>
         && ::ranges::bidirectional_range<vertex_edge_range_t<G>> 
