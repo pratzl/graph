@@ -170,7 +170,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(graph_user_value_type&& val, allocat
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-  requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc> && daa_vertex_data_c<VRng, VValueFnc>
+  requires daa_edge_data<ERng, EKeyFnc, EValueFnc> && daa_vertex_data<VRng, VValueFnc>
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
@@ -226,7 +226,7 @@ daa_graph<VV, EV, GV, IndexT, A>::daa_graph(ERng const&     erng,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-requires daa_edge_data_c<ERng, EKeyFnc, EValueFnc> //
+requires daa_edge_data<ERng, EKeyFnc, EValueFnc> //
 daa_graph<VV, EV, GV, IndexT, A>::daa_graph(
       ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A const& alloc)
       : daa_graph(

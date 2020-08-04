@@ -13,7 +13,7 @@
 namespace std::graph {
 
 // clang-format off
-template <searchable_graph_c G, typename A = allocator<char>>
+template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
         && ::ranges::random_access_range<vertex_range_t<G>> 
 class vertex_topological_sort

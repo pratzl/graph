@@ -72,7 +72,7 @@ template <typename G, typename A>
 using edge_path_range = decltype(::ranges::make_subrange(declval<edge_path_t<G, A>&>()));
 
 
-template <typename G, arithmetic_c DistanceT, typename A = allocator<vertex_iterator_t<G>>>
+template <typename G, arithmetic DistanceT, typename A = allocator<vertex_iterator_t<G>>>
 struct shortest_path2 {
   DistanceT               distance;
   vertex_path_range<G, A> vertex_path;
@@ -81,7 +81,7 @@ struct shortest_path2 {
 
 
 //! The return value of the shortest distance functions
-template <forward_iterator VertexIteratorT, arithmetic_c DistanceT>
+template <forward_iterator VertexIteratorT, arithmetic DistanceT>
 struct shortest_distance {
   VertexIteratorT first;                  // source vertex
   VertexIteratorT last;                   // last vertex in path
@@ -89,7 +89,7 @@ struct shortest_distance {
 };
 
 //! The return value of the shortest path functions
-template <forward_iterator VertexIteratorT, arithmetic_c DistanceT, typename A = allocator<VertexIteratorT>>
+template <forward_iterator VertexIteratorT, arithmetic DistanceT, typename A = allocator<VertexIteratorT>>
 struct shortest_path {
   vector<VertexIteratorT, A> path;                   // vertices that make up the path
   DistanceT                  distance = DistanceT(); // sum of the path's edge distances in the path
@@ -461,7 +461,7 @@ requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_
 //! @param alloc       The allocator to use for internal containers.
 //
 template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-//requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic_c; }
+//requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic; }
 requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> void dijkstra_shortest_paths(
       G&                   g,
       vertex_iterator_t<G> source,

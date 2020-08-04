@@ -624,8 +624,6 @@ constexpr auto erase_edge(G& g, vertex_in_edge_iterator_t<G> uv) -> vertex_in_ed
 //
 // Graph category tags
 //
-struct sparse_graph_tag {};
-struct dense_graph_tag {};
 
 //
 // Concept definitions
@@ -633,68 +631,60 @@ struct dense_graph_tag {};
 
 // clang-format off
 template <typename G>
-concept uniform_graph_c = requires(G&& g, vertex_t<G>& u) {
+concept uniform_graph = requires(G&& g, vertex_t<G>& u) {
   true;
   //{ edges(g) } -> edge_range_t<G>;
   //{ edges(g, u) } ->vertex_edge_range_t<G>;
 };
 
 template <typename G>
-concept out_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
+concept outward_directed_graph = requires(G&& g, vertex_t<G>& u) {
   true;
   //{ out_edges<G>(g, u) } -> vertex_out_edge_range_t<G>;
 };
 
 template <typename G>
-concept in_directed_graph_c = requires(G&& g, vertex_t<G>& u) {
+concept inward_directed_graph = requires(G&& g, vertex_t<G>& u) {
   true;
   //{ in_edges(g, u) } -> vertex_in_edge_range_t<G>;
 };
 
 template <typename G>
-concept directed_graph_c = uniform_graph_c<G> && out_directed_graph_c<G>;
+concept directed_graph = uniform_graph<G> && outward_directed_graph<G>;
 
 template <typename G>
-concept bidirected_graph_c = uniform_graph_c<G> && out_directed_graph_c<G>&& in_directed_graph_c<G>;
+concept bidirected_graph = uniform_graph<G> && outward_directed_graph<G>&& inward_directed_graph<G>;
 
 template <typename G>
-concept undirected_graph_c = uniform_graph_c<G> && !out_directed_graph_c<G> && !in_directed_graph_c<G>;
-
-#if 0
-template <typename G>
-concept dense_graph_c = is_same<typename G::graph_category, dense_graph_tag>;
-template <typename G>
-concept sparse_graph_c = !dense_graph_c<G>;
-#endif
+concept undirected_graph = uniform_graph<G> && !outward_directed_graph<G> && !inward_directed_graph<G>;
 
 template <typename V>
-concept vertex_c = true;
+concept vertex_c = true; // (vertex_c --> vertex: name conflict with vertex(g,uv))
 template <typename V>
 concept edge_c = true;
 
 template <typename T>
-concept arithmetic_c = is_arithmetic_v<T>;
+concept arithmetic = is_arithmetic_v<T>;
 
 
 // for DFS, BFS & TopoSort ranges
 template <typename G>
-concept searchable_graph_c = requires(G&& g, vertex_iterator_t<G>& u, vertex_edge_iterator_t<G>& uv) {
+concept searchable_graph = requires(G&& g, vertex_iterator_t<G>& u, vertex_edge_iterator_t<G>& uv) {
 #if 1
       true;
 #else
-  ::ranges::input_range<G>;
-  ::ranges::input_iterator<vertex_iterator_t<G>>;
-  ::ranges::input_iterator<vertex_edge_iterator_t<G>>;
+  ::ranges::template input_range<G>;
+  ::ranges::template input_iterator<vertex_iterator_t<G>>;
+  ::ranges::template input_iterator<vertex_edge_iterator_t<G>>;
   //::ranges::forward_range<vertex_t<G>>; // vertex begin/end require graph parameter so it doesn't apply
-  { vertices(g) } ->vertex_range_t<G>;
-  { begin(g, *u) } ->vertex_edge_iterator_t<G>;
-  { end(g, *u) } ->vertex_edge_iterator_t<G>;
-  { vertex(g, *uv, *u) } ->vertex_iterator_t<G>;
-  { vertex_key(g, *u) } ->vertex_key_t<G>;
+  { vertices(g) } -> convertible_to<vertex_range_t<G>>;
+  { begin(g, *u) } -> convertible_to<vertex_edge_iterator_t<G>>;
+  { end(g, *u) } -> convertible_to<vertex_edge_iterator_t<G>>;
+  { vertex(g, *uv, *u) } -> convertible_to<vertex_iterator_t<G>>;
+  { vertex_key(g, *u) } -> convertible_to<vertex_key_t<G>>;
 #endif
 };
 // clang-format on
-
 
 } // namespace std::graph
 

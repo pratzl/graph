@@ -29,7 +29,7 @@ struct component {
 //---------------------------------------------------------------------------------------
 // Connected Components (for undirected graphs)
 //
-template <undirected_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <undirected_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> class con_comp_fn {
 public:
   using graph_type            = G;
@@ -89,14 +89,14 @@ protected:
   component_number_type curr_comp_ = 0;
 };
 
-template <undirected_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <undirected_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> void
 connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A()) {
   con_comp_fn cc(g, alloc);
   cc(start, result_iter);
 }
 
-template <undirected_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <undirected_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> void
 connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A()) {
   con_comp_fn cc(g, alloc);
@@ -106,7 +106,7 @@ connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc =
 //---------------------------------------------------------------------------------------
 // Strongly Connected Components (Tarjen's algorithm for directed graphs)
 //
-template <directed_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <directed_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> class tarjen_scc_fn {
 public:
   using graph_type            = G;
@@ -197,14 +197,14 @@ protected:
   component_number_type curr_comp_ = 0;
 };
 
-template <directed_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <directed_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> void
 strongly_connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A()) {
   tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
   scc(start, result_iter);
 }
 
-template <directed_graph_c G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <directed_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
 requires output_iterator<OutIter, component<G, CompT>> void
 strongly_connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A()) {
   tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
