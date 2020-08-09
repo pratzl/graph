@@ -35,7 +35,10 @@ jobs:
       run: |
         ls -l /usr/local/bin/
         /usr/local/bin/g++ --version
-        echo "CXX=" $CXX
+        g++ --version
+        export CC=/usr/local/bin/gcc
+        export CXX=/usr/local/bin/g++
+        echo "CXX=" $(CXX)
         $(CXX) --version
 
     - name: Create Build Environment
