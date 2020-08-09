@@ -21,6 +21,7 @@ jobs:
     - uses: docker://gcc:10
 
     - name: Verify compiler
+      uses: docker://gcc:10
       env:
         CC: /usr/local/bin/gcc
         CXX: /usr/local/bin/g++
