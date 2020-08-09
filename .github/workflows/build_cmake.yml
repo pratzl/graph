@@ -19,12 +19,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: docker://gcc:10
+
+    - name: Verify compiler
       env:
         CC: /usr/local/bin/gcc
         CXX: /usr/local/bin/g++
-
-    - name: Verify compiler
       run: |
+        ls -l /usr/local/bin/
         echo "CXX=" $CXX
         $(CXX) --version
 
