@@ -24,14 +24,14 @@ jobs:
     #- name: Run compiler
     #  run: docker run -i gcc:10
 
-    - name: Verify compiler in /
+    - name: Verify compiler
       env:
         CC: /usr/local/bin/gcc
         CXX: /usr/local/bin/g++
       run: |
         ls -l /usr/local/bin/
         echo "CXX=" $CXX
-        $(CXX) --version
+        /usr/local/bin/g++ --version
 
     - name: Verify compiler in /usr/local/bin/
       env:
