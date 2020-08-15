@@ -25,7 +25,7 @@ conan_cmake_run(
   docopt.cpp/0.6.2
   fmt/6.2.1
   spdlog/1.6.0
-  range-v3/0.10.0
+  range-v3/0.11.0
   tbb/2020.1
   OPTIONS
   ${CONAN_EXTRA_OPTIONS}

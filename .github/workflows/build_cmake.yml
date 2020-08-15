@@ -10,12 +10,12 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    container: 
-      image: gcc:10
-      env:
-        CC: /usr/local/bin/gcc
-        CXX: /usr/local/bin/g++
-    container: kitware/cmake
+    #container: 
+    #  image: gcc:10
+    #  env:
+    #    CC: /usr/local/bin/gcc
+    #    CXX: /usr/local/bin/g++
+    #container: kitware/cmake
     strategy:
       matrix:
         os: [ubuntu-latest]
