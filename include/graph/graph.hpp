@@ -68,6 +68,9 @@ namespace std::graph {
 // Uniform API Types
 //
 
+template <typename G>
+struct graph_traits;
+
 // Uniform API: Graph types
 template <typename G>
 using graph_value_t = typename G::graph_user_value;

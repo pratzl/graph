@@ -44,6 +44,18 @@ Other Useful Tools
         test_* are test files
         data_* hold data to be used for tests
 
+## Naming Conventions
+| Pattern           | Example              | Req'd? | Description                                                                          |
+| :---------------- | :------------------- | :----: | :----------------------------------------------------------------------------------- |
+| *_type            | edge_type            |   Y    | The full type stored in the graph                                                    |
+| *_value_type      | edge_value_type      |   Y    | The edge type defined by the graph, without the edge_key                             |
+| *_user_value_type | edge_user_value_type |   Y    | The user-defined type from the the template parameter (e.g EV)                       |
+|                   |                      |        |                                                                                      |
+| *_size_type       | vertex_size_type     |   Y    | The size_type defined by the underlying container, or size_t if there isn't one.     |
+| *_index_type      | vertex_index_type    |   n    | The type used for referring to a vertex when it's kept in a random_access container. |
+| *_key_type        | vertex_key_type      |   Y    | The key used for finding a vertex.                                                   |
+
+
 ## ToDo
 
 - [ ] concepts
@@ -95,6 +107,7 @@ Other Useful Tools
     - [ ] implement with deque?
     - [ ] implement with map? (non-integer index)
     - [ ] use common data structure for directed graph?
+    - [ ] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them?
   - [x] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array

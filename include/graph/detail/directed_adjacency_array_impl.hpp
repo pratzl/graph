@@ -3,8 +3,8 @@
 //
 #include <range/v3/algorithm/find_if.hpp>
 
-#ifndef COMPRESSED_ADJ_ARRAY_IMPL_HPP
-#  define COMPRESSED_ADJ_ARRAY_IMPL_HPP
+#ifndef DIRECTED_ADJ_ARRAY_IMPL_HPP
+#  define DIRECTED_ADJ_ARRAY_IMPL_HPP
 
 namespace std::graph {
 
@@ -1021,4 +1021,4 @@ void clear(daa_graph<VV, EV, GV, IndexT, A>& g) {
 
 } // namespace std::graph
 
-#endif // COMPRESSED_ADJ_ARRAY_IMPL_HPP
+#endif // DIRECTED_ADJ_ARRAY_IMPL_HPP
