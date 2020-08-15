@@ -52,10 +52,12 @@ Other Useful Tools
   - [ ] Add edge_set concept
   - [ ] Add vertex_set concept
   - [ ] algorithms: refine concept requirements
-  - [ ] [paper] sparse/dense not defined
+  - [ ] [paper] sparse/dense not defined;
+  - [ ] compare to BGL concepts [Lumsdaine]
 - [ ] Algorithms
-  - [ ] Common
+  - [x] Common
     - [x] Change contiguous --> random_access for requirements
+    - [ ] Test with constexpr
   - [ ] Strongly-connected components: impl, test, update paper
     - [x] implement
     - [ ] test
@@ -78,12 +80,14 @@ Other Useful Tools
   - [ ] shortest paths
     - [ ] Review template arguments
 - [ ] API
-  - [x] Common
   - [ ] Uniform API
     - [ ] vertex_begin/end --> vertices_begin/end
     - [ ] edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
+    - [ ] add vertices(g,u) -> vertex_range
   - [x] Outgoing API
-  - [x] Ingoing API
+    - [ ] add out_vertices(g,u) -> vertex_range
+  - [x] Incoming API
+    - [ ] add in_vertices(g,u) -> vertex_range
 - [ ] Data structures
   - [ ] directed adjacency array
     - [x] implement with vector
@@ -98,6 +102,7 @@ Other Useful Tools
     - [ ] implement with map? (non-integer index)
 - [ ] C++20
   - [ ] review use of sentinal
+  - [ ] operato!= not needed when operator== defined? (part of spaceship operator)
   - [ ] define graph module (C++20)
   - [x] use spaceship operator (n/a b/c <, >, <=, >= isn't needed)
   - [ ] investigate use of coroutines (stack space limits?)
@@ -128,7 +133,7 @@ Other Useful Tools
   - [ ] Generate doxygen
   - [ ] Move todo out of README.md
 - [ ] Feedback
-  - [ ] Tomaz Kaminski
+  - [x] Tomaz Kaminski
     - [x] BFS & DFS range category --> input_iterator
     - [x] BFS & DFS iterator return types
     - [x] replace *reinterpret_cast<T*>(nullptr), with declval<T&>() 
