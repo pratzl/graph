@@ -483,7 +483,7 @@ void daa_graph<VV, EV, GV, IndexT, A>::throw_unordered_edges() const {
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& u)
+                          const_vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return static_cast<vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>>>(&u - g.vertices().data());
 }
@@ -704,7 +704,7 @@ constexpr auto in_vertex(daa_graph<VV, EV, GV, IndexT, A> const& g, edge_t<daa_g
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto in_vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&         g,
-                             edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv)
+                             const_edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex_key(g);
 }
@@ -723,7 +723,7 @@ constexpr auto out_vertex(daa_graph<VV, EV, GV, IndexT, A> const& g, edge_t<daa_
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto out_vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&         g,
-                              edge_t<daa_graph<VV, EV, GV, IndexT, A>> const& uv)
+                              const_edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
@@ -746,16 +746,16 @@ constexpr auto vertex(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          edge_t<daa_graph<VV, EV, GV, IndexT, A>> const&   uv,
-                          vertex_t<daa_graph<VV, EV, GV, IndexT, A>> const& source)
+                          const_edge_t<daa_graph<VV, EV, GV, IndexT, A>>&   uv,
+                          const_vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& source)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&               g,
-                          edge_t<daa_graph<VV, EV, GV, IndexT, A>> const&       uv,
-                          vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> const& source_key)
+constexpr auto vertex_key(daa_graph<VV, EV, GV, IndexT, A> const&         g,
+                          const_edge_t<daa_graph<VV, EV, GV, IndexT, A>>& uv,
+                          vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>>  source_key)
       -> vertex_key_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }

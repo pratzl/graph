@@ -92,6 +92,8 @@ Other Useful Tools
   - [ ] shortest paths
     - [ ] Review template arguments
 - [ ] API
+  - [ ] Common
+    - [ ] Replace type...const& --> const_type&
   - [ ] Uniform API
     - [ ] vertex_begin/end --> vertices_begin/end
     - [ ] edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
