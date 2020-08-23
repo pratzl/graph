@@ -48,7 +48,7 @@ vov_germany_t get_germany_routes() {
 
 
 TEST_CASE("vov graph", "[vov]") {
-  using namespace graph::adaptor;
+  //using namespace graph::adaptor;
   using namespace std::graph;
 
   using Graph = vov_germany_t;
@@ -56,8 +56,8 @@ TEST_CASE("vov graph", "[vov]") {
 
   //auto n = vertices_size(g);
 
-  EXPECT_EQ(10, vertices_size(g));
-  EXPECT_EQ(11, edges_size(g));
+  REQUIRE(10 == vertices_size(g));
+  REQUIRE(11 == edges_size(g));
 
   using lhs  = std::forward_list<std::tuple<size_t, double>>;
   using rhs  = typename vov_germany_t::inner_container;
