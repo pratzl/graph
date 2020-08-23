@@ -503,6 +503,7 @@ public:
   using vertex_size_type             = typename vertex_set::size_type;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
+  using const_vertex_key_type        = const vertex_key_type;
   using vertex_value_type            = vertex_type;
 
   using vertex_iterator       = typename vertex_set::iterator;
@@ -750,8 +751,8 @@ public:
   constexpr const_vertex_iterator end() const;
   constexpr const_vertex_iterator cend() const;
 
-  vertex_iterator       find_vertex(vertex_key_type const&);
-  const_vertex_iterator find_vertex(vertex_key_type const&) const;
+  vertex_iterator       find_vertex(const_vertex_key_type);
+  const_vertex_iterator find_vertex(const_vertex_key_type) const;
 
   constexpr edge_size_type edges_size() const noexcept;
 
@@ -836,6 +837,7 @@ struct graph_traits<ual_graph<VV, EV, GV, IndexT, A>> {
   using vertex_size_type             = typename vertex_set::size_type;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
+  using const_vertex_key_type        = const vertex_key_type;
   using vertex_value_type            = vertex_type;
 
   using vertex_iterator       = typename vertex_set::iterator;

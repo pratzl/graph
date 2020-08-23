@@ -204,9 +204,9 @@ constexpr auto vertex_cend(G const& g) -> const_vertex_iterator_t<G>;
 
 
 template <typename G>
-constexpr auto find_vertex(G& g, vertex_key_t<G> const&) -> vertex_iterator_t<G>;
+constexpr auto find_vertex(G& g, const_vertex_key_t<G>) -> vertex_iterator_t<G>;
 template <typename G>
-constexpr auto find_vertex(G const& g, vertex_key_t<G> const&) -> const_vertex_iterator_t<G>;
+constexpr auto find_vertex(G const& g, const_vertex_key_t<G>) -> const_vertex_iterator_t<G>;
 
 template <typename G>
 void reserve_vertices(G& g, vertex_size_t<G>) {}
@@ -241,12 +241,12 @@ constexpr auto edges_size(G const& g) -> edge_size_t<G>;
 template <typename G>
 constexpr auto find_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_edge(G const& g, vertex_t<G> const& u, vertex_t<G> const& v) -> const_edge_iterator_t<G>;
+constexpr auto find_edge(G const& g, const_vertex_t<G>& u, const_vertex_t<G>& v) -> const_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto find_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) -> edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_edge(G const& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> const_edge_iterator_t<G>;
 
 template <typename G>
@@ -287,30 +287,30 @@ constexpr auto edges(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_rang
 template <typename G>
 constexpr auto begin(G& g, vertex_t<G>& u) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto begin(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto begin(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto cbegin(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto cbegin(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto end(G& g, vertex_t<G>& u) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto end(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto end(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto cend(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto cend(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto edge_begin(G& g, vertex_t<G>& u) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto edge_begin(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto edge_begin(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto edge_cbegin(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto edge_cbegin(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto edge_end(G& g, vertex_t<G>& u) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto edge_end(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto edge_end(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto edge_cend(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto edge_cend(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto create_vertex(G& g) -> pair<vertex_iterator_t<G>, bool>;
@@ -327,21 +327,21 @@ template <typename G>
 constexpr void erase_vertex(G& g, vertex_key_t<G>&);
 
 template <typename G>
-constexpr auto edges_size(G const& g, vertex_t<G> const& u) -> vertex_edge_size_t<G>;
+constexpr auto edges_size(G const& g, const_vertex_t<G>& u) -> vertex_edge_size_t<G>;
 
 template <typename G>
-constexpr auto edges_degree(G const& g, vertex_t<G> const& u) -> vertex_edge_size_t<G>;
+constexpr auto edges_degree(G const& g, const_vertex_t<G>& u) -> vertex_edge_size_t<G>;
 
 template <typename G>
 constexpr auto find_vertex_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_vertex_edge(G const& g, vertex_t<G> const& u, vertex_t<G> const& v)
+constexpr auto find_vertex_edge(G const& g, const_vertex_t<G>& u, const_vertex_t<G>& v)
       -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto find_vertex_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_vertex_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_vertex_edge(G const& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
@@ -358,7 +358,7 @@ constexpr void clear_edges(G& g, vertex_t<G>&);
 template <typename G>
 constexpr auto vertex(G& g, edge_t<G>& uv, const_vertex_t<G>& source) -> vertex_iterator_t<G>&;
 template <typename G>
-constexpr auto vertex(G const& g, const_edge_t<G>& uv, const_vertex_t<G>& source) -> const_vertex_iterator_t<G> const&;
+constexpr auto vertex(G const& g, const_edge_t<G>& uv, const_vertex_t<G>& source) -> const_vertex_iterator_t<G>;
 
 template <typename G>
 constexpr auto edges(G& g, vertex_t<G>& u) -> vertex_edge_range_t<G>;
@@ -368,16 +368,16 @@ constexpr auto edges(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_rang
 template <typename G>
 constexpr auto begin(G& g, vertex_t<G>& u) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto begin(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto begin(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto cbegin(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto cbegin(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto end(G& g, vertex_t<G>& u) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto end(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto end(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto cend(G const& g, vertex_t<G> const& u) -> const_vertex_edge_iterator_t<G>;
+constexpr auto cend(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto create_vertex(G& g) -> pair<vertex_iterator_t<G>, bool>;
@@ -394,21 +394,21 @@ template <typename G>
 constexpr void erase_vertex(G& g, vertex_key_t<G>&);
 
 template <typename G>
-constexpr auto edges_size(G const& g, vertex_t<G> const& u) -> vertex_edge_size_t<G>;
+constexpr auto edges_size(G const& g, const_vertex_t<G>& u) -> vertex_edge_size_t<G>;
 
 template <typename G>
-constexpr auto edges_degree(G const& g, vertex_t<G> const& u) -> vertex_edge_size_t<G>;
+constexpr auto edges_degree(G const& g, const_vertex_t<G>& u) -> vertex_edge_size_t<G>;
 
 template <typename G>
 constexpr auto find_vertex_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_vertex_edge(G const& g, vertex_t<G> const& u, vertex_t<G> const& v)
+constexpr auto find_vertex_edge(G const& g, const_vertex_t<G>& u, const_vertex_t<G>& v)
       -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto find_vertex_edge(G& g, vertex_key_t<G>& ukey, vertex_key_t<G>& vkey) -> vertex_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_vertex_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_vertex_edge(G const& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
@@ -498,38 +498,38 @@ using vertex_out_edge_size_t = typename graph_traits<G>::vertex_out_edge_size_ty
 template <typename G>
 constexpr auto out_edges(G& g, vertex_t<G>& u) -> vertex_out_edge_range_t<G>;
 template <typename G>
-constexpr auto out_edges(G const& g, vertex_t<G> const& u) -> const_vertex_out_edge_range_t<G>;
+constexpr auto out_edges(G const& g, const_vertex_t<G>& u) -> const_vertex_out_edge_range_t<G>;
 
 template <typename G>
 constexpr auto out_begin(G& g, vertex_t<G>& u) -> vertex_out_edge_iterator_t<G>;
 template <typename G>
-constexpr auto out_begin(G const& g, vertex_t<G> const& u) -> const_vertex_out_edge_iterator_t<G>;
+constexpr auto out_begin(G const& g, const_vertex_t<G>& u) -> const_vertex_out_edge_iterator_t<G>;
 template <typename G>
-constexpr auto out_cbegin(G const& g, vertex_t<G> const& u) -> const_vertex_out_edge_iterator_t<G>;
+constexpr auto out_cbegin(G const& g, const_vertex_t<G>& u) -> const_vertex_out_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto out_end(G& g, vertex_t<G>& u) -> vertex_out_edge_iterator_t<G>;
 template <typename G>
-constexpr auto out_end(G const& g, vertex_t<G> const& u) -> const_vertex_out_edge_iterator_t<G>;
+constexpr auto out_end(G const& g, const_vertex_t<G>& u) -> const_vertex_out_edge_iterator_t<G>;
 template <typename G>
-constexpr auto out_cend(G const& g, vertex_t<G> const& u) -> const_vertex_out_edge_iterator_t<G>;
+constexpr auto out_cend(G const& g, const_vertex_t<G>& u) -> const_vertex_out_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto out_size(G const& g, vertex_t<G> const& u) -> vertex_out_edge_size_t<G>;
+constexpr auto out_size(G const& g, const_vertex_t<G>& u) -> vertex_out_edge_size_t<G>;
 template <typename G>
-constexpr auto out_degree(G const& g, vertex_t<G> const& u) -> vertex_out_edge_size_t<G>;
+constexpr auto out_degree(G const& g, const_vertex_t<G>& u) -> vertex_out_edge_size_t<G>;
 
 template <typename G>
 constexpr auto find_out_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_out_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_out_edge(G const& g, vertex_t<G> const& u, vertex_t<G> const& v)
+constexpr auto find_out_edge(G const& g, const_vertex_t<G>& u, const_vertex_t<G>& v)
       -> const_vertex_out_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto find_out_edge(G& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_out_edge(G& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> vertex_out_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_out_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_out_edge(G const& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> const_vertex_out_edge_iterator_t<G>;
 
 template <typename G>
@@ -568,21 +568,21 @@ using vertex_in_edge_size_t = typename graph_traits<G>::vertex_in_edge_size_type
 template <typename G>
 constexpr auto in_edges(G& g, vertex_t<G>& u) -> vertex_in_edge_range_t<G>;
 template <typename G>
-constexpr auto in_edges(G const& g, vertex_t<G> const& u) -> const_vertex_in_edge_range_t<G>;
+constexpr auto in_edges(G const& g, const_vertex_t<G>& u) -> const_vertex_in_edge_range_t<G>;
 
 template <typename G>
 constexpr auto in_begin(G& g, vertex_t<G>& u) -> vertex_in_edge_iterator_t<G>;
 template <typename G>
-constexpr auto in_begin(G const& g, vertex_t<G> const& u) -> const_vertex_in_edge_iterator_t<G>;
+constexpr auto in_begin(G const& g, const_vertex_t<G>& u) -> const_vertex_in_edge_iterator_t<G>;
 template <typename G>
-constexpr auto in_cbegin(G const& g, vertex_t<G> const& u) -> const_vertex_in_edge_iterator_t<G>;
+constexpr auto in_cbegin(G const& g, const_vertex_t<G>& u) -> const_vertex_in_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto in_end(G& g, vertex_t<G>& u) -> vertex_in_edge_iterator_t<G>;
 template <typename G>
-constexpr auto in_end(G const& g, vertex_t<G> const& u) -> const_vertex_in_edge_iterator_t<G>;
+constexpr auto in_end(G const& g, const_vertex_t<G>& u) -> const_vertex_in_edge_iterator_t<G>;
 template <typename G>
-constexpr auto in_cend(G const& g, vertex_t<G> const& u) -> const_vertex_in_edge_iterator_t<G>;
+constexpr auto in_cend(G const& g, const_vertex_t<G>& u) -> const_vertex_in_edge_iterator_t<G>;
 
 template <typename G>
 constexpr auto in_size(G& g, vertex_t<G>& u) -> vertex_in_edge_size_t<G>;
@@ -592,14 +592,14 @@ constexpr auto in_degree(G& g, vertex_t<G>& u) -> vertex_in_edge_size_t<G>;
 template <typename G>
 constexpr auto find_in_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_in_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_in_edge(G const& g, vertex_t<G> const& u, vertex_t<G> const& v)
+constexpr auto find_in_edge(G const& g, const_vertex_t<G>& u, const_vertex_t<G>& v)
       -> const_vertex_in_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto find_in_edge(G& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_in_edge(G& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> vertex_in_edge_iterator_t<G>;
 template <typename G>
-constexpr auto find_in_edge(G const& g, vertex_key_t<G> const& ukey, vertex_key_t<G> const& vkey)
+constexpr auto find_in_edge(G const& g, const_vertex_key_t<G>& ukey, const_vertex_key_t<G>& vkey)
       -> const_vertex_in_edge_iterator_t<G>;
 
 template <typename G>

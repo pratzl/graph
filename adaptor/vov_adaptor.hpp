@@ -30,6 +30,7 @@ struct std::graph::graph_traits<vov<Attributes...>> {
   using vertex_size_type             = typename vertex_set::size_type;
   using vertex_index_type            = vertex_size_type;
   using vertex_key_type              = vertex_size_type;
+  using const_vertex_key_type        = const vertex_key_type;
   using vertex_value_type            = vertex_type;
 
   using vertex_iterator       = typename vertex_set::iterator;
@@ -213,12 +214,12 @@ constexpr auto vertex_cend(vov<Attributes...> const& g) -> const_vertex_iterator
 
 
 template <typename... Attributes>
-constexpr auto find_vertex(vov<Attributes...>& g, vertex_key_t<vov<Attributes...>> const& key)
+constexpr auto find_vertex(vov<Attributes...>& g, const_vertex_key_t<vov<Attributes...>> key)
       -> vertex_iterator_t<vov<Attributes...>> {
   return key < vertices_size(g) ? (g.graph().begin() + key) : g.graph.end();
 }
 template <typename... Attributes>
-constexpr auto find_vertex(vov<Attributes...> const& g, vertex_key_t<vov<Attributes...>> const& key)
+constexpr auto find_vertex(vov<Attributes...> const& g, const_vertex_key_t<vov<Attributes...>> key)
       -> const_vertex_iterator_t<vov<Attributes...>> {
   return key < vertices_size(g) ? (g.graph().begin() + key) : g.graph.end();
 }
@@ -239,7 +240,7 @@ constexpr auto edges(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return out_edges(g, u);
 }
 template <typename... Attributes>
-constexpr auto edges(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto edges(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_out_edge_range_t<vov<Attributes...>> {
   return out_edges(g, u);
 }
@@ -254,7 +255,7 @@ constexpr auto edges_size(vov<Attributes...> const& g) -> edge_size_t<vov<Attrib
 }
 
 template <typename... Attributes>
-constexpr auto edges_size(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto edges_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> vertex_edge_size_t<vov<Attributes...>> {
   return u.size();
 }
@@ -266,8 +267,8 @@ constexpr auto find_edge(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u,
 }
 template <typename... Attributes>
 constexpr auto find_edge(vov<Attributes...> const&           g,
-                         vertex_t<vov<Attributes...>> const& u,
-                         vertex_t<vov<Attributes...>> const& v) -> const_edge_iterator_t<vov<Attributes...>> {
+                         const_vertex_t<vov<Attributes...>>& u,
+                         const_vertex_t<vov<Attributes...>>& v) -> const_edge_iterator_t<vov<Attributes...>> {
   return find_out_edge(g, u, v);
 }
 
@@ -291,7 +292,7 @@ constexpr auto out_edges(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return u;
 }
 template <typename... Attributes>
-constexpr auto out_edges(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_edges(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_out_edge_range_t<vov<Attributes...>> {
   return u;
 }
@@ -302,12 +303,12 @@ constexpr auto begin(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto begin(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto begin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto cbegin(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto cbegin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
@@ -318,12 +319,12 @@ constexpr auto end(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto end(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto end(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto cend(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto cend(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
@@ -335,12 +336,12 @@ constexpr auto edge_begin(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto edge_begin(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto edge_begin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto edge_cbegin(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto edge_cbegin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
@@ -351,12 +352,12 @@ constexpr auto edge_end(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto edge_end(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto edge_end(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto edge_cend(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto edge_cend(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
@@ -368,12 +369,12 @@ constexpr auto out_begin(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto out_begin(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_begin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_out_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto out_cbegin(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_cbegin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_out_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
@@ -384,23 +385,23 @@ constexpr auto out_end(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto out_end(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_end(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_out_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto out_cend(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_cend(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_out_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
 
 template <typename... Attributes>
-constexpr auto out_size(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> vertex_out_edge_size_t<vov<Attributes...>> {
   return u.size();
 }
 template <typename... Attributes>
-constexpr auto out_degree(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u)
+constexpr auto out_degree(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> vertex_out_edge_size_t<vov<Attributes...>> {
   return u.size();
 }
@@ -412,22 +413,22 @@ constexpr auto find_out_edge(vov<Attributes...>& g, vertex_t<vov<Attributes...>>
 }
 template <typename... Attributes>
 constexpr auto
-find_out_edge(vov<Attributes...> const& g, vertex_t<vov<Attributes...>> const& u, vertex_t<vov<Attributes...>> const& v)
+find_out_edge(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u, const_vertex_t<vov<Attributes...>>& v)
       -> const_vertex_out_edge_iterator_t<vov<Attributes...>> {
   return ::ranges::find_if(out_edges(g, u), [&g, &v](auto uv) { return &*out_vertex(g, uv) == &v; });
 }
 
 template <typename... Attributes>
 constexpr auto find_out_edge(vov<Attributes...>&                     g,
-                             vertex_key_t<vov<Attributes...>> const& ukey,
-                             vertex_key_t<vov<Attributes...>> const& vkey)
+                             const_vertex_key_t<vov<Attributes...>>& ukey,
+                             const_vertex_key_t<vov<Attributes...>>& vkey)
       -> vertex_out_edge_iterator_t<vov<Attributes...>> {
   return find_out_edge(g, vertices(g)[ukey], vertices(g)[vkey]);
 }
 template <typename... Attributes>
 constexpr auto find_out_edge(vov<Attributes...> const&               g,
-                             vertex_key_t<vov<Attributes...>> const& ukey,
-                             vertex_key_t<vov<Attributes...>> const& vkey)
+                             const_vertex_key_t<vov<Attributes...>>& ukey,
+                             const_vertex_key_t<vov<Attributes...>>& vkey)
       -> const_vertex_out_edge_iterator_t<vov<Attributes...>> {
   return find_out_edge(g, vertices(g)[ukey], vertices(g)[vkey]);
 }

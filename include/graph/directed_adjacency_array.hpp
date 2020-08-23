@@ -246,6 +246,7 @@ public:
   using vertex_size_type             = typename vertex_set::size_type;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
+  using const_vertex_key_type        = const vertex_key_type;
   using vertex_value_type            = vertex_type;
 
   using vertex_iterator       = typename vertex_set::iterator;
@@ -410,8 +411,8 @@ public:
   constexpr edge_set&       edges();
   constexpr edge_set const& edges() const;
 
-  vertex_iterator       find_vertex(vertex_key_type const&);
-  const_vertex_iterator find_vertex(vertex_key_type const&) const;
+  vertex_iterator       find_vertex(const_vertex_key_type);
+  const_vertex_iterator find_vertex(const_vertex_key_type) const;
 
 protected:
   void reserve_vertices(vertex_size_type);
@@ -466,6 +467,7 @@ struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
   using vertex_size_type             = typename vertex_set::size_type;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
+  using const_vertex_key_type        = const vertex_key_type;
   using vertex_value_type            = vertex_type;
 
   using vertex_iterator       = typename vertex_set::iterator;

@@ -49,10 +49,10 @@ static vector<std::string> const& germany_cities() { return germany_routes_direc
 
 template <class OStream>
 OStream& operator<<(OStream& os, Graph const& g) {
-  for (vertex_t<Graph> const& u : vertices(g)) {
+  for (const_vertex_t<Graph>& u : vertices(g)) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (edge_t<Graph> const& uv : edges(g, u)) {
+    for (const_edge_t<Graph>& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = out_vertex(g, uv);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
