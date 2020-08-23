@@ -111,13 +111,12 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   using std::graph::dfs_vertex_range;
   using Graph = vov_germany_t;
 
-  vov_germany_t                        g  = get_germany_routes();
-  std::graph::vertex_iterator_t<Graph> i1 = begin(g);
-
+  vov_germany_t    g = get_germany_routes();
   dfs_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
+
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u) {
-    std::graph::vertex_key_t<Graph> ukey = vertex_key(g, *u);
+    //std::graph::vertex_key_t<Graph> ukey = vertex_key(g, *u);
     // cout << string(u.depth() * 2, ' ') << vertex_key(g, *u) << endl;
   }
 
@@ -134,7 +133,6 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
           0
   */
 
-#  if 0
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
   for (std::graph::vertex_t<Graph>& u : dfs_vertex_range(g, begin(g) + 2)) // Frankfürt
@@ -151,7 +149,6 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
       3
       0
   */
-#  endif //0
 #elif TEST_OPTION == TEST_OPTION_GEN
   int i = 0;
   for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u, ++i) {

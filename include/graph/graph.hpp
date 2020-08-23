@@ -356,9 +356,9 @@ constexpr void clear_edges(G& g, vertex_t<G>&);
 
 // Uniform API: Edge functions
 template <typename G>
-constexpr auto vertex(G& g, edge_t<G>& uv, vertex_t<G> const& source) -> vertex_iterator_t<G>&;
+constexpr auto vertex(G& g, edge_t<G>& uv, const_vertex_t<G>& source) -> vertex_iterator_t<G>&;
 template <typename G>
-constexpr auto vertex(G const& g, edge_t<G> const& uv, vertex_t<G> const& source) -> const_vertex_iterator_t<G> const&;
+constexpr auto vertex(G const& g, const_edge_t<G>& uv, const_vertex_t<G>& source) -> const_vertex_iterator_t<G> const&;
 
 template <typename G>
 constexpr auto edges(G& g, vertex_t<G>& u) -> vertex_edge_range_t<G>;
@@ -423,32 +423,33 @@ constexpr void clear_edges(G& g, vertex_t<G>&);
 
 // Uniform API: Edge functions
 template <typename G>
-constexpr auto vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>&;
+constexpr auto vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>;
 template <typename G>
-constexpr auto vertex(G const& g, edge_t<G> const& uv) -> vertex_t<G> const&;
+constexpr auto vertex(G const& g, const_edge_t<G>& uv) -> const_vertex_iterator_t<G>;
 template <typename G>
 constexpr auto vertex_key(G const& g, const_edge_t<G>& uv) -> vertex_key_t<G>;
 
 template <typename G>
-constexpr auto vertex(G& g, edge_t<G>& uv, vertex_t<G> const& source) -> vertex_iterator_t<G>&;
+constexpr auto vertex(G& g, edge_t<G>& uv, const_vertex_t<G>& source) -> vertex_iterator_t<G>;
 template <typename G>
-constexpr auto vertex(G const& g, edge_t<G> const& uv, vertex_t<G> const& source) -> vertex_t<G> const&;
+constexpr auto vertex(G const& g, const_edge_t<G>& uv, const_vertex_t<G>& source) -> const_vertex_iterator_t<G>;
 template <typename G>
 constexpr auto vertex_key(G const& g, const_edge_t<G>& uv, const_vertex_t<G>& source) -> vertex_key_t<G>;
 template <typename G>
 constexpr auto vertex_key(G const& g, const_edge_t<G>& uv, vertex_key_t<G> source_key) -> vertex_key_t<G>;
 
+
 template <typename G>
-constexpr auto out_vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>&;
+constexpr auto out_vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>;
 template <typename G>
-constexpr auto out_vertex(G const& g, edge_t<G> const& uv) -> vertex_iterator_t<G> const&;
+constexpr auto out_vertex(G const& g, const_edge_t<G>& uv) -> const_vertex_iterator_t<G>;
 template <typename G>
 constexpr auto out_vertex_key(G const& g, const_edge_t<G>& uv) -> vertex_key_t<G>;
 
 template <typename G>
-constexpr auto in_vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>&;
+constexpr auto in_vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>;
 template <typename G>
-constexpr auto in_vertex(G const& g, edge_t<G> const& uv) -> vertex_iterator_t<G> const&;
+constexpr auto in_vertex(G const& g, const_edge_t<G>& uv) -> const_vertex_iterator_t<G>;
 template <typename G>
 constexpr auto in_vertex_key(G const& g, const_edge_t<G>& uv) -> vertex_key_t<G>;
 

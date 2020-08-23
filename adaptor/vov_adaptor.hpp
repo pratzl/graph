@@ -94,45 +94,18 @@ constexpr auto vertices_size(::vov<Attributes...> const& g) -> std::graph::verte
 }
 
 template <typename... Attributes>
-constexpr auto out_vertex(vov<Attributes...>& g, std::graph::edge_t<vov<Attributes...>>& uv)
-      -> std::graph::vertex_iterator_t<vov<Attributes...>> {
-  return g.begin() + static_cast<typename vov<Attributes...>::difference_type>(vertex_key(g, uv));
-}
-
-template <typename... Attributes>
-constexpr auto out_vertex(vov<Attributes...> const& g, std::graph::edge_t<vov<Attributes...>> const& uv)
-      -> std::graph::const_vertex_iterator_t<vov<Attributes...>> {
-  return g.begin() + vertex_key(g, uv);
-}
-
-template <typename... Attributes>
-constexpr auto out_vertex_key(::vov<Attributes...> const& g, std::graph::const_edge_t<::vov<Attributes...>> const& uv)
+constexpr auto out_vertex_key(::vov<Attributes...> const& g, std::graph::const_edge_t<::vov<Attributes...>>& uv)
       -> std::graph::vertex_key_t<::vov<Attributes...>> {
   return std::get<0>(uv);
 }
 
 template <typename... Attributes>
-constexpr auto vertex(vov<Attributes...>&                       g,
-                      std::graph::edge_t<vov<Attributes...>>&   uv,
-                      std::graph::vertex_t<vov<Attributes...>>& source)
-      -> std::graph::vertex_iterator_t<vov<Attributes...>> {
-  return out_vertex(g, uv);
-}
-
-template <typename... Attributes>
-constexpr auto vertex(vov<Attributes...> const&                       g,
-                      std::graph::edge_t<vov<Attributes...>> const&   uv,
-                      std::graph::vertex_t<vov<Attributes...>> const& source)
-      -> std::graph::const_vertex_iterator_t<vov<Attributes...>> {
-  return out_vertex(g, uv);
-}
-
-template <typename... Attributes>
 constexpr auto vertex_key(vov<Attributes...> const& g, std::graph::const_edge_t<vov<Attributes...>>& uv)
       -> std::graph::vertex_key_t<vov<Attributes...>> {
-  return out_vertex_key(g, uv);
-  //return std::get<0>(uv);
+  //return out_vertex_key(g, uv);
+  return std::get<0>(uv);
 }
+
 template <typename... Attributes>
 constexpr auto vertex_key(vov<Attributes...> const&                       g,
                           std::graph::const_edge_t<vov<Attributes...>>&   uv,
@@ -166,6 +139,46 @@ constexpr auto vertex_key(vov<Attributes...> const& g, std::graph::const_vertex_
   //static_assert(false, "This is compiled");
   //return 1;
 }*/
+
+template <typename... Attributes>
+constexpr auto out_vertex(vov<Attributes...>& g, std::graph::edge_t<vov<Attributes...>>& uv)
+      -> std::graph::vertex_iterator_t<vov<Attributes...>> {
+  return g.begin() + static_cast<typename vov<Attributes...>::difference_type>(vertex_key(g, uv));
+}
+
+template <typename... Attributes>
+constexpr auto out_vertex(vov<Attributes...> const& g, std::graph::const_edge_t<vov<Attributes...>>& uv)
+      -> std::graph::const_vertex_iterator_t<vov<Attributes...>> {
+  return g.begin() + vertex_key(g, uv);
+}
+
+template <typename... Attributes>
+constexpr auto vertex(vov<Attributes...>& g, std::graph::edge_t<vov<Attributes...>>& uv)
+      -> std::graph::vertex_iterator_t<vov<Attributes...>> {
+  return out_vertex(g, uv);
+}
+
+template <typename... Attributes>
+constexpr auto vertex(vov<Attributes...> const& g, std::graph::const_edge_t<vov<Attributes...>>& uv)
+      -> std::graph::const_vertex_iterator_t<vov<Attributes...>> {
+  return out_vertex(g, uv);
+}
+
+template <typename... Attributes>
+constexpr auto vertex(vov<Attributes...>&                             g,
+                      std::graph::edge_t<vov<Attributes...>>&         uv,
+                      std::graph::const_vertex_t<vov<Attributes...>>& source)
+      -> std::graph::vertex_iterator_t<vov<Attributes...>> {
+  return out_vertex(g, uv);
+}
+
+template <typename... Attributes>
+constexpr auto vertex(vov<Attributes...> const&                       g,
+                      std::graph::const_edge_t<vov<Attributes...>>&   uv,
+                      std::graph::const_vertex_t<vov<Attributes...>>& source)
+      -> std::graph::const_vertex_iterator_t<vov<Attributes...>> {
+  return out_vertex(g, uv);
+}
 
 
 template <typename... Attributes>

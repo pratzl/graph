@@ -91,6 +91,16 @@ Other Useful Tools
     - [ ] [paper] add example
   - [ ] shortest paths
     - [ ] Review template arguments
+- [ ] Iterators
+  - [ ] DFS
+    - [ ] validate const iterator
+  - [ ] BFS
+    - [ ] validate const iterator
+  - [ ] Topological Sort
+    - [ ] implement
+    - [ ] test
+    - [ ] [paper] update description with missing info
+    - [ ] [paper] add example
 - [ ] API
   - [ ] Common
     - [ ] Replace type...const& --> const_type&
