@@ -6,8 +6,8 @@
 #include <cassert>
 #include <range/v3/view/subrange.hpp>
 
-#ifndef COMPRESSED_ADJ_ARRAY_HPP
-#  define COMPRESSED_ADJ_ARRAY_HPP
+#ifndef DIRECTED_ADJ_ARRAY_HPP
+#  define DIRECTED_ADJ_ARRAY_HPP
 
 namespace std::graph {
 
@@ -176,13 +176,13 @@ public:
 
   void set_edge_begin(graph_type&, edge_iterator);
 
-  vertex_edge_iterator       edge_begin(graph_type&);
-  const_vertex_edge_iterator edge_begin(graph_type const&) const;
-  const_vertex_edge_iterator edge_cbegin(graph_type const&) const;
+  vertex_edge_iterator       edges_begin(graph_type&);
+  const_vertex_edge_iterator edges_begin(graph_type const&) const;
+  const_vertex_edge_iterator edges_cbegin(graph_type const&) const;
 
-  vertex_edge_iterator       edge_end(graph_type&);
-  const_vertex_edge_iterator edge_end(graph_type const&) const;
-  const_vertex_edge_iterator edge_cend(graph_type const&) const;
+  vertex_edge_iterator       edges_end(graph_type&);
+  const_vertex_edge_iterator edges_end(graph_type const&) const;
+  const_vertex_edge_iterator edges_cend(graph_type const&) const;
 
   edge_size_type edge_size(graph_type const&) const;
 
@@ -230,51 +230,57 @@ private:
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class daa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
-  using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
-  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
-  using graph_user_value_type = GV;
-  using allocator_type        = A;
+  using base_type                   = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
+  using graph_type                  = daa_graph<VV, EV, GV, IndexT, A>;
+  using const_graph_type            = const graph_type;
+  using graph_user_value_type       = GV;
+  using const_graph_user_value_type = const GV;
+  using allocator_type              = A;
 
-  using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
-  using const_vertex_type      = const vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
-  using vertex_iterator        = typename vertex_set::iterator;
-  using const_vertex_iterator  = typename vertex_set::const_iterator;
-  using vertex_size_type       = typename vertex_set::size_type;
-  using vertex_index           = IndexT;
-  using vertex_user_value_type = VV;
-  using vertex_key_type        = vertex_index;
-  using vertex_range           = decltype(::ranges::make_subrange(declval<vertex_set&>()));
-  using const_vertex_range     = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
+  using vertex_type                  = daa_vertex<VV, EV, GV, IndexT, A>;
+  using const_vertex_type            = const vertex_type;
+  using vertex_user_value_type       = VV;
+  using const_vertex_user_value_type = const VV;
+  using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
+  using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_index_type            = IndexT;
+  using vertex_key_type              = vertex_index_type;
+  using const_vertex_key_type        = const vertex_key_type;
+  using vertex_value_type            = vertex_type;
 
-  using edge_user_value_type = EV;
-  using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
-  using const_edge_type      = const edge_type;
-  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = vector<edge_type, edge_allocator_type>;
-  using edge_index           = IndexT;
-  using edge_iterator        = typename edge_set::iterator;
-  using const_edge_iterator  = typename edge_set::const_iterator;
-  using edge_size_type       = typename edge_set::size_type;
+  using vertex_iterator       = typename vertex_set::iterator;
+  using const_vertex_iterator = typename vertex_set::const_iterator;
+  using vertex_range          = decltype(::ranges::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
 
-  using edge_key_type   = pair<vertex_key_type, vertex_key_type>; // <from,to>
-  using edge_value_type = pair<edge_key_type, edge_user_value_type>;
+  using edge_type                  = daa_edge<VV, EV, GV, IndexT, A>;
+  using const_edge_type            = const edge_type;
+  using edge_user_value_type       = EV;
+  using const_edge_user_value_type = const EV;
+  using edge_allocator_type        = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_set                   = vector<edge_type, edge_allocator_type>;
+  using edge_size_type             = typename edge_set::size_type;
+  using edge_index_type            = IndexT;
+  using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_value_type            = pair<edge_key_type, edge_user_value_type>;
 
-  using edge_range       = decltype(::ranges::make_subrange(declval<edge_set&>()));
-  using const_edge_range = decltype(::ranges::make_subrange(declval<edge_set const&>()));
+  using edge_iterator       = typename edge_set::iterator;
+  using const_edge_iterator = typename edge_set::const_iterator;
+  using edge_range          = decltype(::ranges::make_subrange(declval<edge_set&>()));
+  using const_edge_range    = decltype(::ranges::make_subrange(declval<edge_set const&>()));
 
-  using vertex_out_edge_range          = edge_range;
-  using const_vertex_out_edge_range    = const_edge_range;
+  using vertex_out_edge_size_type      = typename edge_set::size_type;
   using vertex_out_edge_iterator       = typename edge_range::iterator;
   using const_vertex_out_edge_iterator = typename const_edge_range::iterator;
-  using vertex_out_edge_size_type      = typename edge_set::size_type;
+  using vertex_out_edge_range          = edge_range;
+  using const_vertex_out_edge_range    = const_edge_range;
 
-  using vertex_edge_range          = edge_range;
-  using const_vertex_edge_range    = const_edge_range;
+  using vertex_edge_size_type      = vertex_out_edge_size_type;
   using vertex_edge_iterator       = vertex_out_edge_iterator;
   using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
-  using vertex_edge_size_type      = vertex_out_edge_size_type;
+  using vertex_edge_range          = edge_range;
+  using const_vertex_edge_range    = const_edge_range;
 
 public:
   daa_graph() noexcept(noexcept(allocator_type())) = default;
@@ -405,8 +411,8 @@ public:
   constexpr edge_set&       edges();
   constexpr edge_set const& edges() const;
 
-  vertex_iterator       find_vertex(vertex_key_type const&);
-  const_vertex_iterator find_vertex(vertex_key_type const&) const;
+  vertex_iterator       find_vertex(const_vertex_key_type);
+  const_vertex_iterator find_vertex(const_vertex_key_type) const;
 
 protected:
   void reserve_vertices(vertex_size_type);
@@ -444,8 +450,63 @@ private:
 };
 
 
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
+  using graph_type                  = daa_graph<VV, EV, GV, IndexT, A>;
+  using const_graph_type            = const graph_type;
+  using graph_user_value_type       = GV;
+  using const_graph_user_value_type = const GV;
+  using allocator_type              = A;
+
+  using vertex_type                  = daa_vertex<VV, EV, GV, IndexT, A>;
+  using const_vertex_type            = const vertex_type;
+  using vertex_user_value_type       = VV;
+  using const_vertex_user_value_type = const VV;
+  using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
+  using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_index_type            = IndexT;
+  using vertex_key_type              = vertex_index_type;
+  using const_vertex_key_type        = const vertex_key_type;
+  using vertex_value_type            = vertex_type;
+
+  using vertex_iterator       = typename vertex_set::iterator;
+  using const_vertex_iterator = typename vertex_set::const_iterator;
+  using vertex_range          = decltype(::ranges::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
+
+  using edge_type                  = daa_edge<VV, EV, GV, IndexT, A>;
+  using const_edge_type            = const edge_type;
+  using edge_user_value_type       = EV;
+  using const_edge_user_value_type = const EV;
+  using edge_allocator_type        = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_set                   = vector<edge_type, edge_allocator_type>;
+  using edge_size_type             = typename edge_set::size_type;
+  using edge_index_type            = IndexT;
+  using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_value_type            = pair<edge_key_type, edge_user_value_type>;
+
+  using edge_iterator       = typename edge_set::iterator;
+  using const_edge_iterator = typename edge_set::const_iterator;
+  using edge_range          = decltype(::ranges::make_subrange(declval<edge_set&>()));
+  using const_edge_range    = decltype(::ranges::make_subrange(declval<edge_set const&>()));
+
+  using vertex_out_edge_size_type      = typename edge_set::size_type;
+  using vertex_out_edge_iterator       = typename edge_range::iterator;
+  using const_vertex_out_edge_iterator = typename const_edge_range::iterator;
+  using vertex_out_edge_range          = edge_range;
+  using const_vertex_out_edge_range    = const_edge_range;
+
+  using vertex_edge_size_type      = vertex_out_edge_size_type;
+  using vertex_edge_iterator       = vertex_out_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
+  using vertex_edge_range          = edge_range;
+  using const_vertex_edge_range    = const_edge_range;
+};
+
+
 } // namespace std::graph
 
-#endif // COMPRESSED_ADJ_ARRAY_HPP
+#endif // DIRECTED_ADJ_ARRAY_HPP
 
 #include "detail/directed_adjacency_array_impl.hpp"

@@ -10,6 +10,9 @@ add_library(graph INTERFACE)
 target_include_directories(graph INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 target_link_libraries(graph INTERFACE CONAN_PKG::range-v3)
 
+add_library(graph_adaptor INTERFACE)
+target_include_directories(graph_adaptor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/adaptor/")
+
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_20)
