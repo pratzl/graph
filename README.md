@@ -102,16 +102,16 @@ Other Useful Tools
     - [ ] [paper] update description with missing info
     - [ ] [paper] add example
 - [ ] API
-  - [ ] Common
-    - [ ] Replace type...const& --> const_type&
+  - [x] Common
+    - [x] Replace type...const& --> const_type&
   - [ ] Uniform API
-    - [ ] vertex_begin/end --> vertices_begin/end
-    - [ ] edge_begin/end --> edges_begin/end? replace begin/end(g,u)?
-    - [ ] add vertices(g,u) -> vertex_range
-  - [x] Outgoing API
-    - [ ] add out_vertices(g,u) -> vertex_range
-  - [x] Incoming API
-    - [ ] add in_vertices(g,u) -> vertex_range
+    - [x] vertices_begin/end --> vertices_begin/end
+    - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
+    - [ ] add vertices(g,u) -> vertex_range_t<G>
+  - [ ] Outgoing API
+    - [ ] add out_vertices(g,u) -> vertex_range_t<G>
+  - [ ] Incoming API
+    - [ ] add in_vertices(g,u) -> vertex_range_t<G>
 - [ ] Data structures
   - [ ] directed adjacency array
     - [x] implement with vector

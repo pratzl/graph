@@ -176,13 +176,13 @@ public:
 
   void set_edge_begin(graph_type&, edge_iterator);
 
-  vertex_edge_iterator       edge_begin(graph_type&);
-  const_vertex_edge_iterator edge_begin(graph_type const&) const;
-  const_vertex_edge_iterator edge_cbegin(graph_type const&) const;
+  vertex_edge_iterator       edges_begin(graph_type&);
+  const_vertex_edge_iterator edges_begin(graph_type const&) const;
+  const_vertex_edge_iterator edges_cbegin(graph_type const&) const;
 
-  vertex_edge_iterator       edge_end(graph_type&);
-  const_vertex_edge_iterator edge_end(graph_type const&) const;
-  const_vertex_edge_iterator edge_cend(graph_type const&) const;
+  vertex_edge_iterator       edges_end(graph_type&);
+  const_vertex_edge_iterator edges_end(graph_type const&) const;
+  const_vertex_edge_iterator edges_cend(graph_type const&) const;
 
   edge_size_type edge_size(graph_type const&) const;
 

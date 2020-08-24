@@ -81,7 +81,7 @@ class bfs_vertex_range
 public:
   bfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
-    if (seed != vertex_end(graph_)) {
+    if (seed != vertices_end(graph_)) {
       queue_.push(queue_elem{seed, 1});
       visited_[vertex_key(graph_, *seed)] = grey;
     }
@@ -98,7 +98,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{vertex_end(bfs.graph_)} {
+    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{vertices_end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -202,12 +202,12 @@ protected:
         queue_.pop();
       }
     }
-    return queue_elem{vertex_end(graph_), 0};
+    return queue_elem{vertices_end(graph_), 0};
   }
 
   void push_neighbors(vertex_iterator_t<G> u, size_t depth) {
-    vertex_edge_iterator_t<G> uv_end = edge_end(graph_, *u);
-    for (vertex_edge_iterator_t<G> uv = edge_begin(graph_, *u); uv != uv_end; ++uv) {
+    vertex_edge_iterator_t<G> uv_end = edges_end(graph_, *u);
+    for (vertex_edge_iterator_t<G> uv = edges_begin(graph_, *u); uv != uv_end; ++uv) {
       vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
       vertex_key_t<G>      v_key = vertex_key(graph_, *v);
       if (visited_[v_key] == white) {
@@ -255,8 +255,8 @@ class bfs_edge_range
 public:
   bfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
-    if (seed != vertex_end(graph_)) {
-      push_neighbors(vertex_end(graph_), seed, 1);
+    if (seed != vertices_end(graph_)) {
+      push_neighbors(vertices_end(graph_), seed, 1);
     }
   }
 
@@ -279,7 +279,7 @@ public:
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
     const_iterator(bfs_edge_range& bfs, bool end_iter = false)
-          : bfs_(&bfs), elem_{vertex_end(bfs.graph_), vertex_edge_iterator_t<G>()} {
+          : bfs_(&bfs), elem_{vertices_end(bfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -377,7 +377,7 @@ public:
 
 protected:
   bool out_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return uv != edge_end(graph_, *u);
+    return uv != edges_end(graph_, *u);
   }
 
   bool is_out_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
@@ -400,8 +400,8 @@ protected:
   }
 
   void push_neighbors(vertex_iterator_t<G> u, vertex_iterator_t<G> v, size_t depth) {
-    vertex_edge_iterator_t<G> vw     = edge_begin(graph_, *v);
-    vertex_edge_iterator_t<G> vw_end = edge_end(graph_, *v);
+    vertex_edge_iterator_t<G> vw     = edges_begin(graph_, *v);
+    vertex_edge_iterator_t<G> vw_end = edges_end(graph_, *v);
     if (vw == vw_end || (edges_size(graph_, *v) == 1 && vertex(graph_, *vw, *v) == u)) {
       queue_.push({v, vw_end, depth});
     } else {
@@ -436,7 +436,7 @@ protected:
           push_neighbors(u, v, d + 1);
         }
 
-        vertex_edge_iterator_t<G> uv_last = --edge_end(graph_, *u);
+        vertex_edge_iterator_t<G> uv_last = --edges_end(graph_, *u);
         if (uv == uv_last) // last edge of u?
           visit(u, black);
 
@@ -444,7 +444,7 @@ protected:
       }
     }
 
-    return queue_elem{vertex_end(graph_), vertex_edge_iterator_t<G>(), 0};
+    return queue_elem{vertices_end(graph_), vertex_edge_iterator_t<G>(), 0};
   }
 
 private:

@@ -187,28 +187,28 @@ constexpr auto cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<
 
 
 template <typename... Attributes>
-constexpr auto vertex_begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
+constexpr auto vertices_begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
   return g.begin();
 }
 template <typename... Attributes>
-constexpr auto vertex_begin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+constexpr auto vertices_begin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
   return g.begin();
 }
 template <typename... Attributes>
-constexpr auto vertex_cbegin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+constexpr auto vertices_cbegin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
   return g.cbegin();
 }
 
 template <typename... Attributes>
-constexpr auto vertex_end(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
+constexpr auto vertices_end(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
   return g.end();
 }
 template <typename... Attributes>
-constexpr auto vertex_end(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+constexpr auto vertices_end(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
   return g.end();
 }
 template <typename... Attributes>
-constexpr auto vertex_cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+constexpr auto vertices_cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
   return g.end();
 }
 
@@ -331,33 +331,33 @@ constexpr auto cend(vov<Attributes...> const& g, const_vertex_t<vov<Attributes..
 
 
 template <typename... Attributes>
-constexpr auto edge_begin(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_begin(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
       -> vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto edge_begin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_begin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
 template <typename... Attributes>
-constexpr auto edge_cbegin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_cbegin(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.begin();
 }
 
 template <typename... Attributes>
-constexpr auto edge_end(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_end(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u)
       -> vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto edge_end(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_end(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }
 template <typename... Attributes>
-constexpr auto edge_cend(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_cend(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> const_vertex_edge_iterator_t<vov<Attributes...>> {
   return u.end();
 }

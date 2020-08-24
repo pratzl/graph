@@ -443,13 +443,13 @@ public:
   vertex_edge_iterator erase_edge(graph_type&, vertex_edge_iterator, vertex_edge_iterator);
   void                 clear_edges(graph_type&);
 
-  vertex_edge_iterator       edge_begin(graph_type&) noexcept;
-  const_vertex_edge_iterator edge_begin(graph_type const&) const noexcept;
-  const_vertex_edge_iterator edge_cbegin(graph_type const&) const noexcept;
+  vertex_edge_iterator       edges_begin(graph_type&) noexcept;
+  const_vertex_edge_iterator edges_begin(graph_type const&) const noexcept;
+  const_vertex_edge_iterator edges_cbegin(graph_type const&) const noexcept;
 
-  vertex_edge_iterator       edge_end(graph_type&) noexcept;
-  const_vertex_edge_iterator edge_end(graph_type const&) const noexcept;
-  const_vertex_edge_iterator edge_cend(graph_type const&) const noexcept;
+  vertex_edge_iterator       edges_end(graph_type&) noexcept;
+  const_vertex_edge_iterator edges_end(graph_type const&) const noexcept;
+  const_vertex_edge_iterator edges_cend(graph_type const&) const noexcept;
 
   edge_type&       edge_front(graph_type&) noexcept;
   edge_type const& edge_front(graph_type const&) const noexcept;
@@ -571,7 +571,7 @@ public:
   protected:
     void advance_edge() {
       // next edge for current vertex
-      if (++uv_ != u_->edge_end(*g_))
+      if (++uv_ != u_->edges_end(*g_))
         return;
 
       // find next vertex with edge(s)
@@ -583,7 +583,7 @@ public:
       // at exit, if u_ != g.vertices().end() then uv_ will refer to a valid edge
       for (; u_ != g_->vertices().end(); ++u_) {
         if (u_->edge_size() > 0) {
-          uv_ = u_->edge_begin(*g_);
+          uv_ = u_->edges_begin(*g_);
           return;
         }
       }
@@ -756,24 +756,24 @@ public:
 
   constexpr edge_size_type edges_size() const noexcept;
 
-  constexpr edge_iterator       edge_begin() { return edge_iterator(*this, begin()); }
-  constexpr const_edge_iterator edge_begin() const {
+  constexpr edge_iterator       edges_begin() { return edge_iterator(*this, begin()); }
+  constexpr const_edge_iterator edges_begin() const {
     return const_edge_iterator(*this, const_cast<graph_type&>(*this).begin());
   }
-  constexpr const_edge_iterator edge_cbegin() const {
+  constexpr const_edge_iterator edges_cbegin() const {
     return const_edge_iterator(*this, const_cast<graph_type&>(*this).cbegin());
   }
 
-  constexpr edge_iterator       edge_end() { return edge_iterator(*this, end()); }
-  constexpr const_edge_iterator edge_end() const {
+  constexpr edge_iterator       edges_end() { return edge_iterator(*this, end()); }
+  constexpr const_edge_iterator edges_end() const {
     return const_edge_iterator(*this, const_cast<graph_type&>(*this).end());
   }
-  constexpr const_edge_iterator edge_cend() const {
+  constexpr const_edge_iterator edges_cend() const {
     return const_edge_iterator(*this, const_cast<graph_type&>(*this).end());
   }
 
-  edge_range       edges() { return ::ranges::make_subrange(edge_begin(), edge_end()); }
-  const_edge_range edges() const { return ::ranges::make_subrange(edge_begin(), edge_end()); }
+  edge_range       edges() { return ::ranges::make_subrange(edges_begin(), edges_end()); }
+  const_edge_range edges() const { return ::ranges::make_subrange(edges_begin(), edges_end()); }
 
 protected:
   void reserve_vertices(vertex_size_type);
