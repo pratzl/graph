@@ -244,6 +244,7 @@ public:
   using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
   using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_ssize_type            = make_signed_t<vertex_size_type>;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
   using const_vertex_key_type        = const vertex_key_type;
@@ -261,6 +262,7 @@ public:
   using edge_allocator_type        = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set                   = vector<edge_type, edge_allocator_type>;
   using edge_size_type             = typename edge_set::size_type;
+  using edge_ssize_type            = make_signed<edge_size_type>;
   using edge_index_type            = IndexT;
   using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type            = pair<edge_key_type, edge_user_value_type>;
@@ -464,7 +466,8 @@ struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
   using const_vertex_user_value_type = const VV;
   using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
-  using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_size_type             = typename graph_type::vertex_size_type;
+  using vertex_ssize_type            = typename graph_type::vertex_ssize_type;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
   using const_vertex_key_type        = const vertex_key_type;
@@ -482,6 +485,7 @@ struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
   using edge_allocator_type        = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set                   = vector<edge_type, edge_allocator_type>;
   using edge_size_type             = typename edge_set::size_type;
+  using edge_ssize_type            = typename graph_type::edge_ssize_type;
   using edge_index_type            = IndexT;
   using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type            = pair<edge_key_type, edge_user_value_type>;

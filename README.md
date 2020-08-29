@@ -104,6 +104,9 @@ Other Useful Tools
 - [ ] API
   - [x] Common
     - [x] Replace type...const& --> const_type&
+    - [x] Add ssize defs & implementations for vertices, edge, out_edges & in_edges
+    - [ ] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
+    - [ ] Remove degree functions (alias of size not needed)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -115,7 +118,6 @@ Other Useful Tools
 - [ ] Data structures
   - [ ] directed adjacency array
     - [x] implement with vector
-    - [ ] extend to support constexpr array
     - [ ] implement with deque?
     - [ ] implement with map? (non-integer index)
     - [ ] use common data structure for directed graph?
@@ -125,26 +127,37 @@ Other Useful Tools
     - [ ] extend to support constexpr array
     - [ ] implement with deque?
     - [ ] implement with map? (non-integer index)
+  - [ ] support constexpr data structures
 - [ ] C++20
   - [ ] review use of sentinal
-  - [ ] operato!= not needed when operator== defined? (part of spaceship operator)
-  - [ ] define graph module (C++20)
+  - [ ] define graph module
   - [x] use spaceship operator (n/a b/c <, >, <=, >= isn't needed)
+  - [ ] operator!= not needed when operator== defined? (part of spaceship operator)
   - [ ] investigate use of coroutines (stack space limits?)
 - [ ] Unit Tests
   - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
 - [ ] Other libraries
   - [ ] bgl17
-    - [ ] [in process] Add simple adaptor to show dfs_vertex_range iteratation with bgl17 vov graph
-    - [ ] Add simple adaptor for compressed graph
-    - [ ] Move adaptor code to ./adaptor
+    - [x] vov graph
+      - [x] Create adaptor
+      - [x] Add dfs_vertex_range test
+      - [ ] Add dfs_edge_range test
+      - [ ] Add bfs_vertex_range test
+      - [ ] Add bfs_edge_range test
+    - [ ] compressed graph
+      - [ ] Create adaptor
+      - [ ] Add dfs_vertex_range test
+      - [ ] Add dfs_edge_range test
+      - [ ] Add bfs_vertex_range test
+      - [ ] Add bfs_edge_range test
+    - [ ] [paper] comparison?
   - [ ] boost
     - [ ] [paper] comparison
   - [ ] lemon
     - [ ] [paper] comparison
 - [ ] Compiler/build support
   - [ ] Build with clang in linux
-    - [ ] Use range-v3 macros for platform-specific concept support
+    - [ ] Use range-v3 headers/macros for concept support
   - [ ] use Catch2 hierarchy feature for unit tests
   - [ ] github failing action(s) on push
   - [ ] validate doxygen output

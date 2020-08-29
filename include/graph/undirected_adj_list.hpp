@@ -5,6 +5,7 @@
 #include <vector>
 #include <range/v3/view/subrange.hpp>
 #include <cassert>
+#include <type_traits>
 
 #ifndef UNDIRECTED_ADJ_LIST_HPP
 #  define UNDIRECTED_ADJ_LIST_HPP
@@ -501,6 +502,7 @@ public:
   using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
   using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_ssize_type            = make_signed_t<vertex_size_type>;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
   using const_vertex_key_type        = const vertex_key_type;
@@ -519,6 +521,7 @@ public:
   using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type            = pair<edge_key_type, edge_user_value_type>;
   using edge_size_type             = size_t;
+  using edge_ssize_type            = ptrdiff_t;
   // edge_set, edge_index_type n/a
 
   using vertex_edge_size_type      = typename vertex_type::vertex_edge_size_type;
@@ -834,7 +837,8 @@ struct graph_traits<ual_graph<VV, EV, GV, IndexT, A>> {
   using const_vertex_user_value_type = const VV;
   using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
-  using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_size_type             = typename graph_type::vertex_size_type;
+  using vertex_ssize_type            = typename graph_type::vertex_ssize_type;
   using vertex_index_type            = IndexT;
   using vertex_key_type              = vertex_index_type;
   using const_vertex_key_type        = const vertex_key_type;
@@ -852,7 +856,8 @@ struct graph_traits<ual_graph<VV, EV, GV, IndexT, A>> {
   using edge_allocator_type        = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type            = pair<edge_key_type, edge_user_value_type>;
-  using edge_size_type             = size_t;
+  using edge_size_type             = typename graph_type::edge_size_type;
+  using edge_ssize_type            = typename graph_type::edge_ssize_type;
   // edge_set, edge_index_type n/a
 
   using vertex_edge_size_type      = typename vertex_type::vertex_edge_size_type;
