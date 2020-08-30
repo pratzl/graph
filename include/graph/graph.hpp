@@ -289,7 +289,6 @@ constexpr auto vertices_end(G const& g) -> const_vertex_iterator_t<G>;
 template <typename G>
 constexpr auto vertices_cend(G const& g) -> const_vertex_iterator_t<G>;
 
-
 template <typename G>
 constexpr auto find_vertex(G& g, const_vertex_key_t<G>) -> vertex_iterator_t<G>;
 template <typename G>
@@ -321,7 +320,6 @@ template <typename G>
 constexpr auto edges_end(G const& g) -> const_edge_iterator_t<G>;
 template <typename G>
 constexpr auto edges_cend(G const& g) -> const_edge_iterator_t<G>;
-
 
 template <typename G>
 constexpr auto edges_size(G const& g) -> edge_size_t<G>;
