@@ -105,8 +105,8 @@ Other Useful Tools
   - [x] Common
     - [x] Replace type...const& --> const_type&
     - [x] Add ssize defs & implementations for vertices, edge, out_edges & in_edges
-    - [ ] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
-    - [ ] Remove degree functions (alias of size not needed)
+    - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
+    - [x] Remove degree functions (alias of size not needed)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?

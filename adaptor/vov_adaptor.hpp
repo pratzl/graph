@@ -440,11 +440,6 @@ constexpr auto out_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attribu
       -> vertex_out_edge_ssize_t<vov<Attributes...>> {
   return static_cast<vertex_out_edge_ssize_t<vov<Attributes...>>>(u.size());
 }
-template <typename... Attributes>
-constexpr auto out_degree(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
-      -> vertex_out_edge_size_t<vov<Attributes...>> {
-  return u.size();
-}
 
 template <typename... Attributes>
 constexpr auto find_out_edge(vov<Attributes...>& g, vertex_t<vov<Attributes...>>& u, vertex_t<vov<Attributes...>>& v)

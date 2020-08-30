@@ -1012,13 +1012,6 @@ constexpr auto edges_ssize(ual_graph<VV, EV, GV, IndexT, A> const&           g,
   return static_cast<ssize_t>(u.edge_size());
 }
 
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_degree(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                            const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_size();
-}
-
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex(ual_graph<VV, EV, GV, IndexT, A>&                    g,

@@ -411,9 +411,6 @@ template <typename G>
 constexpr auto edges_ssize(G const& g, const_vertex_t<G>& u) -> vertex_edge_ssize_t<G>;
 
 template <typename G>
-constexpr auto edges_degree(G const& g, const_vertex_t<G>& u) -> vertex_edge_size_t<G>;
-
-template <typename G>
 constexpr auto find_vertex_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_edge_iterator_t<G>;
 template <typename G>
 constexpr auto find_vertex_edge(G const& g, const_vertex_t<G>& u, const_vertex_t<G>& v)
@@ -519,8 +516,6 @@ template <typename G>
 constexpr auto out_size(G const& g, const_vertex_t<G>& u) -> vertex_out_edge_size_t<G>;
 template <typename G>
 constexpr auto out_ssize(G const& g, const_vertex_t<G>& u) -> vertex_out_edge_ssize_t<G>;
-template <typename G>
-constexpr auto out_degree(G const& g, const_vertex_t<G>& u) -> vertex_out_edge_size_t<G>;
 
 template <typename G>
 constexpr auto find_out_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_out_edge_iterator_t<G>;
@@ -600,8 +595,6 @@ template <typename G>
 constexpr auto in_size(G& g, vertex_t<G>& u) -> vertex_in_edge_size_t<G>;
 template <typename G>
 constexpr auto in_ssize(G& g, vertex_t<G>& u) -> vertex_in_edge_ssize_t<G>;
-template <typename G>
-constexpr auto in_degree(G& g, vertex_t<G>& u) -> vertex_in_edge_size_t<G>;
 
 template <typename G>
 constexpr auto find_in_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_in_edge_iterator_t<G>;
