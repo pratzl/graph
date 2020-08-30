@@ -72,6 +72,44 @@ struct std::graph::graph_traits<vov<Attributes...>> {
 // above. However, I encountered compile errors when doing that and this works as expected.
 namespace std::graph {
 
+
+template <typename... Attributes>
+constexpr auto size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
+  return vertices_size(g);
+}
+
+template <typename... Attributes>
+constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_ssize_t<vov<Attributes...>> {
+  return vertices_ssize(g);
+}
+
+template <typename... Attributes>
+constexpr auto begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
+  return g.begin();
+}
+template <typename... Attributes>
+constexpr auto begin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.begin();
+}
+template <typename... Attributes>
+constexpr auto cbegin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.cbegin();
+}
+
+template <typename... Attributes>
+constexpr auto end(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
+  return g.end();
+}
+template <typename... Attributes>
+constexpr auto end(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.end();
+}
+template <typename... Attributes>
+constexpr auto cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.end();
+}
+
+
 // Uniform API: Common functions (accepts graph, vertex and edge)
 template <typename... Attributes>
 constexpr auto value(edge_t<vov<Attributes...>>& uv) -> edge_value_t<vov<Attributes...>>& {
@@ -166,33 +204,6 @@ constexpr auto vertex(vov<Attributes...> const&           g,
                       const_edge_t<vov<Attributes...>>&   uv,
                       const_vertex_t<vov<Attributes...>>& source) -> const_vertex_iterator_t<vov<Attributes...>> {
   return out_vertex(g, uv);
-}
-
-
-template <typename... Attributes>
-constexpr auto begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
-  return g.begin();
-}
-template <typename... Attributes>
-constexpr auto begin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.begin();
-}
-template <typename... Attributes>
-constexpr auto cbegin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.cbegin();
-}
-
-template <typename... Attributes>
-constexpr auto end(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
-  return g.end();
-}
-template <typename... Attributes>
-constexpr auto end(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.end();
-}
-template <typename... Attributes>
-constexpr auto cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.end();
 }
 
 

@@ -59,6 +59,31 @@ template <typename VV     = empty_value,
 using directed_adjacency_array = daa_graph<VV, EV, GV, IndexT, A>;
 
 
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto size(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>>;
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto ssize(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<daa_graph<VV, EV, GV, IndexT, A>>;
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+
+
 ///-------------------------------------------------------------------------------------
 /// daa_edge
 ///
@@ -273,7 +298,7 @@ public:
   using const_edge_range    = decltype(::ranges::make_subrange(declval<edge_set const&>()));
 
   using vertex_out_edge_size_type      = typename edge_set::size_type;
-  using vertex_out_edge_ssize_type     = typename make_signed_t<vertex_out_edge_size_type>;
+  using vertex_out_edge_ssize_type     = make_signed_t<vertex_out_edge_size_type>;
   using vertex_out_edge_iterator       = typename edge_range::iterator;
   using const_vertex_out_edge_iterator = typename const_edge_range::iterator;
   using vertex_out_edge_range          = edge_range;

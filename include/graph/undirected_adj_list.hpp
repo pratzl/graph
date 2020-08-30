@@ -56,6 +56,31 @@ template <typename VV     = empty_value,
           typename A      = allocator<char>>
 using undirected_adjacency_list = ual_graph<VV, EV, GV, IndexT, A>;
 
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto size(ual_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>>;
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto ssize(ual_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>;
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>;
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>;
+
 ///-------------------------------------------------------------------------------------
 struct in_list;
 struct out_list;

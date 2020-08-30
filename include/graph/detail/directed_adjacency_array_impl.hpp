@@ -903,6 +903,16 @@ constexpr auto vertices_ssize(daa_graph<VV, EV, GV, IndexT, A> const& g)
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto size(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return vertices_size(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto ssize(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return vertices_ssize(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.vertices().begin();
 }
