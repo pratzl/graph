@@ -424,7 +424,6 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
     std::graph::vertex_edge_iterator_t<Graph>       uvi_end1 = std::graph::end(g, u);
     std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = std::graph::end(g, uc);
     std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = std::graph::cend(g, u);
-    EXPECT_EQ(std::graph::edges_size(g, u), std::graph::edges_degree(g, u));
     //EXPECT_EQ(std::graph::edges_size(g, u), uvr.size()); // forward-only range; size n/a
   }
 
@@ -437,7 +436,6 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
     std::graph::vertex_out_edge_iterator_t<Graph>       uvi_end1 = std::graph::out_end(g, u);
     std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end2 = std::graph::out_end(g, uc);
     std::graph::const_vertex_out_edge_iterator_t<Graph> uvi_end3 = std::graph::out_cend(g, u);
-    EXPECT_EQ(std::graph::out_size(g, u), std::graph::out_degree(g, u));
     EXPECT_EQ(std::graph::out_size(g, u), uvr.size());
   }*/
 }

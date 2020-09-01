@@ -570,12 +570,11 @@ constexpr auto out_size(daa_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_
       -> vertex_out_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_size(g);
 }
-
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_degree(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                          const_vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_out_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return out_size(g, u);
+constexpr auto out_ssize(daa_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_out_edge_ssize_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  using ssize_t = vertex_out_edge_ssize_t<daa_graph<VV, EV, GV, IndexT, A>>;
+  return static_cast<ssize_t>(u.edge_size(g));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -665,12 +664,11 @@ constexpr auto edges_size(daa_graph<VV, EV, GV, IndexT, A> const&           g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_degree(daa_graph<VV, EV, GV, IndexT, A> const&           g,
-                            const_vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return static_cast<vertex_edge_size_t<daa_graph<VV, EV, GV, IndexT, A>>>(u.edges_end(g) - u.edges_begin(g));
+constexpr auto edges_ssize(daa_graph<VV, EV, GV, IndexT, A> const&           g,
+                           const_vertex_t<daa_graph<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_ssize_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return static_cast<vertex_edge_ssize_t<daa_graph<VV, EV, GV, IndexT, A>>>(u.edges_end(g) - u.edges_begin(g));
 }
-
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto find_vertex(daa_graph<VV, EV, GV, IndexT, A>&                    g,
@@ -862,24 +860,16 @@ constexpr auto find_edge(daa_graph<VV, EV, GV, IndexT, A> const&               g
 
 
 //
-// API graph functions
+// API: common container functions
 //
-
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return ::ranges::make_subrange(g.vertices());
+constexpr auto size(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return vertices_size(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return ::ranges::make_subrange(g.vertices());
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_size(daa_graph<VV, EV, GV, IndexT, A> const& g)
-      -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().size();
+constexpr auto ssize(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return vertices_ssize(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -912,6 +902,34 @@ constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
   return g.vertices().cend();
 }
 
+
+//
+// API graph functions
+//
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return ::ranges::make_subrange(g.vertices());
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertices(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_range_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return ::ranges::make_subrange(g.vertices());
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertices_size(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().size();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertices_ssize(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_ssize_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  using ssize_t = vertex_ssize_t<daa_graph<VV, EV, GV, IndexT, A>>;
+  return static_cast<ssize_t>(g.vertices().size());
+}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertices_begin(daa_graph<VV, EV, GV, IndexT, A>& g)
@@ -1007,6 +1025,12 @@ constexpr auto edges_cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(daa_graph<VV, EV, GV, IndexT, A> const& g) -> edge_size_t<daa_graph<VV, EV, GV, IndexT, A>> {
   return g.edges().size();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edges_ssize(daa_graph<VV, EV, GV, IndexT, A> const& g)
+      -> edge_ssize_t<daa_graph<VV, EV, GV, IndexT, A>> {
+  using ssize_t = edge_ssize_t<daa_graph<VV, EV, GV, IndexT, A>>;
+  return static_cast<ssize_t>(g.edges().size());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>

@@ -28,6 +28,7 @@ struct std::graph::graph_traits<vov<Attributes...>> {
   using vertex_user_value_type       = std::graph::empty_value;
   using const_vertex_user_value_type = const vertex_user_value_type;
   using vertex_size_type             = typename vertex_set::size_type;
+  using vertex_ssize_type            = make_signed_t<vertex_size_type>;
   using vertex_index_type            = vertex_size_type;
   using vertex_key_type              = vertex_size_type;
   using const_vertex_key_type        = const vertex_key_type;
@@ -41,13 +42,15 @@ struct std::graph::graph_traits<vov<Attributes...>> {
   using vertex_out_edge_set = typename graph_type::inner_container;
   using edge_type           = typename vertex_out_edge_set::value_type;
   using const_edge_type     = const edge_type;
+  using edge_size_type      = size_t;
+  using edge_ssize_type     = ptrdiff_t;
 
   using edge_value_type            = edge_type;
   using const_edge_value_type      = const edge_type;
   using edge_user_value_type       = std::tuple<Attributes...>;
   using const_edge_user_value_type = const edge_user_value_type;
   using vertex_out_edge_size_type  = typename vertex_out_edge_set::size_type;
-  using edge_size_type             = size_t;
+  using vertex_out_edge_ssize_type = make_signed_t<vertex_out_edge_size_type>;
 
   using vertex_out_edge_iterator       = typename vertex_out_edge_set::iterator;
   using const_vertex_out_edge_iterator = typename vertex_out_edge_set::const_iterator;
@@ -56,6 +59,7 @@ struct std::graph::graph_traits<vov<Attributes...>> {
 
   // type aliases for Uniform API
   using vertex_edge_size_type      = vertex_out_edge_size_type;
+  using vertex_edge_ssize_type     = vertex_out_edge_ssize_type;
   using vertex_edge_iterator       = vertex_out_edge_iterator;
   using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
   using vertex_edge_range          = vertex_out_edge_range;
@@ -67,6 +71,44 @@ struct std::graph::graph_traits<vov<Attributes...>> {
 // putting everyting in the namespace as shown, similar to what is done with the graph_traits
 // above. However, I encountered compile errors when doing that and this works as expected.
 namespace std::graph {
+
+
+template <typename... Attributes>
+constexpr auto size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
+  return vertices_size(g);
+}
+
+template <typename... Attributes>
+constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_ssize_t<vov<Attributes...>> {
+  return vertices_ssize(g);
+}
+
+template <typename... Attributes>
+constexpr auto begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
+  return g.begin();
+}
+template <typename... Attributes>
+constexpr auto begin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.begin();
+}
+template <typename... Attributes>
+constexpr auto cbegin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.cbegin();
+}
+
+template <typename... Attributes>
+constexpr auto end(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
+  return g.end();
+}
+template <typename... Attributes>
+constexpr auto end(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.end();
+}
+template <typename... Attributes>
+constexpr auto cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
+  return g.end();
+}
+
 
 // Uniform API: Common functions (accepts graph, vertex and edge)
 template <typename... Attributes>
@@ -86,6 +128,12 @@ constexpr auto vertices(vov<Attributes...> const& g) -> const_vertex_range_t<vov
 template <typename... Attributes>
 constexpr auto vertices_size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
   return g.size();
+}
+
+template <typename... Attributes>
+constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
+  using ssize_t = vertex_ssize_t<vov<Attributes...>>;
+  return static_cast<ssize_t>(g.size());
 }
 
 template <typename... Attributes>
@@ -160,33 +208,6 @@ constexpr auto vertex(vov<Attributes...> const&           g,
 
 
 template <typename... Attributes>
-constexpr auto begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
-  return g.begin();
-}
-template <typename... Attributes>
-constexpr auto begin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.begin();
-}
-template <typename... Attributes>
-constexpr auto cbegin(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.cbegin();
-}
-
-template <typename... Attributes>
-constexpr auto end(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
-  return g.end();
-}
-template <typename... Attributes>
-constexpr auto end(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.end();
-}
-template <typename... Attributes>
-constexpr auto cend(vov<Attributes...> const& g) -> const_vertex_iterator_t<vov<Attributes...>> {
-  return g.end();
-}
-
-
-template <typename... Attributes>
 constexpr auto vertices_begin(vov<Attributes...>& g) -> vertex_iterator_t<vov<Attributes...>> {
   return g.begin();
 }
@@ -253,11 +274,25 @@ constexpr auto edges_size(vov<Attributes...> const& g) -> edge_size_t<vov<Attrib
       ++n;
   return n;
 }
+template <typename... Attributes>
+constexpr auto edges_ssize(vov<Attributes...> const& g) -> edge_ssize_t<vov<Attributes...>> {
+  edge_ssize_t<vov<Attributes...>> n = 0;
+  for (auto& u : vertices(g))
+    for (auto& uv : u)
+      ++n;
+  return n;
+}
 
 template <typename... Attributes>
 constexpr auto edges_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
       -> vertex_edge_size_t<vov<Attributes...>> {
   return u.size();
+}
+
+template <typename... Attributes>
+constexpr auto edges_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+      -> vertex_edge_ssize_t<vov<Attributes...>> {
+  return static_cast<vertex_edge_ssize_t<vov<Attributes...>>>(u.size());
 }
 
 template <typename... Attributes>
@@ -401,9 +436,9 @@ constexpr auto out_size(vov<Attributes...> const& g, const_vertex_t<vov<Attribut
   return u.size();
 }
 template <typename... Attributes>
-constexpr auto out_degree(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
-      -> vertex_out_edge_size_t<vov<Attributes...>> {
-  return u.size();
+constexpr auto out_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+      -> vertex_out_edge_ssize_t<vov<Attributes...>> {
+  return static_cast<vertex_out_edge_ssize_t<vov<Attributes...>>>(u.size());
 }
 
 template <typename... Attributes>

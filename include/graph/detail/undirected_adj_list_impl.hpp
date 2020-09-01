@@ -1004,12 +1004,12 @@ constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const&           g,
       -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return u.edge_size();
 }
-
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_degree(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                            const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return u.edge_size();
+constexpr auto edges_ssize(ual_graph<VV, EV, GV, IndexT, A> const&           g,
+                           const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  using ssize_t = vertex_edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+  return static_cast<ssize_t>(u.edge_size());
 }
 
 
@@ -1190,33 +1190,10 @@ constexpr auto vertices_size(ual_graph<VV, EV, GV, IndexT, A> const& g)
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().begin();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cbegin();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cbegin();
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().end();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cend();
-}
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return g.vertices().cend();
+constexpr auto vertices_ssize(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  using ssize_t = vertex_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+  return static_cast<ssize_t>(g.vertices().size());
 }
 
 
@@ -1315,6 +1292,12 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const& g) -> edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
   return g.edges_size();
 }
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto edges_ssize(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  using ssize_t = edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+  return static_cast<ssize_t>(g.edges().size());
+}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void reserve_edges(ual_graph<VV, EV, GV, IndexT, A>& g, edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> n) {
@@ -1327,6 +1310,49 @@ void clear(ual_graph<VV, EV, GV, IndexT, A>& g) {
   g.clear();
 }
 
+
+//
+// API: common container functions
+//
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto size(ual_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return vertices_size(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto ssize(ual_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return vertices_ssize(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().begin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().end();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+  return g.vertices().cend();
+}
 
 } // namespace std::graph
 
