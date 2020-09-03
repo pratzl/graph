@@ -107,6 +107,8 @@ Other Useful Tools
     - [x] Add ssize defs & implementations for vertices, edge, out_edges & in_edges
     - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
+    - [ ] Replace short names with long names (e.g. dfs -> depth_first_search)
+    - [ ] Add noexcept to size() & ssize() functions? (consider legacy graphs that don't use noexcept)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -116,6 +118,11 @@ Other Useful Tools
   - [ ] Incoming API
     - [ ] add in_vertices(g,u) -> vertex_range_t<G>
 - [ ] Data structures
+  - [ ] Common
+    - [x] remove edge & vertex definitions in paper (not used & distracting)
+    - [ ] replace use of short graph name with long name
+    - [ ] remove type defs on graph classes (only ctors should exist)
+    - [ ] describe rationale for data structures used
   - [ ] directed adjacency array
     - [x] implement with vector
     - [ ] implement with deque?
@@ -181,7 +188,7 @@ Other Useful Tools
     - [x] noexcept shouldn't be on all functions
     - [ ] (final comment review)
   - [ ] Andrew Sutton
-    - [ ] Move concepts to beginning of the paper
+    - [x] Move concepts to beginning of the paper
     - [ ] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
     - [ ] Add -ward suffix for inward & outward (or -coming/-going?)
     - [ ] Tighten up definition of undirected
