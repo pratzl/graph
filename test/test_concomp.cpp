@@ -1,5 +1,5 @@
 //#include "pch.h"
-#include "graph/directed_adjacency_array.hpp"
+#include "graph/directed_adjacency_vector.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/components.hpp"

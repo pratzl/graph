@@ -119,9 +119,9 @@ Other Useful Tools
     - [ ] add in_vertices(g,u) -> vertex_range_t<G>
 - [ ] Data structures
   - [ ] Common
-    - [x] remove edge & vertex definitions in paper (not used & distracting)
-    - [ ] replace use of short graph name with long name
-    - [ ] remove type defs on graph classes (only ctors should exist)
+    - [x] remove edge & vertex definitions in paper (distracting & not referenced)
+    - [x] replace use of short graph name with long name
+    - [x] remove type defs on graph classes in paper (only ctors should exist)
     - [ ] describe rationale for data structures used
   - [ ] directed adjacency array
     - [x] implement with vector
@@ -129,6 +129,7 @@ Other Useful Tools
     - [ ] implement with map? (non-integer index)
     - [ ] use common data structure for directed graph?
     - [ ] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them?
+    - [ ] rename directed_adjacency_array -> directed_adjacency_vertex
   - [x] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array

@@ -1,5 +1,5 @@
 //#include "pch.h"
-#include "graph/undirected_adj_list.hpp"
+#include "graph/undirected_adjacency_list.hpp"
 #include "graph/range/dfs.hpp"
 #include "graph/range/bfs.hpp"
 #include "graph/algorithm/shortest_paths.hpp"

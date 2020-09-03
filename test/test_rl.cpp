@@ -1,4 +1,4 @@
-#include "graph/directed_adjacency_array.hpp"
+#include "graph/directed_adjacency_vector.hpp"
 #include <catch2/catch.hpp>
 
 struct rl_weight_value {
@@ -10,7 +10,7 @@ struct rl_weight_value {
   rl_weight_value(float const& w) : weight(w) {}
 };
 
-using rl_graph = std::graph::directed_adjacency_array<rl_weight_value, rl_weight_value>;
+using rl_graph = std::graph::directed_adjacency_vector<rl_weight_value, rl_weight_value>;
 
 TEST_CASE("rl definition", "[rl][definition]") {
   //using G = rl_graph;

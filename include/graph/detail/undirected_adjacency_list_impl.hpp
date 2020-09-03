@@ -567,19 +567,21 @@ ual_vertex<VV, EV, GV, IndexT, A>::create_edge(graph_type& g, vertex_type& v, ed
 
 
 ///-------------------------------------------------------------------------------------
-/// ual_graph
+/// undirected_adjacency_list
 ///
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(allocator_type const& alloc) noexcept
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(allocator_type const& alloc) noexcept
       : vertices_(alloc), edge_alloc_(alloc) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type const& val, allocator_type const& alloc)
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(graph_user_value_type const& val,
+                                                                            allocator_type const&        alloc)
       : vertices_(alloc), base_type(val), edge_alloc_(alloc) {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type&& val, allocator_type const& alloc)
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(graph_user_value_type&& val,
+                                                                            allocator_type const&   alloc)
       : vertices_(alloc), base_type(move(val)), edge_alloc_(alloc) {}
 
 
@@ -587,7 +589,7 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(graph_user_value_type&& val, allocat
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
   requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data<VRng, VValueFnc>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
                                             EValueFnc const& evalue_fnc,
@@ -637,13 +639,13 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const&     erng,
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
   requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> 
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A const& alloc)
-      : ual_graph(erng, vector<int>(), ekey_fnc, evalue_fnc, [](empty_value) { return empty_value(); }, gv, alloc)
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A const& alloc)
+      : undirected_adjacency_list(erng, vector<int>(), ekey_fnc, evalue_fnc, [](empty_value) { return empty_value(); }, gv, alloc)
 // clang-format on
 {}
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(
       initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist, A const& alloc)
       : base_type(), vertices_(alloc), edge_alloc_(alloc) {
   // Evaluate max vertex key needed
@@ -670,8 +672,8 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-ual_graph<VV, EV, GV, IndexT, A>::ual_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
-                                            A const&                                                         alloc)
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(
+      initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist, A const& alloc)
       : base_type(), vertices_(alloc), edge_alloc_(alloc) {
   // Evaluate max vertex key needed
   vertex_key_type max_vtx_key = vertex_key_type();
@@ -697,73 +699,76 @@ ual_graph<VV, EV, GV, IndexT, A>::ual_graph(initializer_list<tuple<vertex_key_ty
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-ual_graph<VV, EV, GV, IndexT, A>::~ual_graph() {
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::~undirected_adjacency_list() {
   clear(); // assure edges are deleted using edge_alloc_
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::edge_allocator_type
-ual_graph<VV, EV, GV, IndexT, A>::edge_allocator() const noexcept {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_allocator_type
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_allocator() const noexcept {
   return edge_alloc_;
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::vertex_set& ual_graph<VV, EV, GV, IndexT, A>::vertices() {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_set&
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertices() {
   return vertices_;
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::vertex_set const&
-ual_graph<VV, EV, GV, IndexT, A>::vertices() const {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_set const&
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertices() const {
   return vertices_;
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void ual_graph<VV, EV, GV, IndexT, A>::reserve_vertices(vertex_size_type n) {
+void undirected_adjacency_list<VV, EV, GV, IndexT, A>::reserve_vertices(vertex_size_type n) {
   vertices_.reserve(n);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void ual_graph<VV, EV, GV, IndexT, A>::resize_vertices(vertex_size_type n) {
+void undirected_adjacency_list<VV, EV, GV, IndexT, A>::resize_vertices(vertex_size_type n) {
   vertices_.resize(n);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void ual_graph<VV, EV, GV, IndexT, A>::resize_vertices(vertex_size_type n, vertex_user_value_type const& val) {
+void undirected_adjacency_list<VV, EV, GV, IndexT, A>::resize_vertices(vertex_size_type              n,
+                                                                       vertex_user_value_type const& val) {
   vertices_.resize(n, val);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator ual_graph<VV, EV, GV, IndexT, A>::create_vertex() {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_vertex() {
   vertices_.push_back(vertex_type(vertices_, vertices_.size()));
   return vertices_.begin() + (vertices_.size() - 1);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::create_vertex(vertex_user_value_type&& val) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_vertex(vertex_user_value_type&& val) {
   vertices_.push_back(vertex_type(vertices_, vertices_.size(), move(val)));
   return vertices_.begin() + (vertices_.size() - 1);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <class VV2>
-typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::create_vertex(VV2 const& val) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_vertex(VV2 const& val) {
   vertices_.push_back(vertex_type(vertices_, static_cast<vertex_key_type>(vertices_.size()), val));
   return vertices_.begin() + static_cast<vertex_key_type>(vertices_.size() - 1);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::find_vertex(const_vertex_key_type key) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::find_vertex(const_vertex_key_type key) {
   if (key < vertices_.size())
     return vertices_.begin() + key;
   else
     return vertices_.end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::find_vertex(const_vertex_key_type key) const {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::const_vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::find_vertex(const_vertex_key_type key) const {
   if (key < vertices_.size())
     return vertices_.begin() + key;
   else
@@ -772,53 +777,58 @@ ual_graph<VV, EV, GV, IndexT, A>::find_vertex(const_vertex_key_type key) const {
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator ual_graph<VV, EV, GV, IndexT, A>::begin() {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::begin() {
   return vertices_.begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::begin() const {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::const_vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::begin() const {
   return vertices_.begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::cbegin() const {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::const_vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::cbegin() const {
   return vertices_.cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::vertex_iterator ual_graph<VV, EV, GV, IndexT, A>::end() {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::end() {
   return vertices_.end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::end() const {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::const_vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::end() const {
   return vertices_.end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_graph<VV, EV, GV, IndexT, A>::cend() const {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::const_vertex_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::cend() const {
   return vertices_.cend();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr typename ual_graph<VV, EV, GV, IndexT, A>::edge_size_type
-ual_graph<VV, EV, GV, IndexT, A>::edges_size() const noexcept {
+constexpr typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_size_type
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::edges_size() const noexcept {
   return edges_size_;
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator
-ual_graph<VV, EV, GV, IndexT, A>::create_edge(vertex_key_type const& from_key, vertex_key_type const& to_key) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_edge(vertex_key_type const& from_key,
+                                                              vertex_key_type const& to_key) {
   vertex_type& u = vertices_[from_key];
   vertex_type& v = vertices_[to_key];
   return edge_iterator(*this, to_iterator(*this, u), u.create_edge(*this, v));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator ual_graph<VV, EV, GV, IndexT, A>::create_edge(
-      vertex_key_type const& from_key, vertex_key_type const& to_key, edge_user_value_type&& val) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_edge(vertex_key_type const& from_key,
+                                                              vertex_key_type const& to_key,
+                                                              edge_user_value_type&& val) {
   vertex_type& u = vertices_[from_key];
   vertex_type& v = vertices_[to_key];
   return edge_iterator(*this, to_iterator(*this, u), u.create_edge(*this, v, move(val)));
@@ -826,8 +836,10 @@ typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator ual_graph<VV, EV, GV, I
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <class EV2>
-typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator ual_graph<VV, EV, GV, IndexT, A>::create_edge(
-      vertex_key_type const& from_key, vertex_key_type const& to_key, EV2 const& val) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_edge(vertex_key_type const& from_key,
+                                                              vertex_key_type const& to_key,
+                                                              EV2 const&             val) {
   vertex_type& u = vertices_[from_key];
   vertex_type& v = vertices_[to_key];
   return edge_iterator(*this, to_iterator(*this, u), u.create_edge(*this, v, val));
@@ -835,28 +847,30 @@ typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator ual_graph<VV, EV, GV, I
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator
-ual_graph<VV, EV, GV, IndexT, A>::create_edge(vertex_iterator u, vertex_iterator v) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_edge(vertex_iterator u, vertex_iterator v) {
   return edge_iterator(*this, to_iterator(*this, *u), u->create_edge(*this, *v));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator
-ual_graph<VV, EV, GV, IndexT, A>::create_edge(vertex_iterator u, vertex_iterator v, edge_user_value_type&& val) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_edge(vertex_iterator        u,
+                                                              vertex_iterator        v,
+                                                              edge_user_value_type&& val) {
   return edge_iterator(*this, to_iterator(*this, *u), u->create_edge(*this, *v, move(val)));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <class EV2>
-typename ual_graph<VV, EV, GV, IndexT, A>::edge_iterator
-ual_graph<VV, EV, GV, IndexT, A>::create_edge(vertex_iterator u, vertex_iterator v, EV2 const& val) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::create_edge(vertex_iterator u, vertex_iterator v, EV2 const& val) {
   return edge_iterator(*this, to_iterator(*this, *u), u->create_edge(*this, *v, val));
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-typename ual_graph<VV, EV, GV, IndexT, A>::const_edge_iterator
-ual_graph<VV, EV, GV, IndexT, A>::erase_edge(const_edge_iterator pos) {
+typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::const_edge_iterator
+undirected_adjacency_list<VV, EV, GV, IndexT, A>::erase_edge(const_edge_iterator pos) {
   edge_type* uv = &*pos;
   ++pos;
   uv->~edge_type(); // unlinks from vertices
@@ -866,7 +880,7 @@ ual_graph<VV, EV, GV, IndexT, A>::erase_edge(const_edge_iterator pos) {
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void ual_graph<VV, EV, GV, IndexT, A>::clear() {
+void undirected_adjacency_list<VV, EV, GV, IndexT, A>::clear() {
   // make sure edges are deallocated from edge_alloc_
   for (vertex_type& u : vertices_)
     u.clear_edges(*this);
@@ -874,31 +888,32 @@ void ual_graph<VV, EV, GV, IndexT, A>::clear() {
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void ual_graph<VV, EV, GV, IndexT, A>::throw_unordered_edges() const {
+void undirected_adjacency_list<VV, EV, GV, IndexT, A>::throw_unordered_edges() const {
   assert(false); // container must be sorted by edge_key.first
   throw invalid_argument("edges not ordered");
 }
 
 ///-------------------------------------------------------------------------------------
-/// ual_graph graph API
+/// undirected_adjacency_list graph API
 ///
 
 //template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-//using vertices_size_t = typename ual_graph<VV, EV, GV, IndexT, A>::vertex_size_type;
+//using vertices_size_t = typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_size_type;
 
 //
 // API vertex functions
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                          const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return static_cast<vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>>(&u - g.vertices().data());
+constexpr auto vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                          const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return static_cast<vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>>(&u - g.vertices().data());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto to_iterator(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto to_iterator(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                           vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   auto const key = vertex_key(g, u);
   if (key < numeric_limits<decltype(key)>::max())
     return g.vertices().begin() + key;
@@ -907,9 +922,9 @@ constexpr auto to_iterator(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_gra
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto to_iterator(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                           const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto to_iterator(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                           const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   auto const key = vertex_key(g, u);
   if (key < numeric_limits<decltype(key)>::max())
     return g.vertices().begin() + key;
@@ -918,112 +933,123 @@ constexpr auto to_iterator(ual_graph<VV, EV, GV, IndexT, A> const&           g,
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_range_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                     vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_range_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return ::ranges::make_subrange(u.edges_begin(g), u.edges_end(g));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(ual_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_range_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                     const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_range_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return ::ranges::make_subrange(u.edges_begin(g), u.edges_end(g));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto begin(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                     vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_begin(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto begin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                     const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_begin(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto cbegin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                      const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_cbegin(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto end(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                   vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_end(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto end(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                   const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_end(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                    const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_cend(g);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_begin(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_begin(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                           vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_begin(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_begin(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                           const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_begin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                           const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_begin(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_cbegin(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                            const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_cbegin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                            const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_cbegin(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_end(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_end(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                         vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_end(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_end(ual_graph<VV, EV, GV, IndexT, A> const& g, const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_end(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                         const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_end(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_cend(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                          const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> const_vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                          const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edges_cend(g);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                          const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                          const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edge_size();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_ssize(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                           const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u)
-      -> vertex_edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  using ssize_t = vertex_edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto edges_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                           const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+      -> vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  using ssize_t = vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(u.edge_size());
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto find_vertex(ual_graph<VV, EV, GV, IndexT, A>&                    g,
-                           const_vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> key)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto find_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&                    g,
+                           const_vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> key)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.find_vertex(key);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto find_vertex(ual_graph<VV, EV, GV, IndexT, A> const&              g,
-                           const_vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> key)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto find_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&              g,
+                           const_vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> key)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.find_vertex(key);
 }
 
@@ -1033,137 +1059,141 @@ constexpr auto find_vertex(ual_graph<VV, EV, GV, IndexT, A> const&              
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex(ual_graph<VV, EV, GV, IndexT, A>& g, edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto in_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
+                         edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex(ual_graph<VV, EV, GV, IndexT, A> const& g, const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto in_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                         const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&         g,
-                             const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto in_vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                             const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.in_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex(ual_graph<VV, EV, GV, IndexT, A>& g, edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto out_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
+                          edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex(ual_graph<VV, EV, GV, IndexT, A> const& g, const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto out_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                          const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&         g,
-                              const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto out_vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                              const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
 
 #  if 0
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A>& g, edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A> const&         g,
-                      const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                      const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&         g,
-                          const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                          const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.out_vertex_key(g);
 }
 #  endif
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A>&                 g,
-                      edge_t<ual_graph<VV, EV, GV, IndexT, A>>&         uv,
-                      const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& source)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&                 g,
+                      edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>&         uv,
+                      const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& source)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.other_vertex(g, vertex_key(g, source));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                      const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>&   uv,
-                      const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& source)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                      const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>&   uv,
+                      const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& source)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.other_vertex(g, vertex_key(g, source));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                          const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>&   uv,
-                          const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& source)
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                          const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>&   uv,
+                          const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& source)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.other_vertex_key(g, vertex_key(g, source));
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(ual_graph<VV, EV, GV, IndexT, A> const&         g,
-                          const_edge_t<ual_graph<VV, EV, GV, IndexT, A>>& uv,
-                          vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>  source_key)
-      -> vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                          const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv,
+                          vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>  source_key)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.other_vertex_key(g, source_key);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto find_edge(ual_graph<VV, EV, GV, IndexT, A>&           g,
-                         vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u,
-                         vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& v)
-      -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>(
+constexpr auto find_edge(undirected_adjacency_list<VV, EV, GV, IndexT, A>&           g,
+                         vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u,
+                         vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& v)
+      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>(
         g, to_iterator(g, u),
         ::ranges::find_if(edges(g, u), [&g, &u, &v](auto& uv) { return &*vertex(g, uv, u) == &v; }));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto find_edge(ual_graph<VV, EV, GV, IndexT, A> const&           g,
-                         const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& u,
-                         const_vertex_t<ual_graph<VV, EV, GV, IndexT, A>>& v)
-      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  return const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>>(
+constexpr auto find_edge(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
+                         const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u,
+                         const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& v)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>(
         g, to_iterator(g, u), ::ranges::find_if(edges(g, u), [&g, &v](auto& uv) { return &*vertex(g, uv) == &v; }));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto find_edge(ual_graph<VV, EV, GV, IndexT, A>&                     g,
-                         const_vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>& ukey,
-                         const_vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>& vkey)
-      -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto find_edge(undirected_adjacency_list<VV, EV, GV, IndexT, A>&                     g,
+                         const_vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& ukey,
+                         const_vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& vkey)
+      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return find_edge(g, g.vertices()[ukey], g.vertices()[vkey]);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto find_edge(ual_graph<VV, EV, GV, IndexT, A> const&               g,
-                         const_vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>& ukey,
-                         const_vertex_key_t<ual_graph<VV, EV, GV, IndexT, A>>& vkey)
-      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto find_edge(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&               g,
+                         const_vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& ukey,
+                         const_vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& vkey)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return find_edge(g, find_vertex(g, ukey), find_vertex(g, vkey));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto erase_edge(ual_graph<VV, EV, GV, IndexT, A>&                        g,
-                          vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> uv)
-      -> vertex_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> u = in_vertex(g, *uv);
+constexpr auto erase_edge(undirected_adjacency_list<VV, EV, GV, IndexT, A>&                        g,
+                          vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> uv)
+      -> vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> u = in_vertex(g, *uv);
   return u->erase_edge(g, uv);
 }
 
@@ -1173,140 +1203,148 @@ constexpr auto erase_edge(ual_graph<VV, EV, GV, IndexT, A>&                     
 //
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_range_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> vertex_range_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return ::ranges::make_subrange(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_range_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_range_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return ::ranges::make_subrange(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_size(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().size();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_ssize(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  using ssize_t = vertex_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto vertices_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  using ssize_t = vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(g.vertices().size());
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_begin(ual_graph<VV, EV, GV, IndexT, A>& g)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_begin(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_begin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_begin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cbegin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_cbegin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_end(ual_graph<VV, EV, GV, IndexT, A>& g)
-      -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_end(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_end(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_end(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_cend(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto vertices_cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void reserve_vertices(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> n) {
+void reserve_vertices(undirected_adjacency_list<VV, EV, GV, IndexT, A>&               g,
+                      vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> n) {
   g.reserve(n);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void resize_vertices(ual_graph<VV, EV, GV, IndexT, A>& g, vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> n) {
+void resize_vertices(undirected_adjacency_list<VV, EV, GV, IndexT, A>&               g,
+                     vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> n) {
   g.resize(n);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void resize_vertices(ual_graph<VV, EV, GV, IndexT, A>&                       g,
-                     vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>>         n,
-                     vertex_value_t<ual_graph<VV, EV, GV, IndexT, A>> const& val) {
+void resize_vertices(undirected_adjacency_list<VV, EV, GV, IndexT, A>&                       g,
+                     vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>         n,
+                     vertex_value_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> const& val) {
   g.resize(n, val);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(ual_graph<VV, EV, GV, IndexT, A>& g) -> edge_range_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> edge_range_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_edge_range_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_edge_range_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_begin(ual_graph<VV, EV, GV, IndexT, A>& g) -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_begin(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_begin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_begin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_cbegin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges().cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_end(ual_graph<VV, EV, GV, IndexT, A>& g) -> edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_end(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_end(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_end(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_cend(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_edge_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges().cend();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_size(ual_graph<VV, EV, GV, IndexT, A> const& g) -> edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto edges_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> edge_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges_size();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_ssize(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>> {
-  using ssize_t = edge_ssize_t<ual_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto edges_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  using ssize_t = edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(g.edges().size());
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void reserve_edges(ual_graph<VV, EV, GV, IndexT, A>& g, edge_size_t<ual_graph<VV, EV, GV, IndexT, A>> n) {
+void reserve_edges(undirected_adjacency_list<VV, EV, GV, IndexT, A>&             g,
+                   edge_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> n) {
   g.reserve_edges(n);
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-void clear(ual_graph<VV, EV, GV, IndexT, A>& g) {
+void clear(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g) {
   g.clear();
 }
 
@@ -1315,42 +1353,46 @@ void clear(ual_graph<VV, EV, GV, IndexT, A>& g) {
 // API: common container functions
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto size(ual_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return vertices_size(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto ssize(ual_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return vertices_ssize(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto begin(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().begin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto begin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cbegin();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto cbegin(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cbegin();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(ual_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto end(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().end();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto end(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(ual_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<ual_graph<VV, EV, GV, IndexT, A>> {
+constexpr auto cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().cend();
 }
 

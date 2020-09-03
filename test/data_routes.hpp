@@ -1,7 +1,7 @@
 #pragma once
 
-#include "graph/directed_adjacency_array.hpp"
-#include "graph/undirected_adj_list.hpp"
+#include "graph/directed_adjacency_vector.hpp"
+#include "graph/undirected_adjacency_list.hpp"
 
 #include <range/v3/algorithm/find.hpp>
 #include <range/v3/algorithm/lower_bound.hpp>
@@ -60,7 +60,7 @@ struct route {
 };
 
 struct daa_routes_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_array<std::graph::name_value, std::graph::weight_value>;
+  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, std::graph::weight_value>;
   using source_edge_range_t = routes_t;
   using source_edge_t       = source_edge_range_t::value_type;
 
@@ -116,7 +116,7 @@ using data_edges_t    = std::vector<data_edge>;
 using vertex_labels_t = std::vector<std::string>;
 
 struct daa_data_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_array<std::graph::name_value, dbl_weight_value>;
+  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;
 
@@ -162,7 +162,7 @@ struct vov_data_edge_mapper {
 
 //---------------------------------------------------------------------------------------
 // Translates raw edge data into intermediate forms that can easily be used for
-// creating a directed_adjacency_array or undirected_adjacency_list.
+// creating a directed_adjacency_vector or undirected_adjacency_list.
 template <typename Mapper>
 class GraphXlate {
 public:
