@@ -4,29 +4,11 @@
 #include "graph_utility.hpp"
 #include <vector>
 #include <cassert>
-#include <range/v3/view/subrange.hpp>
 
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
 namespace std::graph {
-
-// clang-format off
-// Input vertex data requires a range of data & a function to extract & return 
-// the vertex value.
-template <typename VRng, typename VValueFnc>
-concept daa_vertex_data = ::ranges::input_range<VRng>
-                        && invocable<VValueFnc, typename VRng::value_type>;
-
-// Input edge data requires a range of data & functions to extract & return 
-// the edge key and edge value. ERng is a forward_range because it is 
-// is traversed twice; once to get the max vertex_key and a second time to
-// load the edges.
-template <typename ERng, typename EKeyFnc, typename EValueFnc>
-concept daa_edge_data = ::ranges::forward_range<ERng>
-                        && invocable<EKeyFnc, typename ERng::value_type>
-                        && invocable<EValueFnc, typename ERng::value_type>;
-// clang-format on
 
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector forward declarations
@@ -312,14 +294,10 @@ public:
   directed_adjacency_vector() noexcept(noexcept(allocator_type()))    = default;
   directed_adjacency_vector(directed_adjacency_vector&& rhs) noexcept = default;
   directed_adjacency_vector(directed_adjacency_vector const&)         = default;
-  ~directed_adjacency_vector()                                        = default;
 
   directed_adjacency_vector(allocator_type const& alloc) noexcept;
   directed_adjacency_vector(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
   directed_adjacency_vector(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
-
-  directed_adjacency_vector& operator=(directed_adjacency_vector const&) = default;
-  directed_adjacency_vector& operator=(directed_adjacency_vector&&) = default;
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -366,8 +344,13 @@ public:
   ///                   vertices & edges.
   ///
   // clang-format off
-  template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-    requires daa_edge_data<ERng, EKeyFnc, EValueFnc> && daa_vertex_data<VRng, VValueFnc>
+  template <typename ERng, 
+            typename EKeyFnc, 
+            typename EValueFnc, 
+            typename VRng, 
+            typename VValueFnc>
+    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
+          && vertex_range_extractor<VRng, VValueFnc>
   directed_adjacency_vector(ERng const&      erng,
                            VRng const&      vrng,
                            EKeyFnc const&   ekey_fnc,
@@ -398,7 +381,7 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
-    requires daa_edge_data<ERng, EKeyFnc, EValueFnc>
+    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc>
   directed_adjacency_vector(ERng const&      rng, 
                            EKeyFnc const&   ekey_fnc, 
                            EValueFnc const& evalue_fnc, 
@@ -427,6 +410,11 @@ public:
   ///
   directed_adjacency_vector(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
                             A const&                                                         alloc = A());
+
+  ~directed_adjacency_vector() = default;
+
+  directed_adjacency_vector& operator=(directed_adjacency_vector const&) = default;
+  directed_adjacency_vector& operator=(directed_adjacency_vector&&) = default;
 
 public:
   constexpr vertex_set&       vertices();

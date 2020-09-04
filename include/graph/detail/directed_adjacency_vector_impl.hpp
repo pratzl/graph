@@ -172,7 +172,7 @@ directed_adjacency_vector<VV, EV, GV, IndexT, A>::directed_adjacency_vector(grap
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-  requires daa_edge_data<ERng, EKeyFnc, EValueFnc> && daa_vertex_data<VRng, VValueFnc>
+  requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> && vertex_range_extractor<VRng, VValueFnc>
 directed_adjacency_vector<VV, EV, GV, IndexT, A>::directed_adjacency_vector(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
@@ -228,7 +228,7 @@ directed_adjacency_vector<VV, EV, GV, IndexT, A>::directed_adjacency_vector(ERng
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-requires daa_edge_data<ERng, EKeyFnc, EValueFnc> //
+requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> //
 directed_adjacency_vector<VV, EV, GV, IndexT, A>::directed_adjacency_vector(
       ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A const& alloc)
       : directed_adjacency_vector(

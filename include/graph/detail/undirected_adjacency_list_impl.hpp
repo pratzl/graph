@@ -588,7 +588,7 @@ undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(grap
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-  requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data<VRng, VValueFnc>
+  requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> && vertex_range_extractor<VRng, VValueFnc>
 undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(ERng const&     erng,
                                             VRng const&     vrng,
                                             EKeyFnc const&  ekey_fnc,
@@ -638,7 +638,7 @@ undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(ERng
 // clang-format off
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-  requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> 
+  requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
 undirected_adjacency_list<VV, EV, GV, IndexT, A>::undirected_adjacency_list(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv, A const& alloc)
       : undirected_adjacency_list(erng, vector<int>(), ekey_fnc, evalue_fnc, [](empty_value) { return empty_value(); }, gv, alloc)
 // clang-format on

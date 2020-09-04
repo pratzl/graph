@@ -12,22 +12,6 @@
 
 namespace std::graph {
 
-// clang-format off
-// Input vertex data requires a range of data & a function to extract & return 
-// the vertex value.
-template <typename VRng, typename VValueFnc>
-concept ual_vertex_data = ::ranges::input_range<VRng>
-                        && invocable<VValueFnc, typename VRng::value_type>;
-
-// Input edge data requires a range of data & functions to extract & return 
-// the edge key and edge value. ERng is a forward_range because it is 
-// is traversed twice; once to get the max vertex_key and a second time to
-// load the edges.
-template <typename ERng, typename EKeyFnc, typename EValueFnc>
-concept ual_edge_data_c = ::ranges::forward_range<ERng>
-                        && invocable<EKeyFnc, typename ERng::value_type>
-                        && invocable<EValueFnc, typename ERng::value_type>;
-// clang-format on
 
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list forward declarations
@@ -664,7 +648,7 @@ public:
   undirected_adjacency_list(allocator_type const& alloc) noexcept;
   undirected_adjacency_list(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
   undirected_adjacency_list(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
-  ~undirected_adjacency_list();
+
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -711,15 +695,20 @@ public:
   ///                   vertices & edges.
   ///
   // clang-format off
-  template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-    requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc> && ual_vertex_data<VRng, VValueFnc>
+  template <typename ERng, 
+            typename EKeyFnc, 
+            typename EValueFnc, 
+            typename VRng, 
+            typename VValueFnc>
+    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
+          && vertex_range_extractor<VRng, VValueFnc>
   undirected_adjacency_list(ERng const&      erng,
-            VRng const&      vrng,
-            EKeyFnc const&   ekey_fnc,
-            EValueFnc const& evalue_fnc,
-            VValueFnc const& vvalue_fnc,
-            GV const&        gv    = GV(),
-            A const&         alloc = A());
+                            VRng const&      vrng,
+                            EKeyFnc const&   ekey_fnc,
+                            EValueFnc const& evalue_fnc,
+                            VValueFnc const& vvalue_fnc,
+                            GV const&        gv    = GV(),
+                            A const&         alloc = A());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -743,8 +732,12 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
-    requires ual_edge_data_c<ERng, EKeyFnc, EValueFnc>
-  undirected_adjacency_list(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A const& alloc = A());
+    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc>
+  undirected_adjacency_list(ERng const&      erng, 
+                            EKeyFnc const&   ekey_fnc, 
+                            EValueFnc const& evalue_fnc, 
+                            GV const&        gv    = GV(), 
+                            A const&         alloc = A());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -767,6 +760,11 @@ public:
   ///
   undirected_adjacency_list(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
                             A const&                                                         alloc = A());
+
+  ~undirected_adjacency_list();
+
+  undirected_adjacency_list& operator=(undirected_adjacency_list const&) = default;
+  undirected_adjacency_list& operator=(undirected_adjacency_list&&) = default;
 
 public:
   constexpr edge_allocator_type edge_allocator() const noexcept;

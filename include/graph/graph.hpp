@@ -2,6 +2,7 @@
 //#include <range/v3/all.hpp>
 #include <concepts>
 //#include <range/v3/range/concepts.hpp>
+#include <range/v3/view/subrange.hpp>
 #include <type_traits>
 #include <utility> // pair
 
@@ -668,6 +669,20 @@ concept edge_c = true;
 template <typename T>
 concept arithmetic = is_arithmetic_v<T>;
 
+// Requirements for extracting vertex values from external sources for graph construction
+template <typename VRng, typename VValueFnc>
+concept vertex_range_extractor 
+        = ::ranges::input_range<VRng>
+       && invocable<VValueFnc, typename VRng::value_type>;
+
+// Requirements for extracting edge values from external sources for graph construction
+// ERng is a forward_range because it is traversed twice; once to get the max vertex_key 
+// and a second time to load the edges.
+template <typename ERng, typename EKeyFnc, typename EValueFnc>
+concept edge_range_extractor 
+        = ::ranges::forward_range<ERng>
+       && invocable<EKeyFnc, typename ERng::value_type>
+       && invocable<EValueFnc, typename ERng::value_type>;
 
 // for DFS, BFS & TopoSort ranges
 template <typename G>
@@ -686,6 +701,7 @@ concept searchable_graph = requires(G&& g, vertex_iterator_t<G>& u, vertex_edge_
   { vertex_key(g, *u) } -> convertible_to<vertex_key_t<G>>;
 #endif
 };
+
 // clang-format on
 
 } // namespace std::graph
