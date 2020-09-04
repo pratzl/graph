@@ -75,65 +75,71 @@ struct graph_traits;
 template <typename G>
 struct graph_traits
 {
-  using graph_type                  = typename G::graph_type;
-  using const_graph_type            = typename G::const_graph_type;
-  using graph_user_value_type       = typename graph_type::graph_user_value_type;
-  using const_graph_user_value_type = typename graph_type::const_graph_user_value_type;
-  using allocator_type              = typename graph_type::allocator_type;
+  // graph types
+  using graph_type                  = ...; // all graph types
+  using const_graph_type            = ...; // all graph types
+  using graph_user_value_type       = ...; // all graph types
+  using const_graph_user_value_type = ...; // all graph types
+  using allocator_type              = ...; // all graph types
 
-  using vertex_type                  = typename graph_type::vertex_type;
-  using const_vertex_type            = typename graph_type::const_vertex_type;
-  using vertex_user_value_type       = typename graph_type::user_value_type;
-  using const_vertex_user_value_type = typename graph_type::const_vertex_user_value_type;
-  using vertex_allocator_type        = typename graph_type::vertex_allocator_type;
-  using vertex_size_type             = typename graph_type::vertex_size_type;
-  using vertex_ssize_type            = typename graph_type::vertex_ssize_type;
-  using vertex_index_type            = typename graph_type::vertex_index_type;
-  using vertex_key_type              = typename graph_type::vertex_key_type;
-  using const_vertex_key_type        = typename graph_type::const_vertex_key_type;
-  using vertex_value_type            = typename graph_type::vertex_value_type;
+  // vertex types - only if vertices defined for graph
+  using vertex_type                  = ...; // all graph types
+  using const_vertex_type            = ...; // all graph types
+  using vertex_user_value_type       = ...; // all graph types
+  using const_vertex_user_value_type = ...; // all graph types
+  using vertex_value_type            = ...; // all graph types
 
-  using vertex_iterator       = typename graph_type::vertex_iterator;
-  using const_vertex_iterator = typename graph_type::const_vertex_iterator;
-  using vertex_range          = typename graph_type::vertex_range;
-  using const_vertex_range    = typename graph_type::const_vertex_range;
+  // vertex collection types - only if graph-vertices defined
+  using vertex_size_type             = ...; // 
+  using vertex_ssize_type            = ...; // 
+  using vertex_key_type              = ...; // 
+  using const_vertex_key_type        = ...; // 
+  using vertex_index_type            = ...; // (optional)
+  using vertex_iterator              = ...; // 
+  using const_vertex_iterator        = ...; // 
+  using vertex_range                 = ...; // 
+  using const_vertex_range           = ...; // 
 
-  using edge_type                  = typename graph_type::edge_type;
-  using const_edge_type            = typename graph_type::const_edge_type;
-  using edge_user_value_type       = typename graph_type::edge_user_value_type;
-  using const_edge_user_value_type = typename graph_type::const_edge_user_value_type;
-  using edge_allocator_type        = typename graph_type::edge_allocator_type;
-  using edge_size_type             = typename graph_type::edge_size_type;
-  using edge_ssize_type            = typename graph_type::edge_ssize_type;
-  using edge_index_type            = typename graph_type::IndexT;
-  using edge_key_type              = typename graph_type::edge_key_type; // e.g. <from,to>
-  using edge_value_type            = typename graph_type::edge_value_type;
+  // edge types 
+  using edge_type                  = ...; // 
+  using const_edge_type            = ...; // 
+  using edge_user_value_type       = ...; // 
+  using const_edge_user_value_type = ...; // 
+  using edge_key_type              = ...; // (e.g. pair<vertex_key_t,vertex_key_t>)
+  using edge_value_type            = ...; // 
 
-  using edge_iterator       = typename graph_type::edge_iterator;
-  using const_edge_iterator = typename graph_type::const_edge_iterator;
-  using edge_range          = typename graph_type::edge_range;
-  using const_edge_range    = typename graph_type::const_edge_range;
+  // graph-edge collection types - only if graph-edges defined by graph
+  using edge_size_type             = ...; // all graph types
+  using edge_ssize_type            = ...; // all graph types
+  using edge_index_type            = ...; // only if graph-edges defined
+  using edge_iterator              = ...; // only if graph-edges defined
+  using const_edge_iterator        = ...; // only if graph-edges defined
+  using edge_range                 = ...; // only if graph-edges defined
+  using const_edge_range           = ...; // only if graph-edges defined
 
-  using vertex_out_edge_size_type      = typename graph_type::vertex_out_edge_size_type;
-  using vertex_out_edge_ssize_type     = typename graph_type::vertex_out_edge_ssize_type;
-  using vertex_out_edge_iterator       = typename graph_type::vertex_out_edge_iterator;
-  using const_vertex_out_edge_iterator = typename graph_type::const_vertex_out_edge_iterator;
-  using vertex_out_edge_range          = typename graph_type::vertex_out_edge_range;
-  using const_vertex_out_edge_range    = typename graph_type::const_vertex_out_edge_range;
+  // vertex-edge collection types - directed_graph & undirected_graph
+  using vertex_edge_size_type      = ...; 
+  using vertex_edge_ssize_type     = ...;  
+  using vertex_edge_iterator       = ...; 
+  using const_vertex_edge_iterator = ...; 
+  using vertex_edge_range          = ...; 
+  using const_vertex_edge_range    = ...; 
 
-  using vertex_in_edge_size_type      = typename graph_type::vertex_in_edge_size_type;
-  using vertex_in_edge_ssize_type     = typename graph_type::vertex_in_edge_ssize_type;
-  using vertex_in_edge_iterator       = typename graph_type::vertex_in_edge_iterator;
-  using const_vertex_in_edge_iterator = typename graph_type::const_vertex_in_edge_iterator;
-  using vertex_in_edge_range          = typename graph_type::vertex_in_edge_range;
-  using const_vertex_in_edge_range    = typename graph_type::const_vertex_in_edge_range;
+  // vertex-out-edge collection types - out_directed_graph & bidirected_graph
+  using vertex_out_edge_size_type      = ...; 
+  using vertex_out_edge_ssize_type     = ...; 
+  using vertex_out_edge_iterator       = ...; 
+  using const_vertex_out_edge_iterator = ...; 
+  using vertex_out_edge_range          = ...; 
+  using const_vertex_out_edge_range    = ...; 
 
-  using vertex_edge_size_type      = typename graph_type::vertex_edge_size_type;
-  using vertex_edge_ssize_type     = typename graph_type::vertex_edge_ssize_type;
-  using vertex_edge_iterator       = typename graph_type::vertex_edge_iterator;
-  using const_vertex_edge_iterator = typename graph_type::const_vertex_edge_iterator;
-  using vertex_edge_range          = typename graph_type::vertex_edge_range;
-  using const_vertex_edge_range    = typename graph_type::const_vertex_edge_range;
+  // vertex-in-edge collection types - in_directed_graph & bidirected_graph
+  using vertex_in_edge_size_type      = ...; 
+  using vertex_in_edge_ssize_type     = ...; 
+  using vertex_in_edge_iterator       = ...; 
+  using const_vertex_in_edge_iterator = ...; 
+  using vertex_in_edge_range          = ...; 
+  using const_vertex_in_edge_range    = ...; 
 };
 */
 
