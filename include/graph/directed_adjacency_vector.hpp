@@ -4,38 +4,20 @@
 #include "graph_utility.hpp"
 #include <vector>
 #include <cassert>
-#include <range/v3/view/subrange.hpp>
 
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
 namespace std::graph {
 
-// clang-format off
-// Input vertex data requires a range of data & a function to extract & return 
-// the vertex value.
-template <typename VRng, typename VValueFnc>
-concept daa_vertex_data = ::ranges::input_range<VRng>
-                        && invocable<VValueFnc, typename VRng::value_type>;
-
-// Input edge data requires a range of data & functions to extract & return 
-// the edge key and edge value. ERng is a forward_range because it is 
-// is traversed twice; once to get the max vertex_key and a second time to
-// load the edges.
-template <typename ERng, typename EKeyFnc, typename EValueFnc>
-concept daa_edge_data = ::ranges::forward_range<ERng>
-                        && invocable<EKeyFnc, typename ERng::value_type>
-                        && invocable<EValueFnc, typename ERng::value_type>;
-// clang-format on
-
 ///-------------------------------------------------------------------------------------
-/// directed_adjacency_array forward declarations
+/// directed_adjacency_vector forward declarations
 ///
-/// All vertices are kept in a single vector with an index for the first outgoing edge.
+/// All vertices are kept in a single vector with an index for the first outward edge.
 ///
 /// All edges are kept in a single vector in the graph. Outgoing edges for a vertex are
 /// stored contiguously. Edges for vertex v must come after the previous vertex's edges.
-/// An edge holds the index for its outgoing vertex in the vertices vector, plus any
+/// An edge holds the index for its outward vertex in the vertices vector, plus any
 /// user-defined values.
 
 template <typename VV     = empty_value,
@@ -43,49 +25,46 @@ template <typename VV     = empty_value,
           typename GV     = empty_value,
           typename IndexT = uint32_t,
           typename A      = allocator<char>>
-class daa_graph;
+class directed_adjacency_vector;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class daa_vertex;
+class dav_vertex;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class daa_edge;
-
-template <typename VV     = empty_value,
-          typename EV     = empty_value,
-          typename GV     = empty_value,
-          typename IndexT = uint32_t,
-          typename A      = allocator<char>>
-using directed_adjacency_array = daa_graph<VV, EV, GV, IndexT, A>;
+class dav_edge;
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto size(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_size_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto ssize(daa_graph<VV, EV, GV, IndexT, A> const& g) -> vertex_ssize_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+      -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto begin(directed_adjacency_vector<VV, EV, GV, IndexT, A>& g)
+      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto begin(daa_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto begin(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cbegin(daa_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto cbegin(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(daa_graph<VV, EV, GV, IndexT, A>& g) -> vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto end(directed_adjacency_vector<VV, EV, GV, IndexT, A>& g)
+      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto end(daa_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto end(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
-      -> const_vertex_iterator_t<daa_graph<VV, EV, GV, IndexT, A>>;
+constexpr auto cend(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 
 
 ///-------------------------------------------------------------------------------------
-/// daa_edge
+/// dav_edge
 ///
 /// @tparam VV     Vertex Value type. default = empty_value.
 /// @tparam EV     Edge Value type. default = empty_value.
@@ -94,13 +73,13 @@ constexpr auto cend(daa_graph<VV, EV, GV, IndexT, A> const& g)
 /// @tparam A      Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class daa_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
+class dav_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
 public:
-  using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
+  using graph_type            = directed_adjacency_vector<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
   using base_type             = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
 
-  using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_type            = dav_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -110,7 +89,7 @@ public:
   using vertex_key_type        = vertex_index;
 
   using edge_user_value_type = EV;
-  using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
+  using edge_type            = dav_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_iterator        = typename edge_set::iterator;
@@ -118,35 +97,38 @@ public:
   using edge_index           = IndexT;
 
 public:
-  daa_edge()                    = default;
-  daa_edge(daa_edge const&)     = default;
-  daa_edge(daa_edge&&) noexcept = default;
-  ~daa_edge() noexcept          = default;
-  daa_edge& operator=(daa_edge&) = default;
-  daa_edge& operator=(daa_edge&&) = default;
+  dav_edge()                    = default;
+  dav_edge(dav_edge const&)     = default;
+  dav_edge(dav_edge&&) noexcept = default;
+  ~dav_edge() noexcept          = default;
+  dav_edge& operator=(dav_edge&) = default;
+  dav_edge& operator=(dav_edge&&) = default;
 
-  daa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex);
-  daa_edge(vertex_set const& vertices,
-           vertex_iterator   in_vertex,
-           vertex_iterator   out_vertex,
+  dav_edge(vertex_set const& vertices, vertex_iterator inward_vertex, vertex_iterator outward_vertex);
+  dav_edge(vertex_set const& vertices,
+           vertex_iterator   inward_vertex,
+           vertex_iterator   outward_vertex,
            edge_user_value_type const&);
-  daa_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex, edge_user_value_type&&);
+  dav_edge(vertex_set const& vertices,
+           vertex_iterator   inward_vertex,
+           vertex_iterator   outward_vertex,
+           edge_user_value_type&&);
 
-  vertex_iterator       in_vertex(graph_type&);
-  const_vertex_iterator in_vertex(graph_type const&) const;
-  vertex_key_type       in_vertex_key(graph_type const&) const;
+  vertex_iterator       inward_vertex(graph_type&);
+  const_vertex_iterator inward_vertex(graph_type const&) const;
+  vertex_key_type       inward_vertex_key(graph_type const&) const;
 
-  vertex_iterator       out_vertex(graph_type&);
-  const_vertex_iterator out_vertex(graph_type const&) const;
-  vertex_key_type       out_vertex_key(graph_type const&) const;
+  vertex_iterator       outward_vertex(graph_type&);
+  const_vertex_iterator outward_vertex(graph_type const&) const;
+  vertex_key_type       outward_vertex_key(graph_type const&) const;
 
 private:
-  vertex_key_type in_vertex_;
-  vertex_key_type out_vertex_;
+  vertex_key_type inward_vertex_;
+  vertex_key_type outward_vertex_;
 };
 
 ///-------------------------------------------------------------------------------------
-/// daa_vertex
+/// dav_vertex
 ///
 /// @tparam VV     Vertex Value type. default = empty_value.
 /// @tparam EV     Edge Value type. default = empty_value.
@@ -155,13 +137,13 @@ private:
 /// @tparam A      Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class daa_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
+class dav_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
 public:
-  using graph_type            = daa_graph<VV, EV, GV, IndexT, A>;
+  using graph_type            = directed_adjacency_vector<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
   using base_type             = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
 
-  using vertex_type            = daa_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_type            = dav_vertex<VV, EV, GV, IndexT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
   using vertex_iterator        = typename vertex_set::iterator;
@@ -171,7 +153,7 @@ public:
   using vertex_key_type        = vertex_index;
 
   using edge_user_value_type = EV;
-  using edge_type            = daa_edge<VV, EV, GV, IndexT, A>;
+  using edge_type            = dav_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
   using edge_index           = IndexT;
@@ -183,21 +165,21 @@ public:
   using vertex_edge_iterator       = edge_iterator;
   using const_vertex_edge_iterator = const_edge_iterator;
 
-  using vertex_out_edge_size_type      = typename edge_set::size_type;
-  using vertex_out_edge_iterator       = edge_iterator;
-  using const_vertex_out_edge_iterator = const_edge_iterator;
+  using vertex_outward_edge_size_type      = typename edge_set::size_type;
+  using vertex_outward_edge_iterator       = edge_iterator;
+  using const_vertex_outward_edge_iterator = const_edge_iterator;
 
 public:
-  daa_vertex() noexcept             = default;
-  daa_vertex(daa_vertex const&)     = default;
-  daa_vertex(daa_vertex&&) noexcept = default;
-  ~daa_vertex() noexcept            = default;
-  daa_vertex& operator=(daa_vertex const&) = default;
-  daa_vertex& operator=(daa_vertex&&) = default;
+  dav_vertex() noexcept             = default;
+  dav_vertex(dav_vertex const&)     = default;
+  dav_vertex(dav_vertex&&) noexcept = default;
+  ~dav_vertex() noexcept            = default;
+  dav_vertex& operator=(dav_vertex const&) = default;
+  dav_vertex& operator=(dav_vertex&&) = default;
 
-  daa_vertex(vertex_set& vertices, vertex_index index);
-  daa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type const&);
-  daa_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&);
+  dav_vertex(vertex_set& vertices, vertex_index index);
+  dav_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type const&);
+  dav_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&);
 
   void set_edge_begin(graph_type&, edge_iterator);
 
@@ -217,7 +199,7 @@ private:
 
 /// A simple semi-mutable graph emphasizing performance and space.
 ///
-/// daa_graph is a compressed adjacency array graph with the following characteristics:
+/// directed_adjacency_vector is a compressed adjacency array graph with the following characteristics:
 ///		1.	a forward-only directed graph
 ///		2.	user-defined value types for vertices, edges and the graph.
 ///		3.	iterating over vertices occurs in O(V) and over edges in O(E) time.
@@ -231,7 +213,7 @@ private:
 /// time to identify the largest vertex index referenced (so the internal vertex vector is
 /// allocated only once), and the second time to build the internal edges vector.
 ///
-/// When constructing the daa_graph, vertices are identified by their index in the vertex
+/// When constructing the directed_adjacency_vector, vertices are identified by their index in the vertex
 /// container passed. Edges refer to their in/out vertices using the vertex index. If more
 /// vertices are referred to in the edges container in the constructor, then the internal
 /// vertex vector will be sized to accomodate the largest vertex index used by the edges.
@@ -253,16 +235,16 @@ private:
 /// @tparam A      Allocator. default = std::allocator
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-class daa_graph : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
+class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
   using base_type                   = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
-  using graph_type                  = daa_graph<VV, EV, GV, IndexT, A>;
+  using graph_type                  = directed_adjacency_vector<VV, EV, GV, IndexT, A>;
   using const_graph_type            = const graph_type;
   using graph_user_value_type       = GV;
   using const_graph_user_value_type = const GV;
   using allocator_type              = A;
 
-  using vertex_type                  = daa_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_type                  = dav_vertex<VV, EV, GV, IndexT, A>;
   using const_vertex_type            = const vertex_type;
   using vertex_user_value_type       = VV;
   using const_vertex_user_value_type = const VV;
@@ -280,7 +262,7 @@ public:
   using vertex_range          = decltype(::ranges::make_subrange(declval<vertex_set&>()));
   using const_vertex_range    = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
 
-  using edge_type                  = daa_edge<VV, EV, GV, IndexT, A>;
+  using edge_type                  = dav_edge<VV, EV, GV, IndexT, A>;
   using const_edge_type            = const edge_type;
   using edge_user_value_type       = EV;
   using const_edge_user_value_type = const EV;
@@ -297,32 +279,28 @@ public:
   using edge_range          = decltype(::ranges::make_subrange(declval<edge_set&>()));
   using const_edge_range    = decltype(::ranges::make_subrange(declval<edge_set const&>()));
 
-  using vertex_out_edge_size_type      = typename edge_set::size_type;
-  using vertex_out_edge_ssize_type     = make_signed_t<vertex_out_edge_size_type>;
-  using vertex_out_edge_iterator       = typename edge_range::iterator;
-  using const_vertex_out_edge_iterator = typename const_edge_range::iterator;
-  using vertex_out_edge_range          = edge_range;
-  using const_vertex_out_edge_range    = const_edge_range;
+  using vertex_outward_edge_size_type      = typename edge_set::size_type;
+  using vertex_outward_edge_ssize_type     = make_signed_t<vertex_outward_edge_size_type>;
+  using vertex_outward_edge_iterator       = typename edge_range::iterator;
+  using const_vertex_outward_edge_iterator = typename const_edge_range::iterator;
+  using vertex_outward_edge_range          = edge_range;
+  using const_vertex_outward_edge_range    = const_edge_range;
 
-  using vertex_edge_size_type      = vertex_out_edge_size_type;
-  using vertex_edge_ssize_type     = vertex_out_edge_ssize_type;
-  using vertex_edge_iterator       = vertex_out_edge_iterator;
-  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
+  using vertex_edge_size_type      = vertex_outward_edge_size_type;
+  using vertex_edge_ssize_type     = vertex_outward_edge_ssize_type;
+  using vertex_edge_iterator       = vertex_outward_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_outward_edge_iterator;
   using vertex_edge_range          = edge_range;
   using const_vertex_edge_range    = const_edge_range;
 
 public:
-  daa_graph() noexcept(noexcept(allocator_type())) = default;
-  daa_graph(daa_graph&& rhs) noexcept              = default;
-  daa_graph(daa_graph const&)                      = default;
-  ~daa_graph()                                     = default;
+  directed_adjacency_vector() noexcept(noexcept(allocator_type()))    = default;
+  directed_adjacency_vector(directed_adjacency_vector&& rhs) noexcept = default;
+  directed_adjacency_vector(directed_adjacency_vector const&)         = default;
 
-  daa_graph(allocator_type const& alloc) noexcept;
-  daa_graph(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
-  daa_graph(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
-
-  daa_graph& operator=(daa_graph const&) = default;
-  daa_graph& operator=(daa_graph&&) = default;
+  directed_adjacency_vector(allocator_type const& alloc) noexcept;
+  directed_adjacency_vector(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
+  directed_adjacency_vector(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -360,7 +338,7 @@ public:
   /// @param erng       The container of edge data.
   /// @param vrng       The container of vertex data.
   /// @param ekey_fnc   The edge key extractor functor:
-  ///                   ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
+  ///                   ekey_fnc(ERng::value_type) -> directed_adjacency_vector::edge_key_type
   /// @param evalue_fnc The edge value extractor functor:
   ///                   evalue_fnc(ERng::value_type) -> edge_value_t<G>.
   /// @param vvalue_fnc The vertex value extractor functor:
@@ -369,15 +347,20 @@ public:
   ///                   vertices & edges.
   ///
   // clang-format off
-  template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-    requires daa_edge_data<ERng, EKeyFnc, EValueFnc> && daa_vertex_data<VRng, VValueFnc>
-  daa_graph(ERng const&      erng,
-            VRng const&      vrng,
-            EKeyFnc const&   ekey_fnc,
-            EValueFnc const& evalue_fnc,
-            VValueFnc const& vvalue_fnc,
-            GV const&        gv    = GV(),
-            A const&         alloc = A());
+  template <typename ERng, 
+            typename EKeyFnc, 
+            typename EValueFnc, 
+            typename VRng, 
+            typename VValueFnc>
+    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
+          && vertex_range_extractor<VRng, VValueFnc>
+  directed_adjacency_vector(ERng const&      erng,
+                           VRng const&      vrng,
+                           EKeyFnc const&   ekey_fnc,
+                           EValueFnc const& evalue_fnc,
+                           VValueFnc const& vvalue_fnc,
+                           GV const&        gv    = GV(),
+                           A const&         alloc = A());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -393,7 +376,7 @@ public:
   ///
   /// @param erng       The container of edge data.
   /// @param ekey_fnc   The edge key extractor functor:
-  ///                   ekey_fnc(ERng::value_type) -> daa_graph::edge_key_type
+  ///                   ekey_fnc(ERng::value_type) -> directed_adjacency_vector::edge_key_type
   /// @param evalue_fnc The edge value extractor functor:
   ///                   evalue_fnc(ERng::value_type) -> edge_value_t<G>.
   /// @param alloc      The allocator to use for internal containers for
@@ -401,29 +384,40 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
-    requires daa_edge_data<ERng, EKeyFnc, EValueFnc>
-  daa_graph(ERng const& erng, EKeyFnc const& ekey_fnc, EValueFnc const& evalue_fnc, GV const& gv = GV(), A const& alloc = A());
+    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc>
+  directed_adjacency_vector(ERng const&      rng, 
+                           EKeyFnc const&   ekey_fnc, 
+                           EValueFnc const& evalue_fnc, 
+                           GV const&        gv = GV(), 
+                           A const&         alloc = A());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
-  /// list with a tuple with 3 edge elements: in_vertex_key,
-  /// out_vertex_key and edge_value.
+  /// list with a tuple with 3 edge elements: inward_vertex_key,
+  /// outward_vertex_key and edge_value.
   ///
-  /// @param ilist Initializer list of tuples with in_vertex_key,
-  ///              out_vertex_key and the edge value.
+  /// @param ilist Initializer list of tuples with inward_vertex_key,
+  ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
-  daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
-            A const&                                                                               alloc = A());
+  directed_adjacency_vector(
+        initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
+        A const&                                                                               alloc = A());
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
   ///
-  /// @param ilist Initializer list of tuples with in_vertex_key and
-  ///              out_vertex_key.
+  /// @param ilist Initializer list of tuples with inward_vertex_key and
+  ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
-  daa_graph(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist, A const& alloc = A());
+  directed_adjacency_vector(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
+                            A const&                                                         alloc = A());
+
+  ~directed_adjacency_vector() = default;
+
+  directed_adjacency_vector& operator=(directed_adjacency_vector const&) = default;
+  directed_adjacency_vector& operator=(directed_adjacency_vector&&) = default;
 
 public:
   constexpr vertex_set&       vertices();
@@ -469,7 +463,7 @@ public:
   void clear();
 
 protected:
-  vertex_iterator finalize_out_edges(vertex_range);
+  vertex_iterator finalize_outward_edges(vertex_range);
   void            throw_unordered_edges() const;
 
 private:
@@ -480,8 +474,8 @@ private:
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
-  using graph_type                  = daa_graph<VV, EV, GV, IndexT, A>;
+struct graph_traits<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
+  using graph_type                  = directed_adjacency_vector<VV, EV, GV, IndexT, A>;
   using const_graph_type            = const graph_type;
   using graph_user_value_type       = typename graph_type::graph_user_value_type;
   using const_graph_user_value_type = typename graph_type::const_graph_user_value_type;
@@ -518,19 +512,19 @@ struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
   using edge_range          = typename graph_type::edge_range;
   using const_edge_range    = typename graph_type::const_edge_range;
 
-  using vertex_out_edge_size_type      = typename graph_type::vertex_out_edge_size_type;
-  using vertex_out_edge_ssize_type     = typename graph_type::vertex_out_edge_ssize_type;
-  using vertex_out_edge_iterator       = typename graph_type::vertex_out_edge_iterator;
-  using const_vertex_out_edge_iterator = typename graph_type::const_vertex_out_edge_iterator;
-  using vertex_out_edge_range          = typename graph_type::vertex_out_edge_range;
-  using const_vertex_out_edge_range    = typename graph_type::const_vertex_out_edge_range;
+  using vertex_outward_edge_size_type      = typename graph_type::vertex_outward_edge_size_type;
+  using vertex_outward_edge_ssize_type     = typename graph_type::vertex_outward_edge_ssize_type;
+  using vertex_outward_edge_iterator       = typename graph_type::vertex_outward_edge_iterator;
+  using const_vertex_outward_edge_iterator = typename graph_type::const_vertex_outward_edge_iterator;
+  using vertex_outward_edge_range          = typename graph_type::vertex_outward_edge_range;
+  using const_vertex_outward_edge_range    = typename graph_type::const_vertex_outward_edge_range;
 
-  using vertex_edge_size_type      = vertex_out_edge_size_type;
-  using vertex_edge_ssize_type     = vertex_out_edge_ssize_type;
-  using vertex_edge_iterator       = vertex_out_edge_iterator;
-  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
-  using vertex_edge_range          = vertex_out_edge_range;
-  using const_vertex_edge_range    = const_vertex_out_edge_range;
+  using vertex_edge_size_type      = vertex_outward_edge_size_type;
+  using vertex_edge_ssize_type     = vertex_outward_edge_ssize_type;
+  using vertex_edge_iterator       = vertex_outward_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_outward_edge_iterator;
+  using vertex_edge_range          = vertex_outward_edge_range;
+  using const_vertex_edge_range    = const_vertex_outward_edge_range;
 };
 
 
@@ -538,4 +532,4 @@ struct graph_traits<daa_graph<VV, EV, GV, IndexT, A>> {
 
 #endif // DIRECTED_ADJ_ARRAY_HPP
 
-#include "detail/directed_adjacency_array_impl.hpp"
+#include "detail/directed_adjacency_vector_impl.hpp"

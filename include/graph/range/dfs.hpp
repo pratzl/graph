@@ -6,8 +6,8 @@
 // depth-first search graph algorithms for vertices and edges.
 //
 // The algorithms are designed to work with both directed & undirected graphs
-// by using general functions such as vertex() and edges() instead of out_vertex()
-// and out_edges().
+// by using general functions such as vertex() and edges() instead of outward_vertex()
+// and outward_edges().
 //
 // The ranges have the following assumptions and behavior
 //  1.  The graph structure is assumed to remain stable during the duration of iteration.
@@ -34,7 +34,7 @@
 //  7.  [SG19] Support graphs with non-consecutive integers
 //  8.  Test with array<>
 //  9.  Test with unordered graph
-//  10. const_iterators should return const_vertex_iterator<G> for back_vertex() & out_vertex()
+//  10. const_iterators should return const_vertex_iterator<G> for back_vertex() & outward_vertex()
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?
@@ -318,21 +318,21 @@ public:
     bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
 
-    vertex_iterator_type in_vertex() const { return elem_.u; }
-    vertex_iterator_type out_vertex() const { return vertex(dfs_->graph_, *elem_.uv, *elem_.u); }
-    vertex_iterator_type back_vertex() const { return out_vertex(); }
+    vertex_iterator_type inward_vertex() const { return elem_.u; }
+    vertex_iterator_type outward_vertex() const { return vertex(dfs_->graph_, *elem_.uv, *elem_.u); }
+    vertex_iterator_type back_vertex() const { return outward_vertex(); }
 
     size_t depth() const { return dfs_->stack_.size(); }
 
-    bool is_path_end() const { return !out_exists(); }
+    bool is_path_end() const { return !outward_exists(); }
     bool is_back_edge() const {
-      // No outgoing edge, or outgoing vertex has been visited (undirected, or directed cycle)
-      return !out_exists() || (out_exists() && is_out_visited());
+      // No outward edge, or outward vertex has been visited (undirected, or directed cycle)
+      return !outward_exists() || (outward_exists() && is_outward_visited());
     }
 
   protected:
-    bool out_exists() const { return dfs_->out_exists(elem_); }
-    bool is_out_visited() const { return dfs_->is_out_visited(elem_); }
+    bool outward_exists() const { return dfs_->outward_exists(elem_); }
+    bool is_outward_visited() const { return dfs_->is_outward_visited(elem_); }
 
   protected:
     dfs_edge_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
@@ -384,9 +384,9 @@ public:
       return tmp;
     }
 
-    vertex_iterator_type in_vertex() const { return this->elem_.u; }
-    vertex_iterator_type out_vertex() const { return vertex(this->dfs_->graph_, *this->elem_.uv, *this->elem_.u); }
-    vertex_iterator_type back_vertex() const { return out_vertex(); }
+    vertex_iterator_type inward_vertex() const { return this->elem_.u; }
+    vertex_iterator_type outward_vertex() const { return vertex(this->dfs_->graph_, *this->elem_.uv, *this->elem_.u); }
+    vertex_iterator_type back_vertex() const { return outward_vertex(); }
   };
 
 public:
@@ -399,22 +399,22 @@ public:
   const_iterator cend() const { return const_iterator(*this, true); }
 
 protected:
-  bool out_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+  bool outward_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
     return uv != edges_end(graph_, *u);
   }
 
-  bool is_out_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+  bool is_outward_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
     const_vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
     vertex_key_t<G>            v_key = vertex_key(graph_, *v);
     return visited_[v_key] >= grey;
   }
 
   bool is_back_edge(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return !out_exists(u, uv) || (out_exists(u, uv) && is_out_visited(u, uv));
+    return !outward_exists(u, uv) || (outward_exists(u, uv) && is_outward_visited(u, uv));
   }
 
-  bool out_exists(stack_elem const& se) const { return out_exists(se.u, se.uv); }
-  bool is_out_visited(stack_elem const& se) const { return is_out_visited(se.u, se.uv); }
+  bool outward_exists(stack_elem const& se) const { return outward_exists(se.u, se.uv); }
+  bool is_outward_visited(stack_elem const& se) const { return is_outward_visited(se.u, se.uv); }
   bool is_back_edge(stack_elem const& se) const { return is_back_edge(se.u, se.uv); }
 
   bool is_parent(vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) const {
@@ -425,11 +425,11 @@ protected:
 
   stack_elem advance() {
     while (!stack_.empty()) {
-      if (!out_exists(stack_.top())) { // orphan vertex, or no out edges?
+      if (!outward_exists(stack_.top())) { // orphan vertex, or no out edges?
         visit(stack_.top().u, black);
         stack_.pop();
         continue;
-      } else if (is_out_visited(stack_.top())) { // back edge?
+      } else if (is_outward_visited(stack_.top())) { // back edge?
         auto [u, uv]                     = stack_.top();
         vertex_edge_iterator_t<G> uv_end = edges_end(graph_, *u);
         stack_.pop();

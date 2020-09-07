@@ -1,7 +1,7 @@
 #pragma once
 
-#include "graph/directed_adjacency_array.hpp"
-#include "graph/undirected_adj_list.hpp"
+#include "graph/directed_adjacency_vector.hpp"
+#include "graph/undirected_adjacency_list.hpp"
 
 #include <range/v3/algorithm/find.hpp>
 #include <range/v3/algorithm/lower_bound.hpp>
@@ -60,14 +60,14 @@ struct route {
 };
 
 struct daa_routes_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_array<std::graph::name_value, std::graph::weight_value>;
+  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, std::graph::weight_value>;
   using source_edge_range_t = routes_t;
   using source_edge_t       = source_edge_range_t::value_type;
 
   using vertex_label_t = std::string;
 
-  vertex_label_t in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.km; }
 };
@@ -79,8 +79,8 @@ struct ual_routes_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.km; }
 };
@@ -116,14 +116,14 @@ using data_edges_t    = std::vector<data_edge>;
 using vertex_labels_t = std::vector<std::string>;
 
 struct daa_data_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_array<std::graph::name_value, dbl_weight_value>;
+  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;
 
   using vertex_label_t = std::string;
 
-  vertex_label_t in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
@@ -135,8 +135,8 @@ struct ual_data_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
@@ -150,11 +150,11 @@ struct vov_data_edge_mapper {
   using vertex_label_t = std::string;
   using vertex_index_t = size_t;
 
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
 
-  vertex_index_t const& in_index(source_edge_t const& uv) const { return uv.from; }
-  vertex_index_t const& out_index(source_edge_t const& uv) const { return uv.to; }
+  vertex_index_t const& inward_index(source_edge_t const& uv) const { return uv.from; }
+  vertex_index_t const& outward_index(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
@@ -162,7 +162,7 @@ struct vov_data_edge_mapper {
 
 //---------------------------------------------------------------------------------------
 // Translates raw edge data into intermediate forms that can easily be used for
-// creating a directed_adjacency_array or undirected_adjacency_list.
+// creating a directed_adjacency_vector or undirected_adjacency_list.
 template <typename Mapper>
 class GraphXlate {
 public:
@@ -203,8 +203,8 @@ protected:
   vertex_labels_t unique_vertex_labels(EdgeRng const& uv_rng) const {
     vertex_labels_t vertex_labels;
     for (auto const& uv : uv_rng) {
-      vertex_labels.push_back(mapper_.in_label(uv));
-      vertex_labels.push_back(mapper_.out_label(uv));
+      vertex_labels.push_back(mapper_.inward_label(uv));
+      vertex_labels.push_back(mapper_.outward_label(uv));
     }
     return move(vertex_labels) | ranges::actions::sort | ranges::actions::unique;
   }

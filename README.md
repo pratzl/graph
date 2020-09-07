@@ -104,24 +104,26 @@ Other Useful Tools
 - [ ] API
   - [x] Common
     - [x] Replace type...const& --> const_type&
-    - [x] Add ssize defs & implementations for vertices, edge, out_edges & in_edges
+    - [x] Add ssize defs & implementations for vertices, edge, outward_edges & inward_edges
     - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
-    - [ ] add vertices(g,u) -> vertex_range_t<G>
-  - [ ] Outgoing API
-    - [ ] add out_vertices(g,u) -> vertex_range_t<G>
-  - [ ] Incoming API
-    - [ ] add in_vertices(g,u) -> vertex_range_t<G>
+    - [ ] add vertices(g,u) -> vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u)
 - [ ] Data structures
-  - [ ] directed adjacency array
+  - [ ] Common
+    - [x] remove edge & vertex definitions in paper (distracting & not referenced)
+    - [x] replace use of short graph name with long name
+    - [x] remove type defs on graph classes in paper (only ctors should exist)
+    - [ ] describe rationale for data structures used
+  - [ ] directed adjacency vector
     - [x] implement with vector
     - [ ] implement with deque?
     - [ ] implement with map? (non-integer index)
     - [ ] use common data structure for directed graph?
     - [ ] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them?
+    - [x] rename directed_adjacency_array -> directed_adjacency_vector
   - [x] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
@@ -176,20 +178,28 @@ Other Useful Tools
     - [x] BFS & DFS iterator return types
     - [x] replace *reinterpret_cast<T*>(nullptr), with declval<T&>() 
   - [ ] Jens Mauer
-    - [ ] graph_traits<>
+    - [x] graph_traits<>
     - [ ] functions are missing concepts
     - [x] noexcept shouldn't be on all functions
     - [ ] (final comment review)
   - [ ] Andrew Sutton
-    - [ ] Move concepts to beginning of the paper
+    - [x] Move concepts to beginning of the paper
     - [ ] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
-    - [ ] Add -ward suffix for inward & outward (or -coming/-going?)
+    - [x] Add -ward suffix for inward & outward
     - [ ] Tighten up definition of undirected
     - [ ] Add new concepts
       - [ ] Path
       - [ ] Cycle
       - [ ] add/delete vertices|edges
     - [ ] (final comment review)
+  - [ ] Nikolaev, Andrey (Intel)
+    - [ ] Consider adding undirected_adjacency_array & directed_adjacency_list (perf vs. mutabilty)
+    - [ ] Consider adding adjacency_matrix, particularly for subgraph isomorphism
+    - [x] graph names should only include long names (not short & long names)
+    - [ ] use long names for consistency & clarity (graphs, algorithms, API)
+    - [x] Remove types on graph data structures. Only constructors should appear on graph
+    - [x] Remove definitions for edge & vertex classes (confusing) in favor of using graph_traits types
+    - [ ] Add noexcept to size() & ssize() functions? (consider legacy graphs that don't use noexcept)
 
 ## Thanks to
 
