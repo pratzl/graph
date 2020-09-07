@@ -75,12 +75,12 @@ namespace std::graph {
 
 
 template <typename... Attributes>
-constexpr auto size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
+constexpr auto size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> noexcept {
   return vertices_size(g);
 }
 
 template <typename... Attributes>
-constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_ssize_t<vov<Attributes...>> {
+constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_ssize_t<vov<Attributes...>> noexcept {
   return vertices_ssize(g);
 }
 
@@ -127,12 +127,12 @@ constexpr auto vertices(vov<Attributes...> const& g) -> const_vertex_range_t<vov
 }
 
 template <typename... Attributes>
-constexpr auto vertices_size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
+constexpr auto vertices_size(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> noexcept {
   return g.size();
 }
 
 template <typename... Attributes>
-constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> {
+constexpr auto vertices_ssize(vov<Attributes...> const& g) -> vertex_size_t<vov<Attributes...>> noexcept {
   using ssize_t = vertex_ssize_t<vov<Attributes...>>;
   return static_cast<ssize_t>(g.size());
 }
@@ -268,7 +268,7 @@ constexpr auto edges(vov<Attributes...> const& g, const_vertex_t<vov<Attributes.
 }
 
 template <typename... Attributes>
-constexpr auto edges_size(vov<Attributes...> const& g) -> edge_size_t<vov<Attributes...>> {
+constexpr auto edges_size(vov<Attributes...> const& g) noexcept -> edge_size_t<vov<Attributes...>> {
   edge_size_t<vov<Attributes...>> n = 0;
   for (auto& u : vertices(g))
     for (auto& uv : u)
@@ -276,7 +276,7 @@ constexpr auto edges_size(vov<Attributes...> const& g) -> edge_size_t<vov<Attrib
   return n;
 }
 template <typename... Attributes>
-constexpr auto edges_ssize(vov<Attributes...> const& g) -> edge_ssize_t<vov<Attributes...>> {
+constexpr auto edges_ssize(vov<Attributes...> const& g) noexcept -> edge_ssize_t<vov<Attributes...>> {
   edge_ssize_t<vov<Attributes...>> n = 0;
   for (auto& u : vertices(g))
     for (auto& uv : u)
@@ -285,13 +285,13 @@ constexpr auto edges_ssize(vov<Attributes...> const& g) -> edge_ssize_t<vov<Attr
 }
 
 template <typename... Attributes>
-constexpr auto edges_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u) noexcept
       -> vertex_edge_size_t<vov<Attributes...>> {
   return u.size();
 }
 
 template <typename... Attributes>
-constexpr auto edges_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto edges_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u) noexcept
       -> vertex_edge_ssize_t<vov<Attributes...>> {
   return static_cast<vertex_edge_ssize_t<vov<Attributes...>>>(u.size());
 }
@@ -432,12 +432,12 @@ constexpr auto outward_cend(vov<Attributes...> const& g, const_vertex_t<vov<Attr
 }
 
 template <typename... Attributes>
-constexpr auto outward_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto outward_size(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u) noexcept
       -> vertex_outward_edge_size_t<vov<Attributes...>> {
   return u.size();
 }
 template <typename... Attributes>
-constexpr auto outward_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u)
+constexpr auto outward_ssize(vov<Attributes...> const& g, const_vertex_t<vov<Attributes...>>& u) noexcept
       -> vertex_outward_edge_ssize_t<vov<Attributes...>> {
   return static_cast<vertex_outward_edge_ssize_t<vov<Attributes...>>>(u.size());
 }

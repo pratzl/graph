@@ -196,12 +196,10 @@ Other Useful Tools
     - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
     - [ ] Consider adding adjacency_matrix, particularly for subgraph isomorphism
     - [x] graph names should only include long names (not short & long names)
-    - [ ] use long names for consistency & clarity (graphs, algorithms, API)
-      - [ ] breath_first_search_vertex_range
-      - [ ] breath_first_search_end_range
+    - [x] use long names for consistency & clarity (graphs, algorithms, API)
     - [x] Remove types on graph data structures. Only constructors should appear on graph
     - [x] Remove definitions for edge & vertex classes (confusing) in favor of using graph_traits types
-    - [ ] Add noexcept to size() & ssize() functions? (consider legacy graphs that don't use noexcept)
+    - [x] Add noexcept to size() & ssize() functions? (consider legacy graphs that don't use noexcept)
 
 ## Thanks to
 

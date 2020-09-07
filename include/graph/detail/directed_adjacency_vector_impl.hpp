@@ -591,13 +591,13 @@ constexpr auto outward_cend(directed_adjacency_vector<VV, EV, GV, IndexT, A> con
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto outward_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&           g,
-                            const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u)
+                            const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_outward_edge_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return u.edge_size(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto outward_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&           g,
-                             const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u)
+                             const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_outward_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using ssize_t = vertex_outward_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(u.edge_size(g));
@@ -695,7 +695,7 @@ constexpr auto edges_cend(directed_adjacency_vector<VV, EV, GV, IndexT, A> const
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&           g,
-                          const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u)
+                          const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return static_cast<vertex_edge_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>>(u.edges_end(g) -
                                                                                            u.edges_begin(g));
@@ -703,7 +703,7 @@ constexpr auto edges_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&           g,
-                           const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u)
+                           const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return static_cast<vertex_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>>(u.edges_end(g) -
                                                                                             u.edges_begin(g));
@@ -906,13 +906,13 @@ constexpr auto find_edge(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&
 // API: common container functions
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return vertices_size(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return vertices_ssize(g);
 }
@@ -967,13 +967,13 @@ constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& 
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto vertices_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return g.vertices().size();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto vertices_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using ssize_t = vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(g.vertices().size());
@@ -1076,12 +1076,12 @@ constexpr auto edges_cend(directed_adjacency_vector<VV, EV, GV, IndexT, A> const
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto edges_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept
       -> edge_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   return g.edges().size();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto edges_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept
       -> edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using ssize_t = edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(g.edges().size());

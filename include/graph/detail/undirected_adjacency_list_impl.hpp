@@ -1027,13 +1027,13 @@ constexpr auto edges_cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
-                          const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+                          const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return u.edge_size();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
-                           const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u)
+                           const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   using ssize_t = vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(u.edge_size());
@@ -1216,13 +1216,13 @@ constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& 
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto vertices_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.vertices().size();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertices_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto vertices_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   using ssize_t = vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(g.vertices().size());
@@ -1326,12 +1326,12 @@ constexpr auto edges_cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto edges_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept
       -> edge_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return g.edges_size();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto edges_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto edges_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept
       -> edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   using ssize_t = edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
   return static_cast<ssize_t>(g.edges().size());

@@ -264,9 +264,9 @@ template <typename G>
 constexpr auto vertices(G const& g) -> const_vertex_range_t<G>;
 
 template <typename G>
-constexpr auto vertices_size(G const& g) -> vertex_size_t<G>;
+constexpr auto vertices_size(G const& g) noexcept -> vertex_size_t<G>;
 template <typename G>
-constexpr auto vertices_ssize(G const& g) -> vertex_ssize_t<G>;
+constexpr auto vertices_ssize(G const& g) noexcept -> vertex_ssize_t<G>;
 
 template <typename G>
 constexpr auto begin(G& g) -> vertex_iterator_t<G>;
@@ -329,9 +329,9 @@ template <typename G>
 constexpr auto edges_cend(G const& g) -> const_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto edges_size(G const& g) -> edge_size_t<G>;
+constexpr auto edges_size(G const& g) noexcept -> edge_size_t<G>;
 template <typename G>
-constexpr auto edges_ssize(G const& g) -> edge_ssize_t<G>;
+constexpr auto edges_ssize(G const& g) noexcept -> edge_ssize_t<G>;
 
 template <typename G>
 constexpr auto find_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> edge_iterator_t<G>;
@@ -413,9 +413,9 @@ template <typename G>
 constexpr auto edges_cend(G const& g, const_vertex_t<G>& u) -> const_vertex_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto edges_size(G const& g, const_vertex_t<G>& u) -> vertex_edge_size_t<G>;
+constexpr auto edges_size(G const& g, const_vertex_t<G>& u) noexcept -> vertex_edge_size_t<G>;
 template <typename G>
-constexpr auto edges_ssize(G const& g, const_vertex_t<G>& u) -> vertex_edge_ssize_t<G>;
+constexpr auto edges_ssize(G const& g, const_vertex_t<G>& u) noexcept -> vertex_edge_ssize_t<G>;
 
 template <typename G>
 constexpr auto find_vertex_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_edge_iterator_t<G>;
@@ -520,9 +520,9 @@ template <typename G>
 constexpr auto outward_cend(G const& g, const_vertex_t<G>& u) -> const_vertex_outward_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto outward_size(G const& g, const_vertex_t<G>& u) -> vertex_outward_edge_size_t<G>;
+constexpr auto outward_size(G const& g, const_vertex_t<G>& u) noexcept -> vertex_outward_edge_size_t<G>;
 template <typename G>
-constexpr auto outward_ssize(G const& g, const_vertex_t<G>& u) -> vertex_outward_edge_ssize_t<G>;
+constexpr auto outward_ssize(G const& g, const_vertex_t<G>& u) noexcept -> vertex_outward_edge_ssize_t<G>;
 
 template <typename G>
 constexpr auto find_outward_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_outward_edge_iterator_t<G>;
@@ -599,9 +599,9 @@ template <typename G>
 constexpr auto inward_cend(G const& g, const_vertex_t<G>& u) -> const_vertex_inward_edge_iterator_t<G>;
 
 template <typename G>
-constexpr auto inward_size(G& g, vertex_t<G>& u) -> vertex_inward_edge_size_t<G>;
+constexpr auto inward_size(G& g, vertex_t<G>& u) noexcept -> vertex_inward_edge_size_t<G>;
 template <typename G>
-constexpr auto inward_ssize(G& g, vertex_t<G>& u) -> vertex_inward_edge_ssize_t<G>;
+constexpr auto inward_ssize(G& g, vertex_t<G>& u) noexcept -> vertex_inward_edge_ssize_t<G>;
 
 template <typename G>
 constexpr auto find_inward_edge(G& g, vertex_t<G>& u, vertex_t<G>& v) -> vertex_inward_edge_iterator_t<G>;

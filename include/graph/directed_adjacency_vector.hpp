@@ -35,11 +35,11 @@ class dav_edge;
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g)
+constexpr auto ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const& g) noexcept 
       -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
