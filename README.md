@@ -104,13 +104,13 @@ Other Useful Tools
 - [ ] API
   - [x] Common
     - [x] Replace type...const& --> const_type&
-    - [x] Add ssize defs & implementations for vertices, edge, out_edges & in_edges
+    - [x] Add ssize defs & implementations for vertices, edge, outward_edges & inward_edges
     - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
-    - [ ] add vertices(g,u) -> vertex_range_t<G> & matching out_vertices(g,u), in_vertices(g,u)
+    - [ ] add vertices(g,u) -> vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u)
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
@@ -185,7 +185,7 @@ Other Useful Tools
   - [ ] Andrew Sutton
     - [x] Move concepts to beginning of the paper
     - [ ] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
-    - [ ] Add -ward suffix for inward & outward (or -coming/-going?)
+    - [x] Add -ward suffix for inward & outward
     - [ ] Tighten up definition of undirected
     - [ ] Add new concepts
       - [ ] Path

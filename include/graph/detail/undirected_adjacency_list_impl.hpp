@@ -57,26 +57,26 @@ ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::operator--(int) {
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::advance() {
-  edge_list_in_link_type&  in_link  = *edge_; // in.vertex_key_ == this->vertex_key_;
-  edge_list_out_link_type& out_link = *edge_;
-  if (in_link.vertex_key_ == vertex_key_) {
-    edge_ = in_link.next_;
+  edge_list_inward_link_type&  inward_link  = *edge_; // in.vertex_key_ == this->vertex_key_;
+  edge_list_outward_link_type& outward_link = *edge_;
+  if (inward_link.vertex_key_ == vertex_key_) {
+    edge_ = inward_link.next_;
   } else {
-    assert(out_link.vertex_key_ == vertex_key_);
-    edge_ = out_link.next_;
+    assert(outward_link.vertex_key_ == vertex_key_);
+    edge_ = outward_link.next_;
   }
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_edge_list<VV, EV, GV, IndexT, A>::const_iterator::retreat() {
   if (edge_) {
-    edge_list_in_link_type&  in_link  = *edge_; // in.vertex_key_ == this->vertex_key_;
-    edge_list_out_link_type& out_link = *edge_;
-    if (in_link.vertex_key_ == vertex_key_) {
-      edge_ = in_link.prev_;
+    edge_list_inward_link_type&  inward_link  = *edge_; // in.vertex_key_ == this->vertex_key_;
+    edge_list_outward_link_type& outward_link = *edge_;
+    if (inward_link.vertex_key_ == vertex_key_) {
+      edge_ = inward_link.prev_;
     } else {
-      assert(out_link.vertex_key_ == vertex_key_);
-      edge_ = out_link.prev_;
+      assert(outward_link.vertex_key_ == vertex_key_);
+      edge_ = outward_link.prev_;
     }
   } else {
     vertex_iterator u = graph_->find_vertex(vertex_key_);
@@ -184,16 +184,16 @@ template <typename ListT>
 void ual_edge_list<VV, EV, GV, IndexT, A>::link_back(edge_type&                                        uv,
                                                      ual_edge_list_link<VV, EV, GV, IndexT, A, ListT>& uv_link) {
   if (tail_) {
-    edge_list_in_link_type&  tail_in_link  = static_cast<edge_list_in_link_type&>(*tail_);
-    edge_list_out_link_type& tail_out_link = static_cast<edge_list_out_link_type&>(*tail_);
-    if (tail_in_link.vertex_key_ == uv_link.vertex_key_) {
-      uv_link.prev_      = tail_;
-      tail_in_link.next_ = &uv;
-      tail_              = &uv;
+    edge_list_inward_link_type&  tail_inward_link  = static_cast<edge_list_inward_link_type&>(*tail_);
+    edge_list_outward_link_type& tail_outward_link = static_cast<edge_list_outward_link_type&>(*tail_);
+    if (tail_inward_link.vertex_key_ == uv_link.vertex_key_) {
+      uv_link.prev_          = tail_;
+      tail_inward_link.next_ = &uv;
+      tail_                  = &uv;
     } else {
-      uv_link.prev_       = tail_;
-      tail_out_link.next_ = &uv;
-      tail_               = &uv;
+      uv_link.prev_           = tail_;
+      tail_outward_link.next_ = &uv;
+      tail_                   = &uv;
     }
   } else {
     assert(!head_ && !tail_ && size_ == 0);
@@ -208,13 +208,13 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::unlink(edge_type&                    
                                                   ual_edge_list_link<VV, EV, GV, IndexT, A, ListT>& uv_link) {
 
   if (uv_link.prev_) {
-    edge_list_in_link_type&  prev_in_link  = static_cast<edge_list_in_link_type&>(*uv_link.prev_);
-    edge_list_out_link_type& prev_out_link = static_cast<edge_list_out_link_type&>(*uv_link.prev_);
-    if (prev_in_link.vertex_key_ == uv_link.vertex_key_) {
-      prev_in_link.next_ = uv_link.next_;
+    edge_list_inward_link_type&  prev_inward_link  = static_cast<edge_list_inward_link_type&>(*uv_link.prev_);
+    edge_list_outward_link_type& prev_outward_link = static_cast<edge_list_outward_link_type&>(*uv_link.prev_);
+    if (prev_inward_link.vertex_key_ == uv_link.vertex_key_) {
+      prev_inward_link.next_ = uv_link.next_;
     } else {
-      assert(prev_out_link.vertex_key_ == uv_link.vertex_key_);
-      prev_out_link.next_ = uv_link.next_;
+      assert(prev_outward_link.vertex_key_ == uv_link.vertex_key_);
+      prev_outward_link.next_ = uv_link.next_;
     }
   }
   if (tail_ == &uv) {
@@ -222,13 +222,13 @@ void ual_edge_list<VV, EV, GV, IndexT, A>::unlink(edge_type&                    
   }
 
   if (uv_link.next_) {
-    edge_list_in_link_type&  next_in_link  = static_cast<edge_list_in_link_type&>(*uv_link.next_);
-    edge_list_out_link_type& next_out_link = static_cast<edge_list_out_link_type&>(*uv_link.next_);
-    if (next_in_link.vertex_key_ == uv_link.vertex_key_) {
-      next_in_link.prev_ = uv_link.prev_;
+    edge_list_inward_link_type&  next_inward_link  = static_cast<edge_list_inward_link_type&>(*uv_link.next_);
+    edge_list_outward_link_type& next_outward_link = static_cast<edge_list_outward_link_type&>(*uv_link.next_);
+    if (next_inward_link.vertex_key_ == uv_link.vertex_key_) {
+      next_inward_link.prev_ = uv_link.prev_;
     } else {
-      assert(next_out_link.vertex_key_ == uv_link.vertex_key_);
-      next_out_link.prev_ = uv_link.prev_;
+      assert(next_outward_link.vertex_key_ == uv_link.vertex_key_);
+      next_outward_link.prev_ = uv_link.prev_;
     }
   }
   if (head_ == &uv) {
@@ -285,8 +285,8 @@ ual_edge_list<VV, EV, GV, IndexT, A>::cend(graph_type const& g, vertex_type cons
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type& g, vertex_type& u, vertex_type& v) noexcept
       : base_type()
-      , edge_list_in_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
-      , edge_list_out_link_type(static_cast<vertex_key_type>(&v - g.vertices().vertices.data())) {
+      , edge_list_inward_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
+      , edge_list_outward_link_type(static_cast<vertex_key_type>(&v - g.vertices().vertices.data())) {
   link_back(u, v);
 }
 
@@ -296,8 +296,8 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&                 g,
                                           vertex_type&                v,
                                           edge_user_value_type const& val) noexcept
       : base_type(val)
-      , edge_list_in_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
-      , edge_list_out_link_type(static_cast<vertex_key_type>(&v - g.vertices().data())) {
+      , edge_list_inward_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
+      , edge_list_outward_link_type(static_cast<vertex_key_type>(&v - g.vertices().data())) {
   link_back(u, v);
 }
 
@@ -307,8 +307,8 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&            g,
                                           vertex_type&           v,
                                           edge_user_value_type&& val) noexcept
       : base_type(move(val))
-      , edge_list_in_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
-      , edge_list_out_link_type(static_cast<vertex_key_type>(&v - g.vertices().data())) {
+      , edge_list_inward_link_type(static_cast<vertex_key_type>(&u - g.vertices().data()))
+      , edge_list_outward_link_type(static_cast<vertex_key_type>(&v - g.vertices().data())) {
   link_back(u, v);
 }
 
@@ -333,84 +333,85 @@ ual_edge<VV, EV, GV, IndexT, A>::ual_edge(graph_type&            g,
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 ual_edge<VV, EV, GV, IndexT, A>::~ual_edge() noexcept {
-  edge_list_out_link_type& out_link = *static_cast<edge_list_out_link_type*>(this);
-  assert(out_link.prev() == nullptr && out_link.next() == nullptr); // has edge been unlinked?
+  edge_list_outward_link_type& outward_link = *static_cast<edge_list_outward_link_type*>(this);
+  assert(outward_link.prev() == nullptr && outward_link.next() == nullptr); // has edge been unlinked?
 
-  edge_list_in_link_type& in_link = *static_cast<edge_list_in_link_type*>(this);
-  assert(in_link.prev() == nullptr && in_link.next() == nullptr); // has edge been unlinked?
+  edge_list_inward_link_type& inward_link = *static_cast<edge_list_inward_link_type*>(this);
+  assert(inward_link.prev() == nullptr && inward_link.next() == nullptr); // has edge been unlinked?
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_edge<VV, EV, GV, IndexT, A>::link_front(vertex_type& u, vertex_type& v) noexcept {
-  u.edges_.link_front(*this, *static_cast<edge_list_in_link_type*>(this));
-  v.edges_.link_front(*this, *static_cast<edge_list_out_link_type*>(this));
+  u.edges_.link_front(*this, *static_cast<edge_list_inward_link_type*>(this));
+  v.edges_.link_front(*this, *static_cast<edge_list_outward_link_type*>(this));
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_edge<VV, EV, GV, IndexT, A>::link_back(vertex_type& u, vertex_type& v) noexcept {
-  u.edges_.link_back(*this, *static_cast<edge_list_in_link_type*>(this));
-  v.edges_.link_back(*this, *static_cast<edge_list_out_link_type*>(this));
+  u.edges_.link_back(*this, *static_cast<edge_list_inward_link_type*>(this));
+  v.edges_.link_back(*this, *static_cast<edge_list_outward_link_type*>(this));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_edge<VV, EV, GV, IndexT, A>::unlink(vertex_type& u, vertex_type& v) noexcept {
-  u.edges_.unlink(*this, *static_cast<edge_list_in_link_type*>(this));
-  v.edges_.unlink(*this, *static_cast<edge_list_out_link_type*>(this));
+  u.edges_.unlink(*this, *static_cast<edge_list_inward_link_type*>(this));
+  v.edges_.unlink(*this, *static_cast<edge_list_outward_link_type*>(this));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_iterator
-ual_edge<VV, EV, GV, IndexT, A>::in_vertex(graph_type& g) noexcept {
-  return g.vertices().begin() + in_vertex_key(g);
+ual_edge<VV, EV, GV, IndexT, A>::inward_vertex(graph_type& g) noexcept {
+  return g.vertices().begin() + inward_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_edge<VV, EV, GV, IndexT, A>::in_vertex(graph_type const& g) const noexcept {
-  return static_cast<edge_list_in_link_type const*>(this)->vertex(g);
+ual_edge<VV, EV, GV, IndexT, A>::inward_vertex(graph_type const& g) const noexcept {
+  return static_cast<edge_list_inward_link_type const*>(this)->vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_key_type
-ual_edge<VV, EV, GV, IndexT, A>::in_vertex_key(graph_type const& g) const noexcept {
-  return static_cast<edge_list_in_link_type const*>(this)->vertex_key();
+ual_edge<VV, EV, GV, IndexT, A>::inward_vertex_key(graph_type const& g) const noexcept {
+  return static_cast<edge_list_inward_link_type const*>(this)->vertex_key();
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_iterator
-ual_edge<VV, EV, GV, IndexT, A>::out_vertex(graph_type& g) noexcept {
-  return g.vertices().begin() + out_vertex_key(g);
+ual_edge<VV, EV, GV, IndexT, A>::outward_vertex(graph_type& g) noexcept {
+  return g.vertices().begin() + outward_vertex_key(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_edge<VV, EV, GV, IndexT, A>::out_vertex(graph_type const& g) const noexcept {
-  return static_cast<edge_list_out_link_type const*>(this)->vertex(g);
+ual_edge<VV, EV, GV, IndexT, A>::outward_vertex(graph_type const& g) const noexcept {
+  return static_cast<edge_list_outward_link_type const*>(this)->vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_key_type
-ual_edge<VV, EV, GV, IndexT, A>::out_vertex_key(graph_type const& g) const noexcept {
-  return static_cast<edge_list_out_link_type const*>(this)->vertex_key();
+ual_edge<VV, EV, GV, IndexT, A>::outward_vertex_key(graph_type const& g) const noexcept {
+  return static_cast<edge_list_outward_link_type const*>(this)->vertex_key();
 }
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_iterator
-ual_edge<VV, EV, GV, IndexT, A>::other_vertex(graph_type& g, vertex_key_type const in_or_out_key) noexcept {
-  return in_or_out_key != in_vertex_key(g) ? in_vertex(g) : out_vertex(g);
+ual_edge<VV, EV, GV, IndexT, A>::other_vertex(graph_type& g, vertex_key_type const inward_or_outward_key) noexcept {
+  return inward_or_outward_key != inward_vertex_key(g) ? inward_vertex(g) : outward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::const_vertex_iterator
-ual_edge<VV, EV, GV, IndexT, A>::other_vertex(graph_type const& g, vertex_key_type const in_or_out_key) const noexcept {
-  return in_or_out_key != in_vertex_key(g) ? in_vertex(g) : out_vertex(g);
+ual_edge<VV, EV, GV, IndexT, A>::other_vertex(graph_type const&     g,
+                                              vertex_key_type const inward_or_outward_key) const noexcept {
+  return inward_or_outward_key != inward_vertex_key(g) ? inward_vertex(g) : outward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_edge<VV, EV, GV, IndexT, A>::vertex_key_type
 ual_edge<VV, EV, GV, IndexT, A>::other_vertex_key(graph_type const&     g,
-                                                  vertex_key_type const in_or_out_key) const noexcept {
-  return in_or_out_key != in_vertex_key(g) ? in_vertex_key(g) : out_vertex_key(g);
+                                                  vertex_key_type const inward_or_outward_key) const noexcept {
+  return inward_or_outward_key != inward_vertex_key(g) ? inward_vertex_key(g) : outward_vertex_key(g);
 }
 
 
@@ -508,8 +509,8 @@ ual_vertex<VV, EV, GV, IndexT, A>::edge_size() const noexcept {
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 void ual_vertex<VV, EV, GV, IndexT, A>::erase_edge(graph_type& g, edge_type* uv) {
-  vertex_type& u = *(g.vertices().data() + uv->in_vertex_key(g));
-  vertex_type& v = *(g.vertices().data() + uv->out_vertex_key(g));
+  vertex_type& u = *(g.vertices().data() + uv->inward_vertex_key(g));
+  vertex_type& v = *(g.vertices().data() + uv->outward_vertex_key(g));
   uv->unlink(u, v);
 
   uv->~edge_type();
@@ -1059,66 +1060,66 @@ constexpr auto find_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> cons
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
-                         edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+constexpr auto inward_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
+                             edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.in_vertex(g);
+  return uv.inward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
-                         const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.in_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto in_vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+constexpr auto inward_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
                              const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.in_vertex_key(g);
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
-                          edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
-                          const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex(g);
+  return uv.inward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto out_vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
-                              const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+constexpr auto inward_vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                                 const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex_key(g);
+  return uv.inward_vertex_key(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto outward_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
+                              edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return uv.outward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto outward_vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                              const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return uv.outward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto outward_vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
+                                  const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return uv.outward_vertex_key(g);
 }
 
 #  if 0
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex(g);
+  return uv.outward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
                       const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex(g);
+  return uv.outward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&         g,
                           const_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.out_vertex_key(g);
+  return uv.outward_vertex_key(g);
 }
 #  endif
 
@@ -1193,7 +1194,7 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto erase_edge(undirected_adjacency_list<VV, EV, GV, IndexT, A>&                        g,
                           vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> uv)
       -> vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> u = in_vertex(g, *uv);
+  vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> u = inward_vertex(g, *uv);
   return u->erase_edge(g, uv);
 }
 

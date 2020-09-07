@@ -16,7 +16,7 @@ namespace std::graph {
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list forward declarations
 ///
-/// All vertices are kept in a single vector with an index for the first outgoing edge.
+/// All vertices are kept in a single vector with an index for the first outward edge.
 ///
 /// All edges are kept in doubly-linked lists for both the source and target vertices.
 ///
@@ -66,8 +66,8 @@ constexpr auto cend(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
 ///-------------------------------------------------------------------------------------
 
 // designator types
-struct in_list;
-struct out_list;
+struct inward_list;
+struct outward_list;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class ual_edge_list;
@@ -84,7 +84,7 @@ class ual_edge_list_link;
 /// @tparam GV     Graph Value type. default = empty_value.
 /// @tparam IntexT The type used for vertex & edge index into the internal vectors.
 /// @tparam A      Allocator. default = std::allocator
-/// @tparam ListT  in_list|out_list. Which edge list this is for.
+/// @tparam ListT  inward_list|outward_list. Which edge list this is for.
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class ual_edge_list {
@@ -105,10 +105,10 @@ public:
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
 
-  using edge_list_type          = ual_edge_list<VV, EV, GV, IndexT, A>;
-  using edge_list_in_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, in_list>;
-  using edge_list_out_link_type = ual_edge_list_link<VV, EV, GV, IndexT, A, out_list>;
-  using edge_allocator_type     = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_list_type              = ual_edge_list<VV, EV, GV, IndexT, A>;
+  using edge_list_inward_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, inward_list>;
+  using edge_list_outward_link_type = ual_edge_list_link<VV, EV, GV, IndexT, A, outward_list>;
+  using edge_allocator_type         = typename allocator_traits<A>::template rebind_alloc<edge_type>;
 
   using value_type      = edge_type;
   using pointer         = value_type*;
@@ -261,7 +261,7 @@ private:
 /// @tparam GV     Graph Value type. default = empty_value.
 /// @tparam IntexT The type used for vertex & edge index into the internal vectors.
 /// @tparam A      Allocator. default = std::allocator
-/// @tparam ListT  in_list|out_list. Which edge list this is for.
+/// @tparam ListT  inward_list|outward_list. Which edge list this is for.
 ///
 template <typename VV, typename EV, typename GV, typename IndexT, typename A, typename ListT>
 class ual_edge_list_link {
@@ -323,8 +323,8 @@ private:
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class ual_edge
       : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>
-      , public ual_edge_list_link<VV, EV, GV, IndexT, A, in_list>
-      , public ual_edge_list_link<VV, EV, GV, IndexT, A, out_list> {
+      , public ual_edge_list_link<VV, EV, GV, IndexT, A, inward_list>
+      , public ual_edge_list_link<VV, EV, GV, IndexT, A, outward_list> {
 public:
   using graph_type            = undirected_adjacency_list<VV, EV, GV, IndexT, A>;
   using graph_user_value_type = GV;
@@ -349,9 +349,9 @@ public:
   using const_edge_iterator = typename edge_set::const_iterator;
 #  endif
 
-  using edge_list_type          = ual_edge_list<VV, EV, GV, IndexT, A>;
-  using edge_list_in_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, in_list>;
-  using edge_list_out_link_type = ual_edge_list_link<VV, EV, GV, IndexT, A, out_list>;
+  using edge_list_type              = ual_edge_list<VV, EV, GV, IndexT, A>;
+  using edge_list_inward_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, inward_list>;
+  using edge_list_outward_link_type = ual_edge_list_link<VV, EV, GV, IndexT, A, outward_list>;
 
 protected:
   // noexcept is only defined for move ctor & assignment b/c the user-defined value type could
@@ -376,17 +376,17 @@ protected:
   void unlink(vertex_type&, vertex_type&) noexcept;
 
 public:
-  vertex_iterator       in_vertex(graph_type&) noexcept;
-  const_vertex_iterator in_vertex(graph_type const&) const noexcept;
-  vertex_key_type       in_vertex_key(graph_type const&) const noexcept;
+  vertex_iterator       inward_vertex(graph_type&) noexcept;
+  const_vertex_iterator inward_vertex(graph_type const&) const noexcept;
+  vertex_key_type       inward_vertex_key(graph_type const&) const noexcept;
 
-  vertex_iterator       out_vertex(graph_type&) noexcept;
-  const_vertex_iterator out_vertex(graph_type const&) const noexcept;
-  vertex_key_type       out_vertex_key(graph_type const&) const noexcept;
+  vertex_iterator       outward_vertex(graph_type&) noexcept;
+  const_vertex_iterator outward_vertex(graph_type const&) const noexcept;
+  vertex_key_type       outward_vertex_key(graph_type const&) const noexcept;
 
-  vertex_iterator       other_vertex(graph_type&, vertex_key_type const in_or_out_key) noexcept;
-  const_vertex_iterator other_vertex(graph_type const&, vertex_key_type const in_or_out_key) const noexcept;
-  vertex_key_type       other_vertex_key(graph_type const&, vertex_key_type const in_or_out_key) const noexcept;
+  vertex_iterator       other_vertex(graph_type&, vertex_key_type const inward_or_outward_key) noexcept;
+  const_vertex_iterator other_vertex(graph_type const&, vertex_key_type const inward_or_outward_key) const noexcept;
+  vertex_key_type       other_vertex_key(graph_type const&, vertex_key_type const inward_or_outward_key) const noexcept;
 
   friend graph_type;  // the graph is the one to create & destroy edges because it owns the allocator
   friend vertex_type; // vertex can also destroy its own edges
@@ -422,14 +422,14 @@ public:
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_size_type       = IndexT;
 
-  using edge_list_type             = ual_edge_list<VV, EV, GV, IndexT, A>;
-  using edge_list_in_link_type     = ual_edge_list_link<VV, EV, GV, IndexT, A, in_list>;
-  using edge_list_out_link_type    = ual_edge_list_link<VV, EV, GV, IndexT, A, out_list>;
-  using vertex_edge_size_type      = typename edge_list_type::size_type;
-  using vertex_edge_iterator       = typename edge_list_type::iterator;
-  using const_vertex_edge_iterator = typename edge_list_type::const_iterator;
-  using vertex_edge_range          = typename edge_list_type::edge_range;
-  using const_vertex_edge_range    = typename edge_list_type::const_edge_range;
+  using edge_list_type              = ual_edge_list<VV, EV, GV, IndexT, A>;
+  using edge_list_inward_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, inward_list>;
+  using edge_list_outward_link_type = ual_edge_list_link<VV, EV, GV, IndexT, A, outward_list>;
+  using vertex_edge_size_type       = typename edge_list_type::size_type;
+  using vertex_edge_iterator        = typename edge_list_type::iterator;
+  using const_vertex_edge_iterator  = typename edge_list_type::const_iterator;
+  using vertex_edge_range           = typename edge_list_type::edge_range;
+  using const_vertex_edge_range     = typename edge_list_type::const_edge_range;
 
 public:
   // noexcept is only defined for move ctor & assignment b/c the user-defined value type could
@@ -482,8 +482,8 @@ protected:
 private:
   edge_list_type edges_;
   friend edge_type;
-  friend edge_list_in_link_type;
-  friend edge_list_out_link_type;
+  friend edge_list_inward_link_type;
+  friend edge_list_outward_link_type;
 };
 
 /// A simple undirected adjacency list (graph).
@@ -743,8 +743,8 @@ public:
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
   ///
-  /// @param ilist Initializer list of tuples with in_vertex_key,
-  ///              out_vertex_key and the edge value.
+  /// @param ilist Initializer list of tuples with inward_vertex_key,
+  ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
   undirected_adjacency_list(
@@ -754,8 +754,8 @@ public:
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
   ///
-  /// @param ilist Initializer list of tuples with in_vertex_key and
-  ///              out_vertex_key.
+  /// @param ilist Initializer list of tuples with inward_vertex_key and
+  ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
   undirected_adjacency_list(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
@@ -839,7 +839,7 @@ public:
   void clear();
 
 protected:
-  //vertex_iterator finalize_out_edges(vertex_range);
+  //vertex_iterator finalize_outward_edges(vertex_range);
   void throw_unordered_edges() const;
 
 private:

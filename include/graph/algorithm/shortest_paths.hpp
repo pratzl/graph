@@ -7,8 +7,8 @@
 // for a single source vertex.
 //
 // The algorithms are designed to work with both directed & undirected graphs
-// by using general functions such as vertex() and edges() instead of out_vertex()
-// and out_edges().
+// by using general functions such as vertex() and edges() instead of outward_vertex()
+// and outward_edges().
 //
 // Dijktra's shortest path algorithm runs in O(|E| + |V|log|V|) time and supports non-negative
 // edge weights. Signed weight types are allowed to accomodate real-world situations, and it
@@ -247,8 +247,8 @@ protected:
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
         for (edge_t<G>& uv : edges(g_))
-          if (out_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
-            leaf[in_vertex_key(g_, uv)] = false;
+          if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
+            leaf[inward_vertex_key(g_, uv)] = false;
       }
     }
   }
@@ -358,11 +358,11 @@ protected:
     for (size_t i = 1; changed && i < vertices_size(g_); ++i) {
       changed = false;
       for (edge_t<G>& uv : edges(g_)) {
-        vertex_key_t<G> ukey = in_vertex_key(g_, uv);
+        vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source [yet]
 
-        vertex_key_t<G> vkey   = out_vertex_key(g_, uv);
+        vertex_key_t<G> vkey   = outward_vertex_key(g_, uv);
         DistanceT       v_dist = distances[ukey].distance + distance_fnc_(uv);
 
         if (v_dist < distances[vkey].distance) {
@@ -385,8 +385,8 @@ protected:
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
         for (edge_t<G>& uv : edges(g_))
-          if (out_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
-            leaf[in_vertex_key(g_, uv)] = false;
+          if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
+            leaf[inward_vertex_key(g_, uv)] = false;
       }
     }
 
@@ -394,11 +394,11 @@ protected:
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
       for (edge_t<G>& uv : edges(g_)) {
-        vertex_key_t<G> ukey = in_vertex_key(g_, uv);
+        vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source
 
-        vertex_key_t<G> vkey = out_vertex_key(g_, uv);
+        vertex_key_t<G> vkey = outward_vertex_key(g_, uv);
         if (distances[ukey].distance + distance_fnc_(uv) < distances[vkey].distance) {
           neg_edge_cycles = true;
           break;

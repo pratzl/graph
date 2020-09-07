@@ -87,8 +87,8 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
       if (uvi > 0) {
         cout << "++uv;\n";
       }
-      cout << "EXPECT_EQ(" << out_vertex_key(g, *uv) << ", out_vertex_key(g, *uv));\n";
-      cout << "EXPECT_EQ(\"" << out_vertex(g, *uv)->name << "\", out_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(" << outward_vertex_key(g, *uv) << ", outward_vertex_key(g, *uv));\n";
+      cout << "EXPECT_EQ(\"" << outward_vertex(g, *uv)->name << "\", outward_vertex(g, *uv)->name);\n";
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
     }
   }
@@ -100,40 +100,40 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   EXPECT_EQ("a1", u->name);
   EXPECT_EQ(1, edges_size(g, *u));
   uv = begin(g, *u);
-  EXPECT_EQ(2, out_vertex_key(g, *uv));
-  EXPECT_EQ("b1", out_vertex(g, *uv)->name);
+  EXPECT_EQ(2, outward_vertex_key(g, *uv));
+  EXPECT_EQ("b1", outward_vertex(g, *uv)->name);
   EXPECT_EQ(100, uv->weight);
 
   u = begin(g) + 1;
   EXPECT_EQ("a2", u->name);
   EXPECT_EQ(1, edges_size(g, *u));
   uv = begin(g, *u);
-  EXPECT_EQ(3, out_vertex_key(g, *uv));
-  EXPECT_EQ("b2", out_vertex(g, *uv)->name);
+  EXPECT_EQ(3, outward_vertex_key(g, *uv));
+  EXPECT_EQ("b2", outward_vertex(g, *uv)->name);
   EXPECT_EQ(100, uv->weight);
 
   u = begin(g) + 2;
   EXPECT_EQ("b1", u->name);
   EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
-  EXPECT_EQ(4, out_vertex_key(g, *uv));
-  EXPECT_EQ("c1", out_vertex(g, *uv)->name);
+  EXPECT_EQ(4, outward_vertex_key(g, *uv));
+  EXPECT_EQ("c1", outward_vertex(g, *uv)->name);
   EXPECT_EQ(50, uv->weight);
   ++uv;
-  EXPECT_EQ(3, out_vertex_key(g, *uv));
-  EXPECT_EQ("b2", out_vertex(g, *uv)->name);
+  EXPECT_EQ(3, outward_vertex_key(g, *uv));
+  EXPECT_EQ("b2", outward_vertex(g, *uv)->name);
   EXPECT_EQ(50, uv->weight);
 
   u = begin(g) + 3;
   EXPECT_EQ("b2", u->name);
   EXPECT_EQ(2, edges_size(g, *u));
   uv = begin(g, *u);
-  EXPECT_EQ(5, out_vertex_key(g, *uv));
-  EXPECT_EQ("c2", out_vertex(g, *uv)->name);
+  EXPECT_EQ(5, outward_vertex_key(g, *uv));
+  EXPECT_EQ("c2", outward_vertex(g, *uv)->name);
   EXPECT_EQ(90, uv->weight);
   ++uv;
-  EXPECT_EQ(2, out_vertex_key(g, *uv));
-  EXPECT_EQ("b1", out_vertex(g, *uv)->name);
+  EXPECT_EQ(2, outward_vertex_key(g, *uv));
+  EXPECT_EQ("b1", outward_vertex(g, *uv)->name);
   EXPECT_EQ(10, uv->weight);
 
   u = begin(g) + 4;

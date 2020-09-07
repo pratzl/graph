@@ -6,8 +6,8 @@
 // breadth-first search graph algorithms for vertices and edges.
 //
 // The algorithms are designed to work with both directed & undirected graphs
-// by using general functions such as vertex() and edges() instead of out_vertex()
-// and out_edges().
+// by using general functions such as vertex() and edges() instead of outward_vertex()
+// and outward_edges().
 //
 // The ranges have the following assumptions and behavior
 //  1.  The graph structure is assumed to remain stable during the duration of iteration.
@@ -306,13 +306,13 @@ public:
 
     size_t               depth() const { return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; }
     bool                 is_back_edge() const { return bfs_->is_back_edge(elem_); }
-    bool                 is_path_end() const { return !out_exists(); }
-    vertex_iterator_type out_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, *this->elem_.u); }
-    vertex_iterator_type back_vertex() const { return out_exists() ? out_vertex() : elem_.u; }
+    bool                 is_path_end() const { return !outward_exists(); }
+    vertex_iterator_type outward_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, *this->elem_.u); }
+    vertex_iterator_type back_vertex() const { return outward_exists() ? outward_vertex() : elem_.u; }
 
   protected:
-    bool out_exists() const { return bfs_->out_exists(elem_); }
-    bool is_out_visited() const { return bfs_->is_out_visited(elem_); }
+    bool outward_exists() const { return bfs_->outward_exists(elem_); }
+    bool is_outward_visited() const { return bfs_->is_outward_visited(elem_); }
 
   protected:
     bfs_edge_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
@@ -362,8 +362,8 @@ public:
       return tmp;
     }
 
-    vertex_iterator_type out_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, *this->elem_.u); }
-    vertex_iterator_type back_vertex() const { return this->out_exists() ? out_vertex() : this->elem_.u; }
+    vertex_iterator_type outward_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, *this->elem_.u); }
+    vertex_iterator_type back_vertex() const { return this->outward_exists() ? outward_vertex() : this->elem_.u; }
   };
 
 public:
@@ -376,22 +376,22 @@ public:
   const_iterator cend() const { return const_iterator(*this, true); }
 
 protected:
-  bool out_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+  bool outward_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
     return uv != edges_end(graph_, *u);
   }
 
-  bool is_out_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
+  bool is_outward_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
     const_vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
     vertex_key_t<G>            v_key = vertex_key(graph_, *v);
     return visited_[v_key] >= grey;
   }
 
   bool is_back_edge(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return !out_exists(u, uv) || (out_exists(u, uv) && is_out_visited(u, uv));
+    return !outward_exists(u, uv) || (outward_exists(u, uv) && is_outward_visited(u, uv));
   }
 
-  bool out_exists(queue_elem const& se) const { return out_exists(se.u, se.uv); }
-  bool is_out_visited(queue_elem const& se) const { return is_out_visited(se.u, se.uv); }
+  bool outward_exists(queue_elem const& se) const { return outward_exists(se.u, se.uv); }
+  bool is_outward_visited(queue_elem const& se) const { return is_outward_visited(se.u, se.uv); }
   bool is_back_edge(queue_elem const& se) const { return is_back_edge(se.u, se.uv); }
 
   void visit(vertex_iterator_t<G> u, colors color) {
@@ -424,14 +424,14 @@ protected:
       if (queue_.empty())
         break;
 
-      if (!out_exists(u, uv)) { // orphan vertex, or no out edges?
+      if (!outward_exists(u, uv)) { // orphan vertex, or no out edges?
         visit(u, black);
         return queue_.front(); // next sibling/cousin of uv, or next generation (whatever is in the queue)
       } else {
 #  ifdef _DEBUG
         vertex_key_t<G> v_key = vertex_key(graph_, *uv, *u);
 #  endif
-        if (!is_out_visited(u, uv)) {
+        if (!is_outward_visited(u, uv)) {
           vertex_iterator_t<G> v = vertex(graph_, *uv, *u);
           push_neighbors(u, v, d + 1);
         }

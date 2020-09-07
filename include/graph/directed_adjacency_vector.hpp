@@ -13,11 +13,11 @@ namespace std::graph {
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector forward declarations
 ///
-/// All vertices are kept in a single vector with an index for the first outgoing edge.
+/// All vertices are kept in a single vector with an index for the first outward edge.
 ///
 /// All edges are kept in a single vector in the graph. Outgoing edges for a vertex are
 /// stored contiguously. Edges for vertex v must come after the previous vertex's edges.
-/// An edge holds the index for its outgoing vertex in the vertices vector, plus any
+/// An edge holds the index for its outward vertex in the vertices vector, plus any
 /// user-defined values.
 
 template <typename VV     = empty_value,
@@ -104,24 +104,27 @@ public:
   dav_edge& operator=(dav_edge&) = default;
   dav_edge& operator=(dav_edge&&) = default;
 
-  dav_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex);
+  dav_edge(vertex_set const& vertices, vertex_iterator inward_vertex, vertex_iterator outward_vertex);
   dav_edge(vertex_set const& vertices,
-           vertex_iterator   in_vertex,
-           vertex_iterator   out_vertex,
+           vertex_iterator   inward_vertex,
+           vertex_iterator   outward_vertex,
            edge_user_value_type const&);
-  dav_edge(vertex_set const& vertices, vertex_iterator in_vertex, vertex_iterator out_vertex, edge_user_value_type&&);
+  dav_edge(vertex_set const& vertices,
+           vertex_iterator   inward_vertex,
+           vertex_iterator   outward_vertex,
+           edge_user_value_type&&);
 
-  vertex_iterator       in_vertex(graph_type&);
-  const_vertex_iterator in_vertex(graph_type const&) const;
-  vertex_key_type       in_vertex_key(graph_type const&) const;
+  vertex_iterator       inward_vertex(graph_type&);
+  const_vertex_iterator inward_vertex(graph_type const&) const;
+  vertex_key_type       inward_vertex_key(graph_type const&) const;
 
-  vertex_iterator       out_vertex(graph_type&);
-  const_vertex_iterator out_vertex(graph_type const&) const;
-  vertex_key_type       out_vertex_key(graph_type const&) const;
+  vertex_iterator       outward_vertex(graph_type&);
+  const_vertex_iterator outward_vertex(graph_type const&) const;
+  vertex_key_type       outward_vertex_key(graph_type const&) const;
 
 private:
-  vertex_key_type in_vertex_;
-  vertex_key_type out_vertex_;
+  vertex_key_type inward_vertex_;
+  vertex_key_type outward_vertex_;
 };
 
 ///-------------------------------------------------------------------------------------
@@ -162,9 +165,9 @@ public:
   using vertex_edge_iterator       = edge_iterator;
   using const_vertex_edge_iterator = const_edge_iterator;
 
-  using vertex_out_edge_size_type      = typename edge_set::size_type;
-  using vertex_out_edge_iterator       = edge_iterator;
-  using const_vertex_out_edge_iterator = const_edge_iterator;
+  using vertex_outward_edge_size_type      = typename edge_set::size_type;
+  using vertex_outward_edge_iterator       = edge_iterator;
+  using const_vertex_outward_edge_iterator = const_edge_iterator;
 
 public:
   dav_vertex() noexcept             = default;
@@ -276,17 +279,17 @@ public:
   using edge_range          = decltype(::ranges::make_subrange(declval<edge_set&>()));
   using const_edge_range    = decltype(::ranges::make_subrange(declval<edge_set const&>()));
 
-  using vertex_out_edge_size_type      = typename edge_set::size_type;
-  using vertex_out_edge_ssize_type     = make_signed_t<vertex_out_edge_size_type>;
-  using vertex_out_edge_iterator       = typename edge_range::iterator;
-  using const_vertex_out_edge_iterator = typename const_edge_range::iterator;
-  using vertex_out_edge_range          = edge_range;
-  using const_vertex_out_edge_range    = const_edge_range;
+  using vertex_outward_edge_size_type      = typename edge_set::size_type;
+  using vertex_outward_edge_ssize_type     = make_signed_t<vertex_outward_edge_size_type>;
+  using vertex_outward_edge_iterator       = typename edge_range::iterator;
+  using const_vertex_outward_edge_iterator = typename const_edge_range::iterator;
+  using vertex_outward_edge_range          = edge_range;
+  using const_vertex_outward_edge_range    = const_edge_range;
 
-  using vertex_edge_size_type      = vertex_out_edge_size_type;
-  using vertex_edge_ssize_type     = vertex_out_edge_ssize_type;
-  using vertex_edge_iterator       = vertex_out_edge_iterator;
-  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
+  using vertex_edge_size_type      = vertex_outward_edge_size_type;
+  using vertex_edge_ssize_type     = vertex_outward_edge_ssize_type;
+  using vertex_edge_iterator       = vertex_outward_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_outward_edge_iterator;
   using vertex_edge_range          = edge_range;
   using const_vertex_edge_range    = const_edge_range;
 
@@ -390,11 +393,11 @@ public:
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
-  /// list with a tuple with 3 edge elements: in_vertex_key,
-  /// out_vertex_key and edge_value.
+  /// list with a tuple with 3 edge elements: inward_vertex_key,
+  /// outward_vertex_key and edge_value.
   ///
-  /// @param ilist Initializer list of tuples with in_vertex_key,
-  ///              out_vertex_key and the edge value.
+  /// @param ilist Initializer list of tuples with inward_vertex_key,
+  ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
   directed_adjacency_vector(
@@ -404,8 +407,8 @@ public:
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
   ///
-  /// @param ilist Initializer list of tuples with in_vertex_key and
-  ///              out_vertex_key.
+  /// @param ilist Initializer list of tuples with inward_vertex_key and
+  ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
   directed_adjacency_vector(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
@@ -460,7 +463,7 @@ public:
   void clear();
 
 protected:
-  vertex_iterator finalize_out_edges(vertex_range);
+  vertex_iterator finalize_outward_edges(vertex_range);
   void            throw_unordered_edges() const;
 
 private:
@@ -509,19 +512,19 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using edge_range          = typename graph_type::edge_range;
   using const_edge_range    = typename graph_type::const_edge_range;
 
-  using vertex_out_edge_size_type      = typename graph_type::vertex_out_edge_size_type;
-  using vertex_out_edge_ssize_type     = typename graph_type::vertex_out_edge_ssize_type;
-  using vertex_out_edge_iterator       = typename graph_type::vertex_out_edge_iterator;
-  using const_vertex_out_edge_iterator = typename graph_type::const_vertex_out_edge_iterator;
-  using vertex_out_edge_range          = typename graph_type::vertex_out_edge_range;
-  using const_vertex_out_edge_range    = typename graph_type::const_vertex_out_edge_range;
+  using vertex_outward_edge_size_type      = typename graph_type::vertex_outward_edge_size_type;
+  using vertex_outward_edge_ssize_type     = typename graph_type::vertex_outward_edge_ssize_type;
+  using vertex_outward_edge_iterator       = typename graph_type::vertex_outward_edge_iterator;
+  using const_vertex_outward_edge_iterator = typename graph_type::const_vertex_outward_edge_iterator;
+  using vertex_outward_edge_range          = typename graph_type::vertex_outward_edge_range;
+  using const_vertex_outward_edge_range    = typename graph_type::const_vertex_outward_edge_range;
 
-  using vertex_edge_size_type      = vertex_out_edge_size_type;
-  using vertex_edge_ssize_type     = vertex_out_edge_ssize_type;
-  using vertex_edge_iterator       = vertex_out_edge_iterator;
-  using const_vertex_edge_iterator = const_vertex_out_edge_iterator;
-  using vertex_edge_range          = vertex_out_edge_range;
-  using const_vertex_edge_range    = const_vertex_out_edge_range;
+  using vertex_edge_size_type      = vertex_outward_edge_size_type;
+  using vertex_edge_ssize_type     = vertex_outward_edge_ssize_type;
+  using vertex_edge_iterator       = vertex_outward_edge_iterator;
+  using const_vertex_edge_iterator = const_vertex_outward_edge_iterator;
+  using vertex_edge_range          = vertex_outward_edge_range;
+  using const_vertex_edge_range    = const_vertex_outward_edge_range;
 };
 
 

@@ -66,8 +66,8 @@ struct daa_routes_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.km; }
 };
@@ -79,8 +79,8 @@ struct ual_routes_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.km; }
 };
@@ -122,8 +122,8 @@ struct daa_data_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
@@ -135,8 +135,8 @@ struct ual_data_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
@@ -150,11 +150,11 @@ struct vov_data_edge_mapper {
   using vertex_label_t = std::string;
   using vertex_index_t = size_t;
 
-  vertex_label_t const& in_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& out_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
+  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
 
-  vertex_index_t const& in_index(source_edge_t const& uv) const { return uv.from; }
-  vertex_index_t const& out_index(source_edge_t const& uv) const { return uv.to; }
+  vertex_index_t const& inward_index(source_edge_t const& uv) const { return uv.from; }
+  vertex_index_t const& outward_index(source_edge_t const& uv) const { return uv.to; }
 
   std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
 };
@@ -203,8 +203,8 @@ protected:
   vertex_labels_t unique_vertex_labels(EdgeRng const& uv_rng) const {
     vertex_labels_t vertex_labels;
     for (auto const& uv : uv_rng) {
-      vertex_labels.push_back(mapper_.in_label(uv));
-      vertex_labels.push_back(mapper_.out_label(uv));
+      vertex_labels.push_back(mapper_.inward_label(uv));
+      vertex_labels.push_back(mapper_.outward_label(uv));
     }
     return move(vertex_labels) | ranges::actions::sort | ranges::actions::unique;
   }
