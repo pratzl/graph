@@ -15,7 +15,7 @@
 //  3.  The state of the traversal is in the range object. Calling begin() returns the
 //      current state, not the beginning of the range.
 //
-// The dfs_edge_range iterators have is_back_edge() and back_vertex() which are used
+// The depth_first_search_edge_range iterators have is_back_edge() and back_vertex() which are used
 // on terminal vertices in the search. A terminal is a vertex that hasn't been visited
 // yet and has no edges to search. When this is true, a pseudo edge is used which is just
 // the end(g,u) edge for the vertex. When is_back_edge() is true, back_vertex() should
@@ -68,7 +68,7 @@ template <searchable_graph G, typename A = allocator<char>>
   requires uniform_graph<G>
         && integral<vertex_key_t<G>>
         && ::ranges::random_access_range<vertex_range_t<G>> 
-class dfs_vertex_range
+class depth_first_search_vertex_range
 // clang-format on
 {
 
@@ -88,7 +88,7 @@ class dfs_vertex_range
   using parent_type  = vector<vertex_iterator_t<G>, parent_alloc>;
 
 public:
-  dfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+  depth_first_search_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph)
         , stack_(alloc)
         , visited_(vertices_size(graph_), white, alloc)
@@ -110,7 +110,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(dfs_vertex_range& dfs, bool end_iter = false)
+    const_iterator(depth_first_search_vertex_range& dfs, bool end_iter = false)
           : dfs_(&dfs), elem_{vertices_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
         elem_ = dfs.stack_.top();
@@ -140,7 +140,7 @@ public:
     pointer parent() const { return parent_[vertex_key(graph_, *elem_.u)]; }
 
   protected:
-    dfs_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
+    depth_first_search_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     stack_elem        elem_;
   };
 
@@ -155,7 +155,7 @@ public:
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
-    iterator(dfs_vertex_range& dfs) : const_iterator(dfs) {}
+    iterator(depth_first_search_vertex_range& dfs) : const_iterator(dfs) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));
@@ -240,7 +240,7 @@ template <searchable_graph G, typename A = allocator<char>>
 requires uniform_graph<G> /*directed_graph<G> */
       && integral<vertex_key_t<G>>
       && ::ranges::random_access_range<vertex_range_t<G>> 
-class dfs_edge_range
+class depth_first_search_edge_range
 // clang-format on
 {
 
@@ -261,7 +261,7 @@ class dfs_edge_range
   using parent_type  = vector<vertex_iterator_t<G>, parent_alloc>;
 
 public:
-  dfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+  depth_first_search_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph)
         , stack_(alloc)
         , visited_(vertices_size(graph), white, alloc)
@@ -292,7 +292,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(dfs_edge_range& dfs, bool end_iter = false)
+    const_iterator(depth_first_search_edge_range& dfs, bool end_iter = false)
           : dfs_(&dfs), elem_{vertices_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
         elem_ = dfs.stack_.top();
@@ -335,7 +335,7 @@ public:
     bool is_outward_visited() const { return dfs_->is_outward_visited(elem_); }
 
   protected:
-    dfs_edge_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
+    depth_first_search_edge_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     stack_elem      elem_;
   };
 
@@ -359,7 +359,7 @@ public:
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
-    iterator(dfs_edge_range& dfs, bool end_iter = false) : const_iterator(dfs, end_iter) {}
+    iterator(depth_first_search_edge_range& dfs, bool end_iter = false) : const_iterator(dfs, end_iter) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));

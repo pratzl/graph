@@ -59,7 +59,7 @@ if (ENABLE_PCH)
   target_precompile_headers(project_options INTERFACE <vector> <string> <map> <utility>)
 endif()
 
-option(ENABLE_BGL17 "Enable Better Graph Library 17" ON)
+option(ENABLE_BGL17 "Enable Better Graph Library 17" OFF)
 if(ENABLE_BGL17)
 endif()
 

@@ -1,7 +1,7 @@
 //#include "pch.h"
 #include "graph/undirected_adjacency_list.hpp"
-#include "graph/range/dfs.hpp"
-#include "graph/range/bfs.hpp"
+#include "graph/range/depth_first_search.hpp"
+#include "graph/range/breadth_first_search.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
 #include "data_routes.hpp"
 #include <iostream>
@@ -14,11 +14,11 @@
     Tests
     0.  pass: Basic creation, destruction, traversal
     1.  DFS
-        a.  pass: dfs_vertex_range
-        b.  pass: dfs_edge_range
+        a.  pass: depth_first_search_vertex_range
+        b.  pass: depth_first_search_edge_range
     4.  BFS
-        a.  pass: bfs_vertex_range
-        b.  pass: bfs_edge_range
+        a.  pass: breadth_first_search_vertex_range
+        b.  pass: breadth_first_search_edge_range
     5.  shortest_paths
         a. pass: dijkstra_shortest_distances
         b. pass: dijkstra_shortest_paths
@@ -470,8 +470,8 @@ TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
 
 #if 0
 #elif TEST_OPTION == TEST_OPTION_OUTPUT
-  dfs_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt"));
-  for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
+  depth_first_search_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt"));
+  for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
   /* Output: seed = Frankfürt
@@ -489,7 +489,7 @@ TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
 
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
-  for (auto& u : dfs_vertex_range(g, begin(g) + 2)) // Frankfürt
+  for (auto& u : depth_first_search_vertex_range(g, begin(g) + 2)) // Frankfürt
     cout << u.name << endl;
     /* Output: seed = Frankfürt
     Frankfürt
@@ -505,8 +505,8 @@ TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
-  dfs_vertex_range                  dfs_vtx_rng(g, find_city(g, "Frankfürt"));
-  dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
+  depth_first_search_vertex_range                  dfs_vtx_rng(g, find_city(g, "Frankfürt"));
+  depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
   EXPECT_EQ("Frankfürt", u->name);
   EXPECT_EQ(1, u.depth());
   EXPECT_EQ("Mannheim", (++u)->name);
@@ -532,7 +532,7 @@ TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
 
 TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
   Graph          g = create_germany_routes_graph();
-  dfs_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
+  depth_first_search_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   int ln = 0;
@@ -567,10 +567,10 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
   travel Frankfürt --> Kassel 173km [back edge]
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
-  cout << "dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();\n"
+  cout << "depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();\n"
        << "\n";
   size_t uvi = 0;
-  for (dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv, ++uvi) {
+  for (depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv, ++uvi) {
     if (uvi > 0)
       cout << "\n"
            << "++uv;\n";
@@ -593,7 +593,7 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
     }
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
-  dfs_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
+  depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
 
   EXPECT_FALSE(uv.is_back_edge());
   EXPECT_EQ("Frankfürt", inward_vertex(g, *uv)->name);
@@ -695,7 +695,7 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
 
 TEST_CASE("ual bfs vertex", "[ual][bfs][vertex]") {
   Graph            g = create_germany_routes_graph();
-  bfs_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
+  breadth_first_search_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
@@ -715,7 +715,7 @@ TEST_CASE("ual bfs vertex", "[ual][bfs][vertex]") {
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
 #elif TEST_OPTION == TEST_OPTION_TEST
-  bfs_vertex_range<Graph>::iterator u = bfs_vtx_rng.begin();
+  breadth_first_search_vertex_range<Graph>::iterator u = bfs_vtx_rng.begin();
   EXPECT_EQ("Frankfürt", u->name);
   EXPECT_EQ(1, u.depth());
   EXPECT_EQ("Mannheim", (++u)->name);
@@ -741,7 +741,7 @@ TEST_CASE("ual bfs vertex", "[ual][bfs][vertex]") {
 
 TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
   Graph          g = create_germany_routes_graph();
-  bfs_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
+  breadth_first_search_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
@@ -776,10 +776,10 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
             view Stuttgart
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
-  cout << "bfs_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();\n"
+  cout << "breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();\n"
        << "\n";
   size_t uvi = 0;
-  for (bfs_edge_range<Graph>::iterator uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv, ++uvi) {
+  for (breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv, ++uvi) {
     if (uvi > 0)
       cout << "\n"
            << "++uv;\n";
@@ -801,7 +801,7 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
     cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
-  bfs_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();
+  breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();
 
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_FALSE(uv.is_back_edge());

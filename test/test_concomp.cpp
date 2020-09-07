@@ -1,7 +1,7 @@
 //#include "pch.h"
 #include "graph/directed_adjacency_vector.hpp"
-#include "graph/range/dfs.hpp"
-#include "graph/range/bfs.hpp"
+#include "graph/range/depth_first_search.hpp"
+#include "graph/range/breadth_first_search.hpp"
 #include "graph/algorithm/components.hpp"
 #include "data_routes.hpp"
 #include <iostream>

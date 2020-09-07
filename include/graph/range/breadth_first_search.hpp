@@ -15,7 +15,7 @@
 //  3.  The state of the traversal is in the range object. Calling begin() returns the
 //      current state, not the beginning of the range.
 //
-// The bfs_edge_range iterators have is_back_edge() and back_vertex() which are used
+// The breadth_first_search_edge_range iterators have is_back_edge() and back_vertex() which are used
 // on terminal vertices in the search. A terminal is a vertex that hasn't been visited
 // yet and has no edges to search. When this is true, a pseudo edge is used which is just
 // the end(g,u) edge for the vertex. When is_back_edge() is true, back_vertex() should
@@ -62,7 +62,7 @@ namespace std::graph {
 template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>> 
         && ::ranges::random_access_range<vertex_range_t<G>> 
-class bfs_vertex_range
+class breadth_first_search_vertex_range
 // clang-format on
 {
   enum three_colors : int8_t {
@@ -79,7 +79,7 @@ class bfs_vertex_range
   using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+  breadth_first_search_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
     if (seed != vertices_end(graph_)) {
       queue_.push(queue_elem{seed, 1});
@@ -98,7 +98,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{vertices_end(bfs.graph_)} {
+    const_iterator(breadth_first_search_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{vertices_end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -126,7 +126,7 @@ public:
     size_t depth() const { return bfs_->queue_.empty() ? 0 : bfs_->queue_.front().depth; }
 
   protected:
-    bfs_vertex_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
+    breadth_first_search_vertex_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     queue_elem        elem_;
   };
 
@@ -141,7 +141,7 @@ public:
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
-    iterator(bfs_vertex_range& bfs, bool end_iter = false) : const_iterator(bfs, end_iter) {}
+    iterator(breadth_first_search_vertex_range& bfs, bool end_iter = false) : const_iterator(bfs, end_iter) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));
@@ -235,7 +235,7 @@ template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
         && ::ranges::random_access_range<vertex_range_t<G>>
         && ::ranges::bidirectional_range<vertex_edge_range_t<G>> 
-class bfs_edge_range
+class breadth_first_search_edge_range
 // clang-format on
 {
   enum colors : int8_t {
@@ -253,7 +253,7 @@ class bfs_edge_range
   using queue_type  = queue<queue_elem, deque<queue_elem, queue_alloc>>;
 
 public:
-  bfs_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
+  breadth_first_search_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
     if (seed != vertices_end(graph_)) {
       push_neighbors(vertices_end(graph_), seed, 1);
@@ -278,7 +278,7 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(bfs_edge_range& bfs, bool end_iter = false)
+    const_iterator(breadth_first_search_edge_range& bfs, bool end_iter = false)
           : bfs_(&bfs), elem_{vertices_end(bfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
@@ -315,7 +315,7 @@ public:
     bool is_outward_visited() const { return bfs_->is_outward_visited(elem_); }
 
   protected:
-    bfs_edge_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
+    breadth_first_search_edge_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
     queue_elem      elem_;
   };
 
@@ -337,7 +337,7 @@ public:
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
     iterator(const_iterator const& iter) : const_iterator(iter) {}
-    iterator(bfs_edge_range& bfs) : const_iterator(bfs) {}
+    iterator(breadth_first_search_edge_range& bfs) : const_iterator(bfs) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));

@@ -16,15 +16,15 @@ namespace std::graph {
 template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
         && ::ranges::random_access_range<vertex_range_t<G>> 
-class vertex_topological_sort
+class topological_sort_vertex_range
 // clang-format on
 {
   using count_t   = vertex_key_t<G>;
   using visited_t = vector<count_t>;
 
 public:
-  vertex_topological_sort() = default;
-  vertex_topological_sort();
+  topological_sort_vertex_range() = default;
+  topological_sort_vertex_range();
 
 public:
 public:

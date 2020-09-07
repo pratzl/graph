@@ -8,7 +8,7 @@
 //
 
 #include "../graph.hpp"
-#include "../range/dfs.hpp"
+#include "../range/depth_first_search.hpp"
 #include <vector>
 
 #ifndef GRAPH_TRANSITIVE_CLOSURE_HPP
@@ -33,7 +33,7 @@ dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   using reach_t = reaches<G>;
   auto first    = begin(g);
   for (auto ui = first; ui != end(g); ++ui) {
-    for (auto& v : dfs_vertex_range(g, ui, alloc)) {
+    for (auto& v : depth_first_search_vertex_range(g, ui, alloc)) {
       vertex_iterator_t<G> vi =
             first +
             vertex_key(

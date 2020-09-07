@@ -108,14 +108,14 @@ TEST_CASE("vov graph", "[vov]") {
 TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   using namespace std::graph;
   using namespace graph::adaptor;
-  using std::graph::dfs_vertex_range;
+  using std::graph::depth_first_search_vertex_range;
   using Graph = vov_germany_t;
 
   vov_germany_t    g = get_germany_routes();
-  dfs_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
+  depth_first_search_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
-  for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u) {
+  for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u) {
     //std::graph::vertex_key_t<Graph> ukey = vertex_key(g, *u);
     // cout << string(u.depth() * 2, ' ') << vertex_key(g, *u) << endl;
   }
@@ -135,7 +135,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
 
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
-  for (std::graph::vertex_t<Graph>& u : dfs_vertex_range(g, begin(g) + 2)) // Frankfürt
+  for (std::graph::vertex_t<Graph>& u : depth_first_search_vertex_range(g, begin(g) + 2)) // Frankfürt
     cout << vertex_key(g, u) << endl;
     /* Output: seed = Frankfürt
       2
@@ -151,7 +151,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   */
 #elif TEST_OPTION == TEST_OPTION_GEN
   int i = 0;
-  for (dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u, ++i) {
+  for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u, ++i) {
     if (i == 0)
       cout << "EXPECT_EQ(" << vertex_key(g, *u) << ", vertex_key(g, *u));\n";
     else
@@ -159,7 +159,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
     cout << "EXPECT_EQ(" << u.depth() << ", u.depth());\n";
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
-  dfs_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
+  depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
   EXPECT_EQ(2, vertex_key(g, *u));
   EXPECT_EQ(1, u.depth());
   EXPECT_EQ(4, vertex_key(g, *(++u)));

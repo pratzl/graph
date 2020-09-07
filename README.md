@@ -142,16 +142,16 @@ Other Useful Tools
   - [ ] bgl17
     - [x] vov graph
       - [x] Create adaptor
-      - [x] Add dfs_vertex_range test
-      - [ ] Add dfs_edge_range test
-      - [ ] Add bfs_vertex_range test
-      - [ ] Add bfs_edge_range test
+      - [x] Add depth_first_search_vertex_range test
+      - [ ] Add depth_first_search_edge_range test
+      - [ ] Add breadth_first_search_vertex_range test
+      - [ ] Add breadth_first_search_edge_range test
     - [ ] compressed graph
       - [ ] Create adaptor
-      - [ ] Add dfs_vertex_range test
-      - [ ] Add dfs_edge_range test
-      - [ ] Add bfs_vertex_range test
-      - [ ] Add bfs_edge_range test
+      - [ ] Add depth_first_search_vertex_range test
+      - [ ] Add depth_first_search_edge_range test
+      - [ ] Add breadth_first_search_vertex_range test
+      - [ ] Add breadth_first_search_edge_range test
     - [ ] [paper] comparison?
   - [ ] boost
     - [ ] [paper] comparison
@@ -193,10 +193,12 @@ Other Useful Tools
       - [ ] add/delete vertices|edges
     - [ ] (final comment review)
   - [ ] Nikolaev, Andrey (Intel)
-    - [ ] Consider adding undirected_adjacency_array & directed_adjacency_list (perf vs. mutabilty)
+    - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
     - [ ] Consider adding adjacency_matrix, particularly for subgraph isomorphism
     - [x] graph names should only include long names (not short & long names)
     - [ ] use long names for consistency & clarity (graphs, algorithms, API)
+      - [ ] breath_first_search_vertex_range
+      - [ ] breath_first_search_end_range
     - [x] Remove types on graph data structures. Only constructors should appear on graph
     - [x] Remove definitions for edge & vertex classes (confusing) in favor of using graph_traits types
     - [ ] Add noexcept to size() & ssize() functions? (consider legacy graphs that don't use noexcept)
