@@ -191,7 +191,7 @@ public:
   const_vertex_edge_iterator edges_end(graph_type const&) const;
   const_vertex_edge_iterator edges_cend(graph_type const&) const;
 
-  edge_size_type edge_size(graph_type const&) const;
+  edge_size_type edges_size(graph_type const&) const;
 
 private:
   edge_index first_edge_ = numeric_limits<edge_index>::max();

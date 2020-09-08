@@ -144,7 +144,7 @@ dav_vertex<VV, EV, GV, IndexT, A>::edges_cend(graph_type const& g) const {
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename dav_vertex<VV, EV, GV, IndexT, A>::edge_size_type
-dav_vertex<VV, EV, GV, IndexT, A>::edge_size(graph_type const& g) const {
+dav_vertex<VV, EV, GV, IndexT, A>::edges_size(graph_type const& g) const {
   if (this < &g.vertices().back())
     return (this + 1)->first_edge_ - first_edge_;
   else
@@ -593,14 +593,14 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto outward_size(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&           g,
                             const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_outward_edge_size_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
-  return u.edge_size(g);
+  return u.edges_size(g);
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto outward_ssize(directed_adjacency_vector<VV, EV, GV, IndexT, A> const&           g,
                              const_vertex_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_outward_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using ssize_t = vertex_outward_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, IndexT, A>>;
-  return static_cast<ssize_t>(u.edge_size(g));
+  return static_cast<ssize_t>(u.edges_size(g));
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>

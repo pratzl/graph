@@ -503,7 +503,7 @@ ual_vertex<VV, EV, GV, IndexT, A>::edge_back(graph_type const& g) const noexcept
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 typename ual_vertex<VV, EV, GV, IndexT, A>::vertex_edge_size_type
-ual_vertex<VV, EV, GV, IndexT, A>::edge_size() const noexcept {
+ual_vertex<VV, EV, GV, IndexT, A>::edges_size() const noexcept {
   return edges_.size();
 }
 
@@ -1029,14 +1029,14 @@ template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
                           const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return u.edge_size();
+  return u.edges_size();
 }
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto edges_ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const&           g,
                            const_vertex_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& u) noexcept
       -> vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   using ssize_t = vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
-  return static_cast<ssize_t>(u.edge_size());
+  return static_cast<ssize_t>(u.edges_size());
 }
 
 
@@ -1354,13 +1354,13 @@ void clear(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g) {
 // API: common container functions
 //
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept
       -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return vertices_size(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept
       -> vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return vertices_ssize(g);
 }

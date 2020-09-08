@@ -36,11 +36,11 @@ class ual_edge;
 
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto size(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept
       -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g)
+constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, IndexT, A> const& g) noexcept
       -> vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>;
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
@@ -447,7 +447,7 @@ public:
 
 public:
   vertex_key_type       vertex_key(graph_type const&) const noexcept;
-  vertex_edge_size_type edge_size() const noexcept;
+  vertex_edge_size_type edges_size() const noexcept;
 
   vertex_edge_iterator erase_edge(graph_type&, vertex_edge_iterator);
   vertex_edge_iterator erase_edge(graph_type&, vertex_edge_iterator, vertex_edge_iterator);
@@ -595,7 +595,7 @@ public:
     void advance_vertex() {
       // at exit, if u_ != g.vertices().end() then uv_ will refer to a valid edge
       for (; u_ != g_->vertices().end(); ++u_) {
-        if (u_->edge_size() > 0) {
+        if (u_->edges_size() > 0) {
           uv_ = u_->edges_begin(*g_);
           return;
         }
