@@ -66,6 +66,7 @@ Other Useful Tools
   - [ ] algorithms: refine concept requirements
   - [ ] [paper] sparse/dense not defined;
   - [ ] compare to BGL concepts [Lumsdaine]
+  - [ ] allow vertex_key_t<G> to be non-integer
 - [ ] Algorithms
   - [x] Common
     - [x] Change contiguous --> random_access for requirements
@@ -107,16 +108,23 @@ Other Useful Tools
     - [x] Add ssize defs & implementations for vertices, edge, outward_edges & inward_edges
     - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
+    - [ ] Consider addtion of [[nodiscard]]
+    - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
-    - [ ] add vertices(g,u) -> vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u)
+    - [ ] add vertices(g,u) -> vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
+    - [ ] add vertices_size(g,u) [add impl]
+    - [ ] add vertices_ssize(g,u) [add impl]
+    - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey)
+    - [ ] vertex_key_type required to be integral
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
     - [x] replace use of short graph name with long name
     - [x] remove type defs on graph classes in paper (only ctors should exist)
     - [ ] describe rationale for data structures used
+    - [ ] assure CSR can be handled with the current ctors
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [ ] implement with deque?
@@ -124,12 +132,13 @@ Other Useful Tools
     - [ ] use common data structure for directed graph?
     - [ ] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them?
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
-  - [x] unordered adjacency list
+  - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
     - [ ] implement with deque?
     - [ ] implement with map? (non-integer index)
-  - [ ] support constexpr data structures
+  - [ ] support Compressed Sparse Row (CSR)?
+  - [ ] support constexpr data structures (vector, array)
 - [ ] C++20
   - [ ] review use of sentinal
   - [ ] define graph module
@@ -155,6 +164,7 @@ Other Useful Tools
     - [ ] [paper] comparison?
   - [ ] boost
     - [ ] [paper] comparison
+    - [ ] Add adaptor example
   - [ ] lemon
     - [ ] [paper] comparison
 - [ ] Compiler/build support
@@ -192,7 +202,7 @@ Other Useful Tools
       - [ ] Cycle
       - [ ] add/delete vertices|edges
     - [ ] (final comment review)
-  - [ ] Nikolaev, Andrey (Intel)
+  - [ ] Andrey Nikolaev & Tatyana Bysheva (Intel)
     - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
     - [ ] Consider adding adjacency_matrix, particularly for subgraph isomorphism
     - [x] graph names should only include long names (not short & long names)
@@ -200,6 +210,46 @@ Other Useful Tools
     - [x] Remove types on graph data structures. Only constructors should appear on graph
     - [x] Remove definitions for edge & vertex classes (confusing) in favor of using graph_traits types
     - [x] Add noexcept to size() & ssize() functions? (consider legacy graphs that don't use noexcept)
+    - [ ] edges(g,u): what is behavior when u isn't in g?
+      - [ ] Return empty range (preferred)
+      - [ ] Undefined behavior if determining if u is in g is expensive
+      - [ ] How does this apply to other functions in the API
+    - [ ] how are invalid parameters handled in algorithms (cf API)? (undefined behavior, ...)
+    - [ ] consider creating a graph_view<G>
+    - [x] consider adding edge_key<G>, edge_key(g,uv) & edge_key(g,u,v)
+    - [ ] Are const versions of algos needed? (If I pass a const graph g, are all dependent types const?)
+    - [ ] Consider re-adding degree() (alias of size or ssize)
+  - [ ] Leanne/Jing Dong <jdleanne@gmail.com> 10/7/20
+    - [ ] Recommend adding incidence matrix
+  - [ ] Graph review
+    - [ ] Changes
+      - [ ] name changes: directed_adjacency_array --> _vertex, -ward, long names, drop _c suffix
+      - [ ] types
+        - [ ] graph_traits<G> (template aliases can't be overridden)
+        - [ ] edge_key_t<G> (not used in algorithms, but I did use in graph data structures internally)
+      - [ ] functions
+        - [ ] limited use of noexcept on functions (size, ssize)
+        - [ ] add: vertices(g,u), vertices_size(g,u), vertices_ssize(g,u), outward_vertices(g,u), inward_vertices(g,u)
+      - [ ] graph data structures
+        - [ ] added concepts: vertex_range_extractor<VRng, VValueFnc>, edge_range_extractor<ERng, EKeyFnc, EValueFnc>
+        - [ ] remove unnecessary definitions (e.g. vertex & edge classes)
+        - [ ] remove unnecessary type definitions (e.g. on graph class)
+        - [ ] dropped adjacency_matrix
+      - [ ] Adapting to External Graphs (new section)
+    - [ ] Recommendations
+      - [ ] Consider returning empty range/end iterator if passing vector/edge that doesn't belong to graph
+      - [ ] re-add adjacency_matrix / incidence_matrix?
+      - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
+      - [ ] graph_view?
+    - [ ] Other
+      - [ ] using map<K,V> for vertices is possible, but requires different algorithms to match
+    - [ ] ToDo
+      - [ ] concepts: incidence_list, vertex_list, edge_list, path, cycle, add/del vertex/edge
+      - [ ] constexpr everywhere? (vector, array)
+      - [ ] comparison to boost, Lemon, ...
+    - [ ] Optional
+      - [ ] co-routines
+      - [ ] modules
 
 ## Thanks to
 

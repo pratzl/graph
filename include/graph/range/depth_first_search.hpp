@@ -67,7 +67,7 @@ namespace std::graph {
 template <searchable_graph G, typename A = allocator<char>>
   requires uniform_graph<G>
         && integral<vertex_key_t<G>>
-        && ::ranges::random_access_range<vertex_range_t<G>> 
+        && ranges::random_access_range<vertex_range_t<G>> 
 class depth_first_search_vertex_range
 // clang-format on
 {
@@ -141,7 +141,7 @@ public:
 
   protected:
     depth_first_search_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
-    stack_elem        elem_;
+    stack_elem                       elem_;
   };
 
   class iterator : public const_iterator {
@@ -239,7 +239,7 @@ private:
 template <searchable_graph G, typename A = allocator<char>>
 requires uniform_graph<G> /*directed_graph<G> */
       && integral<vertex_key_t<G>>
-      && ::ranges::random_access_range<vertex_range_t<G>> 
+      && ranges::random_access_range<vertex_range_t<G>> 
 class depth_first_search_edge_range
 // clang-format on
 {
@@ -281,11 +281,11 @@ public:
     using reference         = value_type const&;
     using difference_type   = typename iterator_traits<const_vertex_edge_iterator_t<G>>::difference_type;
 
-    using vertex_type           = const_vertex_t<G>;
+    using vertex_type           = vertex_t<G> const;
     using vertex_reference_type = vertex_type&;
     using vertex_iterator_type  = const_vertex_iterator_t<G>;
 
-    using edge_type                 = const_edge_t<G>;
+    using edge_type                 = edge_t<G> const;
     using edge_reference_type       = edge_type&;
     using vertex_edge_iterator_type = const_vertex_edge_iterator_t<G>;
 
@@ -336,7 +336,7 @@ public:
 
   protected:
     depth_first_search_edge_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
-    stack_elem      elem_;
+    stack_elem                     elem_;
   };
 
 

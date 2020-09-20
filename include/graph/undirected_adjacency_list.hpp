@@ -118,8 +118,8 @@ public:
   using size_type       = size_t;
   using difference_type = ptrdiff_t;
 
-  using edge_range       = decltype(::ranges::make_subrange(iterator(), iterator()));
-  using const_edge_range = decltype(::ranges::make_subrange(const_iterator(), const_iterator()));
+  using edge_range       = decltype(ranges::make_subrange(iterator(), iterator()));
+  using const_edge_range = decltype(ranges::make_subrange(const_iterator(), const_iterator()));
 
 public:
   class const_iterator {
@@ -173,7 +173,8 @@ public:
 
   class iterator : public const_iterator {
   public:
-    using iterator_category = bidirectional_iterator_tag;
+    using base_t            = const_iterator;
+    using iterator_category = typename base_t::iterator_category;
     using value_type        = ual_edge_list::edge_type;
     using difference_type   = ual_edge_list::difference_type;
     using size_type         = ual_edge_list::size_type;
@@ -339,11 +340,13 @@ public:
   using vertex_user_value_type = VV;
   using vertex_key_type        = vertex_index;
 
+  using edge_key_type        = pair<vertex_key_type, vertex_key_type>;
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_index           = IndexT;
-  using edge_size_type       = IndexT;
+  using edge_size_type       = size_t;
+  using edge_ssize_type      = ptrdiff_t;
 #  ifdef FUTURE
   using edge_iterator       = typename edge_set::iterator;
   using const_edge_iterator = typename edge_set::const_iterator;
@@ -388,6 +391,8 @@ public:
   const_vertex_iterator other_vertex(graph_type const&, vertex_key_type const inward_or_outward_key) const noexcept;
   vertex_key_type       other_vertex_key(graph_type const&, vertex_key_type const inward_or_outward_key) const noexcept;
 
+  edge_key_type edge_key(graph_type const& g) const noexcept;
+
   friend graph_type;  // the graph is the one to create & destroy edges because it owns the allocator
   friend vertex_type; // vertex can also destroy its own edges
 };
@@ -420,7 +425,7 @@ public:
   using edge_user_value_type = EV;
   using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_size_type       = IndexT;
+  using edge_size_type       = typename edge_type::edge_size_type;
 
   using edge_list_type              = ual_edge_list<VV, EV, GV, IndexT, A>;
   using edge_list_inward_link_type  = ual_edge_list_link<VV, EV, GV, IndexT, A, inward_list>;
@@ -473,7 +478,7 @@ public:
 
   template <class EV2>
   vertex_edge_iterator create_edge(graph_type&,
-                                   vertex_key_type const&,
+                                   vertex_key_type,
                                    EV2 const&); // EV2 must be accepted by vertex_user_value_type constructor
 
 protected:
@@ -497,58 +502,52 @@ private:
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 class undirected_adjacency_list : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
-  using base_type                   = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
-  using graph_type                  = undirected_adjacency_list<VV, EV, GV, IndexT, A>;
-  using const_graph_type            = const graph_type;
-  using graph_user_value_type       = GV;
-  using const_graph_user_value_type = const GV;
-  using allocator_type              = A;
+  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
+  using graph_type            = undirected_adjacency_list<VV, EV, GV, IndexT, A>;
+  using graph_user_value_type = GV;
+  using allocator_type        = A;
 
-  using vertex_type                  = ual_vertex<VV, EV, GV, IndexT, A>;
-  using const_vertex_type            = const vertex_type;
-  using vertex_user_value_type       = VV;
-  using const_vertex_user_value_type = const VV;
-  using vertex_allocator_type        = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set                   = vector<vertex_type, vertex_allocator_type>;
-  using vertex_size_type             = typename vertex_set::size_type;
-  using vertex_ssize_type            = make_signed_t<vertex_size_type>;
-  using vertex_index_type            = IndexT;
-  using vertex_key_type              = vertex_index_type;
-  using const_vertex_key_type        = const vertex_key_type;
-  using vertex_value_type            = vertex_type;
+  using vertex_type            = ual_vertex<VV, EV, GV, IndexT, A>;
+  using vertex_user_value_type = VV;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
+  using vertex_size_type       = typename vertex_set::size_type;
+  using vertex_ssize_type      = typename vertex_set::difference_type;
+  using vertex_index_type      = IndexT;
+  using vertex_key_type        = vertex_index_type;
+  using vertex_value_type      = vertex_type;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_range          = decltype(::ranges::make_subrange(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(::ranges::make_subrange(declval<vertex_set const&>()));
+  using vertex_range          = decltype(ranges::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(ranges::make_subrange(declval<vertex_set const&>()));
 
-  using edge_type                  = ual_edge<VV, EV, GV, IndexT, A>;
-  using const_edge_type            = const edge_type;
-  using edge_user_value_type       = EV;
-  using const_edge_user_value_type = const EV;
-  using edge_allocator_type        = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_key_type              = pair<vertex_key_type, vertex_key_type>; // <from,to>
-  using edge_value_type            = pair<edge_key_type, edge_user_value_type>;
-  using edge_size_type             = size_t;
-  using edge_ssize_type            = ptrdiff_t;
+  using edge_type            = ual_edge<VV, EV, GV, IndexT, A>;
+  using edge_user_value_type = EV;
+  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_key_type        = pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
+  using edge_size_type       = typename edge_type::edge_size_type;
+  using edge_ssize_type      = typename edge_type::edge_ssize_type;
   // edge_set, edge_index_type n/a
 
-  using vertex_edge_size_type      = typename vertex_type::vertex_edge_size_type;
-  using vertex_edge_ssize_type     = make_signed_t<vertex_edge_size_type>;
   using vertex_edge_iterator       = typename vertex_type::vertex_edge_iterator;
   using const_vertex_edge_iterator = typename vertex_type::const_vertex_edge_iterator;
   using vertex_edge_range          = typename vertex_type::vertex_edge_range;
   using const_vertex_edge_range    = typename vertex_type::const_vertex_edge_range;
+  using vertex_edge_size_type      = typename vertex_edge_iterator::size_type;
+  using vertex_edge_ssize_type     = typename vertex_edge_iterator::difference_type;
 
   class edge_iterator;       // (defined below)
   class const_edge_iterator; // (defined below)
-  using edge_range       = decltype(::ranges::make_subrange(edge_iterator(), edge_iterator()));
-  using const_edge_range = decltype(::ranges::make_subrange(const_edge_iterator(), const_edge_iterator()));
+  using edge_range       = decltype(ranges::make_subrange(edge_iterator(), edge_iterator()));
+  using const_edge_range = decltype(ranges::make_subrange(const_edge_iterator(), const_edge_iterator()));
 
   class const_edge_iterator {
   public:
     using iterator_category = forward_iterator_tag;
     using value_type        = ual_edge<VV, EV, GV, IndexT, A>;
+    using size_type         = size_t;
     using difference_type   = ptrdiff_t;
     using pointer           = value_type const*;
     using reference         = value_type const&;
@@ -610,9 +609,11 @@ public:
 
   class edge_iterator : public const_edge_iterator {
   public:
-    using iterator_category = forward_iterator_tag;
-    using value_type        = ual_edge<VV, EV, GV, IndexT, A>;
-    using difference_type   = ptrdiff_t;
+    using base_t            = const_edge_iterator;
+    using iterator_category = typename base_t::iterator_category;
+    using value_type        = typename base_t::value_type;
+    using size_type         = typename base_t::size_type;
+    using difference_type   = typename base_t::difference_type;
     using pointer           = value_type*;
     using reference         = value_type&;
 
@@ -780,8 +781,8 @@ public:
   constexpr const_vertex_iterator end() const;
   constexpr const_vertex_iterator cend() const;
 
-  vertex_iterator       find_vertex(const_vertex_key_type);
-  const_vertex_iterator find_vertex(const_vertex_key_type) const;
+  vertex_iterator       find_vertex(vertex_key_type);
+  const_vertex_iterator find_vertex(vertex_key_type) const;
 
   constexpr edge_size_type edges_size() const noexcept;
 
@@ -801,8 +802,8 @@ public:
     return const_edge_iterator(*this, const_cast<graph_type&>(*this).end());
   }
 
-  edge_range       edges() { return ::ranges::make_subrange(edges_begin(), edges_end()); }
-  const_edge_range edges() const { return ::ranges::make_subrange(edges_begin(), edges_end()); }
+  edge_range       edges() { return ranges::make_subrange(edges_begin(), edges_end()); }
+  const_edge_range edges() const { return ranges::make_subrange(edges_begin(), edges_end()); }
 
 protected:
   void reserve_vertices(vertex_size_type);
@@ -816,12 +817,12 @@ protected:
   vertex_iterator create_vertex(VV2 const&); // vertex_user_value_type must be constructable from VV2
 
 public:
-  edge_iterator create_edge(vertex_key_type const&, vertex_key_type const&);
-  edge_iterator create_edge(vertex_key_type const&, vertex_key_type const&, edge_user_value_type&&);
+  edge_iterator create_edge(vertex_key_type, vertex_key_type);
+  edge_iterator create_edge(vertex_key_type, vertex_key_type, edge_user_value_type&&);
 
   template <class EV2>
-  edge_iterator create_edge(vertex_key_type const&,
-                            vertex_key_type const&,
+  edge_iterator create_edge(vertex_key_type,
+                            vertex_key_type,
                             EV2 const&); // EV2 must be accepted by vertex_user_value_type constructor
 
   edge_iterator create_edge(vertex_iterator, vertex_iterator);
@@ -851,49 +852,32 @@ private:
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 struct graph_traits<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  using graph_type                  = undirected_adjacency_list<VV, EV, GV, IndexT, A>;
-  using const_graph_type            = const graph_type;
-  using graph_user_value_type       = typename graph_type::graph_user_value_type;
-  using const_graph_user_value_type = typename graph_type::const_graph_user_value_type;
-  using allocator_type              = typename graph_type::allocator_type;
+  using graph_type            = undirected_adjacency_list<VV, EV, GV, IndexT, A>;
+  using graph_user_value_type = typename graph_type::graph_user_value_type;
+  using allocator_type        = typename graph_type::allocator_type;
 
-  using vertex_type                  = typename graph_type::vertex_type;
-  using const_vertex_type            = typename graph_type::const_vertex_type;
-  using vertex_user_value_type       = typename graph_type::vertex_user_value_type;
-  using const_vertex_user_value_type = typename graph_type::const_vertex_user_value_type;
-  using vertex_size_type             = typename graph_type::vertex_size_type;
-  using vertex_ssize_type            = typename graph_type::vertex_ssize_type;
-  using vertex_index_type            = typename graph_type::vertex_index_type;
-  using vertex_key_type              = typename graph_type::vertex_key_type;
-  using const_vertex_key_type        = typename graph_type::const_vertex_key_type;
-  using vertex_value_type            = typename graph_type::vertex_value_type;
+  using vertex_type            = typename graph_type::vertex_type;
+  using vertex_key_type        = typename graph_type::vertex_key_type;
+  using vertex_user_value_type = typename graph_type::vertex_user_value_type;
+  using vertex_value_type      = typename graph_type::vertex_value_type;
 
-  using vertex_iterator       = typename graph_type::vertex_iterator;
-  using const_vertex_iterator = typename graph_type::const_vertex_iterator;
-  using vertex_range          = typename graph_type::vertex_range;
-  using const_vertex_range    = typename graph_type::const_vertex_range;
+  using edge_type            = typename graph_type::edge_type;
+  using edge_key_type        = typename graph_type::edge_key_type; // pair<from,to>
+  using edge_user_value_type = typename graph_type::edge_user_value_type;
+  using edge_value_type      = typename graph_type::edge_value_type;
 
-  using edge_type                  = typename graph_type::edge_type;
-  using const_edge_type            = typename graph_type::const_edge_type;
-  using edge_user_value_type       = typename graph_type::edge_user_value_type;
-  using const_edge_user_value_type = typename graph_type::const_edge_user_value_type;
-  using edge_key_type              = typename graph_type::edge_key_type; // pair<from,to>
-  using edge_value_type            = typename graph_type::edge_value_type;
-  using edge_size_type             = typename graph_type::edge_size_type;
-  using edge_ssize_type            = typename graph_type::edge_ssize_type;
-  // edge_set, edge_index_type n/a
+  using vertex_range       = typename graph_type::vertex_range;
+  using const_vertex_range = typename graph_type::const_vertex_range;
+  using vertex_size_type   = typename graph_type::vertex_size_type;
+  using vertex_index_type  = typename graph_type::vertex_index_type;
 
-  using vertex_edge_size_type      = typename graph_type::vertex_edge_size_type;
-  using vertex_edge_ssize_type     = typename graph_type::vertex_edge_ssize_type;
-  using vertex_edge_iterator       = typename graph_type::vertex_edge_iterator;
-  using const_vertex_edge_iterator = typename graph_type::const_vertex_edge_iterator;
-  using vertex_edge_range          = typename graph_type::vertex_edge_range;
-  using const_vertex_edge_range    = typename graph_type::const_vertex_edge_range;
+  using vertex_edge_range       = typename graph_type::vertex_edge_range;
+  using const_vertex_edge_range = typename graph_type::const_vertex_edge_range;
+  using vertex_edge_size_type   = typename graph_type::vertex_edge_size_type;
 
-  using edge_iterator       = typename graph_type::edge_iterator;
-  using const_edge_iterator = typename graph_type::const_edge_iterator;
-  using edge_range          = typename graph_type::edge_range;
-  using const_edge_range    = typename graph_type::const_edge_range;
+  using edge_range       = typename graph_type::edge_range;
+  using const_edge_range = typename graph_type::const_edge_range;
+  using edge_size_type   = typename graph_type::edge_size_type;
 };
 
 } // namespace std::graph

@@ -28,8 +28,8 @@ struct reaches {
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a sparse graph. Complexity is same as DFS: V(VE).
 template <directed_graph G, typename OutIter, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> constexpr void
-dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
+requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
+                                     dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   using reach_t = reaches<G>;
   auto first    = begin(g);
   for (auto ui = first; ui != end(g); ++ui) {
@@ -46,8 +46,8 @@ dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
 }
 
 template <typename ExecutionPolicy, directed_graph G, typename OutIter, typename A = allocator<bool>>
-requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> constexpr void
-warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
+requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
+                                     warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a dense graph using Warshall's algorithm.
@@ -56,8 +56,8 @@ warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter,
 /// ToDo: Implement parallel option
 ///
 template <directed_graph G, typename OutIter, typename A = allocator<bool>>
-requires integral<vertex_key_t<G>>&& ::ranges::random_access_range<vertex_range_t<G>> constexpr void
-warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
+requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
+                                     warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   size_t const V = vertices_size(g);
 
   vector<bool> reach(V * V, alloc);

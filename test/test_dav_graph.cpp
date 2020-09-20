@@ -49,10 +49,10 @@ static vector<std::string> const& germany_cities() { return germany_routes_direc
 
 template <class OStream>
 OStream& operator<<(OStream& os, Graph const& g) {
-  for (const_vertex_t<Graph>& u : vertices(g)) {
+  for (vertex_t<Graph> const& u : vertices(g)) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (const_edge_t<Graph>& uv : edges(g, u)) {
+    for (edge_t<Graph> const& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = outward_vertex(g, uv);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
@@ -488,7 +488,7 @@ TEST_CASE("daa dfs vertex", "[daa][dfs][vertex]") {
 }
 
 TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
-  Graph          g = create_germany_routes_graph();
+  Graph                         g = create_germany_routes_graph();
   depth_first_search_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -525,7 +525,8 @@ TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
   cout << "depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();\n"
        << "\n";
   size_t uvi = 0;
-  for (depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv, ++uvi) {
+  for (depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end();
+       ++uv, ++uvi) {
     if (uvi > 0)
       cout << "\n"
            << "++uv;\n";
@@ -654,7 +655,7 @@ TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
 }
 
 TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
-  Graph            g = create_germany_routes_graph();
+  Graph                             g = create_germany_routes_graph();
   breadth_first_search_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -700,7 +701,7 @@ TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
 }
 
 TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
-  Graph          g = create_germany_routes_graph();
+  Graph                           g = create_germany_routes_graph();
   breadth_first_search_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -738,7 +739,8 @@ TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
   cout << "breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();\n"
        << "\n";
   size_t uvi = 0;
-  for (breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv, ++uvi) {
+  for (breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end();
+       ++uv, ++uvi) {
     if (uvi > 0)
       cout << "\n"
            << "++uv;\n";

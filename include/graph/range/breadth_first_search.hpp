@@ -61,7 +61,7 @@ namespace std::graph {
 // clang-format off
 template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>> 
-        && ::ranges::random_access_range<vertex_range_t<G>> 
+        && ranges::random_access_range<vertex_range_t<G>> 
 class breadth_first_search_vertex_range
 // clang-format on
 {
@@ -98,7 +98,8 @@ public:
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
     const_iterator(const_iterator const&) = default;
-    const_iterator(breadth_first_search_vertex_range& bfs, bool end_iter = false) : bfs_(&bfs), elem_{vertices_end(bfs.graph_)} {
+    const_iterator(breadth_first_search_vertex_range& bfs, bool end_iter = false)
+          : bfs_(&bfs), elem_{vertices_end(bfs.graph_)} {
       if (!end_iter && !bfs.queue_.empty())
         elem_ = bfs.queue_.front();
     }
@@ -127,7 +128,7 @@ public:
 
   protected:
     breadth_first_search_vertex_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
-    queue_elem        elem_;
+    queue_elem                         elem_;
   };
 
   class iterator : public const_iterator {
@@ -233,8 +234,8 @@ private:
 // clang-format off
 template <searchable_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
-        && ::ranges::random_access_range<vertex_range_t<G>>
-        && ::ranges::bidirectional_range<vertex_edge_range_t<G>> 
+        && ranges::random_access_range<vertex_range_t<G>>
+        && ranges::bidirectional_range<vertex_edge_range_t<G>> 
 class breadth_first_search_edge_range
 // clang-format on
 {
@@ -267,11 +268,11 @@ public:
     using pointer           = const_vertex_edge_iterator_t<G>;
     using reference         = value_type const&;
 
-    using vertex_type           = const_vertex_t<G>;
+    using vertex_type           = vertex_t<G> const;
     using vertex_reference_type = vertex_type&;
     using vertex_iterator_type  = const_vertex_iterator_t<G>;
 
-    using edge_type                 = const_edge_t<G>;
+    using edge_type                 = edge_t<G> const;
     using edge_reference_type       = edge_type&;
     using vertex_edge_iterator_type = const_vertex_edge_iterator_t<G>;
 
@@ -316,7 +317,7 @@ public:
 
   protected:
     breadth_first_search_edge_range* bfs_ = nullptr; // always non-null & valid; ptr allows default ctor
-    queue_elem      elem_;
+    queue_elem                       elem_;
   };
 
   class iterator : public const_iterator {

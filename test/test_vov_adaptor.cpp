@@ -1,7 +1,7 @@
 //#include "pch.h"
 #include "vov_adaptor.hpp"
 #include "data_routes.hpp"
-#include "graph/range/dfs.hpp"
+#include "graph/range/depth_first_search.hpp"
 
 #include <iostream>
 #include <catch2/catch.hpp>
@@ -111,7 +111,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   using std::graph::depth_first_search_vertex_range;
   using Graph = vov_germany_t;
 
-  vov_germany_t    g = get_germany_routes();
+  vov_germany_t                   g = get_germany_routes();
   depth_first_search_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT

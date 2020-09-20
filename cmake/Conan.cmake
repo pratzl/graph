@@ -21,10 +21,10 @@ conan_add_remote(NAME bincrafters URL
 conan_cmake_run(
   REQUIRES
   ${CONAN_EXTRA_REQUIRES}
-  catch2/2.11.0
+  catch2/2.13.1
   docopt.cpp/0.6.2
-  fmt/6.2.1
-  spdlog/1.6.0
+  fmt/7.0.3
+  spdlog/1.8.0
   range-v3/0.11.0
   tbb/2020.1
   OPTIONS
