@@ -24,42 +24,42 @@ namespace std::graph {
 template <typename VV   = empty_value,
           typename EV   = empty_value,
           typename GV   = empty_value,
-          typename KeyT = uint32_t,
+          integral KeyT = uint32_t,
           typename A    = allocator<char>>
 class undirected_adjacency_list;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_vertex;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_edge;
 
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto size(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g) noexcept
       -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g) noexcept
       -> vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto begin(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto cbegin(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto end(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto end(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto cend(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
@@ -69,10 +69,10 @@ constexpr auto cend(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
 struct inward_list;
 struct outward_list;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_edge_list;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A, typename ListT>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A, typename ListT>
 class ual_edge_list_link;
 
 
@@ -86,7 +86,7 @@ class ual_edge_list_link;
 /// @tparam A      Allocator. default = std::allocator
 /// @tparam ListT  inward_list|outward_list. Which edge list this is for.
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_edge_list {
 public:
   class iterator;
@@ -264,7 +264,7 @@ private:
 /// @tparam A      Allocator. default = std::allocator
 /// @tparam ListT  inward_list|outward_list. Which edge list this is for.
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A, typename ListT>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A, typename ListT>
 class ual_edge_list_link {
 public:
   using graph_type = undirected_adjacency_list<VV, EV, GV, KeyT, A>;
@@ -321,7 +321,7 @@ private:
 /// @tparam IntexT The type used for vertex & edge index into the internal vectors.
 /// @tparam A      Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_edge
       : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>
       , public ual_edge_list_link<VV, EV, GV, KeyT, A, inward_list>
@@ -406,7 +406,7 @@ public:
 /// @tparam IntexT The type used for vertex & edge index into the internal vectors.
 /// @tparam A      Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
 public:
   using graph_type            = undirected_adjacency_list<VV, EV, GV, KeyT, A>;
@@ -499,7 +499,7 @@ private:
 /// @tparam IntexT The type used for vertex & edge index into the internal vectors.
 /// @tparam A      Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class undirected_adjacency_list : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
   using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
@@ -850,7 +850,7 @@ private:
   friend vertex_type;
 };
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
   using graph_type            = undirected_adjacency_list<VV, EV, GV, KeyT, A>;
   using graph_user_value_type = typename graph_type::graph_user_value_type;

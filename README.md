@@ -125,8 +125,7 @@ Other Useful Tools
     - [x] remove type defs on graph classes in paper (only ctors should exist)
     - [ ] describe rationale for data structures used
     - [x] assure CSR can be handled with the current ctors [can't store vector props; vertex lookup log(n)]
-    - [x] IndexT --> KeyT
-    - [ ] KeyT integral concept
+    - [x] IndexT --> KeyT, integral concept
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [ ] implement with deque?

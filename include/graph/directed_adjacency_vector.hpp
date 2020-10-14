@@ -23,42 +23,42 @@ namespace std::graph {
 template <typename VV   = empty_value,
           typename EV   = empty_value,
           typename GV   = empty_value,
-          typename KeyT = uint32_t,
+          integral KeyT = uint32_t,
           typename A    = allocator<char>>
 class directed_adjacency_vector;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class dav_vertex;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class dav_edge;
 
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto size(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g) noexcept
       -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto ssize(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g) noexcept
       -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto begin(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto begin(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto cbegin(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto end(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto end(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto cend(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
@@ -72,7 +72,7 @@ constexpr auto cend(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g)
 /// @tparam KeyT The type used for the vertex key, and index into edge vector
 /// @tparam A    Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class dav_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
 public:
   using base_type  = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
@@ -138,7 +138,7 @@ private:
 /// @tparam KeyT The type used for the vertex key, and index into edge vector
 /// @tparam A    Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class dav_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
 public:
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
@@ -235,7 +235,7 @@ private:
 /// @tparam KeyT The type used for the vertex key, and index into edge vector
 /// @tparam A    Allocator. default = std::allocator
 //
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
 public:
   using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
@@ -467,7 +467,7 @@ private:
 };
 
 
-template <typename VV, typename EV, typename GV, typename KeyT, typename A>
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   using graph_type            = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
   using graph_user_value_type = typename graph_type::graph_user_value_type;
