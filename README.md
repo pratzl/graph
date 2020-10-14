@@ -113,7 +113,7 @@ Other Useful Tools
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
-    - [ ] add vertices(g,u) -> vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
+    - [ ] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
     - [ ] add vertices_size(g,u) [add impl]
     - [ ] add vertices_ssize(g,u) [add impl]
     - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey)
@@ -124,13 +124,15 @@ Other Useful Tools
     - [x] replace use of short graph name with long name
     - [x] remove type defs on graph classes in paper (only ctors should exist)
     - [ ] describe rationale for data structures used
-    - [ ] assure CSR can be handled with the current ctors
+    - [x] assure CSR can be handled with the current ctors [can't store vector props; vertex lookup log(n)]
+    - [x] IndexT --> KeyT
+    - [ ] KeyT integral concept
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [ ] implement with deque?
-    - [ ] implement with map? (non-integer index)
+    - [x] implement with map? (non-integer index) [too much change in algorithms]
     - [ ] use common data structure for directed graph?
-    - [ ] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them?
+    - [x] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them? [key can be used in place of index]
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
   - [ ] unordered adjacency list
     - [x] implement with vector
@@ -221,6 +223,10 @@ Other Useful Tools
     - [ ] Consider re-adding degree() (alias of size or ssize)
   - [ ] Leanne/Jing Dong <jdleanne@gmail.com> 10/7/20
     - [ ] Recommend adding incidence matrix
+  - [ ] SG19 Review 10/8/20
+    - [x] Remove unneeded const types in graph_traits
+    - [x] Use iterator_t<range> to define types in graph_traits when possible
+    - [ ] Move graph data structures into separate proposals
   - [ ] Graph review
     - [ ] Changes
       - [ ] name changes: directed_adjacency_array --> _vertex, -ward, long names, drop _c suffix
