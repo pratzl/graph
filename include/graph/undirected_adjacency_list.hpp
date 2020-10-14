@@ -869,7 +869,6 @@ struct graph_traits<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   using vertex_range       = typename graph_type::vertex_range;
   using const_vertex_range = typename graph_type::const_vertex_range;
   using vertex_size_type   = typename graph_type::vertex_size_type;
-  using vertex_index_type  = typename graph_type::vertex_index_type;
 
   using vertex_edge_range       = typename graph_type::vertex_edge_range;
   using const_vertex_edge_range = typename graph_type::const_vertex_edge_range;

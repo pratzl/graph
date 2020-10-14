@@ -92,7 +92,6 @@ struct graph_traits
   using vertex_range                 = ...; // 
   using const_vertex_range           = ...; // 
   using vertex_size_type             = ...; // 
-  using vertex_index_type            = ...; // (optional)
 
   // edge types 
   using edge_type                  = ...; // 
@@ -104,7 +103,6 @@ struct graph_traits
   using edge_range                 = ...; // only if graph-edges defined
   using const_edge_range           = ...; // only if graph-edges defined
   using edge_size_type             = ...; // all graph types
-  using edge_index_type            = ...; // only if graph-edges defined
 
   // vertex-edge collection types - directed_graph & undirected_graph
   using vertex_edge_range          = ...; 
@@ -472,24 +470,24 @@ constexpr void clear_edges(G& g, vertex_t<G>&);
 
 // Uniform API: Vertex-Vertex range functions
 template <typename G>
-constexpr auto vertices(G& g, vertex_t<G>& u) -> vertex_range_t<G>;
+constexpr auto vertices(G& g, vertex_t<G>& u) -> vertex_vertex_range_t<G>;
 template <typename G>
-constexpr auto vertices(G const& g, vertex_t<G> const& u) -> const_vertex_range_t<G>;
+constexpr auto vertices(G const& g, vertex_t<G> const& u) -> const_vertex_vertex_range_t<G>;
 
 template <typename G>
-constexpr auto vertices(G& g, vertex_key_t<G> u) -> vertex_range_t<G>;
+constexpr auto vertices(G& g, vertex_key_t<G> u) -> vertex_vertex_range_t<G>;
 template <typename G>
-constexpr auto vertices(G const& g, vertex_key_t<G> u) -> const_vertex_range_t<G>;
+constexpr auto vertices(G const& g, vertex_key_t<G> u) -> const_vertex_vertex_range_t<G>;
 
 template <typename G>
-constexpr auto vertices_size(G const& g, vertex_t<G> const& u) noexcept -> vertex_size_t<G>;
+constexpr auto vertices_size(G const& g, vertex_t<G> const& u) noexcept -> vertex_vertex_size_t<G>;
 template <typename G>
-constexpr auto vertices_size(G const& g, vertex_key_t<G> u) noexcept -> vertex_size_t<G>;
+constexpr auto vertices_size(G const& g, vertex_key_t<G> u) noexcept -> vertex_vertex_size_t<G>;
 
 template <typename G>
-constexpr auto vertices_ssize(G const& g, vertex_t<G> const& u) noexcept -> vertex_ssize_t<G>;
+constexpr auto vertices_ssize(G const& g, vertex_t<G> const& u) noexcept -> vertex_vertex_ssize_t<G>;
 template <typename G>
-constexpr auto vertices_ssize(G const& g, vertex_key_t<G> u) noexcept -> vertex_ssize_t<G>;
+constexpr auto vertices_ssize(G const& g, vertex_key_t<G> u) noexcept -> vertex_vertex_ssize_t<G>;
 
 
 //

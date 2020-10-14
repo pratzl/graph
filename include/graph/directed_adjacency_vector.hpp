@@ -486,12 +486,10 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using vertex_range       = typename graph_type::vertex_range;
   using const_vertex_range = typename graph_type::const_vertex_range;
   using vertex_size_type   = typename graph_type::vertex_size_type;
-  using vertex_index_type  = typename graph_type::vertex_index_type;
 
   using edge_range       = typename graph_type::edge_range;
   using const_edge_range = typename graph_type::const_edge_range;
   using edge_size_type   = typename graph_type::edge_size_type;
-  using edge_index_type  = typename graph_type::edge_index_type;
 
   using vertex_outward_edge_range       = typename graph_type::vertex_outward_edge_range;
   using const_vertex_outward_edge_range = typename graph_type::const_vertex_outward_edge_range;
@@ -500,6 +498,10 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, IndexT, A>> {
   using vertex_edge_range       = vertex_outward_edge_range;
   using const_vertex_edge_range = const_vertex_outward_edge_range;
   using vertex_edge_size_type   = vertex_outward_edge_size_type;
+
+  using vertex_vertex_range       = void;
+  using const_vertex_vertex_range = void;
+  using vertex_vertex_size_type   = void;
 };
 
 
