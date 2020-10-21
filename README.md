@@ -66,7 +66,7 @@ Other Useful Tools
   - [ ] algorithms: refine concept requirements
   - [ ] [paper] sparse/dense not defined;
   - [ ] compare to BGL concepts [Lumsdaine]
-  - [ ] allow vertex_key_t<G> to be non-integer
+  - [x] allow vertex_key_t<G> to be non-integer [no; requires algo specialization, performance impact]
 - [ ] Algorithms
   - [x] Common
     - [x] Change contiguous --> random_access for requirements
@@ -216,7 +216,7 @@ Other Useful Tools
       - [ ] Undefined behavior if determining if u is in g is expensive
       - [ ] How does this apply to other functions in the API
     - [ ] how are invalid parameters handled in algorithms (cf API)? (undefined behavior, ...)
-    - [ ] consider creating a graph_view<G>
+    - [ ] consider creating a subgraph_view<G>
     - [x] consider adding edge_key<G>, edge_key(g,uv) & edge_key(g,u,v)
     - [ ] Are const versions of algos needed? (If I pass a const graph g, are all dependent types const?)
     - [ ] Consider re-adding degree() (alias of size or ssize)
@@ -245,7 +245,7 @@ Other Useful Tools
       - [ ] Consider returning empty range/end iterator if passing vector/edge that doesn't belong to graph
       - [ ] re-add adjacency_matrix / incidence_matrix?
       - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
-      - [ ] graph_view?
+      - [ ] subgraph_view?
     - [ ] Other
       - [ ] using map<K,V> for vertices is possible, but requires different algorithms to match
     - [ ] ToDo
