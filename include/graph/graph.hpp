@@ -693,9 +693,9 @@ template <typename G>
 concept undirected_graph = uniform_graph<G> && !outward_directed_graph<G> && !inward_directed_graph<G>;
 
 template <typename V>
-concept vertex_c = true; // (vertex_c --> vertex: name conflict with vertex(g,uv))
+concept graph_vertex = true;
 template <typename V>
-concept edge_c = true;
+concept graph_edge = true;
 
 template <typename T>
 concept arithmetic = is_arithmetic_v<T>;

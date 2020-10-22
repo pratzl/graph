@@ -59,7 +59,7 @@ Other Useful Tools
 ## ToDo
 
 - [ ] concepts
-  - [ ] vertex_c --> vertex? (name conflict with vertex(g,uv))
+  - [x] vertex_c --> graph_vertex
   - [ ] add type traits? (needed when concepts exist?)
   - [ ] Add edge_set concept
   - [ ] Add vertex_set concept
