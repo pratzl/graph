@@ -5,6 +5,7 @@
 #include <range/v3/view/subrange.hpp>
 #include <type_traits>
 #include <utility> // pair
+#include "ordered_pair.hpp"
 
 /* 
     This header's organization

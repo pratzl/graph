@@ -108,8 +108,10 @@ Other Useful Tools
     - [x] Add ssize defs & implementations for vertices, edge, outward_edges & inward_edges
     - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
-    - [ ] Consider addtion of [[nodiscard]]
+    - [ ] Consider addition of [[nodiscard]]
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
+    - [ ] use West const to mirror usage in std :(
+    - [ ] Add ordered_pair<T,T> & unordered_pair<T,T> as sub-structs of pair for edges
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -118,6 +120,15 @@ Other Useful Tools
     - [ ] add vertices_ssize(g,u) [add impl]
     - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey)
     - [ ] vertex_key_type required to be integral
+    - [ ] add contains(g,u), contains(g,u,v)
+  - [ ] ordered_pair & unordered_pair
+    - [x] initial implementation
+    - [x] initial test impl
+    - [ ] support conditionally explicit ctors
+    - [ ] support tuple_size<ordered_pair<T1,T2>> & tuple_size<unordered_pair<T1,T2>>
+    - [ ] support tuple_element<orderd_pair<T1,T2>> & tuple_element<unorderd_pair<T1,T2>>
+    - [ ] support get(ordered_pair<T1,T2>) & get(unordered_pair<T1,T2>)
+    - [ ] support piecewise_construct_t ctor
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
@@ -133,12 +144,15 @@ Other Useful Tools
     - [ ] use common data structure for directed graph?
     - [x] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them? [key can be used in place of index]
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
+    - [ ] Create paper D2240R0 
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
     - [ ] implement with deque?
     - [ ] implement with map? (non-integer index)
-  - [ ] support Compressed Sparse Row (CSR)?
+    - [ ] Create paper D2239R0 
+  - [ ] Create paper for D2241R0 graph data structure design directions
+    - [ ] support Compressed Sparse Row (CSR)? [Properties on vertices?]
   - [ ] support constexpr data structures (vector, array)
 - [ ] C++20
   - [ ] review use of sentinal
@@ -195,9 +209,10 @@ Other Useful Tools
     - [ ] (final comment review)
   - [ ] Andrew Sutton
     - [x] Move concepts to beginning of the paper
-    - [ ] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
+    - [x] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
     - [x] Add -ward suffix for inward & outward
-    - [ ] Tighten up definition of undirected
+    - [x] Tighten up definition of directed & undirected
+    - [ ] Consider creating ordered_pair and unorderd_pair [as sub-structs of std::pair]
     - [ ] Add new concepts
       - [ ] Path
       - [ ] Cycle
@@ -226,26 +241,6 @@ Other Useful Tools
     - [x] Remove unneeded const types in graph_traits
     - [x] Use iterator_t<range> to define types in graph_traits when possible
     - [ ] Move graph data structures into separate proposals
-  - [ ] Graph review
-    - [ ] Changes
-      - [ ] name changes: directed_adjacency_array --> _vertex, -ward, long names, drop _c suffix
-      - [ ] types
-        - [ ] graph_traits<G> (template aliases can't be overridden)
-        - [ ] edge_key_t<G> (not used in algorithms, but I did use in graph data structures internally)
-      - [ ] functions
-        - [ ] limited use of noexcept on functions (size, ssize)
-        - [ ] add: vertices(g,u), vertices_size(g,u), vertices_ssize(g,u), outward_vertices(g,u), inward_vertices(g,u)
-      - [ ] graph data structures
-        - [ ] added concepts: vertex_range_extractor<VRng, VValueFnc>, edge_range_extractor<ERng, EKeyFnc, EValueFnc>
-        - [ ] remove unnecessary definitions (e.g. vertex & edge classes)
-        - [ ] remove unnecessary type definitions (e.g. on graph class)
-        - [ ] dropped adjacency_matrix
-      - [ ] Adapting to External Graphs (new section)
-    - [ ] Recommendations
-      - [ ] Consider returning empty range/end iterator if passing vector/edge that doesn't belong to graph
-      - [ ] re-add adjacency_matrix / incidence_matrix?
-      - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
-      - [ ] subgraph_view?
     - [ ] Other
       - [ ] using map<K,V> for vertices is possible, but requires different algorithms to match
     - [ ] ToDo
