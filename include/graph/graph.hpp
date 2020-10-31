@@ -1,11 +1,7 @@
-//#include <memory>
-//#include <range/v3/all.hpp>
 #include <concepts>
-//#include <range/v3/range/concepts.hpp>
 #include <range/v3/view/subrange.hpp>
 #include <type_traits>
 #include <utility> // pair
-#include "ordered_pair.hpp"
 
 /* 
     This header's organization

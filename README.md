@@ -61,8 +61,6 @@ Other Useful Tools
 - [ ] concepts
   - [x] vertex_c --> graph_vertex
   - [ ] add type traits? (needed when concepts exist?)
-  - [ ] Add edge_set concept
-  - [ ] Add vertex_set concept
   - [ ] algorithms: refine concept requirements
   - [ ] [paper] sparse/dense not defined;
   - [ ] compare to BGL concepts [Lumsdaine]
@@ -108,10 +106,9 @@ Other Useful Tools
     - [x] Add ssize defs & implementations for vertices, edge, outward_edges & inward_edges
     - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
-    - [ ] Consider addition of [[nodiscard]]
+    - [x] Consider addition of [[nodiscard]] (std only uses it on empty & allocate, neither used in graph.hpp)
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
     - [ ] use West const to mirror usage in std :(
-    - [ ] Add ordered_pair<T,T> & unordered_pair<T,T> as sub-structs of pair for edges
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -119,9 +116,9 @@ Other Useful Tools
     - [ ] add vertices_size(g,u) [add impl]
     - [ ] add vertices_ssize(g,u) [add impl]
     - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey)
-    - [ ] vertex_key_type required to be integral
+    - [x] vertex_key_type required to be integral
     - [ ] add contains(g,u), contains(g,u,v)
-  - [ ] ordered_pair & unordered_pair
+  - [ ] ordered_pair & unordered_pair [define need for directed/undirected concepts]
     - [x] initial implementation
     - [x] initial test impl
     - [ ] support conditionally explicit ctors
@@ -134,32 +131,32 @@ Other Useful Tools
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
     - [x] replace use of short graph name with long name
     - [x] remove type defs on graph classes in paper (only ctors should exist)
-    - [ ] describe rationale for data structures used
-    - [x] assure CSR can be handled with the current ctors [can't store vector props; vertex lookup log(n)]
+    - [ ] assure CSR can be handled with the current graph ctors
     - [x] IndexT --> KeyT, integral concept
   - [ ] directed adjacency vector
     - [x] implement with vector
-    - [ ] implement with deque?
-    - [x] implement with map? (non-integer index) [too much change in algorithms]
-    - [ ] use common data structure for directed graph?
+    - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
+    - [x] implement with map? (non-integer index) [no: too big of impact to algorithms]
     - [x] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them? [key can be used in place of index]
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
-    - [ ] Create paper D2240R0 
+    - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
-    - [ ] implement with deque?
-    - [ ] implement with map? (non-integer index)
-    - [ ] Create paper D2239R0 
+    - [x] implement with deque? [for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
+    - [x] implement with map? (non-integer index) [no: too big of impact to algorithms]
+    - [ ] [wait for P1709 review by LEWG] Create paper D2239R0 
   - [ ] Create paper for D2241R0 graph data structure design directions
-    - [ ] support Compressed Sparse Row (CSR)? [Properties on vertices?]
+    - [ ] describe rationale for data structures used
+    - [x] support Compressed Sparse Row (CSR)?
+      - [x] no: can't store vertex props; vertex lookup log(n)
   - [ ] support constexpr data structures (vector, array)
 - [ ] C++20
   - [ ] review use of sentinal
   - [ ] define graph module
   - [x] use spaceship operator (n/a b/c <, >, <=, >= isn't needed)
   - [ ] operator!= not needed when operator== defined? (part of spaceship operator)
-  - [ ] investigate use of coroutines (stack space limits?)
+  - [ ] investigate use of coroutines for BFS & DFS (stack space limits?)
 - [ ] Unit Tests
   - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
 - [ ] Other libraries
@@ -189,7 +186,8 @@ Other Useful Tools
   - [ ] github failing action(s) on push
   - [ ] validate doxygen output
   - [ ] validate sanitizer generation
-  - [ ] remove unrelated libraries (imgui, ...)
+  - [x] remove unrelated libraries (imgui, ...)
+  - [ ] use compiler-supplied concepts (msvc, gcc)
 - [ ] Other Tools
   - [ ] Add clang-tidy to VSCode
   - [ ] Can VS be configured for development & remote development?
@@ -212,7 +210,7 @@ Other Useful Tools
     - [x] Drop _c suffix on concept names (vertex_c --> conflicts with vertex(g,uv) fnc)
     - [x] Add -ward suffix for inward & outward
     - [x] Tighten up definition of directed & undirected
-    - [ ] Consider creating ordered_pair and unorderd_pair [as sub-structs of std::pair]
+    - [x] Consider creating ordered_pair and unordered_pair [as sub-structs of std::pair]
     - [ ] Add new concepts
       - [ ] Path
       - [ ] Cycle

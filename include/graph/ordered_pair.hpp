@@ -1,5 +1,8 @@
-#include <concepts>
-//#include <range/v3/range/concepts.hpp>
+#ifdef __clang__
+#  include <range/v3/range/concepts.hpp>
+#else
+#  include <concepts>
+#endif
 #include <range/v3/view/subrange.hpp>
 #include <type_traits>
 #include <utility> // pair
