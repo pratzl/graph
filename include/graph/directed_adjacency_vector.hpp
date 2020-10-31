@@ -2,6 +2,7 @@
 //	Author: J. Phillip Ratzloff
 //
 #include "graph_utility.hpp"
+#include "ordered_pair.hpp"
 #include <vector>
 #include <cassert>
 
@@ -87,7 +88,7 @@ public:
   using vertex_index           = KeyT;
   using vertex_user_value_type = VV;
 
-  using edge_key_type        = pair<vertex_key_type, vertex_key_type>;
+  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>;
   using edge_user_value_type = EV;
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
@@ -265,7 +266,7 @@ public:
   using edge_size_type       = typename edge_set::size_type;
   using edge_ssize_type      = typename edge_set::difference_type;
   using edge_index_type      = KeyT;
-  using edge_key_type        = pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
 
   using edge_iterator       = typename edge_set::iterator;
@@ -479,7 +480,7 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   using vertex_value_type      = typename graph_type::vertex_value_type;
 
   using edge_type            = typename graph_type::edge_type;
-  using edge_key_type        = typename graph_type::edge_key_type; // pair<from,to>
+  using edge_key_type        = typename graph_type::edge_key_type; // ordered_pair<from,to>
   using edge_user_value_type = typename graph_type::edge_user_value_type;
   using edge_value_type      = typename graph_type::edge_value_type;
 

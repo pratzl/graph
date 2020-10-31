@@ -46,7 +46,7 @@ struct ordered_pair : public pair<T1, T2> {
   }
 
   constexpr ordered_pair& operator=(ordered_pair&& other) noexcept {
-    base_t::operator=(forward<T1>(other));
+    base_t::operator=(forward<base_t>(other));
     return *this;
   }
 
@@ -117,7 +117,7 @@ struct unordered_pair : public pair<T1, T2> {
   }
 
   constexpr unordered_pair& operator=(unordered_pair&& other) noexcept {
-    base_t::operator=(forward<T1>(other));
+    base_t::operator=(forward<base_t>(other));
     return *this;
   }
 
