@@ -892,6 +892,13 @@ void undirected_adjacency_list<VV, EV, GV, KeyT, A>::clear() {
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+void undirected_adjacency_list<VV, EV, GV, KeyT, A>::swap(undirected_adjacency_list& rhs) {
+  vertices_.swap(rhs.vertices_);
+  swap(edges_size_, rhs.edges_size_);
+  edge_alloc_.swap(rhs.edge_alloc_);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 void undirected_adjacency_list<VV, EV, GV, KeyT, A>::throw_unordered_edges() const {
   assert(false); // container must be sorted by edge_key.first
   throw invalid_argument("edges not ordered");

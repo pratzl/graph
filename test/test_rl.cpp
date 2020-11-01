@@ -14,4 +14,6 @@ using rl_graph = std::graph::directed_adjacency_vector<rl_weight_value, rl_weigh
 
 TEST_CASE("rl definition", "[rl][definition]") {
   //using G = rl_graph;
+  //static_assert(std::is_same_v<std::graph::edge_key_t<G>,
+  //                             std::graph::ordered_pair<std::graph::vertex_key_t<G>, std::graph::vertex_key_t<G>>>);
 }

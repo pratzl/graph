@@ -65,8 +65,7 @@ namespace std::graph {
 
 // clang-format off
 template <searchable_graph G, typename A = allocator<char>>
-  requires uniform_graph<G>
-        && integral<vertex_key_t<G>>
+  requires integral<vertex_key_t<G>>
         && ranges::random_access_range<vertex_range_t<G>> 
 class depth_first_search_vertex_range
 // clang-format on
@@ -237,8 +236,7 @@ private:
 ///
 // clang-format off
 template <searchable_graph G, typename A = allocator<char>>
-requires uniform_graph<G> /*directed_graph<G> */
-      && integral<vertex_key_t<G>>
+requires integral<vertex_key_t<G>>
       && ranges::random_access_range<vertex_range_t<G>> 
 class depth_first_search_edge_range
 // clang-format on

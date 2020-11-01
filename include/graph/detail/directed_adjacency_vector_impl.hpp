@@ -477,6 +477,12 @@ void directed_adjacency_vector<VV, EV, GV, KeyT, A>::clear() {
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+void directed_adjacency_vector<VV, EV, GV, KeyT, A>::swap(directed_adjacency_vector& rhs) {
+  vertices_.swap(rhs.vertices_);
+  edges_.swap(rhs.edges_);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 void directed_adjacency_vector<VV, EV, GV, KeyT, A>::throw_unordered_edges() const {
   assert(false); // container must be sorted by edge_key.first
   throw domain_error("edges not ordered");
@@ -488,6 +494,14 @@ void directed_adjacency_vector<VV, EV, GV, KeyT, A>::throw_unordered_edges() con
 
 //template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 //using vertices_size_t = typename directed_adjacency_vector<VV, EV, GV, IndexT, A>::vertex_size_type;
+
+//
+// Uniform API: Common functions (accepts graph, vertex and edge)
+//
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+void clear(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) {
+  g.clear();
+}
 
 //
 // API vertex functions
@@ -587,7 +601,7 @@ constexpr auto outward_cend(directed_adjacency_vector<VV, EV, GV, KeyT, A> const
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto outward_size(directed_adjacency_vector<VV, EV, GV, KeyT, A> const&           g,
                             vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> const& u) noexcept
-      -> vertex_outward_edge_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+      -> vertex_outward_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   return u.edges_size(g);
 }
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
@@ -1101,12 +1115,6 @@ template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 void reserve_edges(directed_adjacency_vector<VV, EV, GV, KeyT, A>&             g,
                    edge_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> n) {
   g.reserve_edges(n);
-}
-
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-void clear(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) {
-  g.clear();
 }
 
 

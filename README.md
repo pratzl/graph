@@ -108,7 +108,8 @@ Other Useful Tools
     - [x] Remove degree functions (alias of size not needed)
     - [x] Consider addition of [[nodiscard]] (std only uses it on empty & allocate, neither used in graph.hpp)
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
-    - [ ] use West const to mirror usage in std :(
+    - [ ] use West const to mirror usage in std
+    - [ ] value(gve) needs a type defined (don't use decltype with call to undefined user_value)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?

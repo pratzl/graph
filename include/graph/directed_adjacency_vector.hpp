@@ -74,9 +74,9 @@ constexpr auto cend(directed_adjacency_vector<VV, EV, GV, KeyT, A> const& g)
 /// @tparam A    Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class dav_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV> {
+class dav_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV> {
 public:
-  using base_type  = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
+  using base_type  = conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV>;
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
 
   using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
@@ -140,10 +140,10 @@ private:
 /// @tparam A    Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class dav_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
+class dav_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV> {
 public:
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
-  using base_type  = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
+  using base_type  = conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV>;
 
   using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -167,7 +167,7 @@ public:
   using vertex_edge_iterator       = edge_iterator;
   using const_vertex_edge_iterator = const_edge_iterator;
 
-  using vertex_outward_edge_size_type      = typename edge_set::size_type;
+  using vertex_outward_size_type           = typename edge_set::size_type;
   using vertex_outward_edge_iterator       = edge_iterator;
   using const_vertex_outward_edge_iterator = const_edge_iterator;
 
@@ -237,9 +237,9 @@ private:
 /// @tparam A    Allocator. default = std::allocator
 //
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
+class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
 public:
-  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
   using graph_type            = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
@@ -274,14 +274,14 @@ public:
   using edge_range          = decltype(ranges::make_subrange(declval<edge_set&>()));
   using const_edge_range    = decltype(ranges::make_subrange(declval<edge_set const&>()));
 
-  using vertex_outward_edge_size_type      = typename edge_set::size_type;
+  using vertex_outward_size_type           = typename edge_set::size_type;
   using vertex_outward_edge_ssize_type     = typename edge_set::difference_type;
   using vertex_outward_edge_iterator       = typename edge_range::iterator;
   using const_vertex_outward_edge_iterator = typename const_edge_range::iterator;
   using vertex_outward_edge_range          = edge_range;
   using const_vertex_outward_edge_range    = const_edge_range;
 
-  using vertex_edge_size_type      = vertex_outward_edge_size_type;
+  using vertex_edge_size_type      = vertex_outward_size_type;
   using vertex_edge_ssize_type     = vertex_outward_edge_ssize_type;
   using vertex_edge_iterator       = vertex_outward_edge_iterator;
   using const_vertex_edge_iterator = const_vertex_outward_edge_iterator;
@@ -456,6 +456,7 @@ protected:
 
 public:
   void clear();
+  void swap(directed_adjacency_vector&);
 
 protected:
   vertex_iterator finalize_outward_edges(vertex_range);
@@ -494,15 +495,15 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
 
   using vertex_outward_edge_range       = typename graph_type::vertex_outward_edge_range;
   using const_vertex_outward_edge_range = typename graph_type::const_vertex_outward_edge_range;
-  using vertex_outward_edge_size_type   = typename graph_type::vertex_outward_edge_size_type;
+  using vertex_outward_size_type        = typename graph_type::vertex_outward_size_type;
 
   using vertex_edge_range       = vertex_outward_edge_range;
   using const_vertex_edge_range = const_vertex_outward_edge_range;
-  using vertex_edge_size_type   = vertex_outward_edge_size_type;
+  using vertex_edge_size_type   = vertex_outward_size_type;
 
-  using vertex_vertex_range       = void;
-  using const_vertex_vertex_range = void;
-  using vertex_vertex_size_type   = void;
+  using vertex_vertex_range       = detail::vertex_vertex_range<graph_type>;
+  using const_vertex_vertex_range = const detail::vertex_vertex_range<graph_type>;
+  using vertex_vertex_size_type   = size_t;
 };
 
 

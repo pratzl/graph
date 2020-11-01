@@ -324,13 +324,13 @@ private:
 ///
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class ual_edge
-      : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>
+      : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV>
       , public ual_edge_list_link<VV, EV, GV, KeyT, A, inward_list>
       , public ual_edge_list_link<VV, EV, GV, KeyT, A, outward_list> {
 public:
   using graph_type            = undirected_adjacency_list<VV, EV, GV, KeyT, A>;
   using graph_user_value_type = GV;
-  using base_type             = conditional_t<graph_value_needs_wrap<EV>::value, graph_value<EV>, EV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV>;
 
   using vertex_type            = ual_vertex<VV, EV, GV, KeyT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -408,11 +408,11 @@ public:
 /// @tparam A      Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class ual_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV> {
+class ual_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV> {
 public:
   using graph_type            = undirected_adjacency_list<VV, EV, GV, KeyT, A>;
   using graph_user_value_type = GV;
-  using base_type             = conditional_t<graph_value_needs_wrap<VV>::value, graph_value<VV>, VV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV>;
 
   using vertex_type            = ual_vertex<VV, EV, GV, KeyT, A>;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
@@ -501,9 +501,9 @@ private:
 /// @tparam A      Allocator. default = std::allocator
 ///
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class undirected_adjacency_list : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV> {
+class undirected_adjacency_list : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
 public:
-  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value<GV>, GV>;
+  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
   using graph_type            = undirected_adjacency_list<VV, EV, GV, KeyT, A>;
   using graph_user_value_type = GV;
   using allocator_type        = A;
@@ -839,6 +839,7 @@ public:
 
 public:
   void clear();
+  void swap(undirected_adjacency_list&);
 
 protected:
   //vertex_iterator finalize_outward_edges(vertex_range);
