@@ -18,9 +18,9 @@ struct component {
   component(CompT comp, vertex_iterator_t<G> vi) : component_number(comp), vertex(vi) {}
 
   component()                 = default;
-  component(component const&) = default;
+  component(const component&) = default;
   component(component&&)      = default;
-  component& operator=(component const&) = default;
+  component& operator=(const component&) = default;
   component& operator=(component&&) = default;
   ~component()                      = default;
 };
@@ -49,7 +49,7 @@ public:
   con_comp_fn(graph_type& g, A alloc) : graph_(g), alloc_(alloc), stack_(alloc), visited_(alloc) {}
 
   graph_type&       graph() { return graph_; }
-  graph_type const& graph() const { return graph_; }
+  const graph_type& graph() const { return graph_; }
   allocator_type    allocator() const { return alloc_; }
 
   void operator()(vertex_iterator_t<G> start, OutIter result_iter) { eval_cc(start, result_iter); }
@@ -135,8 +135,8 @@ protected:
     CompT low        = undiscovered();
 
     visit_elem()                  = default;
-    visit_elem(visit_elem const&) = default;
-    visit_elem& operator=(visit_elem const&) = default;
+    visit_elem(const visit_elem&) = default;
+    visit_elem& operator=(const visit_elem&) = default;
   };
   using visited_alloc = typename allocator_traits<A>::template rebind_alloc<visit_elem>;
   using visited_type  = vector<visit_elem, visited_alloc>;

@@ -37,31 +37,31 @@ class ual_edge;
 
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto size(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g) noexcept
+constexpr auto size(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
       -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto ssize(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g) noexcept
+constexpr auto ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
       -> vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto begin(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
+constexpr auto begin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto cbegin(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
+constexpr auto cbegin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto end(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto end(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
+constexpr auto end(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto cend(undirected_adjacency_list<VV, EV, GV, KeyT, A> const& g)
+constexpr auto cend(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
 
 ///-------------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ public:
   using pointer         = value_type*;
   using const_pointer   = value_type const*;
   using reference       = value_type&;
-  using const_reference = value_type const&;
+  using const_reference = const value_type&;
   using size_type       = size_t;
   using difference_type = ptrdiff_t;
 
@@ -136,14 +136,14 @@ public:
     using vertex_type = ual_edge_list::vertex_type;
     using edge_type   = ual_edge_list::edge_type;
 
-    const_iterator(graph_type const& g, vertex_type const& u, edge_type const* uv = nullptr) noexcept
+    const_iterator(const graph_type& g, const vertex_type& u, const edge_type* uv = nullptr) noexcept
           : vertex_key_(u.vertex_key(g)), edge_(const_cast<edge_type*>(uv)), graph_(const_cast<graph_type*>(&g)) {}
 
     const_iterator() noexcept                          = default;
-    const_iterator(const_iterator const& rhs) noexcept = default;
+    const_iterator(const const_iterator& rhs) noexcept = default;
     ~const_iterator() noexcept                         = default;
 
-    const_iterator& operator=(const_iterator const& rhs) noexcept = default;
+    const_iterator& operator=(const const_iterator& rhs) noexcept = default;
 
     reference operator*() const;
     pointer   operator->() const;
@@ -154,8 +154,8 @@ public:
     const_iterator& operator--();
     const_iterator  operator--(int);
 
-    bool operator==(const_iterator const& rhs) const noexcept;
-    bool operator!=(const_iterator const& rhs) const noexcept;
+    bool operator==(const const_iterator& rhs) const noexcept;
+    bool operator!=(const const_iterator& rhs) const noexcept;
 
     friend void swap(const_iterator& lhs, const_iterator& rhs) noexcept {
       swap(lhs.vertex_key_, rhs.vertex_key_);
@@ -187,12 +187,12 @@ public:
     using edge_type   = ual_edge_list::edge_type;
 
     iterator() noexcept                    = default;
-    iterator(iterator const& rhs) noexcept = default;
+    iterator(const iterator& rhs) noexcept = default;
     ~iterator() noexcept                   = default;
 
-    iterator& operator=(iterator const& rhs) = default;
+    iterator& operator=(const iterator& rhs) = default;
 
-    iterator(graph_type const& g, vertex_type const& u, edge_type const* uv = nullptr) : const_iterator(g, u, uv) {}
+    iterator(const graph_type& g, const vertex_type& u, const edge_type* uv = nullptr) : const_iterator(g, u, uv) {}
 
     reference operator*() const;
     pointer   operator->() const;
@@ -211,9 +211,9 @@ public:
 
 public:
   ual_edge_list() noexcept                     = default;
-  ual_edge_list(ual_edge_list const&) noexcept = default;
+  ual_edge_list(const ual_edge_list&) noexcept = default;
   ~ual_edge_list() noexcept                    = default;
-  ual_edge_list& operator=(ual_edge_list const&) noexcept = default;
+  ual_edge_list& operator=(const ual_edge_list&) noexcept = default;
 
   ual_edge_list(ual_edge_list&& rhs) noexcept : head_(move(rhs.head_)), tail_(move(rhs.tail_)), size_(move(rhs.size_)) {
     rhs.head_ = rhs.tail_ = nullptr;
@@ -225,10 +225,10 @@ public:
   bool      empty() const noexcept;
 
   edge_type&       front();
-  edge_type const& front() const;
+  const edge_type& front() const;
 
   edge_type&       back();
-  edge_type const& back() const;
+  const edge_type& back() const;
 
 
 public:
@@ -242,12 +242,12 @@ public:
   void unlink(edge_type& uv, ual_edge_list_link<VV, EV, GV, KeyT, A, ListT>& uv_link);
 
   iterator       begin(graph_type& g, vertex_type& u) noexcept;
-  const_iterator begin(graph_type const& g, vertex_type const& u) const noexcept;
-  const_iterator cbegin(graph_type const& g, vertex_type const& u) const noexcept;
+  const_iterator begin(const graph_type& g, const vertex_type& u) const noexcept;
+  const_iterator cbegin(const graph_type& g, const vertex_type& u) const noexcept;
 
   iterator       end(graph_type& g, vertex_type& u) noexcept;
-  const_iterator end(graph_type const& g, vertex_type const& u) const noexcept;
-  const_iterator cend(graph_type const& g, vertex_type const& u) const noexcept;
+  const_iterator end(const graph_type& g, const vertex_type& u) const noexcept;
+  const_iterator cend(const graph_type& g, const vertex_type& u) const noexcept;
 
 private:
   edge_type* head_ = nullptr;
@@ -287,21 +287,21 @@ public:
   ual_edge_list_link(vertex_key_type ukey) noexcept : vertex_key_(ukey) {}
 
   ual_edge_list_link() noexcept                          = default;
-  ual_edge_list_link(ual_edge_list_link const&) noexcept = default;
+  ual_edge_list_link(const ual_edge_list_link&) noexcept = default;
   ual_edge_list_link(ual_edge_list_link&&) noexcept      = default;
   ~ual_edge_list_link() noexcept                         = default;
-  ual_edge_list_link& operator=(ual_edge_list_link const&) noexcept = default;
+  ual_edge_list_link& operator=(const ual_edge_list_link&) noexcept = default;
   ual_edge_list_link& operator=(ual_edge_list_link&&) noexcept = default;
 
 public:
   vertex_key_type       vertex_key() const noexcept { return vertex_key_; }
-  const_vertex_iterator vertex(graph_type const& g) const { return g.vertices().begin() + vertex_key_; }
+  const_vertex_iterator vertex(const graph_type& g) const { return g.vertices().begin() + vertex_key_; }
   vertex_iterator       vertex(graph_type& g) { return g.vertices().begin() + vertex_key_; }
 
   edge_type*       next() noexcept { return next_; }
-  edge_type const* next() const noexcept { return next_; }
+  const edge_type* next() const noexcept { return next_; }
   edge_type*       prev() noexcept { return prev_; }
-  edge_type const* prev() const noexcept { return prev_; }
+  const edge_type* prev() const noexcept { return prev_; }
 
 private:
   vertex_key_type vertex_key_ = numeric_limits<vertex_key_type>::max();
@@ -361,18 +361,18 @@ protected:
   // noexcept is only defined for move ctor & assignment b/c the user-defined value type could
   // throw an exception in other cases
   ual_edge() noexcept                = default;
-  ual_edge(ual_edge const&) noexcept = default;
+  ual_edge(const ual_edge&) noexcept = default;
   ual_edge(ual_edge&&) noexcept      = default;
   ~ual_edge() noexcept;
   ual_edge& operator=(ual_edge&) noexcept = default;
   ual_edge& operator=(ual_edge&&) noexcept = default;
 
   ual_edge(graph_type&, vertex_type& u, vertex_type& v) noexcept;
-  ual_edge(graph_type&, vertex_type& u, vertex_type& v, edge_user_value_type const&) noexcept;
+  ual_edge(graph_type&, vertex_type& u, vertex_type& v, const edge_user_value_type&) noexcept;
   ual_edge(graph_type&, vertex_type& u, vertex_type& v, edge_user_value_type&&) noexcept;
 
   ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi) noexcept;
-  ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, edge_user_value_type const&) noexcept;
+  ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, const edge_user_value_type&) noexcept;
   ual_edge(graph_type&, vertex_iterator ui, vertex_iterator vi, edge_user_value_type&&) noexcept;
 
   void link_front(vertex_type&, vertex_type&) noexcept;
@@ -381,18 +381,18 @@ protected:
 
 public:
   vertex_iterator       inward_vertex(graph_type&) noexcept;
-  const_vertex_iterator inward_vertex(graph_type const&) const noexcept;
-  vertex_key_type       inward_vertex_key(graph_type const&) const noexcept;
+  const_vertex_iterator inward_vertex(const graph_type&) const noexcept;
+  vertex_key_type       inward_vertex_key(const graph_type&) const noexcept;
 
   vertex_iterator       outward_vertex(graph_type&) noexcept;
-  const_vertex_iterator outward_vertex(graph_type const&) const noexcept;
-  vertex_key_type       outward_vertex_key(graph_type const&) const noexcept;
+  const_vertex_iterator outward_vertex(const graph_type&) const noexcept;
+  vertex_key_type       outward_vertex_key(const graph_type&) const noexcept;
 
   vertex_iterator       other_vertex(graph_type&, vertex_key_type const inward_or_outward_key) noexcept;
-  const_vertex_iterator other_vertex(graph_type const&, vertex_key_type const inward_or_outward_key) const noexcept;
-  vertex_key_type       other_vertex_key(graph_type const&, vertex_key_type const inward_or_outward_key) const noexcept;
+  const_vertex_iterator other_vertex(const graph_type&, vertex_key_type const inward_or_outward_key) const noexcept;
+  vertex_key_type       other_vertex_key(const graph_type&, vertex_key_type const inward_or_outward_key) const noexcept;
 
-  edge_key_type edge_key(graph_type const& g) const noexcept;
+  edge_key_type edge_key(const graph_type& g) const noexcept;
 
   friend graph_type;  // the graph is the one to create & destroy edges because it owns the allocator
   friend vertex_type; // vertex can also destroy its own edges
@@ -441,18 +441,18 @@ public:
   // noexcept is only defined for move ctor & assignment b/c the user-defined value type could
   // throw an exception in other cases
   ual_vertex()                      = default;
-  ual_vertex(ual_vertex const&)     = default;
+  ual_vertex(const ual_vertex&)     = default;
   ual_vertex(ual_vertex&&) noexcept = default;
   ~ual_vertex() noexcept            = default;
-  ual_vertex& operator=(ual_vertex const&) = default;
+  ual_vertex& operator=(const ual_vertex&) = default;
   ual_vertex& operator=(ual_vertex&&) noexcept = default;
 
   ual_vertex(vertex_set& vertices, vertex_index index);
-  ual_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type const&);
+  ual_vertex(vertex_set& vertices, vertex_index index, const vertex_user_value_type&);
   ual_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&) noexcept;
 
 public:
-  vertex_key_type       vertex_key(graph_type const&) const noexcept;
+  vertex_key_type       vertex_key(const graph_type&) const noexcept;
   vertex_edge_size_type edges_size() const noexcept;
 
   vertex_edge_iterator erase_edge(graph_type&, vertex_edge_iterator);
@@ -460,27 +460,27 @@ public:
   void                 clear_edges(graph_type&);
 
   vertex_edge_iterator       edges_begin(graph_type&) noexcept;
-  const_vertex_edge_iterator edges_begin(graph_type const&) const noexcept;
-  const_vertex_edge_iterator edges_cbegin(graph_type const&) const noexcept;
+  const_vertex_edge_iterator edges_begin(const graph_type&) const noexcept;
+  const_vertex_edge_iterator edges_cbegin(const graph_type&) const noexcept;
 
   vertex_edge_iterator       edges_end(graph_type&) noexcept;
-  const_vertex_edge_iterator edges_end(graph_type const&) const noexcept;
-  const_vertex_edge_iterator edges_cend(graph_type const&) const noexcept;
+  const_vertex_edge_iterator edges_end(const graph_type&) const noexcept;
+  const_vertex_edge_iterator edges_cend(const graph_type&) const noexcept;
 
   edge_type&       edge_front(graph_type&) noexcept;
-  edge_type const& edge_front(graph_type const&) const noexcept;
+  const edge_type& edge_front(const graph_type&) const noexcept;
 
   edge_type&       edge_back(graph_type&) noexcept;
-  edge_type const& edge_back(graph_type const&) const noexcept;
+  const edge_type& edge_back(const graph_type&) const noexcept;
 
   vertex_edge_iterator create_edge(graph_type&, vertex_type&);
-  vertex_edge_iterator create_edge(graph_type&, vertex_type&, edge_user_value_type const&);
+  vertex_edge_iterator create_edge(graph_type&, vertex_type&, const edge_user_value_type&);
   vertex_edge_iterator create_edge(graph_type&, vertex_type&, edge_user_value_type&&);
 
   template <class EV2>
   vertex_edge_iterator create_edge(graph_type&,
                                    vertex_key_type,
-                                   EV2 const&); // EV2 must be accepted by vertex_user_value_type constructor
+                                   const EV2&); // EV2 must be accepted by vertex_user_value_type constructor
 
 protected:
   void erase_edge(graph_type&, edge_type*);
@@ -521,7 +521,7 @@ public:
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_range          = decltype(ranges::make_subrange(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(ranges::make_subrange(declval<vertex_set const&>()));
+  using const_vertex_range    = decltype(ranges::make_subrange(declval<const vertex_set&>()));
 
   using edge_type            = ual_edge<VV, EV, GV, KeyT, A>;
   using edge_user_value_type = EV;
@@ -551,19 +551,19 @@ public:
     using size_type         = size_t;
     using difference_type   = ptrdiff_t;
     using pointer           = value_type const*;
-    using reference         = value_type const&;
+    using reference         = const value_type&;
 
   public:
-    const_edge_iterator(graph_type const& g, vertex_iterator u) : g_(&const_cast<graph_type&>(g)), u_(u) {
+    const_edge_iterator(const graph_type& g, vertex_iterator u) : g_(&const_cast<graph_type&>(g)), u_(u) {
       advance_vertex();
     }
-    const_edge_iterator(graph_type const& g, vertex_iterator u, vertex_edge_iterator uv)
+    const_edge_iterator(const graph_type& g, vertex_iterator u, vertex_edge_iterator uv)
           : g_(&const_cast<graph_type&>(g)), u_(u), uv_(uv) {}
 
     const_edge_iterator() noexcept                               = default;
-    const_edge_iterator(const_edge_iterator const& rhs) noexcept = default;
+    const_edge_iterator(const const_edge_iterator& rhs) noexcept = default;
     ~const_edge_iterator() noexcept                              = default;
-    const_edge_iterator& operator=(const_edge_iterator const& rhs) = default;
+    const_edge_iterator& operator=(const const_edge_iterator& rhs) = default;
 
     reference operator*() const { return *uv_; }
     pointer   operator->() const { return &*uv_; }
@@ -578,8 +578,8 @@ public:
       return tmp;
     }
 
-    bool operator==(const_edge_iterator const& rhs) const noexcept { return uv_ == rhs.uv_ && u_ == rhs.u_; }
-    bool operator!=(const_edge_iterator const& rhs) const noexcept { return !operator==(rhs); }
+    bool operator==(const const_edge_iterator& rhs) const noexcept { return uv_ == rhs.uv_ && u_ == rhs.u_; }
+    bool operator!=(const const_edge_iterator& rhs) const noexcept { return !operator==(rhs); }
 
   protected:
     void advance_edge() {
@@ -623,10 +623,10 @@ public:
     edge_iterator(graph_type& g, vertex_iterator u, vertex_edge_iterator uv) : const_edge_iterator(g, u, uv) {}
 
     edge_iterator() noexcept : const_edge_iterator(){};
-    edge_iterator(edge_iterator const& rhs) noexcept : const_edge_iterator(rhs) {}
+    edge_iterator(const edge_iterator& rhs) noexcept : const_edge_iterator(rhs) {}
     edge_iterator(const_edge_iterator& rhs) : const_edge_iterator(rhs) {}
     ~edge_iterator() {}
-    edge_iterator& operator=(edge_iterator const& rhs) noexcept {
+    edge_iterator& operator=(const edge_iterator& rhs) noexcept {
       const_edge_iterator::operator=(rhs);
       return *this;
     }
@@ -647,9 +647,9 @@ public:
 
 public:
   undirected_adjacency_list() noexcept(noexcept(allocator_type())) = default;
-  undirected_adjacency_list(allocator_type const& alloc) noexcept;
-  undirected_adjacency_list(graph_user_value_type const&, allocator_type const& alloc = allocator_type());
-  undirected_adjacency_list(graph_user_value_type&&, allocator_type const& alloc = allocator_type());
+  undirected_adjacency_list(const allocator_type& alloc) noexcept;
+  undirected_adjacency_list(const graph_user_value_type&, const allocator_type& alloc = allocator_type());
+  undirected_adjacency_list(graph_user_value_type&&, const allocator_type& alloc = allocator_type());
 
 
   // The following constructors will load edges (and vertices) into the graph
@@ -704,13 +704,13 @@ public:
             typename VValueFnc>
     requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
           && vertex_range_extractor<VRng, VValueFnc>
-  undirected_adjacency_list(ERng const&      erng,
-                            VRng const&      vrng,
-                            EKeyFnc const&   ekey_fnc,
-                            EValueFnc const& evalue_fnc,
-                            VValueFnc const& vvalue_fnc,
-                            GV const&        gv    = GV(),
-                            A const&         alloc = A());
+  undirected_adjacency_list(const ERng&      erng,
+                            const VRng&      vrng,
+                            const EKeyFnc&   ekey_fnc,
+                            const EValueFnc& evalue_fnc,
+                            const VValueFnc& vvalue_fnc,
+                            const GV&        gv    = GV(),
+                            const A&         alloc = A());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -735,11 +735,11 @@ public:
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
     requires edge_range_extractor<ERng, EKeyFnc, EValueFnc>
-  undirected_adjacency_list(ERng const&      erng, 
-                            EKeyFnc const&   ekey_fnc, 
-                            EValueFnc const& evalue_fnc, 
-                            GV const&        gv    = GV(), 
-                            A const&         alloc = A());
+  undirected_adjacency_list(const ERng&      erng, 
+                            const EKeyFnc&   ekey_fnc, 
+                            const EValueFnc& evalue_fnc, 
+                            const GV&        gv    = GV(), 
+                            const A&         alloc = A());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -750,8 +750,8 @@ public:
   /// @param alloc Allocator.
   ///
   undirected_adjacency_list(
-        initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>> const& ilist,
-        A const&                                                                               alloc = A());
+        const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>>& ilist,
+        const A&                                                                               alloc = A());
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
@@ -760,19 +760,19 @@ public:
   ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
-  undirected_adjacency_list(initializer_list<tuple<vertex_key_type, vertex_key_type>> const& ilist,
-                            A const&                                                         alloc = A());
+  undirected_adjacency_list(const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
+                            const A&                                                         alloc = A());
 
   ~undirected_adjacency_list();
 
-  undirected_adjacency_list& operator=(undirected_adjacency_list const&) = default;
+  undirected_adjacency_list& operator=(const undirected_adjacency_list&) = default;
   undirected_adjacency_list& operator=(undirected_adjacency_list&&) = default;
 
 public:
   constexpr edge_allocator_type edge_allocator() const noexcept;
 
   constexpr vertex_set&       vertices();
-  constexpr vertex_set const& vertices() const;
+  constexpr const vertex_set& vertices() const;
 
   constexpr vertex_iterator       begin();
   constexpr const_vertex_iterator begin() const;
@@ -809,13 +809,13 @@ public:
 protected:
   void reserve_vertices(vertex_size_type);
   void resize_vertices(vertex_size_type);
-  void resize_vertices(vertex_size_type, vertex_user_value_type const&);
+  void resize_vertices(vertex_size_type, const vertex_user_value_type&);
 
   vertex_iterator create_vertex();
   vertex_iterator create_vertex(vertex_user_value_type&&);
 
   template <class VV2>
-  vertex_iterator create_vertex(VV2 const&); // vertex_user_value_type must be constructable from VV2
+  vertex_iterator create_vertex(const VV2&); // vertex_user_value_type must be constructable from VV2
 
 public:
   edge_iterator create_edge(vertex_key_type, vertex_key_type);
@@ -824,7 +824,7 @@ public:
   template <class EV2>
   edge_iterator create_edge(vertex_key_type,
                             vertex_key_type,
-                            EV2 const&); // EV2 must be accepted by vertex_user_value_type constructor
+                            const EV2&); // EV2 must be accepted by vertex_user_value_type constructor
 
   edge_iterator create_edge(vertex_iterator, vertex_iterator);
   edge_iterator create_edge(vertex_iterator, vertex_iterator, edge_user_value_type&&);
@@ -832,7 +832,7 @@ public:
   template <class EV2>
   edge_iterator create_edge(vertex_iterator,
                             vertex_iterator,
-                            EV2 const&); // EV2 must be accepted by vertex_user_value_type constructor
+                            const EV2&); // EV2 must be accepted by vertex_user_value_type constructor
 
 
   const_edge_iterator erase_edge(const_edge_iterator);

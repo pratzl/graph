@@ -44,12 +44,12 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (vertex_t<DollarGraph>& u : vertices(g)) {
     vertex_key_t<DollarGraph> u_key  = vertex_key(g, u);
-    string const&             u_name = value(u).name;
+    const string&             u_name = value(u).name;
     cout << "[" << u_key << "] " << u_name << "\n";
     for (edge_t<DollarGraph>& uv : edges(g, u)) {
       vertex_iterator_t<DollarGraph> vi     = vertex(g, uv, u);
       vertex_key_t<DollarGraph>      v_key  = vertex_key(g, *vi);
-      string const&                  v_name = value(*vi).name;
+      const string&                  v_name = value(*vi).name;
       cout << "  --> [" << v_key << " " << v_name << "] weight=" << value(uv).weight << "\n";
     }
   }
@@ -166,7 +166,7 @@ TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "Dollar strongly connected components\n";
-  for (comp_t const& comp : comps) {
+  for (const comp_t& comp : comps) {
     cout << "[" << comp.component_number << "] " << comp.vertex->name << "\n";
   }
 

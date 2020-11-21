@@ -13,10 +13,10 @@ namespace std::graph {
 template <class T>
 struct graph_value_wrapper {
   graph_value_wrapper()                           = default;
-  graph_value_wrapper(graph_value_wrapper const&) = default;
-  graph_value_wrapper& operator=(graph_value_wrapper const&) = default;
+  graph_value_wrapper(const graph_value_wrapper&) = default;
+  graph_value_wrapper& operator=(const graph_value_wrapper&) = default;
   graph_value_wrapper(graph_value_wrapper&& v) : value(move(v.value)) {}
-  graph_value_wrapper(T const& v) : value(v) {}
+  graph_value_wrapper(const T& v) : value(v) {}
   graph_value_wrapper(T&& v) : value(move(v)) {}
 
   T value = T();
@@ -32,7 +32,7 @@ constexpr auto user_value(T& v) -> T& {
   return v;
 }
 template <class T>
-constexpr auto user_value(T const& v) -> T const& {
+constexpr auto user_value(const T& v) -> const T& {
   return v;
 }
 template <class T>
@@ -40,7 +40,7 @@ constexpr auto user_value(graph_value_t<T>& v) -> T& {
   return v.value;
 }
 template <class T>
-constexpr auto user_value(graph_value_t<T> const& v) -> T const& {
+constexpr auto user_value(const graph_value_t<T>& v) -> const T& {
   return v.value;
 }
 
@@ -54,18 +54,18 @@ struct weight_value {
   int weight = 0;
 
   weight_value()                    = default;
-  weight_value(weight_value const&) = default;
-  weight_value& operator=(weight_value const&) = default;
-  weight_value(int const& w) : weight(w) {}
+  weight_value(const weight_value&) = default;
+  weight_value& operator=(const weight_value&) = default;
+  weight_value(const int& w) : weight(w) {}
 };
 
 struct name_value {
   string name;
 
   name_value()                  = default;
-  name_value(name_value const&) = default;
-  name_value& operator=(name_value const&) = default;
-  name_value(string const& s) : name(s) {}
+  name_value(const name_value&) = default;
+  name_value& operator=(const name_value&) = default;
+  name_value(const string& s) : name(s) {}
   name_value(string&& s) : name(move(s)) {}
 };
 
@@ -96,7 +96,7 @@ namespace detail {
     const_vertex_vertex_iterator(const_vertex_vertex_iterator&&)      = default;
     ~const_vertex_vertex_iterator()                                   = default;
 
-    const_vertex_vertex_iterator& operator=(const_vertex_vertex_iterator const&) = default;
+    const_vertex_vertex_iterator& operator=(const const_vertex_vertex_iterator&) = default;
     const_vertex_vertex_iterator& operator=(const_vertex_vertex_iterator&&) = default;
 
   public:
@@ -111,8 +111,8 @@ namespace detail {
       return tmp;
     }
 
-    bool operator==(const_vertex_vertex_iterator const& rhs) const noexcept { return g_ == rhs.g_ && uv_ == rhs.uv_; }
-    bool operator!=(const_vertex_vertex_iterator const& rhs) const noexcept { return !operator==(rhs); }
+    bool operator==(const const_vertex_vertex_iterator& rhs) const noexcept { return g_ == rhs.g_ && uv_ == rhs.uv_; }
+    bool operator!=(const const_vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
 
   protected:
     graph_type*               g_ = nullptr;
@@ -148,7 +148,7 @@ namespace detail {
     vertex_vertex_iterator(vertex_vertex_iterator&&)      = default;
     ~vertex_vertex_iterator()                             = default;
 
-    vertex_vertex_iterator& operator=(vertex_vertex_iterator const&) = default;
+    vertex_vertex_iterator& operator=(const vertex_vertex_iterator&) = default;
     vertex_vertex_iterator& operator=(vertex_vertex_iterator&&) = default;
 
   public:
@@ -163,8 +163,8 @@ namespace detail {
       return tmp;
     }
 
-    bool operator==(vertex_vertex_iterator const& rhs) const noexcept { return base_t::operator==(rhs); }
-    bool operator!=(vertex_vertex_iterator const& rhs) const noexcept { return !operator==(rhs); }
+    bool operator==(const vertex_vertex_iterator& rhs) const noexcept { return base_t::operator==(rhs); }
+    bool operator!=(const vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
   };
 
   template <typename G>
@@ -190,7 +190,7 @@ namespace detail {
     vertex_vertex_range(vertex_vertex_range&&)      = default;
     ~vertex_vertex_range()                          = default;
 
-    vertex_vertex_range& operator=(vertex_vertex_range const&) = default;
+    vertex_vertex_range& operator=(const vertex_vertex_range&) = default;
     vertex_vertex_range& operator=(vertex_vertex_range&&) = default;
 
   public:
@@ -205,8 +205,8 @@ namespace detail {
     size_type  size() const noexcept { return edges_size(*g_, *u_); }
     ssize_type ssize() const noexcept { return edges_ssize(*g_, *u_); }
 
-    bool operator==(vertex_vertex_range const& rhs) const noexcept { return g_ == rhs.g_ && u_ == rhs.u_; }
-    bool operator!=(vertex_vertex_range const& rhs) const noexcept { return !operator==(rhs); }
+    bool operator==(const vertex_vertex_range& rhs) const noexcept { return g_ == rhs.g_ && u_ == rhs.u_; }
+    bool operator!=(const vertex_vertex_range& rhs) const noexcept { return !operator==(rhs); }
 
   private:
     graph_type*  g_ = nullptr;

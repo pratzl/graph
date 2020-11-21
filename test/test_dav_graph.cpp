@@ -38,21 +38,21 @@ using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 struct route;
 using Routes = routes_t;
 
-vector<Graph::edge_value_type> const& daa_germany_edge_routes = germany_routes_directed_graph.edge_values();
+const vector<Graph::edge_value_type>& daa_germany_edge_routes = germany_routes_directed_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
 static Graph                      create_germany_routes_graph() { return germany_routes_directed_graph.create_graph(); }
-static vector<std::string> const& germany_cities() { return germany_routes_directed_graph.vertex_values(); }
+static const vector<std::string>& germany_cities() { return germany_routes_directed_graph.vertex_values(); }
 
 template <class OStream>
-OStream& operator<<(OStream& os, Graph const& g) {
-  for (vertex_t<Graph> const& u : vertices(g)) {
+OStream& operator<<(OStream& os, const Graph& g) {
+  for (const vertex_t<Graph>& u : vertices(g)) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (edge_t<Graph> const& uv : edges(g, u)) {
+    for (const edge_t<Graph>& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = outward_vertex(g, uv);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
@@ -101,10 +101,10 @@ TEST_CASE("daa example 1", "[daa][example][1]") {
   using G          = directed_adjacency_vector<name_value, weight_value, name_value>;
   using edge_key_t = typename G::edge_key_type;
 
-  auto find_city    = [&cities](string const& city) { return find(cities, city) - begin(cities); };
-  auto vertex_value = [](string const& name) { return name; };
-  auto edge_key   = [&cities, &find_city](route_mi const& r) { return edge_key_t(find_city(r.from), find_city(r.to)); };
-  auto edge_value = [&cities](route_mi const& r) { return r.miles; };
+  auto find_city    = [&cities](const string& city) { return find(cities, city) - begin(cities); };
+  auto vertex_value = [](const string& name) { return name; };
+  auto edge_key   = [&cities, &find_city](const route_mi& r) { return edge_key_t(find_city(r.from), find_city(r.to)); };
+  auto edge_value = [&cities](const route_mi& r) { return r.miles; };
 
   G g(routes, cities, edge_key, edge_value, vertex_value, name_value("NC Routes"));
   REQUIRE(vertices_size(g) == 3);
@@ -312,7 +312,7 @@ TEST_CASE("daa init", "[daa][init]") {
 
 TEST_CASE("daa graph functions", "[daa][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = create_germany_routes_graph();
+  const Graph& gc = create_germany_routes_graph();
 
   //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
   std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
@@ -354,12 +354,12 @@ TEST_CASE("daa graph functions", "[daa][graph][functions]") {
 
 TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
   std::graph::vertex_iterator_t<Graph>       ui  = std::graph::begin(g);
   std::graph::const_vertex_iterator_t<Graph> uic = std::graph::cbegin(g);
   std::graph::vertex_t<Graph>&               u   = *ui;
-  std::graph::vertex_t<Graph> const&         uc  = *uic;
+  const std::graph::vertex_t<Graph>&         uc  = *uic;
 
   std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, u);
   std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uc);
@@ -401,7 +401,7 @@ TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
 TEST_CASE("daa edge functions", "[daa][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
   vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
   vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Mannheim"; });

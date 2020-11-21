@@ -49,12 +49,12 @@ struct route {
   std::string to;
   int         km = 0;
 
-  route(std::string const& from_city, std::string const& to_city, int kilometers)
+  route(const std::string& from_city, const std::string& to_city, int kilometers)
         : from(from_city), to(to_city), km(kilometers) {}
   route()             = default;
-  route(route const&) = default;
+  route(const route&) = default;
   route(route&&)      = default;
-  route& operator=(route const&) = default;
+  route& operator=(const route&) = default;
   route& operator=(route&&) = default;
   ~route()                  = default;
 };
@@ -66,10 +66,10 @@ struct daa_routes_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t inward_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t outward_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t inward_label(const source_edge_t& uv) const { return uv.from; }
+  vertex_label_t outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.km; }
+  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.km; }
 };
 
 struct ual_routes_edge_mapper {
@@ -79,10 +79,10 @@ struct ual_routes_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
+  const vertex_label_t& inward_label(const source_edge_t& uv) const { return uv.from; }
+  const vertex_label_t& outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.km; }
+  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.km; }
 };
 
 
@@ -90,10 +90,10 @@ struct ual_routes_edge_mapper {
 struct dbl_weight_value {
   double weight = 0;
 
-  dbl_weight_value(double const& w) : weight(w) {}
+  dbl_weight_value(const double& w) : weight(w) {}
   dbl_weight_value()                        = default;
-  dbl_weight_value(dbl_weight_value const&) = default;
-  dbl_weight_value& operator=(dbl_weight_value const&) = default;
+  dbl_weight_value(const dbl_weight_value&) = default;
+  dbl_weight_value& operator=(const dbl_weight_value&) = default;
   ~dbl_weight_value()                                  = default;
 };
 
@@ -105,11 +105,11 @@ struct data_edge {
   std::string from;
   std::string to;
   double      weight = 0.0;
-  data_edge(std::string const& from_vertex, std::string const& to_vertex, double wght)
+  data_edge(const std::string& from_vertex, const std::string& to_vertex, double wght)
         : from(from_vertex), to(to_vertex), weight(wght) {}
   data_edge()                 = default;
-  data_edge(data_edge const&) = default;
-  data_edge& operator=(data_edge const&) = default;
+  data_edge(const data_edge&) = default;
+  data_edge& operator=(const data_edge&) = default;
   ~data_edge()                           = default;
 };
 using data_edges_t    = std::vector<data_edge>;
@@ -122,10 +122,10 @@ struct daa_data_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t inward_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t outward_label(source_edge_t const& uv) const { return uv.to; }
+  vertex_label_t inward_label(const source_edge_t& uv) const { return uv.from; }
+  vertex_label_t outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
+  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 
 struct ual_data_edge_mapper {
@@ -135,10 +135,10 @@ struct ual_data_edge_mapper {
 
   using vertex_label_t = std::string;
 
-  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
+  const vertex_label_t& inward_label(const source_edge_t& uv) const { return uv.from; }
+  const vertex_label_t& outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
+  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 
 #if 0
@@ -150,13 +150,13 @@ struct vov_data_edge_mapper {
   using vertex_label_t = std::string;
   using vertex_index_t = size_t;
 
-  vertex_label_t const& inward_label(source_edge_t const& uv) const { return uv.from; }
-  vertex_label_t const& outward_label(source_edge_t const& uv) const { return uv.to; }
+  const vertex_label_t& inward_label(const source_edge_t& uv) const { return uv.from; }
+  const vertex_label_t& outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  vertex_index_t const& inward_index(source_edge_t const& uv) const { return uv.from; }
-  vertex_index_t const& outward_index(source_edge_t const& uv) const { return uv.to; }
+  const vertex_index_t& inward_index(const source_edge_t& uv) const { return uv.from; }
+  const vertex_index_t& outward_index(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(source_edge_t const& uv) const { return uv.weight; }
+  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 #endif
 
@@ -177,32 +177,32 @@ public:
   using target_edges_t      = std::vector<target_edge_t>;
 
 public:
-  GraphXlate(Mapper const& mapper, source_edge_range_t const& edges) : mapper_(mapper) {
+  GraphXlate(const Mapper& mapper, const source_edge_range_t& edges) : mapper_(mapper) {
     vertex_labels_ = std::move(unique_vertex_labels(edges)); // get list of unique vertex labels from edges (in,out)
     edge_values_   = to_edge_values(edges);                  // convert to new edge list with {{u_idx,v_idx} uv_value}
   }
 
   target_graph_t create_graph() const {
     return target_graph_t(
-          edge_values_, vertex_labels_, [](target_edge_t const& uv) { return uv.first; },
-          [](target_edge_t const& er) { return er.second; },
-          [](vertex_label_t const& label) -> vertex_label_t const& { return label; });
+          edge_values_, vertex_labels_, [](const target_edge_t& uv) { return uv.first; },
+          [](const target_edge_t& er) { return er.second; },
+          [](const vertex_label_t& label) -> const vertex_label_t& { return label; });
   }
 
-  target_edges_t const&  edge_values() const { return edge_values_; } // exposed mainly for sanity test
-  vertex_labels_t const& vertex_values() const { return vertex_labels_; }
+  const target_edges_t&  edge_values() const { return edge_values_; } // exposed mainly for sanity test
+  const vertex_labels_t& vertex_values() const { return vertex_labels_; }
 
 protected:
-  vertex_index_t find_vertex_index(vertex_label_t const& label) const {
+  vertex_index_t find_vertex_index(const vertex_label_t& label) const {
     return static_cast<vertex_index_t>(::ranges::lower_bound(vertex_labels_, label) - ::ranges::begin(vertex_labels_));
   }
 
   // extract unique vertex lables from edges (in, out values)
   // result returned in ordered vector
   template <::ranges::forward_range EdgeRng>
-  vertex_labels_t unique_vertex_labels(EdgeRng const& uv_rng) const {
+  vertex_labels_t unique_vertex_labels(const EdgeRng& uv_rng) const {
     vertex_labels_t vertex_labels;
-    for (auto const& uv : uv_rng) {
+    for (const auto& uv : uv_rng) {
       vertex_labels.push_back(mapper_.inward_label(uv));
       vertex_labels.push_back(mapper_.outward_label(uv));
     }
@@ -210,18 +210,18 @@ protected:
   }
 
   // extract the vertex indexes (in & out) & value to be used in the target graph's edges
-  target_edges_t to_edge_values(source_edge_range_t const& edges) {
+  target_edges_t to_edge_values(const source_edge_range_t& edges) {
     target_edges_t edge_values;
     edge_values.reserve(edges.size());
-    for (source_edge_t const& r : edges) {
+    for (const source_edge_t& r : edges) {
       vertex_index_t from = find_vertex_index(r.from);
       vertex_index_t to   = find_vertex_index(r.to);
       assert(from < vertex_labels_.size());
       assert(to < vertex_labels_.size());
       edge_values.push_back({{from, to}, mapper_.edge_value(r)}); // pair{ pair{u_label, v_label}, uv_value }
     }
-    auto cmp = [](typename target_graph_t::edge_value_type const& lhs,
-                  typename target_graph_t::edge_value_type const& rhs) { return lhs.first.first < rhs.first.first; };
+    auto cmp = [](const typename target_graph_t::edge_value_type& lhs,
+                  const typename target_graph_t::edge_value_type& rhs) { return lhs.first.first < rhs.first.first; };
     ::ranges::sort(edge_values, cmp);
     return edge_values;
   }

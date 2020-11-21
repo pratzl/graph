@@ -56,23 +56,23 @@ struct route;
 using Routes = routes_t;
 
 template <class OStream>
-OStream& operator<<(OStream& os, Graph const& g);
+OStream& operator<<(OStream& os, const Graph& g);
 
-vector<Graph::edge_value_type> const& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
+const vector<Graph::edge_value_type>& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
 static Graph create_germany_routes_graph() { return germany_routes_undirected_graph.create_graph(); }
-static vector<std::string> const& germany_cities() { return germany_routes_undirected_graph.vertex_values(); }
+static const vector<std::string>& germany_cities() { return germany_routes_undirected_graph.vertex_values(); }
 
 template <class OStream>
-OStream& operator<<(OStream& os, Graph const& g) {
-  for (vertex_t<Graph> const& u : vertices(g)) {
+OStream& operator<<(OStream& os, const Graph& g) {
+  for (const vertex_t<Graph>& u : vertices(g)) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (edge_t<Graph> const& uv : edges(g, u)) {
+    for (const edge_t<Graph>& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = vertex(g, uv, u);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  <--> [" << vkey << " " << v->name << "] " << uv.weight << "km";
@@ -355,7 +355,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
 TEST_CASE("ual graph functions", "[ual][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = create_germany_routes_graph();
+  const Graph& gc = create_germany_routes_graph();
 
   //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
   std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
@@ -397,12 +397,12 @@ TEST_CASE("ual graph functions", "[ual][graph][functions]") {
 
 TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
   std::graph::vertex_iterator_t<Graph>       ui  = std::graph::begin(g);
   std::graph::const_vertex_iterator_t<Graph> uic = std::graph::cbegin(g);
   std::graph::vertex_t<Graph>&               u   = *ui;
-  std::graph::vertex_t<Graph> const&         uc  = *uic;
+  const std::graph::vertex_t<Graph>&         uc  = *uic;
 
   std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, u);
   std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uc);
@@ -444,7 +444,7 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
 TEST_CASE("ual edge functions", "[ual][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
   vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
   vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Mannheim"; });
