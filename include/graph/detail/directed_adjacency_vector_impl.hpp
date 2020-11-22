@@ -78,18 +78,20 @@ dav_edge<VV, EV, GV, KeyT, A>::outward_vertex_key(const graph_type&) const {
 /// dav_vertex
 ///
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-dav_vertex<VV, EV, GV, KeyT, A>::dav_vertex(vertex_set& vertices, vertex_index index) {}
+dav_vertex<VV, EV, GV, KeyT, A>::dav_vertex(vertex_set& vertices, vertex_index_type index) {}
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-dav_vertex<VV, EV, GV, KeyT, A>::dav_vertex(vertex_set& vertices, vertex_index index, const vertex_user_value_type& val)
+dav_vertex<VV, EV, GV, KeyT, A>::dav_vertex(vertex_set&                   vertices,
+                                            vertex_index_type             index,
+                                            const vertex_user_value_type& val)
       : base_type(val) {}
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-dav_vertex<VV, EV, GV, KeyT, A>::dav_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&& val)
+dav_vertex<VV, EV, GV, KeyT, A>::dav_vertex(vertex_set& vertices, vertex_index_type index, vertex_user_value_type&& val)
       : base_type(move(val)) {}
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 void dav_vertex<VV, EV, GV, KeyT, A>::set_edge_begin(graph_type& g, edge_iterator uv) {
-  if (first_edge_ == numeric_limits<edge_index>::max()) // not set yet?
-    first_edge_ = static_cast<edge_index>(uv - g.edges().begin());
+  if (first_edge_ == numeric_limits<edge_index_type>::max()) // not set yet?
+    first_edge_ = static_cast<edge_index_type>(uv - g.edges().begin());
 }
 
 

@@ -80,22 +80,27 @@ public:
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
 
   using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_user_value_type = VV;
+  using vertex_key_type        = KeyT;
+  using vertex_index_type      = KeyT;
+  using vertex_value_type      = vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
-  using vertex_iterator        = typename vertex_set::iterator;
-  using const_vertex_iterator  = typename vertex_set::const_iterator;
-  using vertex_key_type        = KeyT;
-  using vertex_index           = KeyT;
-  using vertex_user_value_type = VV;
 
-  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>;
-  using edge_user_value_type = EV;
+  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
+  using vertex_iterator       = typename vertex_set::iterator;
+  using const_vertex_iterator = typename vertex_set::const_iterator;
+  using vertex_size_type      = ranges::range_size_t<vertex_range>;
+  using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
+
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_user_value_type = EV;
+  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_index_type      = KeyT;
+  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
-  using edge_iterator        = typename edge_set::iterator;
-  using const_edge_iterator  = typename edge_set::const_iterator;
-  using edge_index           = KeyT;
 
 public:
   dav_edge()                    = default;
@@ -146,30 +151,41 @@ public:
   using base_type  = conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV>;
 
   using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_user_value_type = VV;
+  using vertex_key_type        = KeyT;
+  using vertex_index_type      = KeyT;
+  using vertex_value_type      = vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
-  using vertex_iterator        = typename vertex_set::iterator;
-  using const_vertex_iterator  = typename vertex_set::const_iterator;
-  using vertex_key_type        = KeyT;
-  using vertex_index           = KeyT;
-  using vertex_user_value_type = VV;
 
-  using edge_user_value_type = EV;
+  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
+  using vertex_iterator       = typename vertex_set::iterator;
+  using const_vertex_iterator = typename vertex_set::const_iterator;
+  using vertex_size_type      = ranges::range_size_t<vertex_range>;
+  using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
+
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_user_value_type = EV;
+  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_index_type      = KeyT;
+  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
-  using edge_index           = KeyT;
-  using edge_iterator        = typename edge_set::iterator;
-  using const_edge_iterator  = typename edge_set::const_iterator;
-  using edge_size_type       = typename edge_set::size_type;
 
-  using vertex_edge_size_type      = typename edge_set::size_type;
+  using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
+  using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
+  using edge_iterator       = ranges::iterator_t<edge_range>;
+  using const_edge_iterator = ranges::iterator_t<const_edge_range>;
+  using edge_size_type      = ranges::range_size_t<edge_range>;
+  using edge_ssize_type     = ranges::range_difference_t<edge_range>;
+
+  using vertex_edge_range          = edge_range;
+  using const_vertex_edge_range    = const_edge_range;
   using vertex_edge_iterator       = edge_iterator;
   using const_vertex_edge_iterator = const_edge_iterator;
-
-  using vertex_outward_size_type           = typename edge_set::size_type;
-  using vertex_outward_edge_iterator       = edge_iterator;
-  using const_vertex_outward_edge_iterator = const_edge_iterator;
+  using vertex_edge_size_type      = edge_size_type;
+  using vertex_edge_ssize_type     = edge_ssize_type;
 
 public:
   dav_vertex() noexcept             = default;
@@ -179,9 +195,9 @@ public:
   dav_vertex& operator=(const dav_vertex&) = default;
   dav_vertex& operator=(dav_vertex&&) = default;
 
-  dav_vertex(vertex_set& vertices, vertex_index index);
-  dav_vertex(vertex_set& vertices, vertex_index index, const vertex_user_value_type&);
-  dav_vertex(vertex_set& vertices, vertex_index index, vertex_user_value_type&&);
+  dav_vertex(vertex_set& vertices, vertex_index_type index);
+  dav_vertex(vertex_set& vertices, vertex_index_type index, const vertex_user_value_type&);
+  dav_vertex(vertex_set& vertices, vertex_index_type index, vertex_user_value_type&&);
 
   void set_edge_begin(graph_type&, edge_iterator);
 
@@ -196,7 +212,7 @@ public:
   edge_size_type edges_size(const graph_type&) const;
 
 private:
-  edge_index first_edge_ = numeric_limits<edge_index>::max();
+  edge_index_type first_edge_ = numeric_limits<edge_index_type>::max();
 };
 
 /// A simple semi-mutable graph emphasizing performance and space.
@@ -246,47 +262,47 @@ public:
 
   using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
   using vertex_user_value_type = VV;
-  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
-  using vertex_size_type       = typename vertex_set::size_type;
-  using vertex_ssize_type      = typename vertex_set::difference_type;
   using vertex_key_type        = KeyT;
   using vertex_index_type      = KeyT;
   using vertex_value_type      = vertex_type;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
 
-  using vertex_iterator       = typename vertex_set::iterator;
-  using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
   using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
+  using vertex_iterator       = typename vertex_set::iterator;
+  using const_vertex_iterator = typename vertex_set::const_iterator;
+  using vertex_size_type      = ranges::range_size_t<vertex_range>;
+  using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
 
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
   using edge_user_value_type = EV;
+  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_index_type      = KeyT;
+  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
   using edge_set             = vector<edge_type, edge_allocator_type>;
-  using edge_size_type       = typename edge_set::size_type;
-  using edge_ssize_type      = typename edge_set::difference_type;
-  using edge_index_type      = KeyT;
-  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
-  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
 
-  using edge_iterator       = typename edge_set::iterator;
-  using const_edge_iterator = typename edge_set::const_iterator;
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
+  using edge_iterator       = ranges::iterator_t<edge_range>;
+  using const_edge_iterator = ranges::iterator_t<const_edge_range>;
+  using edge_size_type      = ranges::range_size_t<edge_range>;
+  using edge_ssize_type     = ranges::range_difference_t<edge_range>;
 
-  using vertex_outward_size_type           = ranges::range_size_t<edge_range>;
-  using vertex_outward_edge_ssize_type     = ranges::range_difference_t<edge_range>;
-  using vertex_outward_edge_iterator       = ranges::iterator_t<edge_range>;
-  using const_vertex_outward_edge_iterator = ranges::iterator_t<const_edge_range>;
   using vertex_outward_edge_range          = edge_range;
   using const_vertex_outward_edge_range    = const_edge_range;
+  using vertex_outward_edge_iterator       = edge_iterator;
+  using const_vertex_outward_edge_iterator = const_edge_iterator;
+  using vertex_outward_size_type           = edge_size_type;
+  using vertex_outward_edge_ssize_type     = edge_ssize_type;
 
-  using vertex_edge_size_type      = vertex_outward_size_type;
-  using vertex_edge_ssize_type     = vertex_outward_edge_ssize_type;
-  using vertex_edge_iterator       = vertex_outward_edge_iterator;
-  using const_vertex_edge_iterator = const_vertex_outward_edge_iterator;
   using vertex_edge_range          = edge_range;
   using const_vertex_edge_range    = const_edge_range;
+  using vertex_edge_iterator       = edge_iterator;
+  using const_vertex_edge_iterator = const_edge_iterator;
+  using vertex_edge_size_type      = edge_size_type;
+  using vertex_edge_ssize_type     = edge_ssize_type;
 
 public:
   directed_adjacency_vector() noexcept(noexcept(allocator_type()))    = default;
