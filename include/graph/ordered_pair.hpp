@@ -1,9 +1,5 @@
-#ifdef __clang__
-#  include <range/v3/range/concepts.hpp>
-#else
-#  include <concepts>
-#endif
-#include <range/v3/view/subrange.hpp>
+#include <concepts>
+#include <ranges>
 #include <type_traits>
 #include <utility> // pair
 
@@ -11,7 +7,6 @@
 #  define ORDERED_PAIR_HPP
 
 namespace std::graph {
-namespace ranges = ::ranges; // future = std::ranges
 
 //
 // ordered_pair

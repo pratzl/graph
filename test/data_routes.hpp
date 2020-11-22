@@ -3,7 +3,6 @@
 #include "graph/directed_adjacency_vector.hpp"
 #include "graph/undirected_adjacency_list.hpp"
 
-#include <range/v3/algorithm/find.hpp>
 #include <range/v3/algorithm/lower_bound.hpp>
 #include <range/v3/action/sort.hpp>
 #include <range/v3/action/unique.hpp>
@@ -12,7 +11,6 @@
 #include <string>
 #include <vector>
 
-//namespace ranges = ::ranges;
 
 //---------------------------------------------------------------------------------------
 // forward declarations
@@ -196,7 +194,7 @@ public:
 
 protected:
   vertex_index_t find_vertex_index(const vertex_label_t& label) const {
-    return static_cast<vertex_index_t>(ranges::lower_bound(vertex_labels_, label) - ranges::begin(vertex_labels_));
+    return static_cast<vertex_index_t>(::ranges::lower_bound(vertex_labels_, label) - ranges::begin(vertex_labels_));
   }
 
   // extract unique vertex lables from edges (in, out values)
@@ -208,7 +206,7 @@ protected:
       vertex_labels.push_back(mapper_.inward_label(uv));
       vertex_labels.push_back(mapper_.outward_label(uv));
     }
-    return move(vertex_labels) | ranges::actions::sort | ranges::actions::unique;
+    return move(vertex_labels) | ::ranges::actions::sort | ::ranges::actions::unique;
   }
 
   // extract the vertex indexes (in & out) & value to be used in the target graph's edges
@@ -224,7 +222,7 @@ protected:
     }
     auto cmp = [](const typename target_graph_t::edge_value_type& lhs,
                   const typename target_graph_t::edge_value_type& rhs) { return lhs.first.first < rhs.first.first; };
-    ranges::sort(edge_values, cmp);
+    ::ranges::actions::sort(edge_values, cmp);
     return edge_values;
   }
 

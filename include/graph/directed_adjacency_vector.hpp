@@ -256,8 +256,8 @@ public:
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_range          = decltype(ranges::make_subrange(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(ranges::make_subrange(declval<const vertex_set&>()));
+  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
 
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
   using edge_user_value_type = EV;
@@ -271,13 +271,13 @@ public:
 
   using edge_iterator       = typename edge_set::iterator;
   using const_edge_iterator = typename edge_set::const_iterator;
-  using edge_range          = decltype(ranges::make_subrange(declval<edge_set&>()));
-  using const_edge_range    = decltype(ranges::make_subrange(declval<const edge_set&>()));
+  using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
+  using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
 
-  using vertex_outward_size_type           = typename edge_set::size_type;
-  using vertex_outward_edge_ssize_type     = typename edge_set::difference_type;
-  using vertex_outward_edge_iterator       = typename edge_range::iterator;
-  using const_vertex_outward_edge_iterator = typename const_edge_range::iterator;
+  using vertex_outward_size_type           = ranges::range_size_t<edge_range>;
+  using vertex_outward_edge_ssize_type     = ranges::range_difference_t<edge_range>;
+  using vertex_outward_edge_iterator       = ranges::iterator_t<edge_range>;
+  using const_vertex_outward_edge_iterator = ranges::iterator_t<const_edge_range>;
   using vertex_outward_edge_range          = edge_range;
   using const_vertex_outward_edge_range    = const_edge_range;
 

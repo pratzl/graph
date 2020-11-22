@@ -4,7 +4,7 @@
 #include "graph_utility.hpp"
 #include "ordered_pair.hpp"
 #include <vector>
-#include <range/v3/view/subrange.hpp>
+#include <ranges>
 #include <cassert>
 #include <type_traits>
 
@@ -119,8 +119,8 @@ public:
   using size_type       = size_t;
   using difference_type = ptrdiff_t;
 
-  using edge_range       = decltype(ranges::make_subrange(iterator(), iterator()));
-  using const_edge_range = decltype(ranges::make_subrange(const_iterator(), const_iterator()));
+  using edge_range       = decltype(make_subrange2(iterator(), iterator()));
+  using const_edge_range = decltype(make_subrange2(const_iterator(), const_iterator()));
 
 public:
   class const_iterator {
@@ -520,8 +520,8 @@ public:
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_range          = decltype(ranges::make_subrange(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(ranges::make_subrange(declval<const vertex_set&>()));
+  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
 
   using edge_type            = ual_edge<VV, EV, GV, KeyT, A>;
   using edge_user_value_type = EV;
@@ -541,8 +541,8 @@ public:
 
   class edge_iterator;       // (defined below)
   class const_edge_iterator; // (defined below)
-  using edge_range       = decltype(ranges::make_subrange(edge_iterator(), edge_iterator()));
-  using const_edge_range = decltype(ranges::make_subrange(const_edge_iterator(), const_edge_iterator()));
+  using edge_range       = decltype(make_subrange2(edge_iterator(), edge_iterator()));
+  using const_edge_range = decltype(make_subrange2(const_edge_iterator(), const_edge_iterator()));
 
   class const_edge_iterator {
   public:
@@ -803,8 +803,8 @@ public:
     return const_edge_iterator(*this, const_cast<graph_type&>(*this).end());
   }
 
-  edge_range       edges() { return ranges::make_subrange(edges_begin(), edges_end()); }
-  const_edge_range edges() const { return ranges::make_subrange(edges_begin(), edges_end()); }
+  edge_range       edges() { return make_subrange2(edges_begin(), edges_end()); }
+  const_edge_range edges() const { return make_subrange2(edges_begin(), edges_end()); }
 
 protected:
   void reserve_vertices(vertex_size_type);

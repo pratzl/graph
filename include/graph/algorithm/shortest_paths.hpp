@@ -48,7 +48,6 @@
 #include <queue>
 #include <vector>
 #include "../graph.hpp"
-#include "range/v3/algorithm/reverse.hpp"
 
 #define SHORTEST_RANGE
 
@@ -63,13 +62,13 @@ template <typename G, typename A = allocator<vertex_iterator_t<G>>>
 using vertex_path_t = vector<vertex_iterator_t<G>, A>;
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
-using vertex_path_range = decltype(ranges::make_subrange(declval<vertex_path_t<G, A>&>()));
+using vertex_path_range = decltype(make_subrange2(declval<vertex_path_t<G, A>&>()));
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
 using edge_path_t = vector<edge_iterator_t<G>, A>;
 
 template <typename G, typename A>
-using edge_path_range = decltype(ranges::make_subrange(declval<edge_path_t<G, A>&>()));
+using edge_path_range = decltype(make_subrange2(declval<edge_path_t<G, A>&>()));
 
 
 template <typename G, arithmetic DistanceT, typename A = allocator<vertex_iterator_t<G>>>

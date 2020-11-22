@@ -1,5 +1,5 @@
 #include <concepts>
-#include <range/v3/view/subrange.hpp>
+#include <ranges>
 #include <type_traits>
 #include <utility> // pair
 #include "ordered_pair.hpp"
@@ -69,8 +69,6 @@ concept arithmetic = is_arithmetic_v<T>;
 
 
 namespace std::graph {
-
-namespace ranges = ::ranges; // future = std::ranges
 
 //
 // Graph Traits

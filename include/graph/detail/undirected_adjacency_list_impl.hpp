@@ -1,10 +1,11 @@
 //
 //	Author: J. Phillip Ratzloff
 //
-#include <range/v3/algorithm/find_if.hpp>
 
 #ifndef UNDIRECTED_ADJ_LIST_IMPL_HPP
-#  define UNDIRECTED_ADJ_LIST_IMPL_HPP
+#define UNDIRECTED_ADJ_LIST_IMPL_HPP
+
+#include <stdexcept>
 
 namespace std::graph {
 
@@ -947,14 +948,14 @@ template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
                      vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
       -> vertex_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return ranges::make_subrange(u.edges_begin(g), u.edges_end(g));
+  return make_subrange2(u.edges_begin(g), u.edges_end(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
                      const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
       -> const_vertex_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return ranges::make_subrange(u.edges_begin(g), u.edges_end(g));
+  return make_subrange2(u.edges_begin(g), u.edges_end(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
@@ -1111,7 +1112,7 @@ constexpr auto outward_vertex_key(const undirected_adjacency_list<VV, EV, GV, Ke
   return uv.outward_vertex_key(g);
 }
 
-#  if 0
+#if 0
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
@@ -1131,7 +1132,7 @@ constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, IndexT, A>
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv.outward_vertex_key(g);
 }
-#  endif
+#endif
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&                 g,
@@ -1230,13 +1231,13 @@ constexpr auto erase_edge(undirected_adjacency_list<VV, EV, GV, KeyT, A>&       
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return ranges::make_subrange(g.vertices());
+  return make_subrange2(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return ranges::make_subrange(g.vertices());
+  return make_subrange2(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>

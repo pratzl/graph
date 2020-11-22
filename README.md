@@ -162,7 +162,7 @@ Other Useful Tools
   - [ ] investigate use of coroutines for BFS & DFS (stack space limits?)
 - [ ] Unit Tests
   - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
-  - [ ] Switch from range-v3 to compiler-defined ranges
+  - [x] Switch from range-v3 to compiler-defined ranges (except algorithms like sort)
   - [ ] Create templated tests based on directed/undirected types
   - [ ] Move German Routes to text file
 - [ ] Other libraries

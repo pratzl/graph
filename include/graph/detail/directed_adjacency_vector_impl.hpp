@@ -1,7 +1,8 @@
 //
 //	Author: J. Phillip Ratzloff
 //
-#include <range/v3/algorithm/find_if.hpp>
+#include <ranges>
+#include <stdexcept>
 
 #ifndef DIRECTED_ADJ_ARRAY_IMPL_HPP
 #  define DIRECTED_ADJ_ARRAY_IMPL_HPP
@@ -208,7 +209,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, A>::directed_adjacency_vector(const 
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_outward_edges(ranges::make_subrange(t, u));
+      t = finalize_outward_edges(make_subrange2(t, u));
 
       edge_iterator uv;
       if constexpr (same_as<decltype(evalue_fnc(edge_data)), void>) {
@@ -220,7 +221,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, A>::directed_adjacency_vector(const 
     }
 
     // assure begin edge is set for remaining vertices w/o edges
-    finalize_outward_edges(ranges::make_subrange(t, vertices_.end()));
+    finalize_outward_edges(make_subrange2(t, vertices_.end()));
   }
 }
 
@@ -264,7 +265,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, A>::directed_adjacency_vector(
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_outward_edges(ranges::make_subrange(t, u));
+      t = finalize_outward_edges(make_subrange2(t, u));
 
       edge_iterator uv;
       uv = create_edge(ukey, vkey, uv_val);
@@ -272,7 +273,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, A>::directed_adjacency_vector(
     }
 
     // assure begin edge is set for remaining vertices w/o edges
-    finalize_outward_edges(ranges::make_subrange(t, vertices_.end()));
+    finalize_outward_edges(make_subrange2(t, vertices_.end()));
   }
 }
 
@@ -301,7 +302,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, A>::directed_adjacency_vector(
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_outward_edges(ranges::make_subrange(t, u));
+      t = finalize_outward_edges(make_subrange2(t, u));
 
       edge_iterator uv;
       uv = create_edge(ukey, vkey);
@@ -309,7 +310,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, A>::directed_adjacency_vector(
     }
 
     // assure begin edge is set for remaining vertices w/o edges
-    finalize_outward_edges(ranges::make_subrange(t, vertices_.end()));
+    finalize_outward_edges(make_subrange2(t, vertices_.end()));
   }
 }
 
@@ -541,9 +542,9 @@ constexpr auto outward_edges(directed_adjacency_vector<VV, EV, GV, KeyT, A>&    
       -> vertex_outward_edge_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   if (&u < &g.vertices().back()) {
     auto v = to_iterator(g, u) + 1;
-    return ranges::make_subrange(u.edges_begin(g), v->edges_begin(g));
+    return make_subrange2(u.edges_begin(g), v->edges_begin(g));
   } else {
-    return ranges::make_subrange(u.edges_begin(g), g.edges().end());
+    return make_subrange2(u.edges_begin(g), g.edges().end());
   }
 }
 
@@ -553,9 +554,9 @@ constexpr auto outward_edges(const directed_adjacency_vector<VV, EV, GV, KeyT, A
       -> const_vertex_outward_edge_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   if (&u < &g.vertices().back()) {
     auto v = to_iterator(g, u) + 1;
-    return ranges::make_subrange(u.edges_begin(g), v->edges_begin(g));
+    return make_subrange2(u.edges_begin(g), v->edges_begin(g));
   } else {
-    return ranges::make_subrange(u.edges_begin(g), g.edges().end());
+    return make_subrange2(u.edges_begin(g), g.edges().end());
   }
 }
 
@@ -981,13 +982,13 @@ constexpr auto cend(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return ranges::make_subrange(g.vertices());
+  return make_subrange2(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto vertices(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return ranges::make_subrange(g.vertices());
+  return make_subrange2(g.vertices());
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
