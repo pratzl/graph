@@ -10,6 +10,8 @@
 #ifndef VOV_ADAPTOR_HPP
 #  define VOV_ADAPTOR_HPP
 
+//namespace ranges = ::ranges;
+
 // It's valid to define things in std/std::graph to extend the definitions
 // that already exit, as stated at
 // https://en.cppreference.com/w/cpp/language/extending_std.
@@ -27,8 +29,8 @@ struct std::graph::graph_traits<vov<Attributes...>> {
   using vertex_user_value_type = std::graph::empty_value;
   using vertex_value_type      = vertex_type;
 
-  using vertex_range       = decltype(::ranges::make_subrange(std::declval<vertex_set&>()));
-  using const_vertex_range = decltype(::ranges::make_subrange(std::declval<const vertex_set&>()));
+  using vertex_range       = decltype(ranges::make_subrange(std::declval<vertex_set&>()));
+  using const_vertex_range = decltype(ranges::make_subrange(std::declval<const vertex_set&>()));
   using vertex_size_type   = typename vertex_set::size_type;
 
   using edge_type            = typename vertex_outward_edge_set::value_type;
@@ -37,9 +39,9 @@ struct std::graph::graph_traits<vov<Attributes...>> {
   using edge_value_type      = edge_type;
   using edge_size_type       = size_t;
 
-  using vertex_outward_edge_range = decltype(::ranges::make_subrange(std::declval<vertex_outward_edge_set&>()));
+  using vertex_outward_edge_range = decltype(ranges::make_subrange(std::declval<vertex_outward_edge_set&>()));
   using const_vertex_outward_edge_range =
-        decltype(::ranges::make_subrange(std::declval<const vertex_outward_edge_set&>()));
+        decltype(ranges::make_subrange(std::declval<const vertex_outward_edge_set&>()));
   using vertex_outward_size_type = typename vertex_outward_edge_set::size_type;
 
   // type aliases for Uniform API
@@ -98,11 +100,11 @@ constexpr auto value(std::graph::edge_t<vov<Attributes...>>& uv) -> std::graph::
 
 template <typename... Attributes>
 constexpr auto vertices(vov<Attributes...>& g) -> std::graph::vertex_range_t<vov<Attributes...>> {
-  return ::ranges::make_subrange(g);
+  return ranges::make_subrange(g);
 }
 template <typename... Attributes>
 constexpr auto vertices(const vov<Attributes...>& g) -> std::graph::const_vertex_range_t<vov<Attributes...>> {
-  return ::ranges::make_subrange(g);
+  return ranges::make_subrange(g);
 }
 
 template <typename... Attributes>
@@ -450,14 +452,14 @@ constexpr auto find_outward_edge(vov<Attributes...>&                       g,
                                  std::graph::vertex_t<vov<Attributes...>>& u,
                                  std::graph::vertex_t<vov<Attributes...>>& v)
       -> std::graph::vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return ::ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*outward_vertex(g, uv) == &v; });
+  return ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*outward_vertex(g, uv) == &v; });
 }
 template <typename... Attributes>
 constexpr auto find_outward_edge(const vov<Attributes...>&                       g,
                                  const std::graph::vertex_t<vov<Attributes...>>& u,
                                  const std::graph::vertex_t<vov<Attributes...>>& v)
       -> std::graph::const_vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return ::ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*outward_vertex(g, uv) == &v; });
+  return ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*outward_vertex(g, uv) == &v; });
 }
 
 template <typename... Attributes>

@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+//namespace ranges = ::ranges;
+
 //---------------------------------------------------------------------------------------
 // forward declarations
 //
@@ -194,12 +196,12 @@ public:
 
 protected:
   vertex_index_t find_vertex_index(const vertex_label_t& label) const {
-    return static_cast<vertex_index_t>(::ranges::lower_bound(vertex_labels_, label) - ::ranges::begin(vertex_labels_));
+    return static_cast<vertex_index_t>(ranges::lower_bound(vertex_labels_, label) - ranges::begin(vertex_labels_));
   }
 
   // extract unique vertex lables from edges (in, out values)
   // result returned in ordered vector
-  template <::ranges::forward_range EdgeRng>
+  template <ranges::forward_range EdgeRng>
   vertex_labels_t unique_vertex_labels(const EdgeRng& uv_rng) const {
     vertex_labels_t vertex_labels;
     for (const auto& uv : uv_rng) {
@@ -222,7 +224,7 @@ protected:
     }
     auto cmp = [](const typename target_graph_t::edge_value_type& lhs,
                   const typename target_graph_t::edge_value_type& rhs) { return lhs.first.first < rhs.first.first; };
-    ::ranges::sort(edge_values, cmp);
+    ranges::sort(edge_values, cmp);
     return edge_values;
   }
 
