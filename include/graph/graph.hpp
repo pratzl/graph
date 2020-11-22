@@ -61,6 +61,13 @@
 #ifndef GRAPH_FWD_HPP
 #  define GRAPH_FWD_HPP
 
+namespace std {
+// (propose add to std)
+template <typename T>
+concept arithmetic = is_arithmetic_v<T>;
+} // namespace std
+
+
 namespace std::graph {
 
 namespace ranges = ::ranges; // future = std::ranges
@@ -124,10 +131,6 @@ struct graph_traits
 //
 
 // clang-format off
-
-// (propose add to std)
-template <typename T>
-concept arithmetic = is_arithmetic_v<T>;
 
 // directed = integral vertex key && edge key is ordered
 template <typename G>

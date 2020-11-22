@@ -142,6 +142,7 @@ Other Useful Tools
     - [x] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them? [key can be used in place of index]
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
     - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
+    - [ ] create matching undirected adjacency vector with unmutable edge values
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
@@ -161,8 +162,12 @@ Other Useful Tools
   - [ ] investigate use of coroutines for BFS & DFS (stack space limits?)
 - [ ] Unit Tests
   - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
+  - [ ] Switch from range-v3 to compiler-defined ranges
+  - [ ] Create templated tests based on directed/undirected types
+  - [ ] Move German Routes to text file
 - [ ] Other libraries
   - [ ] bgl17
+    - [ ] rename to NWGraph
     - [x] vov graph
       - [x] Create adaptor
       - [x] Add depth_first_search_vertex_range test
@@ -182,8 +187,7 @@ Other Useful Tools
   - [ ] lemon
     - [ ] [paper] comparison
 - [ ] Compiler/build support
-  - [ ] Build with clang in linux
-    - [ ] Use range-v3 headers/macros for concept support
+  - [ ] Build with clang in linux (when <concepts> header available)
   - [ ] use Catch2 hierarchy feature for unit tests
   - [ ] github failing action(s) on push
   - [ ] validate doxygen output
