@@ -67,13 +67,13 @@ OStream& operator<<(OStream& os, const Graph& g) {
 }
 
 
-TEST_CASE("daa minsize", "[daa][minsize]") {
+TEST_CASE("daa minsize", "[dav][minsize]") {
   using G = std::graph::directed_adjacency_vector<>;
   EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
   EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
-TEST_CASE("daa empty", "[daa][empty]") {
+TEST_CASE("daa empty", "[dav][empty]") {
   Graph g;
   EXPECT_EQ(0, vertices_size(g));
   EXPECT_EQ(0, edges_size(g));
@@ -81,14 +81,14 @@ TEST_CASE("daa empty", "[daa][empty]") {
   //EXPECT_EQ(sizeof(Graph::vertex_size_type) + sizeof(weight_value), sizeof(Graph::edge_type));
 }
 
-TEST_CASE("daa initializer list", "[daa][init][initializer list]") {
+TEST_CASE("daa initializer list", "[dav][init][initializer list]") {
   //using edge_key_val = std::tuple<vertex_key_t<Graph>, vertex_key_t<Graph>, edge_value_t<Graph>>;
   Graph g0{};                     // empty graph
   Graph g1{{1, 2, 3}};            // one edge
   Graph g2{{1, 2, 3}, {4, 5, 6}}; // two edges
 }
 
-TEST_CASE("daa example 1", "[daa][example][1]") {
+TEST_CASE("daa example 1", "[dav][example][1]") {
   using std::graph::directed_adjacency_vector;
   using ranges::end;
   struct route_mi {
@@ -113,7 +113,7 @@ TEST_CASE("daa example 1", "[daa][example][1]") {
   REQUIRE(edges_size(g) == 2);
 }
 
-TEST_CASE("daa example 2", "[daa][example][2]") {
+TEST_CASE("daa example 2", "[dav][example][2]") {
   using std::graph::directed_adjacency_vector;
   using G = directed_adjacency_vector<empty_value, weight_value>;
 
@@ -122,7 +122,7 @@ TEST_CASE("daa example 2", "[daa][example][2]") {
   REQUIRE(edges_size(g) == 2);
 }
 
-TEST_CASE("daa init", "[daa][init]") {
+TEST_CASE("daa init", "[dav][init]") {
 #if 0
   vector<Graph::edge_value_type> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, daa_germany_edge_routes);
@@ -312,7 +312,7 @@ TEST_CASE("daa init", "[daa][init]") {
 #endif
 }
 
-TEST_CASE("daa graph functions", "[daa][graph][functions]") {
+TEST_CASE("daa graph functions", "[dav][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = create_germany_routes_graph();
 
@@ -354,7 +354,7 @@ TEST_CASE("daa graph functions", "[daa][graph][functions]") {
 #endif
 }
 
-TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
+TEST_CASE("daa vertex functions", "[dav][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
@@ -400,7 +400,7 @@ TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
   }
 }
 
-TEST_CASE("daa edge functions", "[daa][edge][functions]") {
+TEST_CASE("daa edge functions", "[dav][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
@@ -425,7 +425,32 @@ TEST_CASE("daa edge functions", "[daa][edge][functions]") {
   EXPECT_EQ(uv, uv3);
 }
 
-TEST_CASE("daa dfs vertex", "[daa][dfs][vertex]") {
+TEST_CASE("daa vertex-vertex functions", "[dav][vertex][functions]") {
+  using namespace std::graph;
+  Graph        g  = create_germany_routes_graph();
+  const Graph& gc = g;
+
+
+  vertex_iterator_t<Graph> u    = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_key_t<Graph>      ukey = vertex_key(g, *u);
+  EXPECT_EQ(edges_size(g, *u), vertices_size(g, *u));
+  EXPECT_EQ(edges_ssize(g, *u), vertices_ssize(g, *u));
+
+  size_t                          cnt   = 0;
+  vertex_edge_iterator_t<Graph>   uv_it = edges_begin(g, *u);
+  vertex_vertex_iterator_t<Graph> u_it  = vertices_begin(g, *u);
+
+  for (vertex_iterator_t<Graph> other = u; uv_it != edges_end(g, *u) && u_it != vertices_end(g, *u);
+       ++uv_it, ++u_it, ++cnt) {
+    EXPECT_EQ(outward_vertex_key(g, *uv_it), vertex_key(g, *u_it));
+  }
+
+  EXPECT_EQ(edges_size(g, *u), cnt);    // all edges/vertices visited?
+  EXPECT_EQ(uv_it, edges_end(g, *u));   // reached the end?
+  EXPECT_EQ(u_it, vertices_end(g, *u)); // reached the end?
+}
+
+TEST_CASE("daa dfs vertex", "[dav][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -489,7 +514,7 @@ TEST_CASE("daa dfs vertex", "[daa][dfs][vertex]") {
 #endif
 }
 
-TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
+TEST_CASE("daa dfs edge", "[dav][dfs][edge]") {
   Graph                         g = create_germany_routes_graph();
   depth_first_search_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -656,7 +681,7 @@ TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
 #endif
 }
 
-TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
+TEST_CASE("daa bfs vertex", "[dav][bfs][vertex]") {
   Graph                             g = create_germany_routes_graph();
   breadth_first_search_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
@@ -702,7 +727,7 @@ TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
 #endif
 }
 
-TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
+TEST_CASE("cass bfs edge", "[dav][bfs][edge]") {
   Graph                           g = create_germany_routes_graph();
   breadth_first_search_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -873,7 +898,7 @@ TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
 #endif
 }
 
-TEST_CASE("daa dijkstra distance", "[daa][dikjstra][distance]") {
+TEST_CASE("daa dijkstra distance", "[dav][dikjstra][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -973,7 +998,7 @@ TEST_CASE("daa dijkstra distance", "[daa][dikjstra][distance]") {
 #endif
 }
 
-TEST_CASE("daa bellman-ford distance", "[daa][bellman-ford][distance]") {
+TEST_CASE("daa bellman-ford distance", "[dav][bellman-ford][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -1074,7 +1099,7 @@ TEST_CASE("daa bellman-ford distance", "[daa][bellman-ford][distance]") {
 #endif
 }
 
-TEST_CASE("daa dijkstra shortest path", "[daa][dikjstra][path]") {
+TEST_CASE("daa dijkstra shortest path", "[dav][dikjstra][path]") {
   using std::graph::dijkstra_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1252,7 +1277,7 @@ TEST_CASE("daa dijkstra shortest path", "[daa][dikjstra][path]") {
 #endif
 }
 
-TEST_CASE("daa bellman-fort shortest path", "[daa][bellman-ford][path]") {
+TEST_CASE("daa bellman-fort shortest path", "[dav][bellman-ford][path]") {
   using std::graph::bellman_ford_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1434,7 +1459,7 @@ TEST_CASE("daa bellman-fort shortest path", "[daa][bellman-ford][path]") {
 }
 
 
-TEST_CASE("daa dfs transitive closure", "[daa][dfs][transitive closure]") {
+TEST_CASE("daa dfs transitive closure", "[dav][dfs][transitive closure]") {
   using std::graph::dfs_transitive_closure;
   using std::graph::reaches;
 
@@ -1565,7 +1590,7 @@ TEST_CASE("daa dfs transitive closure", "[daa][dfs][transitive closure]") {
 }
 
 
-TEST_CASE("daa warshall transitive closure", "[daa][warshall][transitive closure]") {
+TEST_CASE("daa warshall transitive closure", "[dav][warshall][transitive closure]") {
   using std::graph::warshall_transitive_closure;
   using std::graph::reaches;
 

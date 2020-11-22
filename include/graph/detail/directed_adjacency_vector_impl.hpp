@@ -154,38 +154,38 @@ dav_vertex<VV, EV, GV, KeyT, A>::edges_size(const graph_type& g) const {
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_begin(graph_type& g) {
-  return vertex_vertex_iterator(g, *this, edges_begin(g));
+  return vertex_vertex_iterator(g, edges_begin(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_begin(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, *this, edges_begin(g));
+  return const_vertex_vertex_iterator(g, edges_begin(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_cbegin(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, *this, edges_cbegin(g));
+  return const_vertex_vertex_iterator(g, edges_cbegin(g));
 }
 
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_end(graph_type& g) {
-  return vertex_vertex_iterator(g, *this, edges_end(g));
+  return vertex_vertex_iterator(g, edges_end(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_end(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, *this, edges_end(g));
+  return const_vertex_vertex_iterator(g, edges_end(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_cend(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, *this, edges_cend(g));
+  return const_vertex_vertex_iterator(g, edges_cend(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
@@ -924,6 +924,70 @@ constexpr auto find_edge(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&  
 //
 // Uniform API: Vertex-Vertex range functions
 //
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                        vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return {u.vertices_begin(g), u.vertices_end(g)};
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                        const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return {u.vertices_begin(g), u.vertices_end(g)};
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_size(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                             const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return edges_size(g, u);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                              const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return edges_ssize(g, u);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_begin(directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                              vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return u.vertices_begin(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_begin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                              const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return u.vertices_begin(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_cbegin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                               const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return u.vertices_cbegin(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_end(directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                            vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return u.vertices_end(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_end(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                            const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return u.vertices_end(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_cend(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
+                             const vertex_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return u.vertices_cend(g);
+}
 
 
 //

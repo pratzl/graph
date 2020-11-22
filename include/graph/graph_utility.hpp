@@ -83,13 +83,13 @@ namespace detail {
 
     using iterator_category = forward_iterator_tag;
     using value_type        = vertex_type;
-    using size_type         = typename vertex_edge_iterator::size_type;
+    using size_type         = ::size_t;
     using difference_type   = typename vertex_edge_iterator::difference_type;
     using pointer           = const value_type*;
     using reference         = const value_type&;
 
   public:
-    constexpr const_vertex_vertex_iterator(graph_type& g, vertex_type& u, vertex_edge_iterator uv) : g_(&g), uv_(uv) {}
+    constexpr const_vertex_vertex_iterator(graph_type& g, vertex_edge_iterator uv) : g_(&g), uv_(uv) {}
 
     constexpr const_vertex_vertex_iterator()                                    = default;
     constexpr const_vertex_vertex_iterator(const const_vertex_vertex_iterator&) = default;
@@ -100,8 +100,8 @@ namespace detail {
     constexpr const_vertex_vertex_iterator& operator=(const_vertex_vertex_iterator&&) = default;
 
   public:
-    constexpr reference operator*() const { return vertex(*g_, *uv_); }
-    constexpr pointer   operator->() const { return &vertex(*g_, *uv_); }
+    constexpr reference operator*() const { return *outward_vertex(*g_, *uv_); }
+    constexpr pointer   operator->() const { return &*outward_vertex(*g_, &*uv_); }
 
     constexpr const_vertex_vertex_iterator& operator++() { return *++uv_; }
 
@@ -143,7 +143,7 @@ namespace detail {
     using base_t::uv_;
 
   public:
-    constexpr vertex_vertex_iterator(graph_type& g, vertex_type& u, vertex_edge_iterator uv) : base_t(g, u) {}
+    constexpr vertex_vertex_iterator(graph_type& g, vertex_edge_iterator uv) : base_t(g, uv) {}
 
     constexpr vertex_vertex_iterator()                              = default;
     constexpr vertex_vertex_iterator(const vertex_vertex_iterator&) = default;
@@ -154,10 +154,13 @@ namespace detail {
     constexpr vertex_vertex_iterator& operator=(vertex_vertex_iterator&&) = default;
 
   public:
-    constexpr reference operator*() const { return vertex(*g_, *uv_); }
-    constexpr pointer   operator->() const { return &vertex(*g_, *uv_); }
+    constexpr reference operator*() const { return *outward_vertex(*g_, *uv_); }
+    constexpr pointer   operator->() const { return &*outward_vertex(*g_, &*uv_); }
 
-    constexpr vertex_vertex_iterator& operator++() { return *++uv_; }
+    constexpr vertex_vertex_iterator& operator++() {
+      ++uv_;
+      return *this;
+    }
 
     constexpr vertex_vertex_iterator operator++(int) {
       vertex_vertex_iterator tmp(*this);
@@ -168,6 +171,7 @@ namespace detail {
     constexpr bool operator==(const vertex_vertex_iterator& rhs) const noexcept { return base_t::operator==(rhs); }
     constexpr bool operator!=(const vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
   };
+
 
   template <typename G>
   class const_vertex_vertex_range {

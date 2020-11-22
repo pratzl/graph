@@ -509,12 +509,7 @@ constexpr auto vertices(const G&, vertex_key_t<G> ukey) -> const_vertex_vertex_r
 template <directed_or_undirected G>
 constexpr auto vertices_size(const G&, const vertex_t<G>& u) noexcept -> vertex_vertex_size_t<G>;
 template <directed_or_undirected G>
-constexpr auto vertices_size(const G&, vertex_key_t<G> ukey) noexcept -> vertex_vertex_size_t<G>;
-
-template <directed_or_undirected G>
 constexpr auto vertices_ssize(const G&, const vertex_t<G>& u) noexcept -> vertex_vertex_ssize_t<G>;
-template <directed_or_undirected G>
-constexpr auto vertices_ssize(const G&, vertex_key_t<G> u) noexcept -> vertex_vertex_ssize_t<G>;
 
 template <directed_or_undirected G>
 constexpr auto vertices_begin(G& g, vertex_t<G>& u) -> vertex_vertex_iterator_t<G>;
@@ -540,16 +535,6 @@ constexpr auto find_vertex(const G&, vertex_key_t<G> ukey, vertex_key_t<G> vkey)
 // Directed API (outward)
 //
 
-// Directed API (inward & outward)
-template <directed G>
-constexpr auto vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>;
-template <directed G>
-constexpr auto vertex(const G&, const edge_t<G>& uv) -> const_vertex_iterator_t<G>;
-
-template <directed G>
-constexpr auto vertex_key(const G&, const edge_t<G>& uv) -> vertex_key_t<G>;
-
-
 // Directed API (outward): Types
 template <directed G>
 using vertex_outward_edge_range_t = typename graph_traits<G>::vertex_outward_edge_range;
@@ -569,6 +554,16 @@ template <directed G>
 using vertex_outward_size_t = typename graph_traits<G>::vertex_outward_size_type;
 template <directed G>
 using vertex_outward_edge_ssize_t = ranges::range_difference_t<typename graph_traits<G>::vertex_outward_edge_range>;
+
+
+// Directed API (inward & outward)
+template <directed G>
+constexpr auto vertex(G& g, edge_t<G>& uv) -> vertex_iterator_t<G>;
+template <directed G>
+constexpr auto vertex(const G&, const edge_t<G>& uv) -> const_vertex_iterator_t<G>;
+
+template <directed G>
+constexpr auto vertex_key(const G&, const edge_t<G>& uv) -> vertex_key_t<G>;
 
 
 // Directed API (outward): Vertex-Edge functions
