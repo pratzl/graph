@@ -12,7 +12,7 @@ namespace std::graph {
 //
 template <class T>
 struct graph_value_wrapper {
-  graph_value_wrapper()                           = default;
+  constexpr graph_value_wrapper()                 = default;
   graph_value_wrapper(const graph_value_wrapper&) = default;
   graph_value_wrapper& operator=(const graph_value_wrapper&) = default;
   graph_value_wrapper(graph_value_wrapper&& v) : value(move(v.value)) {}
@@ -53,7 +53,7 @@ struct empty_value {}; // empty graph|vertex|edge value
 struct weight_value {
   int weight = 0;
 
-  weight_value()                    = default;
+  constexpr weight_value()          = default;
   weight_value(const weight_value&) = default;
   weight_value& operator=(const weight_value&) = default;
   weight_value(const int& w) : weight(w) {}
@@ -89,30 +89,32 @@ namespace detail {
     using reference         = const value_type&;
 
   public:
-    const_vertex_vertex_iterator(graph_type& g, vertex_type& u, vertex_edge_iterator uv) : g_(&g), uv_(uv) {}
+    constexpr const_vertex_vertex_iterator(graph_type& g, vertex_type& u, vertex_edge_iterator uv) : g_(&g), uv_(uv) {}
 
-    const_vertex_vertex_iterator()                                    = default;
-    const_vertex_vertex_iterator(const const_vertex_vertex_iterator&) = default;
-    const_vertex_vertex_iterator(const_vertex_vertex_iterator&&)      = default;
-    ~const_vertex_vertex_iterator()                                   = default;
+    constexpr const_vertex_vertex_iterator()                                    = default;
+    constexpr const_vertex_vertex_iterator(const const_vertex_vertex_iterator&) = default;
+    constexpr const_vertex_vertex_iterator(const_vertex_vertex_iterator&&)      = default;
+    ~const_vertex_vertex_iterator()                                             = default;
 
-    const_vertex_vertex_iterator& operator=(const const_vertex_vertex_iterator&) = default;
-    const_vertex_vertex_iterator& operator=(const_vertex_vertex_iterator&&) = default;
+    constexpr const_vertex_vertex_iterator& operator=(const const_vertex_vertex_iterator&) = default;
+    constexpr const_vertex_vertex_iterator& operator=(const_vertex_vertex_iterator&&) = default;
 
   public:
-    reference operator*() const { return vertex(*g_, *uv_); }
-    pointer   operator->() const { return &vertex(*g_, *uv_); }
+    constexpr reference operator*() const { return vertex(*g_, *uv_); }
+    constexpr pointer   operator->() const { return &vertex(*g_, *uv_); }
 
-    const_vertex_vertex_iterator& operator++() { return *++uv_; }
+    constexpr const_vertex_vertex_iterator& operator++() { return *++uv_; }
 
-    const_vertex_vertex_iterator operator++(int) {
+    constexpr const_vertex_vertex_iterator operator++(int) {
       const_vertex_vertex_iterator tmp(*this);
       ++*this;
       return tmp;
     }
 
-    bool operator==(const const_vertex_vertex_iterator& rhs) const noexcept { return g_ == rhs.g_ && uv_ == rhs.uv_; }
-    bool operator!=(const const_vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
+    constexpr bool operator==(const const_vertex_vertex_iterator& rhs) const noexcept {
+      return g_ == rhs.g_ && uv_ == rhs.uv_;
+    }
+    constexpr bool operator!=(const const_vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
 
   protected:
     graph_type*               g_ = nullptr;
@@ -141,76 +143,121 @@ namespace detail {
     using base_t::uv_;
 
   public:
-    vertex_vertex_iterator(graph_type& g, vertex_type& u, vertex_edge_iterator uv) : base_t(g, u) {}
+    constexpr vertex_vertex_iterator(graph_type& g, vertex_type& u, vertex_edge_iterator uv) : base_t(g, u) {}
 
-    vertex_vertex_iterator()                              = default;
-    vertex_vertex_iterator(const vertex_vertex_iterator&) = default;
-    vertex_vertex_iterator(vertex_vertex_iterator&&)      = default;
-    ~vertex_vertex_iterator()                             = default;
+    constexpr vertex_vertex_iterator()                              = default;
+    constexpr vertex_vertex_iterator(const vertex_vertex_iterator&) = default;
+    constexpr vertex_vertex_iterator(vertex_vertex_iterator&&)      = default;
+    ~vertex_vertex_iterator()                                       = default;
 
-    vertex_vertex_iterator& operator=(const vertex_vertex_iterator&) = default;
-    vertex_vertex_iterator& operator=(vertex_vertex_iterator&&) = default;
+    constexpr vertex_vertex_iterator& operator=(const vertex_vertex_iterator&) = default;
+    constexpr vertex_vertex_iterator& operator=(vertex_vertex_iterator&&) = default;
 
   public:
-    reference operator*() const { return vertex(*g_, *uv_); }
-    pointer   operator->() const { return &vertex(*g_, *uv_); }
+    constexpr reference operator*() const { return vertex(*g_, *uv_); }
+    constexpr pointer   operator->() const { return &vertex(*g_, *uv_); }
 
-    vertex_vertex_iterator& operator++() { return *++uv_; }
+    constexpr vertex_vertex_iterator& operator++() { return *++uv_; }
 
-    vertex_vertex_iterator operator++(int) {
+    constexpr vertex_vertex_iterator operator++(int) {
       vertex_vertex_iterator tmp(*this);
       ++*this;
       return tmp;
     }
 
-    bool operator==(const vertex_vertex_iterator& rhs) const noexcept { return base_t::operator==(rhs); }
-    bool operator!=(const vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
+    constexpr bool operator==(const vertex_vertex_iterator& rhs) const noexcept { return base_t::operator==(rhs); }
+    constexpr bool operator!=(const vertex_vertex_iterator& rhs) const noexcept { return !operator==(rhs); }
   };
 
   template <typename G>
-  class vertex_vertex_range {
+  class const_vertex_vertex_range {
   public:
+    using graph_type              = G;
+    using vertex_type             = vertex_t<G>;
+    using const_vertex_edge_range = const_vertex_edge_range_t<G>;
+
+    using value_type      = vertex_type;
+    using size_type       = ranges::range_size_t<const_vertex_edge_range>;
+    using ssize_type      = ranges::range_difference_t<const_vertex_edge_range>;
+    using difference_type = ranges::range_difference_t<const_vertex_edge_range>;
+
+    using const_iterator = const_vertex_vertex_iterator<G>;
+    using iterator       = const_vertex_vertex_iterator<G>;
+
+  public:
+    constexpr const_vertex_vertex_range(graph_type& g, vertex_type& u) : g_(&g_), u_(&u) {}
+
+    constexpr const_vertex_vertex_range()                                 = default;
+    constexpr const_vertex_vertex_range(const const_vertex_vertex_range&) = default;
+    constexpr const_vertex_vertex_range(const_vertex_vertex_range&&)      = default;
+    ~const_vertex_vertex_range()                                          = default;
+
+    constexpr const_vertex_vertex_range& operator=(const const_vertex_vertex_range&) = default;
+    constexpr const_vertex_vertex_range& operator=(const_vertex_vertex_range&&) = default;
+
+  public:
+    constexpr const_iterator begin() const { return const_iterator(*g_, edges_begin(*g_, *u_)); }
+    constexpr const_iterator cbegin() const { return const_iterator(*g_, edges_begin(*g_, *u_)); }
+
+    constexpr const_iterator end() const { return const_iterator(*g_, edges_end(*g_, *u_)); }
+    constexpr const_iterator cend() const { return const_iterator(*g_, edges_end(*g_, *u_)); }
+
+    constexpr size_type  size() const noexcept { return edges_size(*g_, *u_); }
+    constexpr ssize_type ssize() const noexcept { return edges_ssize(*g_, *u_); }
+
+    constexpr bool operator==(const const_vertex_vertex_range& rhs) const noexcept {
+      return g_ == rhs.g_ && u_ == rhs.u_;
+    }
+    constexpr bool operator!=(const const_vertex_vertex_range& rhs) const noexcept { return !operator==(rhs); }
+
+  protected:
+    graph_type*  g_ = nullptr;
+    vertex_type* u_ = nullptr;
+  };
+
+  template <typename G>
+  class vertex_vertex_range : public const_vertex_vertex_range<G> {
+    using base_t = const_vertex_vertex_range<G>;
+    using this_t = vertex_vertex_range<G>;
+
     using graph_type           = G;
     using vertex_type          = vertex_t<G>;
     using vertex_edge_iterator = vertex_edge_iterator_t<G>;
 
-    using value_type      = vertex_type;
-    using size_type       = typename vertex_edge_iterator::size_type;
-    using ssize_type      = typename vertex_edge_iterator::difference_type;
-    using difference_type = typename vertex_edge_iterator::difference_type;
+    using value_type      = typename base_t::value_type;
+    using size_type       = typename base_t::size_type;
+    using ssize_type      = typename base_t::ssize_type;
+    using difference_type = typename base_t::difference_type;
 
     using const_iterator = const_vertex_vertex_iterator<G>;
     using iterator       = vertex_vertex_iterator<G>;
 
-  public:
-    vertex_vertex_range(graph_type& g, vertex_type& u) : g_(&g_), u_(&u) {}
-
-    vertex_vertex_range()                           = default;
-    vertex_vertex_range(const vertex_vertex_range&) = default;
-    vertex_vertex_range(vertex_vertex_range&&)      = default;
-    ~vertex_vertex_range()                          = default;
-
-    vertex_vertex_range& operator=(const vertex_vertex_range&) = default;
-    vertex_vertex_range& operator=(vertex_vertex_range&&) = default;
+  protected:
+    using base_t::g_;
+    using base_t::u_;
 
   public:
-    iterator       begin() { return iterator(*g_, edges_begin(*g_, *u_)); }
-    const_iterator begin() const { return const_iterator(*g_, edges_begin(*g_, *u_)); }
-    const_iterator cbegin() const { return const_iterator(*g_, edges_begin(*g_, *u_)); }
+    constexpr vertex_vertex_range(graph_type& g, vertex_type& u) : base_t(g, u) {}
 
-    iterator       end() { return iterator(*g_, edges_end(*g_, *u_)); }
-    const_iterator end() const { return const_iterator(*g_, edges_end(*g_, *u_)); }
-    const_iterator cend() const { return const_iterator(*g_, edges_end(*g_, *u_)); }
+    constexpr vertex_vertex_range()                           = default;
+    constexpr vertex_vertex_range(const vertex_vertex_range&) = default;
+    constexpr vertex_vertex_range(vertex_vertex_range&&)      = default;
+    ~vertex_vertex_range()                                    = default;
 
-    size_type  size() const noexcept { return edges_size(*g_, *u_); }
-    ssize_type ssize() const noexcept { return edges_ssize(*g_, *u_); }
+    constexpr vertex_vertex_range& operator=(const vertex_vertex_range&) = default;
+    constexpr vertex_vertex_range& operator=(vertex_vertex_range&&) = default;
 
-    bool operator==(const vertex_vertex_range& rhs) const noexcept { return g_ == rhs.g_ && u_ == rhs.u_; }
-    bool operator!=(const vertex_vertex_range& rhs) const noexcept { return !operator==(rhs); }
+  public:
+    constexpr iterator       begin() { return iterator(*g_, edges_begin(*g_, *u_)); }
+    constexpr const_iterator begin() const { return const_iterator(*g_, edges_begin(*g_, *u_)); }
+    constexpr const_iterator cbegin() const { return const_iterator(*g_, edges_begin(*g_, *u_)); }
 
-  private:
-    graph_type*  g_ = nullptr;
-    vertex_type* u_ = nullptr;
+    constexpr iterator       end() { return iterator(*g_, edges_end(*g_, *u_)); }
+    constexpr const_iterator end() const { return const_iterator(*g_, edges_end(*g_, *u_)); }
+    constexpr const_iterator cend() const { return const_iterator(*g_, edges_end(*g_, *u_)); }
+
+    constexpr bool operator==(const vertex_vertex_range& rhs) const noexcept { return base_t::operator==(rhs); }
+    constexpr bool operator!=(const vertex_vertex_range& rhs) const noexcept { return base_t::operator!=(rhs); }
   };
 
   template <typename T>

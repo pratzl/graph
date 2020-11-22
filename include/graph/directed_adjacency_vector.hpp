@@ -87,12 +87,10 @@ public:
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
 
-  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_size_type      = ranges::range_size_t<vertex_range>;
-  using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
+  using vertex_size_type      = typename vertex_set::size_type;
+  using vertex_ssize_type     = typename vertex_set::difference_type;
 
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
   using edge_user_value_type = EV;
@@ -158,12 +156,10 @@ public:
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
   using vertex_set             = vector<vertex_type, vertex_allocator_type>;
 
-  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_size_type      = ranges::range_size_t<vertex_range>;
-  using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
+  using vertex_size_type      = typename vertex_set::size_type;
+  using vertex_ssize_type     = typename vertex_set::difference_type;
 
   using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
   using edge_user_value_type = EV;
@@ -186,6 +182,13 @@ public:
   using const_vertex_edge_iterator = const_edge_iterator;
   using vertex_edge_size_type      = edge_size_type;
   using vertex_edge_ssize_type     = edge_ssize_type;
+
+  using vertex_vertex_range          = detail::vertex_vertex_range<graph_type>;
+  using const_vertex_vertex_range    = detail::const_vertex_vertex_range<graph_type>;
+  using vertex_vertex_iterator       = detail::vertex_vertex_iterator<graph_type>;
+  using const_vertex_vertex_iterator = detail::const_vertex_vertex_iterator<graph_type>;
+  using vertex_vertex_size_type      = edge_size_type;
+  using vertex_vertex_ssize_type     = edge_ssize_type;
 
 public:
   dav_vertex() noexcept             = default;
@@ -210,6 +213,16 @@ public:
   const_vertex_edge_iterator edges_cend(const graph_type&) const;
 
   edge_size_type edges_size(const graph_type&) const;
+
+  vertex_vertex_iterator       vertices_begin(graph_type&);
+  const_vertex_vertex_iterator vertices_begin(const graph_type&) const;
+  const_vertex_vertex_iterator vertices_cbegin(const graph_type&) const;
+
+  vertex_vertex_iterator       vertices_end(graph_type&);
+  const_vertex_vertex_iterator vertices_end(const graph_type&) const;
+  const_vertex_vertex_iterator vertices_cend(const graph_type&) const;
+
+  vertex_vertex_size_type vertices_size(const graph_type&) const;
 
 private:
   edge_index_type first_edge_ = numeric_limits<edge_index_type>::max();

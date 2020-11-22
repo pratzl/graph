@@ -268,10 +268,6 @@ constexpr auto value(GVE& gve) -> decltype(user_value(gve)) {
 
 template <directed_or_undirected G>
 void clear(G& g);
-template <directed_or_undirected G>
-void clear(G& g, graph_value_t<G>&&);
-template <directed_or_undirected G>
-void clear(G& g, const graph_value_t<G>&);
 
 template <directed_or_undirected G>
 constexpr void swap(G& a, G& b);
@@ -280,6 +276,9 @@ constexpr void swap(G& a, G& b);
 // Uniform API: Vertex functions
 template <directed_or_undirected G>
 constexpr auto vertex_key(const G&, const vertex_t<G>& u) -> vertex_key_t<G>;
+
+template <directed_or_undirected G>
+void clear(G& g, vertex_t<G>& u);
 
 template <directed_or_undirected G>
 constexpr auto create_vertex(G& g) -> pair<vertex_iterator_t<G>, bool>;
@@ -297,6 +296,13 @@ constexpr void erase_vertices(G& g, vertex_range_t<G>&);
 
 
 // Uniform API: Edge functions
+template <directed_or_undirected G>
+constexpr auto edge_key(G& g, const edge_t<G>& uv) -> edge_key_t<G>;
+template <directed_or_undirected G>
+constexpr auto edge_key(G& g, const vertex_t<G>& u, const vertex_t<G>& v) -> edge_key_t<G>;
+template <directed_or_undirected G>
+constexpr auto edge_key(G& g, vertex_key_t<G> u, vertex_t<G> v) -> edge_key_t<G>;
+
 template <directed_or_undirected G>
 constexpr auto vertex(G& g, edge_t<G>& uv, const vertex_t<G>& source) -> vertex_iterator_t<G>;
 template <directed_or_undirected G>
