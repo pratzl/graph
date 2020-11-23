@@ -7,6 +7,7 @@
 #include <iostream>
 #include <catch2/catch.hpp>
 
+
 /* ToDo
     1x  Get graph output to match expected
     2.  Replace vector(g,uv) --> vector(g,uv,source)
@@ -47,6 +48,9 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
+using std::ranges::find_if;
+
+//namespace ranges = ::ranges;
 using namespace std::graph; // Bring graph types & functions into global namespace
 using Graph      = std::graph::undirected_adjacency_list<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
@@ -56,23 +60,23 @@ struct route;
 using Routes = routes_t;
 
 template <class OStream>
-OStream& operator<<(OStream& os, Graph const& g);
+OStream& operator<<(OStream& os, const Graph& g);
 
-vector<Graph::edge_value_type> const& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
+const vector<Graph::edge_value_type>& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
-  return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
+  return find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
 static Graph create_germany_routes_graph() { return germany_routes_undirected_graph.create_graph(); }
-static vector<std::string> const& germany_cities() { return germany_routes_undirected_graph.vertex_values(); }
+static const vector<std::string>& germany_cities() { return germany_routes_undirected_graph.vertex_values(); }
 
 template <class OStream>
-OStream& operator<<(OStream& os, Graph const& g) {
-  for (vertex_t<Graph> const& u : vertices(g)) {
+OStream& operator<<(OStream& os, const Graph& g) {
+  for (const vertex_t<Graph>& u : vertices(g)) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (edge_t<Graph> const& uv : edges(g, u)) {
+    for (const edge_t<Graph>& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = vertex(g, uv, u);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  <--> [" << vkey << " " << v->name << "] " << uv.weight << "km";
@@ -355,7 +359,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
 TEST_CASE("ual graph functions", "[ual][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = create_germany_routes_graph();
+  const Graph& gc = create_germany_routes_graph();
 
   //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
   std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
@@ -397,12 +401,12 @@ TEST_CASE("ual graph functions", "[ual][graph][functions]") {
 
 TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
   std::graph::vertex_iterator_t<Graph>       ui  = std::graph::begin(g);
   std::graph::const_vertex_iterator_t<Graph> uic = std::graph::cbegin(g);
   std::graph::vertex_t<Graph>&               u   = *ui;
-  std::graph::vertex_t<Graph> const&         uc  = *uic;
+  const std::graph::vertex_t<Graph>&         uc  = *uic;
 
   std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, u);
   std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uc);
@@ -412,7 +416,7 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
   EXPECT_EQ(f1, f2);
 
-  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> f3 = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
   EXPECT_NE(f3, g.vertices().end());
   EXPECT_EQ(2, vertex_key(g, *f3));
 
@@ -444,15 +448,15 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
 TEST_CASE("ual edge functions", "[ual][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
-  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Mannheim"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Mannheim"; });
   EXPECT_NE(end(g), u);
   EXPECT_NE(end(g), v);
 
   edge_iterator_t<Graph> uv = find_edge(g, *u, *v); // find edge Frankfurt --> Mannheim
-  EXPECT_NE(::ranges::end(edges(g)), uv);
+  EXPECT_NE(std::ranges::end(edges(g)), uv);
   EXPECT_EQ(v, vertex(g, *uv, *u));
   EXPECT_EQ(v, outward_vertex(g, *uv));
   EXPECT_EQ(u, inward_vertex(g, *uv));
@@ -932,7 +936,7 @@ TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1035,7 +1039,7 @@ TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1140,7 +1144,7 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1319,7 +1323,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 

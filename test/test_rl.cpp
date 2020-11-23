@@ -5,9 +5,9 @@ struct rl_weight_value {
   float weight = 0;
 
   rl_weight_value()                       = default;
-  rl_weight_value(rl_weight_value const&) = default;
-  rl_weight_value& operator=(rl_weight_value const&) = default;
-  rl_weight_value(float const& w) : weight(w) {}
+  rl_weight_value(const rl_weight_value&) = default;
+  rl_weight_value& operator=(const rl_weight_value&) = default;
+  rl_weight_value(const float& w) : weight(w) {}
 };
 
 using rl_graph = std::graph::directed_adjacency_vector<rl_weight_value, rl_weight_value>;

@@ -63,7 +63,7 @@ Other Useful Tools
   - [ ] add type traits? (needed when concepts exist?)
   - [ ] algorithms: refine concept requirements
   - [ ] [paper] sparse/dense not defined;
-  - [ ] compare to BGL concepts [Lumsdaine]
+  - [x] compare to BGL concepts [Lumsdaine]: need to add concepts for adjacency, incidence, vertex_list, edge_list
   - [x] allow vertex_key_t<G> to be non-integer [no; requires algo specialization, performance impact]
 - [ ] Algorithms
   - [x] Common
@@ -108,15 +108,16 @@ Other Useful Tools
     - [x] Remove degree functions (alias of size not needed)
     - [x] Consider addition of [[nodiscard]] (std only uses it on empty & allocate, neither used in graph.hpp)
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
-    - [ ] use West const to mirror usage in std
+    - [x] use West const to mirror usage in std
     - [ ] value(gve) needs a type defined (don't use decltype with call to undefined user_value)
+    - [ ] [paper] Recommend addition of arithmetic<T> concept to std (= arithmetic_v<T>)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
     - [ ] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
     - [ ] add vertices_size(g,u) [add impl]
     - [ ] add vertices_ssize(g,u) [add impl]
-    - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey)
+    - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey), graph_contains_edge(g, u, v)
     - [x] vertex_key_type required to be integral
     - [ ] add contains(g,u), contains(g,u,v)
   - [ ] ordered_pair & unordered_pair [define need for directed/undirected concepts]
@@ -141,6 +142,7 @@ Other Useful Tools
     - [x] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them? [key can be used in place of index]
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
     - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
+    - [ ] create matching undirected adjacency vector with unmutable edge values
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
@@ -160,8 +162,12 @@ Other Useful Tools
   - [ ] investigate use of coroutines for BFS & DFS (stack space limits?)
 - [ ] Unit Tests
   - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
+  - [x] Switch from range-v3 to compiler-defined ranges (except algorithms like sort)
+  - [ ] Create templated tests based on directed/undirected types
+  - [ ] Move German Routes to text file
 - [ ] Other libraries
   - [ ] bgl17
+    - [ ] rename to NWGraph
     - [x] vov graph
       - [x] Create adaptor
       - [x] Add depth_first_search_vertex_range test
@@ -181,8 +187,7 @@ Other Useful Tools
   - [ ] lemon
     - [ ] [paper] comparison
 - [ ] Compiler/build support
-  - [ ] Build with clang in linux
-    - [ ] Use range-v3 headers/macros for concept support
+  - [ ] Build with clang in linux (when <concepts> header available)
   - [ ] use Catch2 hierarchy feature for unit tests
   - [ ] github failing action(s) on push
   - [ ] validate doxygen output

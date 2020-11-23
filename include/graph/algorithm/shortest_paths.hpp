@@ -48,7 +48,6 @@
 #include <queue>
 #include <vector>
 #include "../graph.hpp"
-#include "range/v3/algorithm/reverse.hpp"
 
 #define SHORTEST_RANGE
 
@@ -63,13 +62,13 @@ template <typename G, typename A = allocator<vertex_iterator_t<G>>>
 using vertex_path_t = vector<vertex_iterator_t<G>, A>;
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
-using vertex_path_range = decltype(ranges::make_subrange(declval<vertex_path_t<G, A>&>()));
+using vertex_path_range = decltype(make_subrange2(declval<vertex_path_t<G, A>&>()));
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
 using edge_path_t = vector<edge_iterator_t<G>, A>;
 
 template <typename G, typename A>
-using edge_path_range = decltype(ranges::make_subrange(declval<edge_path_t<G, A>&>()));
+using edge_path_range = decltype(make_subrange2(declval<edge_path_t<G, A>&>()));
 
 
 template <typename G, arithmetic DistanceT, typename A = allocator<vertex_iterator_t<G>>>
@@ -95,9 +94,9 @@ struct shortest_path {
   DistanceT                  distance = DistanceT(); // sum of the path's edge distances in the path
 
   shortest_path()                     = default;
-  shortest_path(shortest_path const&) = default;
+  shortest_path(const shortest_path&) = default;
   shortest_path(shortest_path&&)      = default;
-  shortest_path& operator=(shortest_path const&) = default;
+  shortest_path& operator=(const shortest_path&) = default;
   shortest_path& operator=(shortest_path&&) = default;
   shortest_path(A alloc) : path(alloc) {}
 };
@@ -115,7 +114,7 @@ class dijkstra_fn {
   struct vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
     vertex_key_t<G> vtx_key  = numeric_limits<vertex_key_t<G>>::max();
     DistanceT       distance = numeric_limits<DistanceT>::max(); // distance from source
-    bool            operator<(vertex_dist const& rhs) const {
+    bool            operator<(const vertex_dist& rhs) const {
       return distance > rhs.distance; // > so top has lowest distance in priority_queue
     }
   };
@@ -199,7 +198,7 @@ protected:
       vertex_key_t<G> vtx_key    = numeric_limits<vertex_key_t<G>>::max();
       DistanceT       distance   = numeric_limits<DistanceT>::max(); // distance from source
       vertex_key_t<G> parent_key = numeric_limits<vertex_key_t<G>>::max();
-      bool            operator<(q_vertex_dist const& rhs) const {
+      bool            operator<(const q_vertex_dist& rhs) const {
         return distance > rhs.distance; // > so top has lowest distance in priority_queue
       }
     };
@@ -267,7 +266,7 @@ class bellman_ford_fn {
   struct vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
     vertex_key_t<G> vtx_key  = numeric_limits<vertex_key_t<G>>::max();
     DistanceT       distance = numeric_limits<DistanceT>::max();
-    bool            operator<(vertex_dist const& rhs) const {
+    bool            operator<(const vertex_dist& rhs) const {
       return distance > rhs.distance; // > so top has lowest distance in priority_queue
     }
   };

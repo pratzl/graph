@@ -108,7 +108,7 @@ public:
 
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
-    const_iterator(const_iterator const&) = default;
+    const_iterator(const const_iterator&) = default;
     const_iterator(depth_first_search_vertex_range& dfs, bool end_iter = false)
           : dfs_(&dfs), elem_{vertices_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
@@ -116,7 +116,7 @@ public:
     }
 
     const_iterator& operator=(const_iterator&&) = default;
-    const_iterator& operator=(const_iterator const&) = default;
+    const_iterator& operator=(const const_iterator&) = default;
 
     reference operator*() const { return *elem_.u; }
     pointer   operator->() const { return elem_.u; }
@@ -132,8 +132,8 @@ public:
       return tmp;
     }
 
-    bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
-    bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
+    bool operator==(const const_iterator& rhs) const { return elem_.u == rhs.elem_.u; }
+    bool operator!=(const const_iterator& rhs) const { return !operator==(rhs); }
 
     size_t  depth() const { return dfs_->stack_.size(); }
     pointer parent() const { return parent_[vertex_key(graph_, *elem_.u)]; }
@@ -153,14 +153,14 @@ public:
 
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
-    iterator(const_iterator const& iter) : const_iterator(iter) {}
+    iterator(const const_iterator& iter) : const_iterator(iter) {}
     iterator(depth_first_search_vertex_range& dfs) : const_iterator(dfs) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));
       return *this;
     }
-    iterator& operator=(iterator const& rhs) {
+    iterator& operator=(const iterator& rhs) {
       const_iterator::operator=(rhs);
       return *this;
     }
@@ -276,7 +276,7 @@ public:
     using iterator_category = input_iterator_tag;
     using value_type        = edge_t<G>;
     using pointer           = const_vertex_edge_iterator_t<G>;
-    using reference         = value_type const&;
+    using reference         = const value_type&;
     using difference_type   = typename iterator_traits<const_vertex_edge_iterator_t<G>>::difference_type;
 
     using vertex_type           = vertex_t<G> const;
@@ -289,7 +289,7 @@ public:
 
     const_iterator()                      = default;
     const_iterator(const_iterator&&)      = default;
-    const_iterator(const_iterator const&) = default;
+    const_iterator(const const_iterator&) = default;
     const_iterator(depth_first_search_edge_range& dfs, bool end_iter = false)
           : dfs_(&dfs), elem_{vertices_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
@@ -297,7 +297,7 @@ public:
     }
 
     const_iterator& operator=(const_iterator&&) = default;
-    const_iterator& operator=(const_iterator const&) = default;
+    const_iterator& operator=(const const_iterator&) = default;
 
     reference operator*() const { return *elem_.uv; }
     pointer   operator->() const { return elem_.uv; }
@@ -313,8 +313,8 @@ public:
       return tmp;
     }
 
-    bool operator==(const_iterator const& rhs) const { return elem_.u == rhs.elem_.u; }
-    bool operator!=(const_iterator const& rhs) const { return !operator==(rhs); }
+    bool operator==(const const_iterator& rhs) const { return elem_.u == rhs.elem_.u; }
+    bool operator!=(const const_iterator& rhs) const { return !operator==(rhs); }
 
     vertex_iterator_type inward_vertex() const { return elem_.u; }
     vertex_iterator_type outward_vertex() const { return vertex(dfs_->graph_, *elem_.uv, *elem_.u); }
@@ -356,14 +356,14 @@ public:
 
     iterator() = default;
     iterator(const_iterator&& iter) : const_iterator(move(iter)) {}
-    iterator(const_iterator const& iter) : const_iterator(iter) {}
+    iterator(const const_iterator& iter) : const_iterator(iter) {}
     iterator(depth_first_search_edge_range& dfs, bool end_iter = false) : const_iterator(dfs, end_iter) {}
 
     iterator& operator=(iterator&& rhs) {
       const_iterator::operator=(move(rhs));
       return *this;
     }
-    iterator& operator=(iterator const& rhs) {
+    iterator& operator=(const iterator& rhs) {
       const_iterator::operator=(rhs);
       return *this;
     }
@@ -411,9 +411,9 @@ protected:
     return !outward_exists(u, uv) || (outward_exists(u, uv) && is_outward_visited(u, uv));
   }
 
-  bool outward_exists(stack_elem const& se) const { return outward_exists(se.u, se.uv); }
-  bool is_outward_visited(stack_elem const& se) const { return is_outward_visited(se.u, se.uv); }
-  bool is_back_edge(stack_elem const& se) const { return is_back_edge(se.u, se.uv); }
+  bool outward_exists(const stack_elem& se) const { return outward_exists(se.u, se.uv); }
+  bool is_outward_visited(const stack_elem& se) const { return is_outward_visited(se.u, se.uv); }
+  bool is_back_edge(const stack_elem& se) const { return is_back_edge(se.u, se.uv); }
 
   bool is_parent(vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) const {
     vertex_key_t<G>      u_key = vertex_key(graph_, *u);

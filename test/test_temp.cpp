@@ -3,6 +3,8 @@
 #include <vector>
 #include <type_traits>
 
+//namespace ranges = ::ranges;
+
 namespace std {
 
 template <typename R,
@@ -13,7 +15,7 @@ template <typename R,
 constexpr auto mean(R&& r, P proj = P{}) {
   Result result = Result();
   Result n      = Result();
-  for (auto const& v : r) {
+  for (const auto& v : r) {
     result += v;
     ++n;
   }

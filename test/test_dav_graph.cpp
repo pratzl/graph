@@ -30,6 +30,10 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
+using std::ranges::find_if;
+using std::ranges::find;
+using ::ranges::actions::sort;
+
 using namespace std::graph; // Bring graph functions into global namespace
 using Graph      = std::graph::directed_adjacency_vector<name_value, weight_value>;
 using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
@@ -38,21 +42,21 @@ using vtx_key_t  = std::graph::vertex_key_t<Graph>;
 struct route;
 using Routes = routes_t;
 
-vector<Graph::edge_value_type> const& daa_germany_edge_routes = germany_routes_directed_graph.edge_values();
+const vector<Graph::edge_value_type>& daa_germany_edge_routes = germany_routes_directed_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
-  return ::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
+  return find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
 static Graph                      create_germany_routes_graph() { return germany_routes_directed_graph.create_graph(); }
-static vector<std::string> const& germany_cities() { return germany_routes_directed_graph.vertex_values(); }
+static const vector<std::string>& germany_cities() { return germany_routes_directed_graph.vertex_values(); }
 
 template <class OStream>
-OStream& operator<<(OStream& os, Graph const& g) {
-  for (vertex_t<Graph> const& u : vertices(g)) {
+OStream& operator<<(OStream& os, const Graph& g) {
+  for (const vertex_t<Graph>& u : vertices(g)) {
     vertex_key_t<Graph> ukey = vertex_key(g, u);
     os << "\n[" << ukey << "] " << u.name;
-    for (edge_t<Graph> const& uv : edges(g, u)) {
+    for (const edge_t<Graph>& uv : edges(g, u)) {
       const_vertex_iterator_t<Graph> v    = outward_vertex(g, uv);
       vertex_key_t<Graph>            vkey = vertex_key(g, *v);
       os << "\n  --> [" << vkey << " " << v->name << "] " << uv.weight << "km";
@@ -63,13 +67,13 @@ OStream& operator<<(OStream& os, Graph const& g) {
 }
 
 
-TEST_CASE("daa minsize", "[daa][minsize]") {
+TEST_CASE("daa minsize", "[dav][minsize]") {
   using G = std::graph::directed_adjacency_vector<>;
   EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
   EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
-TEST_CASE("daa empty", "[daa][empty]") {
+TEST_CASE("daa empty", "[dav][empty]") {
   Graph g;
   EXPECT_EQ(0, vertices_size(g));
   EXPECT_EQ(0, edges_size(g));
@@ -77,18 +81,16 @@ TEST_CASE("daa empty", "[daa][empty]") {
   //EXPECT_EQ(sizeof(Graph::vertex_size_type) + sizeof(weight_value), sizeof(Graph::edge_type));
 }
 
-TEST_CASE("daa initializer list", "[daa][init][initializer list]") {
+TEST_CASE("daa initializer list", "[dav][init][initializer list]") {
   //using edge_key_val = std::tuple<vertex_key_t<Graph>, vertex_key_t<Graph>, edge_value_t<Graph>>;
   Graph g0{};                     // empty graph
   Graph g1{{1, 2, 3}};            // one edge
   Graph g2{{1, 2, 3}, {4, 5, 6}}; // two edges
 }
 
-TEST_CASE("daa example 1", "[daa][example][1]") {
+TEST_CASE("daa example 1", "[dav][example][1]") {
   using std::graph::directed_adjacency_vector;
-  using ::ranges::sort;
-  using ::ranges::find;
-  using ::ranges::end;
+  using ranges::end;
   struct route_mi {
     string from;
     string to;
@@ -101,17 +103,17 @@ TEST_CASE("daa example 1", "[daa][example][1]") {
   using G          = directed_adjacency_vector<name_value, weight_value, name_value>;
   using edge_key_t = typename G::edge_key_type;
 
-  auto find_city    = [&cities](string const& city) { return find(cities, city) - begin(cities); };
-  auto vertex_value = [](string const& name) { return name; };
-  auto edge_key   = [&cities, &find_city](route_mi const& r) { return edge_key_t(find_city(r.from), find_city(r.to)); };
-  auto edge_value = [&cities](route_mi const& r) { return r.miles; };
+  auto find_city    = [&cities](const string& city) { return find(cities, city) - begin(cities); };
+  auto vertex_value = [](const string& name) { return name; };
+  auto edge_key   = [&cities, &find_city](const route_mi& r) { return edge_key_t(find_city(r.from), find_city(r.to)); };
+  auto edge_value = [&cities](const route_mi& r) { return r.miles; };
 
   G g(routes, cities, edge_key, edge_value, vertex_value, name_value("NC Routes"));
   REQUIRE(vertices_size(g) == 3);
   REQUIRE(edges_size(g) == 2);
 }
 
-TEST_CASE("daa example 2", "[daa][example][2]") {
+TEST_CASE("daa example 2", "[dav][example][2]") {
   using std::graph::directed_adjacency_vector;
   using G = directed_adjacency_vector<empty_value, weight_value>;
 
@@ -120,7 +122,7 @@ TEST_CASE("daa example 2", "[daa][example][2]") {
   REQUIRE(edges_size(g) == 2);
 }
 
-TEST_CASE("daa init", "[daa][init]") {
+TEST_CASE("daa init", "[dav][init]") {
 #if 0
   vector<Graph::edge_value_type> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, daa_germany_edge_routes);
@@ -310,9 +312,9 @@ TEST_CASE("daa init", "[daa][init]") {
 #endif
 }
 
-TEST_CASE("daa graph functions", "[daa][graph][functions]") {
+TEST_CASE("daa graph functions", "[dav][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = create_germany_routes_graph();
+  const Graph& gc = create_germany_routes_graph();
 
   //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
   std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
@@ -352,14 +354,14 @@ TEST_CASE("daa graph functions", "[daa][graph][functions]") {
 #endif
 }
 
-TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
+TEST_CASE("daa vertex functions", "[dav][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
   std::graph::vertex_iterator_t<Graph>       ui  = std::graph::begin(g);
   std::graph::const_vertex_iterator_t<Graph> uic = std::graph::cbegin(g);
   std::graph::vertex_t<Graph>&               u   = *ui;
-  std::graph::vertex_t<Graph> const&         uc  = *uic;
+  const std::graph::vertex_t<Graph>&         uc  = *uic;
 
   std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, u);
   std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uc);
@@ -369,7 +371,7 @@ TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
   EXPECT_EQ(f1, f2);
 
-  vertex_iterator_t<Graph> f3 = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> f3 = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
   EXPECT_NE(f3, g.vertices().end());
   EXPECT_EQ(2, vertex_key(g, *f3));
 
@@ -398,13 +400,13 @@ TEST_CASE("daa vertex functions", "[daa][vertex][functions]") {
   }
 }
 
-TEST_CASE("daa edge functions", "[daa][edge][functions]") {
+TEST_CASE("daa edge functions", "[dav][edge][functions]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
-  Graph const& gc = g;
+  const Graph& gc = g;
 
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
-  vertex_iterator_t<Graph> v = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Mannheim"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Mannheim"; });
   EXPECT_NE(end(g), u);
   EXPECT_NE(end(g), v);
 
@@ -423,7 +425,32 @@ TEST_CASE("daa edge functions", "[daa][edge][functions]") {
   EXPECT_EQ(uv, uv3);
 }
 
-TEST_CASE("daa dfs vertex", "[daa][dfs][vertex]") {
+TEST_CASE("daa vertex-vertex functions", "[dav][vertex][functions]") {
+  using namespace std::graph;
+  Graph        g  = create_germany_routes_graph();
+  const Graph& gc = g;
+
+
+  vertex_iterator_t<Graph> u    = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_key_t<Graph>      ukey = vertex_key(g, *u);
+  EXPECT_EQ(edges_size(g, *u), vertices_size(g, *u));
+  EXPECT_EQ(edges_ssize(g, *u), vertices_ssize(g, *u));
+
+  size_t                          cnt   = 0;
+  vertex_edge_iterator_t<Graph>   uv_it = edges_begin(g, *u);
+  vertex_vertex_iterator_t<Graph> u_it  = vertices_begin(g, *u);
+
+  for (vertex_iterator_t<Graph> other = u; uv_it != edges_end(g, *u) && u_it != vertices_end(g, *u);
+       ++uv_it, ++u_it, ++cnt) {
+    EXPECT_EQ(outward_vertex_key(g, *uv_it), vertex_key(g, *u_it));
+  }
+
+  EXPECT_EQ(edges_size(g, *u), cnt);    // all edges/vertices visited?
+  EXPECT_EQ(uv_it, edges_end(g, *u));   // reached the end?
+  EXPECT_EQ(u_it, vertices_end(g, *u)); // reached the end?
+}
+
+TEST_CASE("daa dfs vertex", "[dav][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -487,7 +514,7 @@ TEST_CASE("daa dfs vertex", "[daa][dfs][vertex]") {
 #endif
 }
 
-TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
+TEST_CASE("daa dfs edge", "[dav][dfs][edge]") {
   Graph                         g = create_germany_routes_graph();
   depth_first_search_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -654,7 +681,7 @@ TEST_CASE("daa dfs edge", "[daa][dfs][edge]") {
 #endif
 }
 
-TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
+TEST_CASE("daa bfs vertex", "[dav][bfs][vertex]") {
   Graph                             g = create_germany_routes_graph();
   breadth_first_search_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
@@ -700,7 +727,7 @@ TEST_CASE("daa bfs vertex", "[daa][bfs][vertex]") {
 #endif
 }
 
-TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
+TEST_CASE("cass bfs edge", "[dav][bfs][edge]") {
   Graph                           g = create_germany_routes_graph();
   breadth_first_search_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -871,13 +898,13 @@ TEST_CASE("cass bfs edge", "[daa][bfs][edge]") {
 #endif
 }
 
-TEST_CASE("daa dijkstra distance", "[daa][dikjstra][distance]") {
+TEST_CASE("daa dijkstra distance", "[dav][dikjstra][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -971,13 +998,13 @@ TEST_CASE("daa dijkstra distance", "[daa][dikjstra][distance]") {
 #endif
 }
 
-TEST_CASE("daa bellman-ford distance", "[daa][bellman-ford][distance]") {
+TEST_CASE("daa bellman-ford distance", "[dav][bellman-ford][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1072,7 +1099,7 @@ TEST_CASE("daa bellman-ford distance", "[daa][bellman-ford][distance]") {
 #endif
 }
 
-TEST_CASE("daa dijkstra shortest path", "[daa][dikjstra][path]") {
+TEST_CASE("daa dijkstra shortest path", "[dav][dikjstra][path]") {
   using std::graph::dijkstra_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1081,7 +1108,7 @@ TEST_CASE("daa dijkstra shortest path", "[daa][dikjstra][path]") {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1250,7 +1277,7 @@ TEST_CASE("daa dijkstra shortest path", "[daa][dikjstra][path]") {
 #endif
 }
 
-TEST_CASE("daa bellman-fort shortest path", "[daa][bellman-ford][path]") {
+TEST_CASE("daa bellman-fort shortest path", "[dav][bellman-ford][path]") {
   using std::graph::bellman_ford_shortest_paths;
   using std::graph::shortest_path;
 
@@ -1259,7 +1286,7 @@ TEST_CASE("daa bellman-fort shortest path", "[daa][bellman-ford][path]") {
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1432,7 +1459,7 @@ TEST_CASE("daa bellman-fort shortest path", "[daa][bellman-ford][path]") {
 }
 
 
-TEST_CASE("daa dfs transitive closure", "[daa][dfs][transitive closure]") {
+TEST_CASE("daa dfs transitive closure", "[dav][dfs][transitive closure]") {
   using std::graph::dfs_transitive_closure;
   using std::graph::reaches;
 
@@ -1441,7 +1468,7 @@ TEST_CASE("daa dfs transitive closure", "[daa][dfs][transitive closure]") {
   reaches_vec_t reaches_vec;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   dfs_transitive_closure(g, back_inserter(reaches_vec));
@@ -1563,7 +1590,7 @@ TEST_CASE("daa dfs transitive closure", "[daa][dfs][transitive closure]") {
 }
 
 
-TEST_CASE("daa warshall transitive closure", "[daa][warshall][transitive closure]") {
+TEST_CASE("daa warshall transitive closure", "[dav][warshall][transitive closure]") {
   using std::graph::warshall_transitive_closure;
   using std::graph::reaches;
 
@@ -1572,7 +1599,7 @@ TEST_CASE("daa warshall transitive closure", "[daa][warshall][transitive closure
   reaches_vec_t reaches_vec;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = ::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   warshall_transitive_closure(g, back_inserter(reaches_vec));

@@ -1,9 +1,5 @@
-#ifdef __clang__
-#  include <range/v3/range/concepts.hpp>
-#else
-#  include <concepts>
-#endif
-#include <range/v3/view/subrange.hpp>
+#include <concepts>
+#include <ranges>
 #include <type_traits>
 #include <utility> // pair
 
@@ -11,7 +7,6 @@
 #  define ORDERED_PAIR_HPP
 
 namespace std::graph {
-namespace ranges = ::ranges; // future = std::ranges
 
 //
 // ordered_pair
@@ -24,23 +19,23 @@ struct ordered_pair : public pair<T1, T2> {
   using second_type = typename base_t::second_type;
 
   constexpr ordered_pair()                        = default;
-  constexpr ordered_pair(ordered_pair const&)     = default;
+  constexpr ordered_pair(const ordered_pair&)     = default;
   constexpr ordered_pair(ordered_pair&&) noexcept = default;
   //constexpr ~ordered_pair() = default; // dtor not defined in pair<>
 
   template <typename U1, typename U2>
-  constexpr ordered_pair(U1 const& x, U2 const& y) : base_t(x, y) {}
+  constexpr ordered_pair(const U1& x, const U2& y) : base_t(x, y) {}
 
   template <typename U1, typename U2>
   constexpr ordered_pair(U1&& x, U2&& y) noexcept : base_t(forward<U1>(x), forward<U2>(y)) {}
 
   template <typename U1, typename U2>
-  constexpr explicit ordered_pair(pair<U1, U2> const& other) : base_t(other) {}
+  constexpr explicit ordered_pair(const pair<U1, U2>& other) : base_t(other) {}
 
   template <typename U1, typename U2>
   constexpr explicit ordered_pair(pair<U1, U2>&& other) : base_t(forward<pair<U1, U2>>(other)) {}
 
-  constexpr ordered_pair& operator=(ordered_pair const& other) {
+  constexpr ordered_pair& operator=(const ordered_pair& other) {
     base_t::operator=(other);
     return *this;
   }
@@ -57,16 +52,16 @@ struct ordered_pair : public pair<T1, T2> {
 };
 
 template <typename T1, typename T2>
-auto operator<=>(ordered_pair<T1, T2> const& v1, ordered_pair<T1, T2> const& v2) {
-  return operator<=>(static_cast<pair<T1, T2> const&>(v1), static_cast<pair<T1, T2> const&>(v2));
+auto operator<=>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator<=>(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
 }
 template <typename T1, typename T2>
-auto operator<=>(ordered_pair<T1, T2> const& v1, pair<T1, T2> const& v2) {
-  return operator<=>(static_cast<pair<T1, T2> const&>(v1), v2);
+auto operator<=>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator<=>(static_cast<const pair<T1, T2>&>(v1), v2);
 }
 template <typename T1, typename T2>
-auto operator<=>(pair<T1, T2> const& v1, ordered_pair<T1, T2> const& v2) {
-  return operator<=>(v1, static_cast<pair<T1, T2> const&>(v2));
+auto operator<=>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator<=>(v1, static_cast<const pair<T1, T2>&>(v2));
 }
 
 template <typename T1, typename T2>
@@ -95,23 +90,23 @@ struct unordered_pair : public pair<T1, T2> {
   using second_type = typename base_t::second_type;
 
   constexpr unordered_pair()                          = default;
-  constexpr unordered_pair(unordered_pair const&)     = default;
+  constexpr unordered_pair(const unordered_pair&)     = default;
   constexpr unordered_pair(unordered_pair&&) noexcept = default;
   //constexpr ~unordered_pair() = default; // destructor not defined in pair<>
 
   template <typename U1, typename U2>
-  constexpr unordered_pair(U1 const& x, U2 const& y) : base_t(x, y) {}
+  constexpr unordered_pair(const U1& x, const U2& y) : base_t(x, y) {}
 
   template <typename U1, typename U2>
   constexpr unordered_pair(U1&& x, U2&& y) noexcept : base_t(forward<U1>(x), forward<U2>(y)) {}
 
   template <typename U1, typename U2>
-  constexpr explicit unordered_pair(pair<U1, U2> const& other) : base_t(other) {}
+  constexpr explicit unordered_pair(const pair<U1, U2>& other) : base_t(other) {}
 
   template <typename U1, typename U2>
   constexpr explicit unordered_pair(pair<U1, U2>&& other) : base_t(forward<pair<U1, U2>>(other)) {}
 
-  constexpr unordered_pair& operator=(unordered_pair const& other) {
+  constexpr unordered_pair& operator=(const unordered_pair& other) {
     base_t::operator=(other);
     return *this;
   }
@@ -128,16 +123,16 @@ struct unordered_pair : public pair<T1, T2> {
 };
 
 template <typename T1, typename T2>
-auto operator<=>(unordered_pair<T1, T2> const& v1, unordered_pair<T1, T2> const& v2) {
-  return operator<=>(static_cast<pair<T1, T2> const&>(v1), static_cast<pair<T1, T2> const&>(v2));
+auto operator<=>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator<=>(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
 }
 template <typename T1, typename T2>
-auto operator<=>(unordered_pair<T1, T2> const& v1, pair<T1, T2> const& v2) {
-  return operator<=>(static_cast<pair<T1, T2> const&>(v1), v2);
+auto operator<=>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator<=>(static_cast<const pair<T1, T2>&>(v1), v2);
 }
 template <typename T1, typename T2>
-auto operator<=>(pair<T1, T2> const& v1, unordered_pair<T1, T2> const& v2) {
-  return operator<=>(v1, static_cast<pair<T1, T2> const&>(v2));
+auto operator<=>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator<=>(v1, static_cast<const pair<T1, T2>&>(v2));
 }
 
 template <typename T1, typename T2>
