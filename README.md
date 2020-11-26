@@ -111,6 +111,8 @@ Other Useful Tools
     - [x] use West const to mirror usage in std
     - [ ] value(gve) needs a type defined (don't use decltype with call to undefined user_value)
     - [ ] [paper] Recommend addition of arithmetic<T> concept to std (= arithmetic_v<T>)
+    - [ ] Should find_edge() return edge_range_t or vertex_edge_range_t (or diff find_edges for diff ranges)?
+    - [ ] Is there a reason user_value_type can't just be value_type?
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?

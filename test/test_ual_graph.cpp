@@ -470,6 +470,59 @@ TEST_CASE("ual edge functions", "[ual][edge][functions]") {
   EXPECT_EQ(uv, uv3);
 }
 
+TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
+  using namespace std::graph;
+  Graph        g  = create_germany_routes_graph();
+  const Graph& gc = g;
+
+
+  vertex_iterator_t<Graph> u    = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_key_t<Graph>      ukey = vertex_key(g, *u);
+  REQUIRE(edges_size(g, *u) == vertices_size(g, *u));
+  REQUIRE(edges_ssize(g, *u) == vertices_ssize(g, *u));
+
+  SECTION("const_iterator") {
+    size_t                                cnt   = 0;
+    const_vertex_edge_iterator_t<Graph>   uv_it = edges_cbegin(g, *u);
+    const_vertex_vertex_iterator_t<Graph> u_it  = vertices_cbegin(g, *u);
+
+    for (vertex_iterator_t<Graph> other = u; uv_it != edges_cend(g, *u) && u_it != vertices_cend(g, *u);
+         ++uv_it, ++u_it, ++cnt) {
+      REQUIRE(outward_vertex_key(g, *uv_it) == vertex_key(g, *u_it));
+    }
+
+    REQUIRE(edges_size(g, *u) == cnt);     // all edges/vertices visited?
+    REQUIRE(uv_it == edges_cend(g, *u));   // reached the end?
+    REQUIRE(u_it == vertices_cend(g, *u)); // reached the end?
+
+    REQUIRE(edges_size(g, *u) >= 2);
+    u_it = vertices_cbegin(g, *u);
+    ++u_it;
+    --u_it;
+    REQUIRE(u_it == vertices_cbegin(g, *u));
+  }
+  SECTION("iterator") {
+    size_t                          cnt   = 0;
+    vertex_edge_iterator_t<Graph>   uv_it = edges_begin(g, *u);
+    vertex_vertex_iterator_t<Graph> u_it  = vertices_begin(g, *u);
+
+    for (vertex_iterator_t<Graph> other = u; uv_it != edges_end(g, *u) && u_it != vertices_end(g, *u);
+         ++uv_it, ++u_it, ++cnt) {
+      REQUIRE(outward_vertex_key(g, *uv_it) == vertex_key(g, *u_it));
+    }
+
+    REQUIRE(edges_size(g, *u) == cnt);    // all edges/vertices visited?
+    REQUIRE(uv_it == edges_end(g, *u));   // reached the end?
+    REQUIRE(u_it == vertices_end(g, *u)); // reached the end?
+
+    REQUIRE(edges_size(g, *u) >= 2);
+    u_it = vertices_begin(g, *u);
+    ++u_it;
+    --u_it;
+    REQUIRE(u_it == vertices_begin(g, *u));
+  }
+}
+
 TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 

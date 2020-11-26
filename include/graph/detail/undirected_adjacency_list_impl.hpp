@@ -450,6 +450,12 @@ ual_vertex<VV, EV, GV, KeyT, A>::edges_cbegin(const graph_type& g) const noexcep
   return edges_.cbegin(g, *this);
 }
 
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::vertex_edge_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::e_begin(graph_type const& g) const {
+  return const_cast<edge_list_type&>(edges_).begin(const_cast<graph_type&>(g), const_cast<ual_vertex&>(*this));
+}
+
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename ual_vertex<VV, EV, GV, KeyT, A>::vertex_edge_iterator
@@ -467,6 +473,12 @@ template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename ual_vertex<VV, EV, GV, KeyT, A>::const_vertex_edge_iterator
 ual_vertex<VV, EV, GV, KeyT, A>::edges_cend(const graph_type& g) const noexcept {
   return edges_.cend(g, *this);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::vertex_edge_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::e_end(graph_type const& g) const {
+  return const_cast<edge_list_type&>(edges_).end(const_cast<graph_type&>(g), const_cast<ual_vertex&>(*this));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
@@ -564,6 +576,49 @@ ual_vertex<VV, EV, GV, KeyT, A>::create_edge(graph_type& g, vertex_type& v, cons
   new (uv) edge_type(g, *this, v, val);
   ++g.edges_size_;
   return vertex_edge_iterator(g, *this, uv);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::vertex_vertex_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_begin(graph_type& g) {
+  return vertex_vertex_iterator(edges_begin(g));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_begin(const graph_type& g) const {
+  return const_vertex_vertex_iterator(e_begin(g));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_cbegin(const graph_type& g) const {
+  return const_vertex_vertex_iterator(e_begin(g));
+}
+
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::vertex_vertex_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_end(graph_type& g) {
+  return vertex_vertex_iterator(edges_end(g));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_end(const graph_type& g) const {
+  return const_vertex_vertex_iterator(e_end(g));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_cend(const graph_type& g) const {
+  return const_vertex_vertex_iterator(e_end(g));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename ual_vertex<VV, EV, GV, KeyT, A>::vertex_vertex_size_type
+ual_vertex<VV, EV, GV, KeyT, A>::vertices_size(const graph_type& g) const {
+  return edges_size(g);
 }
 
 
@@ -906,22 +961,126 @@ void undirected_adjacency_list<VV, EV, GV, KeyT, A>::throw_unordered_edges() con
 }
 
 ///-------------------------------------------------------------------------------------
+/// ual_const_vertex_vertex_iterator
+///
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::ual_const_vertex_vertex_iterator(
+      vertex_edge_iterator const& uv)
+      : uv_(uv) {}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::reference
+ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator*() const noexcept {
+  return *uv_->other_vertex(uv_.graph(), uv_.source_key());
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::pointer
+ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator->() const noexcept {
+  return &**this;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++() noexcept {
+  ++uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++(int) noexcept {
+  ual_const_vertex_vertex_iterator tmp(*this);
+  ++*this;
+  return tmp;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--() noexcept {
+  --uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--(int) noexcept {
+  ual_const_vertex_vertex_iterator tmp(*this);
+  --*this;
+  return tmp;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator==(
+      const ual_const_vertex_vertex_iterator& rhs) const noexcept {
+  return uv_ == rhs.uv_;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator!=(
+      const ual_const_vertex_vertex_iterator& rhs) const noexcept {
+  return !operator==(rhs);
+}
+
+
+///-------------------------------------------------------------------------------------
+/// ual_vertex_vertex_iterator
+///
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::ual_vertex_vertex_iterator(vertex_edge_iterator const& uv)
+      : base_t(uv) {}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::reference
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator*() const {
+  return *const_cast<edge_type&>(*uv_).other_vertex(const_cast<graph_type&>(uv_.graph()), uv_.source_key());
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::pointer
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator->() const {
+  return &**this;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++() {
+  ++uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++(int) {
+  ual_vertex_vertex_iterator tmp(*this);
+  ++*this;
+  return tmp;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--() noexcept {
+  --uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--(int) noexcept {
+  ual_vertex_vertex_iterator tmp(*this);
+  --*this;
+  return tmp;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator==(const ual_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator==(rhs);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator!=(const ual_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator!=(rhs);
+}
+
+///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list graph API
 ///
 
-//template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-//using vertices_size_t = typename undirected_adjacency_list<VV, EV, GV, IndexT, A>::vertex_size_type;
-
-//
-// API vertex functions
-//
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
-                          const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return static_cast<vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>>(&u - g.vertices().data());
-}
-
+// Helper functions
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto to_iterator(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
                            vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
@@ -943,6 +1102,236 @@ constexpr auto to_iterator(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&
   else
     return g.vertices().end();
 }
+
+//
+// Uniform API: Common functions (accepts graph, vertex and edge)
+//
+
+//
+// API vertex functions
+//
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                          const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return static_cast<vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>>(&u - g.vertices().data());
+}
+
+// (clear, create_vertex, erase_vertex not supported because the graph is immutable)
+
+//
+// Uniform API: Edge functions
+//
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edge_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                        const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
+      -> edge_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.edge_key(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edge_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                        const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u,
+                        const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& v)
+      -> edge_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return edge_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>(vertex_key(u), vertex_key(v));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&                 g,
+                      edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>&         uv,
+                      const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& source)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.other_vertex(g, vertex_key(g, source));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                      const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>&   uv,
+                      const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& source)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.other_vertex(g, vertex_key(g, source));
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                          const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>&   uv,
+                          const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& source)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.other_vertex_key(g, vertex_key(g, source));
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                          const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv,
+                          vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>  source_key)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.other_vertex_key(g, source_key);
+}
+
+// (create_edge & erase_edge)
+
+//
+// Uniform API: Graph-Vertex range functions
+//
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return make_subrange2(g.vertices());
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return make_subrange2(g.vertices());
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_size(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
+      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().size();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
+      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  using ssize_t = vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
+  return static_cast<ssize_t>(g.vertices().size());
+}
+
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().begin();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_begin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().cbegin();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_cbegin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_end(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().end();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_end(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().cend();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_cend(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.vertices().cend();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto find_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&              g,
+                           vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> key)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.find_vertex(key);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto find_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&        g,
+                           vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> key)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.find_vertex(key);
+}
+
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+void reserve_vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&               g,
+                      vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> n) {
+  g.reserve(n);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+void resize_vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&               g,
+                     vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> n) {
+  g.resize(n);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+void resize_vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&                       g,
+                     vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>         n,
+                     const vertex_value_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& val) {
+  g.resize(n, val);
+}
+
+
+//
+// Uniform API: Graph-Edge range functions
+//
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges().begin();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_begin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges().begin();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_cbegin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges().cbegin();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_end(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges().end();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_end(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges().end();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_cend(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges().cend();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_size(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
+      -> edge_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return g.edges_size();
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto edges_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
+      -> edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  using ssize_t = edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
+  return static_cast<ssize_t>(g.edges().size());
+}
+
+// (erase_edge & reserve_edges not supported because the graph is immutable)
+
+
+//
+// Uniform API: Vertex-Edge range functions
+//
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
@@ -1050,136 +1439,6 @@ constexpr auto edges_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&
   return static_cast<ssize_t>(u.edges_size());
 }
 
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto find_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&              g,
-                           vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> key)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.find_vertex(key);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto find_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&        g,
-                           vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> key)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.find_vertex(key);
-}
-
-//
-// API edge functions
-//
-
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto inward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                             edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.inward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto inward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                             const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.inward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto inward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                                 const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.inward_vertex_key(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto outward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                              edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.outward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto outward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                              const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.outward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto outward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                                  const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.outward_vertex_key(g);
-}
-
-#if 0
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.outward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex(const undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
-                      const edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.outward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, typename IndexT, typename A>
-constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
-                          const edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv.outward_vertex_key(g);
-}
-#endif
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&                 g,
-                      edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>&         uv,
-                      const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& source)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.other_vertex(g, vertex_key(g, source));
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
-                      const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>&   uv,
-                      const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& source)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.other_vertex(g, vertex_key(g, source));
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
-                          const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>&   uv,
-                          const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& source)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.other_vertex_key(g, vertex_key(g, source));
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                          const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv,
-                          vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>  source_key)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.other_vertex_key(g, source_key);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edge_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
-                        const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
-      -> edge_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return uv.edge_key(g);
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edge_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
-                        const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u,
-                        const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& v)
-      -> edge_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return edge_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>(vertex_key(u), vertex_key(v));
-}
-
-
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto find_edge(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
                          vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u,
@@ -1225,148 +1484,159 @@ constexpr auto erase_edge(undirected_adjacency_list<VV, EV, GV, KeyT, A>&       
 
 
 //
-// API graph functions
+// Uniform API: Vertex-Vertex range functions
+//
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                        vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return {u.vertices_begin(g), u.vertices_end(g)};
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                        const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return {u.vertices_begin(g), u.vertices_end(g)};
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_size(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                             const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return edges_size(g, u);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                              const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return edges_ssize(g, u);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                              vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return u.vertices_begin(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_begin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                              const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return u.vertices_begin(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_cbegin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                               const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return u.vertices_cbegin(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_end(undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                            vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> vertex_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return u.vertices_end(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_end(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                            const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return u.vertices_end(g);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto vertices_cend(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&           g,
+                             const vertex_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& u)
+      -> const_vertex_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return u.vertices_cend(g);
+}
+
+
+//
+// API edge functions
+//
+
+//
+// Directed API (inward & outward)
 //
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return make_subrange2(g.vertices());
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return make_subrange2(g.vertices());
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_size(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
-      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().size();
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
-      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  using ssize_t = vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
-  return static_cast<ssize_t>(g.vertices().size());
-}
-
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+constexpr auto outward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                              edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().begin();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_begin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().cbegin();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_cbegin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().cbegin();
+  return uv.outward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_end(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+constexpr auto outward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                              const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.outward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto outward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                                  const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.outward_vertex_key(g);
+}
+
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto inward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                             edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().end();
+  return uv.inward_vertex(g);
 }
+
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_end(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
+constexpr auto inward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                             const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().cend();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_cend(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.vertices().cend();
-}
-
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-void reserve_vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&               g,
-                      vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> n) {
-  g.reserve(n);
+  return uv.inward_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-void resize_vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&               g,
-                     vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> n) {
-  g.resize(n);
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-void resize_vertices(undirected_adjacency_list<VV, EV, GV, KeyT, A>&                       g,
-                     vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>         n,
-                     const vertex_value_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& val) {
-  g.resize(n, val);
+constexpr auto inward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, A>&         g,
+                                 const edge_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
+  return uv.inward_vertex_key(g);
 }
 
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges();
+//
+// Directed API (outward): Vertex-Edge functions
+//
+
+// todo: outward_vertices
+
+
+#if 0
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return uv.outward_vertex(g);
 }
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges();
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex(const undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
+                      const edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return uv.outward_vertex(g);
 }
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_begin(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges().begin();
+template <typename VV, typename EV, typename GV, typename IndexT, typename A>
+constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
+                          const edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>>& uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
+  return uv.outward_vertex_key(g);
 }
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_begin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges().begin();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_cbegin(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges().cbegin();
-}
+#endif
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_end(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges().end();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_end(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges().end();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_cend(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g)
-      -> const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges().cend();
-}
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_size(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
-      -> edge_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  return g.edges_size();
-}
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto edges_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) noexcept
-      -> edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
-  using ssize_t = edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>>;
-  return static_cast<ssize_t>(g.edges().size());
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-void reserve_edges(undirected_adjacency_list<VV, EV, GV, KeyT, A>&             g,
-                   edge_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, A>> n) {
-  g.reserve_edges(n);
-}
+//
+// API graph functions
+//
 
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>

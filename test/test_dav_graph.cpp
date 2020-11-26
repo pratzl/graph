@@ -425,7 +425,7 @@ TEST_CASE("daa edge functions", "[dav][edge][functions]") {
   EXPECT_EQ(uv, uv3);
 }
 
-TEST_CASE("daa vertex-vertex functions", "[dav][vertex][functions]") {
+TEST_CASE("dav vertex-vertex range", "[dav][vertex_vertex][range]") {
   using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
@@ -433,21 +433,67 @@ TEST_CASE("daa vertex-vertex functions", "[dav][vertex][functions]") {
 
   vertex_iterator_t<Graph> u    = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
   vertex_key_t<Graph>      ukey = vertex_key(g, *u);
-  EXPECT_EQ(edges_size(g, *u), vertices_size(g, *u));
-  EXPECT_EQ(edges_ssize(g, *u), vertices_ssize(g, *u));
+  REQUIRE(edges_size(g, *u) == vertices_size(g, *u));
+  REQUIRE(edges_ssize(g, *u) == vertices_ssize(g, *u));
 
-  size_t                          cnt   = 0;
-  vertex_edge_iterator_t<Graph>   uv_it = edges_begin(g, *u);
-  vertex_vertex_iterator_t<Graph> u_it  = vertices_begin(g, *u);
+  SECTION("const_iterator") {
+    size_t                                cnt   = 0;
+    const_vertex_edge_iterator_t<Graph>   uv_it = edges_cbegin(g, *u);
+    const_vertex_vertex_iterator_t<Graph> u_it  = vertices_cbegin(g, *u);
 
-  for (vertex_iterator_t<Graph> other = u; uv_it != edges_end(g, *u) && u_it != vertices_end(g, *u);
-       ++uv_it, ++u_it, ++cnt) {
-    EXPECT_EQ(outward_vertex_key(g, *uv_it), vertex_key(g, *u_it));
+    for (vertex_iterator_t<Graph> other = u; uv_it != edges_cend(g, *u) && u_it != vertices_cend(g, *u);
+         ++uv_it, ++u_it, ++cnt) {
+      REQUIRE(outward_vertex_key(g, *uv_it) == vertex_key(g, *u_it));
+    }
+
+    REQUIRE(edges_size(g, *u) == cnt);     // all edges/vertices visited?
+    REQUIRE(uv_it == edges_cend(g, *u));   // reached the end?
+    REQUIRE(u_it == vertices_cend(g, *u)); // reached the end?
+
+    REQUIRE(edges_size(g, *u) >= 2);
+    u_it = vertices_cbegin(g, *u);
+    ++u_it;
+    REQUIRE(u_it > vertices_cbegin(g, *u));
+    REQUIRE(u_it >= vertices_cbegin(g, *u));
+    REQUIRE(u_it == vertices_cbegin(g, *u) + 1);
+    REQUIRE(u_it - 1 == vertices_cbegin(g, *u));
+    REQUIRE(vertices_cbegin(g, *u) < u_it);
+    REQUIRE(vertices_cbegin(g, *u) <= u_it);
+    REQUIRE(u_it->name == u_it[0].name);
+    --u_it;
+    REQUIRE(u_it == vertices_cbegin(g, *u));
+    REQUIRE(u_it <= vertices_cbegin(g, *u));
+    REQUIRE(u_it >= vertices_cbegin(g, *u));
   }
+  SECTION("iterator") {
+    size_t                          cnt   = 0;
+    vertex_edge_iterator_t<Graph>   uv_it = edges_begin(g, *u);
+    vertex_vertex_iterator_t<Graph> u_it  = vertices_begin(g, *u);
 
-  EXPECT_EQ(edges_size(g, *u), cnt);    // all edges/vertices visited?
-  EXPECT_EQ(uv_it, edges_end(g, *u));   // reached the end?
-  EXPECT_EQ(u_it, vertices_end(g, *u)); // reached the end?
+    for (vertex_iterator_t<Graph> other = u; uv_it != edges_end(g, *u) && u_it != vertices_end(g, *u);
+         ++uv_it, ++u_it, ++cnt) {
+      REQUIRE(outward_vertex_key(g, *uv_it) == vertex_key(g, *u_it));
+    }
+
+    REQUIRE(edges_size(g, *u) == cnt);    // all edges/vertices visited?
+    REQUIRE(uv_it == edges_end(g, *u));   // reached the end?
+    REQUIRE(u_it == vertices_end(g, *u)); // reached the end?
+
+    REQUIRE(edges_size(g, *u) >= 2);
+    u_it = vertices_begin(g, *u);
+    ++u_it;
+    REQUIRE(u_it > vertices_begin(g, *u));
+    REQUIRE(u_it >= vertices_begin(g, *u));
+    REQUIRE(u_it == vertices_begin(g, *u) + 1);
+    REQUIRE(u_it - 1 == vertices_begin(g, *u));
+    REQUIRE(vertices_begin(g, *u) < u_it);
+    REQUIRE(vertices_begin(g, *u) <= u_it);
+    REQUIRE(u_it->name == u_it[0].name);
+    --u_it;
+    REQUIRE(u_it == vertices_begin(g, *u));
+    REQUIRE(u_it <= vertices_begin(g, *u));
+    REQUIRE(u_it >= vertices_begin(g, *u));
+  }
 }
 
 TEST_CASE("daa dfs vertex", "[dav][dfs][vertex]") {

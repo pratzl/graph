@@ -113,6 +113,12 @@ dav_vertex<VV, EV, GV, KeyT, A>::edges_cbegin(const graph_type& g) const {
   return g.edges().begin() + first_edge_;
 }
 
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename dav_vertex<VV, EV, GV, KeyT, A>::vertex_edge_iterator
+dav_vertex<VV, EV, GV, KeyT, A>::e_begin(const graph_type& g) const {
+  return vertex_edge_iterator(const_cast<graph_type&>(g).edges().begin() + first_edge_);
+}
+
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::vertex_edge_iterator
@@ -142,6 +148,15 @@ dav_vertex<VV, EV, GV, KeyT, A>::edges_cend(const graph_type& g) const {
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename dav_vertex<VV, EV, GV, KeyT, A>::vertex_edge_iterator
+dav_vertex<VV, EV, GV, KeyT, A>::e_end(const graph_type& g) const {
+  if (this < &g.vertices().back())
+    return (this + 1)->e_begin(g);
+  else
+    return const_cast<graph_type&>(g).edges().end();
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::edge_size_type
 dav_vertex<VV, EV, GV, KeyT, A>::edges_size(const graph_type& g) const {
   if (this < &g.vertices().back())
@@ -160,13 +175,13 @@ dav_vertex<VV, EV, GV, KeyT, A>::vertices_begin(graph_type& g) {
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_begin(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, edges_begin(g));
+  return const_vertex_vertex_iterator(const_cast<graph_type&>(g), e_begin(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_cbegin(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, edges_cbegin(g));
+  return const_vertex_vertex_iterator(const_cast<graph_type&>(g), e_begin(g));
 }
 
 
@@ -179,13 +194,13 @@ dav_vertex<VV, EV, GV, KeyT, A>::vertices_end(graph_type& g) {
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_end(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, edges_end(g));
+  return const_vertex_vertex_iterator(const_cast<graph_type&>(g), e_end(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 typename dav_vertex<VV, EV, GV, KeyT, A>::const_vertex_vertex_iterator
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_cend(const graph_type& g) const {
-  return const_vertex_vertex_iterator(g, edges_cend(g));
+  return const_vertex_vertex_iterator(const_cast<graph_type&>(g), e_end(g));
 }
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
@@ -193,6 +208,221 @@ typename dav_vertex<VV, EV, GV, KeyT, A>::vertex_vertex_size_type
 dav_vertex<VV, EV, GV, KeyT, A>::vertices_size(const graph_type& g) const {
   return edges_size(g);
 }
+
+///-------------------------------------------------------------------------------------
+/// dav_const_vertex_vertex_iterator
+///
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::dav_const_vertex_vertex_iterator(
+      graph_type& g, vertex_edge_iterator uv)
+      : g_(&g), uv_(uv) {}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::reference
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator*() const noexcept {
+  return *uv_->outward_vertex(*g_);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::pointer
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator->() const noexcept {
+  return &**this;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++() noexcept {
+  ++uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++(int) noexcept {
+  dav_const_vertex_vertex_iterator tmp(*this);
+  ++*this;
+  return tmp;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator+=(const difference_type distance) noexcept {
+  uv_ += distance;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator+(const difference_type distance) const noexcept {
+  dav_const_vertex_vertex_iterator tmp(*this);
+  return tmp += distance;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--() noexcept {
+  --uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--(int) noexcept {
+  dav_const_vertex_vertex_iterator tmp(*this);
+  --*this;
+  return tmp;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator-=(const difference_type distance) noexcept {
+  uv_ -= distance;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator-(const difference_type distance) const noexcept {
+  dav_const_vertex_vertex_iterator tmp(*this);
+  return tmp -= distance;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator==(
+      const dav_const_vertex_vertex_iterator& rhs) const noexcept {
+  return uv_ == rhs.uv_;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator!=(
+      const dav_const_vertex_vertex_iterator& rhs) const noexcept {
+  return !operator==(rhs);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator>(
+      const dav_const_vertex_vertex_iterator& rhs) const noexcept {
+  return uv_ > rhs.uv_;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator<=(
+      const dav_const_vertex_vertex_iterator& rhs) const noexcept {
+  return !operator>(rhs);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator<(
+      const dav_const_vertex_vertex_iterator& rhs) const noexcept {
+  return uv_ < rhs.uv_;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator>=(
+      const dav_const_vertex_vertex_iterator& rhs) const noexcept {
+  return !operator<(rhs);
+}
+
+
+///-------------------------------------------------------------------------------------
+/// dav_vertex_vertex_iterator
+///
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::dav_vertex_vertex_iterator(graph_type&          g,
+                                                                                      vertex_edge_iterator uv)
+      : base_t(g, uv) {}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::reference
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator*() const {
+  return *const_cast<edge_type&>(*uv_).outward_vertex(const_cast<graph_type&>(*g_));
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr typename dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::pointer
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator->() const {
+  return &**this;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++() {
+  ++uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator++(int) {
+  dav_vertex_vertex_iterator tmp(*this);
+  ++*this;
+  return tmp;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator+=(const difference_type distance) noexcept {
+  uv_ += distance;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator+(const difference_type distance) const noexcept {
+  dav_vertex_vertex_iterator tmp(*this);
+  return tmp += distance;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--() noexcept {
+  --uv_;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator--(int) noexcept {
+  dav_vertex_vertex_iterator tmp(*this);
+  --*this;
+  return tmp;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>&
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator-=(const difference_type distance) noexcept {
+  uv_ -= distance;
+  return *this;
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator-(const difference_type distance) const noexcept {
+  dav_vertex_vertex_iterator tmp(*this);
+  return tmp -= distance;
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+typename dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::reference
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator[](const difference_type distance) const noexcept {
+  return *uv_[distance].outward_vertex(*g_);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator==(const dav_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator==(rhs);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator!=(const dav_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator!=(rhs);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator>(const dav_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator>(rhs);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator<=(const dav_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator<=(rhs);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator<(const dav_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator<(rhs);
+}
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr bool
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator>=(const dav_vertex_vertex_iterator& rhs) const noexcept {
+  return base_t::operator>=(rhs);
+}
+
 
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector
@@ -562,7 +792,7 @@ constexpr auto to_iterator(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&
 }
 
 //
-// Uniform API: Common functions (accepts graph, vertex and edge)
+// Uniform API: Graph functions
 //
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 void clear(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) {
@@ -994,13 +1224,56 @@ constexpr auto vertices_cend(const directed_adjacency_vector<VV, EV, GV, KeyT, A
 // Directed API (inward & outward)
 //
 
-// todo: vertex, vertex_key
+//
+// Directed API (outward): Vertex functions
+//
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto outward_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
+                              edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
+      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return uv.outward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto outward_vertex(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
+                              const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
+      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return uv.outward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto outward_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
+                                  const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
+      -> vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return uv.outward_vertex_key(g);
+}
+
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto inward_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
+                             edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
+      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return uv.inward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto inward_vertex(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
+                             const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
+      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return uv.inward_vertex(g);
+}
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+constexpr auto inward_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
+                                 const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
+      -> vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
+  return uv.inward_vertex_key(g);
+}
+
 
 //
 // Directed API (outward): Vertex-Edge functions
 //
-
-// todo: outward_vertices
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto outward_edges(directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
@@ -1079,52 +1352,6 @@ constexpr auto outward_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, A
   return static_cast<ssize_t>(u.edges_size(g));
 }
 
-//
-// API edge functions
-//
-
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto inward_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
-                             edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return uv.inward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto inward_vertex(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
-                             const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
-      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return uv.inward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto inward_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
-                                 const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return uv.inward_vertex_key(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto outward_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
-                              edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return uv.outward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto outward_vertex(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
-                              const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
-      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return uv.outward_vertex(g);
-}
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto outward_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, A>&         g,
-                                  const edge_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>& uv)
-      -> vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  return uv.outward_vertex_key(g);
-}
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto find_outward_edge(directed_adjacency_vector<VV, EV, GV, KeyT, A>&           g,
