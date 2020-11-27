@@ -98,7 +98,7 @@ struct graph_traits
 
   // edge types 
   using edge_type                  = ...; // 
-  using edge_key_type              = ...; // (e.g. pair<vertex_key_t,vertex_key_t>)
+  using edge_key_type              = ...; // (e.g. ordered_pair<vertex_key_type,vertex_key_type>)
   using edge_user_value_type       = ...; // 
   using edge_value_type            = ...; // 
 
@@ -107,20 +107,25 @@ struct graph_traits
   using const_edge_range           = ...; // only if graph-edges defined
   using edge_size_type             = ...; // all graph types
 
-  // vertex-edge collection types - directed_graph & undirected_graph
+  // vertex-edge collection types - directed_or_undirected
   using vertex_edge_range          = ...; 
   using const_vertex_edge_range    = ...; 
   using vertex_edge_size_type      = ...; 
 
-  // vertex-out-edge collection types - outward_directed_graph & bidirected_graph
-  using vertex_outward_edge_range          = ...; 
-  using const_vertex_outward_edge_range    = ...; 
-  using vertex_outward_size_type      = ...; 
+  // vertex_vertex collection types - directed_or_undirected
+  using vertex_vertex_range        = ...; 
+  using const_vertex_vertex_range  = ...; 
+  using vertex_vertex_size_type    = ...; 
 
-  // vertex-in-edge collection types - inward_directed_graph & bidirected_graph
-  using vertex_inward_edge_range          = ...; 
-  using const_vertex_inward_edge_range    = ...; 
-  using vertex_inward_size_type      = ...; 
+  // vertex-out-edge collection types - directed
+  using vertex_outward_edge_range       = ...; 
+  using const_vertex_outward_edge_range = ...; 
+  using vertex_outward_size_type        = ...; 
+
+  // vertex-in-edge collection types - directed
+  using vertex_inward_edge_range       = ...; 
+  using const_vertex_inward_edge_range = ...; 
+  using vertex_inward_size_type        = ...; 
 };
 */
 

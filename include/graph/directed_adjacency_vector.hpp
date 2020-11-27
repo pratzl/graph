@@ -34,6 +34,12 @@ class dav_vertex;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class dav_edge;
 
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+class dav_const_vertex_vertex_iterator;
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+class dav_vertex_vertex_iterator;
+
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto size(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
@@ -183,12 +189,13 @@ public:
   using vertex_edge_size_type      = edge_size_type;
   using vertex_edge_ssize_type     = edge_ssize_type;
 
-  using vertex_vertex_range          = detail::vertex_vertex_range<graph_type>;
-  using const_vertex_vertex_range    = detail::const_vertex_vertex_range<graph_type>;
-  using vertex_vertex_iterator       = detail::vertex_vertex_iterator<graph_type>;
-  using const_vertex_vertex_iterator = detail::const_vertex_vertex_iterator<graph_type>;
-  using vertex_vertex_size_type      = edge_size_type;
-  using vertex_vertex_ssize_type     = edge_ssize_type;
+  using vertex_vertex_iterator       = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using const_vertex_vertex_iterator = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using vertex_vertex_range          = decltype(make_subrange2(vertex_vertex_iterator(), vertex_vertex_iterator()));
+  using const_vertex_vertex_range =
+        decltype(make_subrange2(const_vertex_vertex_iterator(), const_vertex_vertex_iterator()));
+  using vertex_vertex_size_type  = edge_size_type;
+  using vertex_vertex_ssize_type = edge_ssize_type;
 
 public:
   dav_vertex() noexcept             = default;
@@ -226,6 +233,152 @@ public:
 
 private:
   edge_index_type first_edge_ = numeric_limits<edge_index_type>::max();
+
+  vertex_edge_iterator e_begin(graph_type const&) const;
+  vertex_edge_iterator e_end(graph_type const&) const;
+};
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+class dav_const_vertex_vertex_iterator {
+public:
+  using this_t = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+
+  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+
+  using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_user_value_type = VV;
+  using vertex_key_type        = KeyT;
+  using vertex_value_type      = vertex_type;
+  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
+
+  using vertex_iterator       = typename vertex_set::iterator;
+  using const_vertex_iterator = typename vertex_set::const_iterator;
+
+  using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_user_value_type = typename edge_type::edge_user_value_type;
+  using edge_key_type        = typename edge_type::edge_key_type; // <from,to>
+  using edge_value_type      = typename edge_type::edge_value_type;
+  using edge_set             = typename edge_type::edge_set;
+
+  using vertex_edge_iterator       = typename edge_set::iterator;
+  using const_vertex_edge_iterator = typename edge_set::const_iterator;
+
+  using iterator_category = random_access_iterator_tag;
+  using value_type        = vertex_type;
+  using size_type         = typename edge_set::size_type;
+  using ssize_type        = typename edge_set::difference_type;
+  using difference_type   = typename edge_set::difference_type;
+  using pointer           = const value_type*;
+  using reference         = const value_type&;
+
+public:
+  constexpr dav_const_vertex_vertex_iterator(graph_type& g, vertex_edge_iterator uv);
+
+  constexpr dav_const_vertex_vertex_iterator()                                        = default;
+  constexpr dav_const_vertex_vertex_iterator(const dav_const_vertex_vertex_iterator&) = default;
+  constexpr dav_const_vertex_vertex_iterator(dav_const_vertex_vertex_iterator&&)      = default;
+  ~dav_const_vertex_vertex_iterator()                                                 = default;
+
+  constexpr dav_const_vertex_vertex_iterator& operator=(const dav_const_vertex_vertex_iterator&) = default;
+  constexpr dav_const_vertex_vertex_iterator& operator=(dav_const_vertex_vertex_iterator&&) = default;
+
+public:
+  constexpr reference operator*() const noexcept;
+  constexpr pointer   operator->() const noexcept;
+
+  constexpr dav_const_vertex_vertex_iterator& operator++() noexcept;
+  constexpr dav_const_vertex_vertex_iterator  operator++(int) noexcept;
+  constexpr dav_const_vertex_vertex_iterator& operator+=(const difference_type distance) noexcept;
+  constexpr dav_const_vertex_vertex_iterator  operator+(const difference_type distance) const noexcept;
+
+  constexpr dav_const_vertex_vertex_iterator& operator--() noexcept;
+  constexpr dav_const_vertex_vertex_iterator  operator--(int) noexcept;
+  constexpr dav_const_vertex_vertex_iterator& operator-=(const difference_type distance) noexcept;
+  constexpr dav_const_vertex_vertex_iterator  operator-(const difference_type distance) const noexcept;
+
+  reference operator[](const difference_type distance) const noexcept { return *uv_[distance].outward_vertex(*g_); }
+
+  constexpr bool operator==(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator!=(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
+
+  constexpr bool operator>(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator<=(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
+
+  constexpr bool operator<(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator>=(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
+
+
+  friend void swap(dav_const_vertex_vertex_iterator& lhs, dav_const_vertex_vertex_iterator& rhs) {
+    swap(lhs.g_, rhs.g_);
+    swap(lhs.uv_, rhs.uv_);
+  }
+
+protected:
+  graph_type*          g_ = nullptr;
+  vertex_edge_iterator uv_;
+};
+
+template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+class dav_vertex_vertex_iterator : public dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A> {
+public:
+  using this_t = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using base_t = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+
+  using graph_type           = typename base_t::graph_type;
+  using vertex_type          = typename base_t::vertex_type;
+  using vertex_edge_iterator = typename base_t::vertex_edge_iterator;
+  using edge_type            = typename base_t::edge_type;
+
+  using iterator_category = typename base_t::iterator_category;
+  using value_type        = typename base_t::value_type;
+  using size_type         = typename base_t::size_type;
+  using difference_type   = typename base_t::difference_type;
+  using pointer           = value_type*;
+  using reference         = value_type&;
+
+protected:
+  using base_t::g_;
+  using base_t::uv_;
+
+public:
+  constexpr dav_vertex_vertex_iterator(graph_type& g, vertex_edge_iterator uv);
+
+  constexpr dav_vertex_vertex_iterator()                                  = default;
+  constexpr dav_vertex_vertex_iterator(const dav_vertex_vertex_iterator&) = default;
+  constexpr dav_vertex_vertex_iterator(dav_vertex_vertex_iterator&&)      = default;
+  ~dav_vertex_vertex_iterator()                                           = default;
+
+  constexpr dav_vertex_vertex_iterator& operator=(const dav_vertex_vertex_iterator&) = default;
+  constexpr dav_vertex_vertex_iterator& operator=(dav_vertex_vertex_iterator&&) = default;
+
+public:
+  constexpr reference operator*() const;
+  constexpr pointer   operator->() const;
+
+  constexpr dav_vertex_vertex_iterator& operator++();
+  constexpr dav_vertex_vertex_iterator  operator++(int);
+  constexpr dav_vertex_vertex_iterator& operator+=(const difference_type distance) noexcept;
+  constexpr dav_vertex_vertex_iterator  operator+(const difference_type distance) const noexcept;
+
+  constexpr dav_vertex_vertex_iterator& operator--() noexcept;
+  constexpr dav_vertex_vertex_iterator  operator--(int) noexcept;
+  constexpr dav_vertex_vertex_iterator& operator-=(const difference_type distance) noexcept;
+  constexpr dav_vertex_vertex_iterator  operator-(const difference_type distance) const noexcept;
+
+  reference operator[](const difference_type distance) const noexcept;
+
+  constexpr bool operator==(const dav_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator!=(const dav_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator>(const dav_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator<=(const dav_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator<(const dav_vertex_vertex_iterator& rhs) const noexcept;
+  constexpr bool operator>=(const dav_vertex_vertex_iterator& rhs) const noexcept;
+
+  friend void swap(dav_vertex_vertex_iterator& lhs, dav_vertex_vertex_iterator& rhs) {
+    swap(lhs.g_, rhs.g_);
+    swap(lhs.uv_, rhs.uv_);
+  }
 };
 
 /// A simple semi-mutable graph emphasizing performance and space.
@@ -530,8 +683,8 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   using const_vertex_edge_range = const_vertex_outward_edge_range;
   using vertex_edge_size_type   = vertex_outward_size_type;
 
-  using vertex_vertex_range       = detail::vertex_vertex_range<graph_type>;
-  using const_vertex_vertex_range = const detail::vertex_vertex_range<graph_type>;
+  using vertex_vertex_range       = typename vertex_type::vertex_vertex_range;
+  using const_vertex_vertex_range = typename vertex_type::const_vertex_vertex_range;
   using vertex_vertex_size_type   = size_t;
 };
 
