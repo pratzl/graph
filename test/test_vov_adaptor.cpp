@@ -40,7 +40,7 @@ vov_germany_t get_germany_routes() {
   }
 
   //auto n = std::graph::vertices_size(routes);
-  //std::graph::vertex_key_t<vov_germany_t> ukey = std::graph::vertex_key(routes, *std::graph::begin(routes));
+  //std::graph::vertex_key_t<vov_germany_t> ukey = std::graph::vertex_key(routes, std::graph::begin(routes));
   //cout << ukey;
 
   return routes;
@@ -70,11 +70,11 @@ TEST_CASE("vov graph", "[vov]") {
   static_assert(std::is_same_v<evt2, std::tuple<size_t, double>>, "edge value types2 not same");
 
 #if 0
-  for (std::graph::vertex_t<Graph>& u : vertices(g)) {
+  for (std::graph::vertex_iterator_t<Graph> u = begin(g); u != end(g); ++u) {
     cout << "city[" << vertex_key(g, u) << "]\n";
-    for (std::graph::edge_t<Graph>& uv : edges(g, u)) {
+    for (std::graph::vertex_edge_iterator_t<Graph> uv = edges_begin(g, u); uv != edges_end(g,u); ++uv) {
       //graph::adaptor::value(uv);    // compiler error in msvc (bug?)
-      cout << "  --> city[" << outward_vertex_key(g, uv) << "] " << get<1>(uv) << "km\n";
+      cout << "  --> city[" << outward_vertex_key(g, uv) << "] " << get<1>(*uv) << "km\n";
     }
   }
 #endif
@@ -116,8 +116,8 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u) {
-    //std::graph::vertex_key_t<Graph> ukey = vertex_key(g, *u);
-    // cout << string(u.depth() * 2, ' ') << vertex_key(g, *u) << endl;
+    //std::graph::vertex_key_t<Graph> ukey = vertex_key(g, u.operator->());
+    // cout << string(u.depth() * 2, ' ') << vertex_key(g, u.operator->()) << endl;
   }
 
   /* Output: seed = Frankfürt
@@ -135,7 +135,9 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
 
   // a flat list when using range syntax (depth n/a on vertex)
   cout << endl;
-  for (std::graph::vertex_t<Graph>& u : depth_first_search_vertex_range(g, begin(g) + 2)) // Frankfürt
+  depth_first_search_vertex_range dfs_vtx_range2(g, begin(g) + 2); // Frankfürt
+  for (depth_first_search_vertex_range<Graph>::iterator u = begin(dfs_vtx_range2); u != end(dfs_vtx_range2);
+       ++u) // Frankfürt
     cout << vertex_key(g, u) << endl;
     /* Output: seed = Frankfürt
       2
@@ -153,32 +155,32 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   int i = 0;
   for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u, ++i) {
     if (i == 0)
-      cout << "EXPECT_EQ(" << vertex_key(g, *u) << ", vertex_key(g, *u));\n";
+      cout << "EXPECT_EQ(" << vertex_key(g, u) << ", vertex_key(g, u));\n";
     else
-      cout << "EXPECT_EQ(" << vertex_key(g, *u) << ", vertex_key(g, *(++u)));\n";
+      cout << "EXPECT_EQ(" << vertex_key(g, u) << ", vertex_key(g, ++u));\n";
     cout << "EXPECT_EQ(" << u.depth() << ", u.depth());\n";
   }
 #elif TEST_OPTION == TEST_OPTION_TEST
   depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
-  EXPECT_EQ(2, vertex_key(g, *u));
+  EXPECT_EQ(2, vertex_key(g, u));
   EXPECT_EQ(1, u.depth());
-  EXPECT_EQ(4, vertex_key(g, *(++u)));
+  EXPECT_EQ(4, vertex_key(g, ++u));
   EXPECT_EQ(2, u.depth());
-  EXPECT_EQ(6, vertex_key(g, *(++u)));
+  EXPECT_EQ(6, vertex_key(g, ++u));
   EXPECT_EQ(3, u.depth());
-  EXPECT_EQ(9, vertex_key(g, *(++u)));
+  EXPECT_EQ(9, vertex_key(g, ++u));
   EXPECT_EQ(2, u.depth());
-  EXPECT_EQ(7, vertex_key(g, *(++u)));
+  EXPECT_EQ(7, vertex_key(g, ++u));
   EXPECT_EQ(3, u.depth());
-  EXPECT_EQ(8, vertex_key(g, *(++u)));
+  EXPECT_EQ(8, vertex_key(g, ++u));
   EXPECT_EQ(4, u.depth());
-  EXPECT_EQ(1, vertex_key(g, *(++u)));
+  EXPECT_EQ(1, vertex_key(g, ++u));
   EXPECT_EQ(3, u.depth());
-  EXPECT_EQ(5, vertex_key(g, *(++u)));
+  EXPECT_EQ(5, vertex_key(g, ++u));
   EXPECT_EQ(2, u.depth());
-  EXPECT_EQ(3, vertex_key(g, *(++u)));
+  EXPECT_EQ(3, vertex_key(g, ++u));
   EXPECT_EQ(3, u.depth());
-  EXPECT_EQ(0, vertex_key(g, *(++u)));
+  EXPECT_EQ(0, vertex_key(g, ++u));
   EXPECT_EQ(4, u.depth());
 #endif // TEST_OPTION==
 }

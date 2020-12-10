@@ -91,10 +91,10 @@ public:
         : graph_(graph)
         , stack_(alloc)
         , visited_(vertices_size(graph_), white, alloc)
-        , parent_(vertices_size(graph_), vertices_end(graph_), alloc) {
-    if (seed != vertices_end(graph_)) {
-      stack_.push(stack_elem{seed, edges_begin(graph_, *seed)});
-      visited_[vertex_key(graph_, *seed)] = grey;
+        , parent_(vertices_size(graph_), ranges::end(vertices(graph_)), alloc) {
+    if (seed != ranges::end(vertices(graph_))) {
+      stack_.push(stack_elem{seed, edges_begin(graph_, seed)});
+      visited_[vertex_key(graph_, seed)] = grey;
     }
   }
 
@@ -110,7 +110,7 @@ public:
     const_iterator(const_iterator&&)      = default;
     const_iterator(const const_iterator&) = default;
     const_iterator(depth_first_search_vertex_range& dfs, bool end_iter = false)
-          : dfs_(&dfs), elem_{vertices_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
+          : dfs_(&dfs), elem_{ranges::end(vertices(dfs.graph_)), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
         elem_ = dfs.stack_.top();
     }
@@ -136,7 +136,7 @@ public:
     bool operator!=(const const_iterator& rhs) const { return !operator==(rhs); }
 
     size_t  depth() const { return dfs_->stack_.size(); }
-    pointer parent() const { return parent_[vertex_key(graph_, *elem_.u)]; }
+    pointer parent() const { return parent_[vertex_key(graph_, elem_.u)]; }
 
   protected:
     depth_first_search_vertex_range* dfs_ = nullptr; // always non-null & valid; ptr allows default ctor
@@ -179,7 +179,7 @@ public:
       return tmp;
     }
 
-    pointer parent() { return this->parent_[vertex_key(graph_, *this->elem_.u)]; }
+    pointer parent() { return this->parent_[vertex_key(graph_, this->elem_.u)]; }
   };
 
 public:
@@ -198,29 +198,29 @@ protected:
       stack_.pop();
 
       // advance uv to next unvisited v vertex
-      vertex_edge_iterator_t<G> uv_end = edges_end(graph_, *u);
+      vertex_edge_iterator_t<G> uv_end = edges_end(graph_, u);
       vertex_iterator_t<G>      v      = vertex_iterator_t<G>();
       vertex_key_t<G>           v_key  = vertex_key_t<G>();
       for (; uv != uv_end; ++uv) {
-        v     = vertex(graph_, *uv, *u);
-        v_key = vertex_key(graph_, *uv, *u);
+        v     = vertex(graph_, uv, u);
+        v_key = vertex_key(graph_, uv, u);
         if (visited_[v_key] == white)
           break;
       }
 
       if (uv == uv_end) {
-        vertex_key_t<G> u_key = vertex_key(graph_, *u);
+        vertex_key_t<G> u_key = vertex_key(graph_, u);
         visited_[u_key]       = black;
-      } else {                                                  // (visited_[v_key] == white)
-        stack_.push(stack_elem{u, uv});                         // remember next edge to resume on for u
-        vertex_edge_iterator_t<G> vw = edges_begin(graph_, *v); // may ==end(graph_,*v)
-        stack_.push(stack_elem{v, vw});                         // go level deaper in traversal
+      } else {                                                 // (visited_[v_key] == white)
+        stack_.push(stack_elem{u, uv});                        // remember next edge to resume on for u
+        vertex_edge_iterator_t<G> vw = edges_begin(graph_, v); // may ==end(graph_,*v)
+        stack_.push(stack_elem{v, vw});                        // go level deaper in traversal
         visited_[v_key] = grey;
         parent_[v_key]  = u;
         return stack_.top();
       }
     }
-    return stack_elem{vertices_end(graph_), vertex_edge_iterator_t<G>()};
+    return stack_elem{ranges::end(vertices(graph_)), vertex_edge_iterator_t<G>()};
   }
 
 private:
@@ -263,9 +263,9 @@ public:
         : graph_(graph)
         , stack_(alloc)
         , visited_(vertices_size(graph), white, alloc)
-        , parent_(vertices_size(graph), vertices_end(graph), alloc) {
-    if (seed != vertices_end(graph_)) {
-      stack_.push({seed, edges_begin(graph_, *seed)});
+        , parent_(vertices_size(graph), ranges::end(vertices(graph)), alloc) {
+    if (seed != ranges::end(vertices(graph_))) {
+      stack_.push({seed, edges_begin(graph_, seed)});
       visit(seed, grey);
     }
   }
@@ -291,7 +291,7 @@ public:
     const_iterator(const_iterator&&)      = default;
     const_iterator(const const_iterator&) = default;
     const_iterator(depth_first_search_edge_range& dfs, bool end_iter = false)
-          : dfs_(&dfs), elem_{vertices_end(dfs.graph_), vertex_edge_iterator_t<G>()} {
+          : dfs_(&dfs), elem_{ranges::end(vertices(dfs.graph_)), vertex_edge_iterator_t<G>()} {
       if (!end_iter && !dfs.stack_.empty())
         elem_ = dfs.stack_.top();
     }
@@ -317,7 +317,7 @@ public:
     bool operator!=(const const_iterator& rhs) const { return !operator==(rhs); }
 
     vertex_iterator_type inward_vertex() const { return elem_.u; }
-    vertex_iterator_type outward_vertex() const { return vertex(dfs_->graph_, *elem_.uv, *elem_.u); }
+    vertex_iterator_type outward_vertex() const { return vertex(dfs_->graph_, elem_.uv, elem_.u); }
     vertex_iterator_type back_vertex() const { return outward_vertex(); }
 
     size_t depth() const { return dfs_->stack_.size(); }
@@ -383,7 +383,7 @@ public:
     }
 
     vertex_iterator_type inward_vertex() const { return this->elem_.u; }
-    vertex_iterator_type outward_vertex() const { return vertex(this->dfs_->graph_, *this->elem_.uv, *this->elem_.u); }
+    vertex_iterator_type outward_vertex() const { return vertex(this->dfs_->graph_, this->elem_.uv, this->elem_.u); }
     vertex_iterator_type back_vertex() const { return outward_vertex(); }
   };
 
@@ -398,12 +398,12 @@ public:
 
 protected:
   bool outward_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return uv != edges_end(graph_, *u);
+    return uv != edges_end(graph_, u);
   }
 
   bool is_outward_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    const_vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
-    vertex_key_t<G>            v_key = vertex_key(graph_, *v);
+    const_vertex_iterator_t<G> v     = vertex(graph_, uv, u);
+    vertex_key_t<G>            v_key = vertex_key(graph_, v);
     return visited_[v_key] >= grey;
   }
 
@@ -416,8 +416,8 @@ protected:
   bool is_back_edge(const stack_elem& se) const { return is_back_edge(se.u, se.uv); }
 
   bool is_parent(vertex_iterator_t<G> u, vertex_edge_iterator_t<G> uv) const {
-    vertex_key_t<G>      u_key = vertex_key(graph_, *u);
-    vertex_iterator_t<G> v     = vertex(graph_, *uv, *u);
+    vertex_key_t<G>      u_key = vertex_key(graph_, u);
+    vertex_iterator_t<G> v     = vertex(graph_, uv, u);
     return v == parent_[u_key];
   }
 
@@ -429,7 +429,7 @@ protected:
         continue;
       } else if (is_outward_visited(stack_.top())) { // back edge?
         auto [u, uv]                     = stack_.top();
-        vertex_edge_iterator_t<G> uv_end = edges_end(graph_, *u);
+        vertex_edge_iterator_t<G> uv_end = edges_end(graph_, u);
         stack_.pop();
         for (++uv; uv != uv_end && is_parent(u, uv); ++uv)
           ;
@@ -442,12 +442,12 @@ protected:
         }
       } else { // go down a level
         auto [u, uv]                     = stack_.top();
-        vertex_iterator_t<G>      v      = vertex(graph_, *uv, *u);
-        vertex_edge_iterator_t<G> vw     = edges_begin(graph_, *v);
-        vertex_edge_iterator_t<G> vw_end = edges_end(graph_, *v);
+        vertex_iterator_t<G>      v      = vertex(graph_, uv, u);
+        vertex_edge_iterator_t<G> vw     = edges_begin(graph_, v);
+        vertex_edge_iterator_t<G> vw_end = edges_end(graph_, v);
 
         // scan past parent of v (we have enough info so parent_[] isn't needed)
-        for (; vw != vw_end && vertex(graph_, *vw, *v) == u; ++vw)
+        for (; vw != vw_end && vertex(graph_, vw, v) == u; ++vw)
           ;
 
         stack_.push({v, vw});
@@ -463,17 +463,17 @@ protected:
   }
 
   void visit(vertex_iterator_t<G> u, colors color) {
-    vertex_key_t<G> u_key = vertex_key(graph_, *u);
+    vertex_key_t<G> u_key = vertex_key(graph_, u);
     visited_[u_key]       = color;
   }
 
   void visit(vertex_iterator_t<G> parent, vertex_iterator_t<G> u, colors color) {
-    vertex_key_t<G> u_key = vertex_key(graph_, *u);
+    vertex_key_t<G> u_key = vertex_key(graph_, u);
     visited_[u_key]       = color;
     parent_[u_key]        = parent;
   }
 
-  stack_elem empty_elem() const { return stack_elem{vertices_end(graph_), vertex_edge_iterator_t<G>()}; }
+  stack_elem empty_elem() const { return stack_elem{ranges::end(vertices(graph_)), vertex_edge_iterator_t<G>()}; }
 
 
 private:

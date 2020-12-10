@@ -110,19 +110,21 @@ Other Useful Tools
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
     - [x] use West const to mirror usage in std
     - [ ] value(gve) needs a type defined (don't use decltype with call to undefined user_value)
-    - [ ] [paper] Recommend addition of arithmetic<T> concept to std (= arithmetic_v<T>)
-    - [ ] Should find_edge() return edge_range_t or vertex_edge_range_t (or diff find_edges for diff ranges)?
+    - [x] replace proposed arithmetic concept with arithmetic_v<T>
+    - [x] Should find_edge() return edge_range_t or vertex_edge_range_t? edge_range_t, find_vertex_edge() is used for vertex_edge_range_t
     - [ ] Is there a reason user_value_type can't just be value_type?
+    - [ ] Add find_if() to all ranges
+    - [ ] Decide: begin/end for all ranges, or none at all in favor of using begin(rng)/end(rng)
+    - [ ] Define common implementations that each graph can optionally specialize
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
-    - [ ] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
-    - [ ] add vertices_size(g,u) [add impl]
-    - [ ] add vertices_ssize(g,u) [add impl]
-    - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey), graph_contains_edge(g, u, v)
+    - [x] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
+    - [x] add vertices_size(g,u) [add impl]
+    - [x] add vertices_ssize(g,u) [add impl]
+    - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey), graph_contains_edge(g, u, v) [add impl]
     - [x] vertex_key_type required to be integral
-    - [ ] add contains(g,u), contains(g,u,v)
-  - [ ] ordered_pair & unordered_pair [define need for directed/undirected concepts]
+  - [ ] ordered_pair & unordered_pair
     - [x] initial implementation
     - [x] initial test impl
     - [ ] support conditionally explicit ctors
@@ -144,7 +146,7 @@ Other Useful Tools
     - [x] vertex_size_type, vertex_index_type, vertex_key_type are similar. Do we need all of them? [key can be used in place of index]
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
     - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
-    - [ ] create matching undirected adjacency vector with unmutable edge values
+    - [ ] create matching undirected adjacency vector with immutable edge values
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
@@ -162,14 +164,15 @@ Other Useful Tools
   - [x] use spaceship operator (n/a b/c <, >, <=, >= isn't needed)
   - [ ] operator!= not needed when operator== defined? (part of spaceship operator)
   - [ ] investigate use of coroutines for BFS & DFS (stack space limits?)
+  - [ ] what is the status of make_subrange<I,S> for ranges?
 - [ ] Unit Tests
   - [ ] Replace EXPECT_EQ(), etc. --> REQUIRE()
   - [x] Switch from range-v3 to compiler-defined ranges (except algorithms like sort)
   - [ ] Create templated tests based on directed/undirected types
   - [ ] Move German Routes to text file
 - [ ] Other libraries
-  - [ ] bgl17
-    - [ ] rename to NWGraph
+  - [ ] NWGraph
+    - [ ] rename bgl17 to NWGraph
     - [x] vov graph
       - [x] Create adaptor
       - [x] Add depth_first_search_vertex_range test
@@ -195,7 +198,7 @@ Other Useful Tools
   - [ ] validate doxygen output
   - [ ] validate sanitizer generation
   - [x] remove unrelated libraries (imgui, ...)
-  - [ ] use compiler-supplied concepts (msvc, gcc)
+  - [x] use compiler-supplied concepts (msvc, gcc)
 - [ ] Other Tools
   - [ ] Add clang-tidy to VSCode
   - [ ] Can VS be configured for development & remote development?

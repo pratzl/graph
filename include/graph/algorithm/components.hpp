@@ -56,21 +56,21 @@ public:
 
   void operator()(vertex_range_t<G> rng, OutIter result_iter) {
     for (vertex_iterator_t<G> u = begin(rng); u != end(rng); ++u)
-      if (!visited_[vertex_key(graph_, *u)])
+      if (!visited_[vertex_key(graph_, u)])
         eval_cc(u, result_iter);
   }
 
 protected:
   void eval_cc(vertex_iterator_t<G> seed, OutIter result_iter) {
     stack_.push(seed);
-    visited_[vertex_key(graph_, *seed)] = true;
-    *result_iter                        = component_type(curr_comp_, seed);
+    visited_[vertex_key(graph_, seed)] = true;
+    *result_iter                       = component_type(curr_comp_, seed);
 
     while (!stack_.empty()) {
       vertex_iterator_t<G> u = stack_.top();
       stack_.pop();
       for (vertex_iterator_t<G> v = begin(graph_, *u); v != end(graph_, *u); ++u) {
-        vertex_key_t<G> v_key = vertex_key(graph_, *v, *u);
+        vertex_key_t<G> v_key = vertex_key(graph_, v, u);
         if (!visited_[v_key]) {
           stack_.push(v);
           visited_[v_key] = true;
@@ -152,7 +152,7 @@ protected:
   constexpr static CompT undiscovered() { return numeric_limits<CompT>::max(); }
 
   void eval_scc(vertex_iterator_t<G> u, OutIter result_iter) {
-    component_number_type const u_key = static_cast<component_number_type>(vertex_key(graph_, *u));
+    component_number_type const u_key = static_cast<component_number_type>(vertex_key(graph_, u));
     if (visited_[u_key].discovered != undiscovered())
       return;
 
@@ -160,10 +160,10 @@ protected:
     stack_.push(u);
     in_stack_[u_key] = true;
 
-    for (edge_t<G>& uv : edges(graph_, *u)) {
-      vertex_key_t<G> v_key = vertex_key(graph_, uv, *u);
+    for (edge_iterator_t<G> uv = edges_begin(graph_, u); uv != edges_end(graph_, u); ++uv) {
+      vertex_key_t<G> v_key = vertex_key(graph_, uv, u);
       if (visited_[v_key].discovered == undiscovered()) {
-        eval_scc(vertex(graph_, uv, *u), result_iter);
+        eval_scc(vertex(graph_, uv, u), result_iter);
         visited_[v_key].low = std::min(visited_[v_key].low, visited_[u_key].low);
       } else if (in_stack_[v_key])
         visited_[v_key].low = std::min(visited_[v_key].low, visited_[u_key].discovered);
@@ -173,13 +173,13 @@ protected:
       using result_type = component<G, CompT>;
       while (stack_.top() != u) {
         vertex_iterator_t<G> v     = stack_.top();
-        vertex_key_t<G>      v_key = vertex_key(graph_, *v);
+        vertex_key_t<G>      v_key = vertex_key(graph_, v);
         in_stack_[v_key]           = false;
         *result_iter               = result_type(curr_comp_, v);
         stack_.pop();
       }
       vertex_iterator_t<G> v     = stack_.top();
-      vertex_key_t<G>      v_key = vertex_key(graph_, *v);
+      vertex_key_t<G>      v_key = vertex_key(graph_, v);
       in_stack_[v_key]           = false;
       *result_iter               = result_type(curr_comp_, v);
       stack_.pop();

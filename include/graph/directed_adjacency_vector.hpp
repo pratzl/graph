@@ -4,12 +4,16 @@
 #include "graph_utility.hpp"
 #include "ordered_pair.hpp"
 #include <vector>
+#include <deque>
 #include <cassert>
 
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
 namespace std::graph {
+
+#  define DAV_VERTEX_SET vector
+#  define DAV_EDGE_SET vector
 
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector forward declarations
@@ -42,31 +46,31 @@ class dav_vertex_vertex_iterator;
 
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto size(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
+constexpr auto vertices_size(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
       -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
+constexpr auto vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
       -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto begin(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
+constexpr auto vertices_begin(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto begin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
+constexpr auto vertices_begin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto cbegin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
+constexpr auto vertices_cbegin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto end(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
+constexpr auto vertices_end(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto end(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
+constexpr auto vertices_end(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto cend(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
+constexpr auto vertices_cend(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
       -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
 
@@ -91,7 +95,7 @@ public:
   using vertex_index_type      = KeyT;
   using vertex_value_type      = vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
+  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
@@ -104,7 +108,7 @@ public:
   using edge_index_type      = KeyT;
   using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = vector<edge_type, edge_allocator_type>;
+  using edge_set             = DAV_EDGE_SET<edge_type, edge_allocator_type>;
 
 public:
   dav_edge()                    = default;
@@ -114,25 +118,19 @@ public:
   dav_edge& operator=(dav_edge&) = default;
   dav_edge& operator=(dav_edge&&) = default;
 
-  dav_edge(const vertex_set& vertices, vertex_iterator inward_vertex, vertex_iterator outward_vertex);
-  dav_edge(const vertex_set& vertices,
-           vertex_iterator   inward_vertex,
-           vertex_iterator   outward_vertex,
-           const edge_user_value_type&);
-  dav_edge(const vertex_set& vertices,
-           vertex_iterator   inward_vertex,
-           vertex_iterator   outward_vertex,
-           edge_user_value_type&&);
+  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key);
+  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, const edge_user_value_type&);
+  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, edge_user_value_type&&);
 
   vertex_iterator       inward_vertex(graph_type&);
   const_vertex_iterator inward_vertex(const graph_type&) const;
-  vertex_key_type       inward_vertex_key(const graph_type&) const;
+  vertex_key_type       inward_vertex_key() const noexcept;
 
   vertex_iterator       outward_vertex(graph_type&);
   const_vertex_iterator outward_vertex(const graph_type&) const;
-  vertex_key_type       outward_vertex_key(const graph_type&) const;
+  vertex_key_type       outward_vertex_key() const noexcept;
 
-  edge_key_type edge_key() const;
+  edge_key_type edge_key() const noexcept;
 
 private:
   vertex_key_type inward_vertex_;
@@ -160,7 +158,7 @@ public:
   using vertex_index_type      = KeyT;
   using vertex_value_type      = vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
+  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
@@ -173,7 +171,7 @@ public:
   using edge_index_type      = KeyT;
   using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = vector<edge_type, edge_allocator_type>;
+  using edge_set             = DAV_EDGE_SET<edge_type, edge_allocator_type>;
 
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
@@ -181,21 +179,6 @@ public:
   using const_edge_iterator = ranges::iterator_t<const_edge_range>;
   using edge_size_type      = ranges::range_size_t<edge_range>;
   using edge_ssize_type     = ranges::range_difference_t<edge_range>;
-
-  using vertex_edge_range          = edge_range;
-  using const_vertex_edge_range    = const_edge_range;
-  using vertex_edge_iterator       = edge_iterator;
-  using const_vertex_edge_iterator = const_edge_iterator;
-  using vertex_edge_size_type      = edge_size_type;
-  using vertex_edge_ssize_type     = edge_ssize_type;
-
-  using vertex_vertex_iterator       = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
-  using const_vertex_vertex_iterator = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
-  using vertex_vertex_range          = decltype(make_subrange2(vertex_vertex_iterator(), vertex_vertex_iterator()));
-  using const_vertex_vertex_range =
-        decltype(make_subrange2(const_vertex_vertex_iterator(), const_vertex_vertex_iterator()));
-  using vertex_vertex_size_type  = edge_size_type;
-  using vertex_vertex_ssize_type = edge_ssize_type;
 
 public:
   dav_vertex() noexcept             = default;
@@ -209,33 +192,12 @@ public:
   dav_vertex(vertex_set& vertices, vertex_index_type index, const vertex_user_value_type&);
   dav_vertex(vertex_set& vertices, vertex_index_type index, vertex_user_value_type&&);
 
-  void set_edge_begin(graph_type&, edge_iterator);
-
-  vertex_edge_iterator       edges_begin(graph_type&);
-  const_vertex_edge_iterator edges_begin(const graph_type&) const;
-  const_vertex_edge_iterator edges_cbegin(const graph_type&) const;
-
-  vertex_edge_iterator       edges_end(graph_type&);
-  const_vertex_edge_iterator edges_end(const graph_type&) const;
-  const_vertex_edge_iterator edges_cend(const graph_type&) const;
-
-  edge_size_type edges_size(const graph_type&) const;
-
-  vertex_vertex_iterator       vertices_begin(graph_type&);
-  const_vertex_vertex_iterator vertices_begin(const graph_type&) const;
-  const_vertex_vertex_iterator vertices_cbegin(const graph_type&) const;
-
-  vertex_vertex_iterator       vertices_end(graph_type&);
-  const_vertex_vertex_iterator vertices_end(const graph_type&) const;
-  const_vertex_vertex_iterator vertices_cend(const graph_type&) const;
-
-  vertex_vertex_size_type vertices_size(const graph_type&) const;
+  void            set_edge_begin(graph_type&, edge_iterator);
+  void            set_edge_begin(edge_index_type);
+  edge_index_type edge_begin_index() const;
 
 private:
   edge_index_type first_edge_ = numeric_limits<edge_index_type>::max();
-
-  vertex_edge_iterator e_begin(graph_type const&) const;
-  vertex_edge_iterator e_end(graph_type const&) const;
 };
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
@@ -250,7 +212,7 @@ public:
   using vertex_key_type        = KeyT;
   using vertex_value_type      = vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
+  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
@@ -284,6 +246,9 @@ public:
   constexpr dav_const_vertex_vertex_iterator& operator=(dav_const_vertex_vertex_iterator&&) = default;
 
 public:
+  constexpr const_vertex_iterator outward_vertex(graph_type const&) const;
+  constexpr vertex_key_type       outward_vertex_key() const;
+
   constexpr reference operator*() const noexcept;
   constexpr pointer   operator->() const noexcept;
 
@@ -328,6 +293,7 @@ public:
   using graph_type           = typename base_t::graph_type;
   using vertex_type          = typename base_t::vertex_type;
   using vertex_edge_iterator = typename base_t::vertex_edge_iterator;
+  using vertex_iterator      = typename base_t::vertex_iterator;
   using edge_type            = typename base_t::edge_type;
 
   using iterator_category = typename base_t::iterator_category;
@@ -353,6 +319,8 @@ public:
   constexpr dav_vertex_vertex_iterator& operator=(dav_vertex_vertex_iterator&&) = default;
 
 public:
+  constexpr vertex_iterator outward_vertex(graph_type&);
+
   constexpr reference operator*() const;
   constexpr pointer   operator->() const;
 
@@ -432,7 +400,7 @@ public:
   using vertex_index_type      = KeyT;
   using vertex_value_type      = vertex_type;
   using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = vector<vertex_type, vertex_allocator_type>;
+  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
   using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
@@ -447,7 +415,7 @@ public:
   using edge_index_type      = KeyT;
   using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
   using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = vector<edge_type, edge_allocator_type>;
+  using edge_set             = DAV_EDGE_SET<edge_type, edge_allocator_type>;
 
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
@@ -456,19 +424,25 @@ public:
   using edge_size_type      = ranges::range_size_t<edge_range>;
   using edge_ssize_type     = ranges::range_difference_t<edge_range>;
 
+  using vertex_outward_size_type  = edge_size_type;
+  using vertex_outward_ssize_type = edge_ssize_type;
+
   using vertex_outward_edge_range          = edge_range;
   using const_vertex_outward_edge_range    = const_edge_range;
   using vertex_outward_edge_iterator       = edge_iterator;
   using const_vertex_outward_edge_iterator = const_edge_iterator;
-  using vertex_outward_size_type           = edge_size_type;
-  using vertex_outward_edge_ssize_type     = edge_ssize_type;
+
+  using vertex_outward_vertex_iterator       = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using const_vertex_outward_vertex_iterator = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using vertex_outward_vertex_range =
+        decltype(make_subrange2(vertex_outward_vertex_iterator(), vertex_outward_vertex_iterator()));
+  using const_vertex_outward_vertex_range =
+        decltype(make_subrange2(const_vertex_outward_vertex_iterator(), const_vertex_outward_vertex_iterator()));
 
   using vertex_edge_range          = edge_range;
   using const_vertex_edge_range    = const_edge_range;
   using vertex_edge_iterator       = edge_iterator;
   using const_vertex_edge_iterator = const_edge_iterator;
-  using vertex_edge_size_type      = edge_size_type;
-  using vertex_edge_ssize_type     = edge_ssize_type;
 
 public:
   directed_adjacency_vector() noexcept(noexcept(allocator_type()))    = default;
@@ -675,17 +649,19 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   using const_edge_range = typename graph_type::const_edge_range;
   using edge_size_type   = typename graph_type::edge_size_type;
 
+  using vertex_outward_size_type = typename graph_type::vertex_outward_size_type;
+  using vertex_edge_size_type    = vertex_outward_size_type;
+  using vertex_vertex_size_type  = vertex_outward_size_type;
+
   using vertex_outward_edge_range       = typename graph_type::vertex_outward_edge_range;
   using const_vertex_outward_edge_range = typename graph_type::const_vertex_outward_edge_range;
-  using vertex_outward_size_type        = typename graph_type::vertex_outward_size_type;
+  using vertex_edge_range               = vertex_outward_edge_range;
+  using const_vertex_edge_range         = const_vertex_outward_edge_range;
 
-  using vertex_edge_range       = vertex_outward_edge_range;
-  using const_vertex_edge_range = const_vertex_outward_edge_range;
-  using vertex_edge_size_type   = vertex_outward_size_type;
-
-  using vertex_vertex_range       = typename vertex_type::vertex_vertex_range;
-  using const_vertex_vertex_range = typename vertex_type::const_vertex_vertex_range;
-  using vertex_vertex_size_type   = size_t;
+  using vertex_outward_vertex_range       = typename graph_type::vertex_outward_vertex_range;
+  using const_vertex_outward_vertex_range = typename graph_type::const_vertex_outward_vertex_range;
+  using vertex_vertex_range               = vertex_outward_vertex_range;
+  using const_vertex_vertex_range         = const_vertex_outward_vertex_range;
 };
 
 
