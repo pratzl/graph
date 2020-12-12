@@ -31,14 +31,11 @@ template <directed G, typename OutIter, typename A = allocator<char>>
 requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
                                      dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A()) {
   using reach_t = reaches<G>;
-  auto first    = begin(g);
-  for (auto ui = first; ui != end(g); ++ui) {
-    for (auto& v : depth_first_search_vertex_range(g, ui, alloc)) {
-      vertex_iterator_t<G> vi =
-            first +
-            vertex_key(
-                  g,
-                  v); // dfs should return a vertex_iterator_t? we can't be guaranteed of vertex& --> iterator conversion for all graphs
+  using dfs_t   = depth_first_search_vertex_range<G, A>;
+  for (auto ui = begin(g); ui != end(g); ++ui) {
+    dfs_t dfs(g, ui, alloc);
+    for (typename dfs_t::iterator vi_dfs = begin(dfs); vi_dfs != end(dfs); ++vi_dfs) {
+      vertex_iterator_t<G> vi = vi_dfs.operator->();
       if (vi != ui)
         *result_iter = reach_t{ui, vi};
     }
@@ -47,7 +44,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 
 template <typename ExecutionPolicy, directed G, typename OutIter, typename A = allocator<bool>>
 requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
-                                     warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
+warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a dense graph using Warshall's algorithm.
@@ -61,10 +58,10 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
   size_t const V = vertices_size(g);
 
   vector<bool> reach(V * V, alloc);
-  for (vertex_t<G>& u : g) {
-    size_t uoff = vertex_key(g, u) * V;
-    for (auto& uv : edges(g, u))
-      reach[uoff + vertex_key(g, uv, u)] = true;
+  for (vertex_iterator_t<G> ui = begin(g); ui != end(g); ++ui) {
+    size_t uoff = vertex_key(g, ui) * V;
+    for (vertex_edge_iterator_t<G> uv = edges_begin(g, ui); uv != edges_end(g, ui); ++uv)
+      reach[uoff + vertex_key(g, uv, ui)] = true;
   }
 
   for (vertex_key_t<G> k = 0; k < V; ++k) {

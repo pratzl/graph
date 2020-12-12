@@ -71,8 +71,8 @@ template <typename G, typename A>
 using edge_path_range = decltype(make_subrange2(declval<edge_path_t<G, A>&>()));
 
 
-template <typename G, arithmetic DistanceT, typename A = allocator<vertex_iterator_t<G>>>
-struct shortest_path2 {
+template <typename G, typename DistanceT, typename A = allocator<vertex_iterator_t<G>>>
+requires is_arithmetic_v<DistanceT> struct shortest_path2 {
   DistanceT               distance;
   vertex_path_range<G, A> vertex_path;
   edge_path_range<G, A>   path;
@@ -80,16 +80,16 @@ struct shortest_path2 {
 
 
 //! The return value of the shortest distance functions
-template <forward_iterator VertexIteratorT, arithmetic DistanceT>
-struct shortest_distance {
+template <forward_iterator VertexIteratorT, typename DistanceT>
+requires is_arithmetic_v<DistanceT> struct shortest_distance {
   VertexIteratorT first;                  // source vertex
   VertexIteratorT last;                   // last vertex in path
   DistanceT       distance = DistanceT(); // sum of the path's edge distances in the path
 };
 
 //! The return value of the shortest path functions
-template <forward_iterator VertexIteratorT, arithmetic DistanceT, typename A = allocator<VertexIteratorT>>
-struct shortest_path {
+template <forward_iterator VertexIteratorT, typename DistanceT, typename A = allocator<VertexIteratorT>>
+requires is_arithmetic_v<DistanceT> struct shortest_path {
   vector<VertexIteratorT, A> path;                   // vertices that make up the path
   DistanceT                  distance = DistanceT(); // sum of the path's edge distances in the path
 
@@ -191,7 +191,7 @@ protected:
   //!                 in the graph with value of false.
   void
   find_paths(vertex_iterator_t<G> source, vertex_dist_cont& distances, bool const leaves_only, vector<bool>& leaf) {
-    vertex_key_t<G> const source_key = vertex_key(g_, *source);
+    vertex_key_t<G> const source_key = vertex_key(g_, source);
     distances[source_key]            = {source_key, 0};
 
     struct q_vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
@@ -215,8 +215,9 @@ protected:
       in_q[ukey] = false;
 
       // thru u's edges
-      for (edge_t<G>& uv : edges(g_, *find_vertex(g_, ukey))) {
-        DistanceT       v_dist = distances[ukey].distance + distance_fnc_(uv);
+      vertex_edge_range_t<G> edges_rng = edges(g_, find_vertex(g_, ukey));
+      for (vertex_edge_iterator_t<G> uv = edges_rng.begin(); uv != edges_rng.end(); ++uv) {
+        DistanceT       v_dist = distances[ukey].distance + distance_fnc_(*uv);
         vertex_key_t<G> vkey   = vertex_key(g_, uv, ukey);
         if (vkey != parent_key)
           leaf[ukey] = false;
@@ -245,7 +246,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_t<G>& uv : edges(g_))
+        for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv)
           if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[inward_vertex_key(g_, uv)] = false;
       }
@@ -356,13 +357,13 @@ protected:
     bool changed = true; // allows exiting early once results are stable
     for (size_t i = 1; changed && i < vertices_size(g_); ++i) {
       changed = false;
-      for (edge_t<G>& uv : edges(g_)) {
+      for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv) {
         vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source [yet]
 
         vertex_key_t<G> vkey   = outward_vertex_key(g_, uv);
-        DistanceT       v_dist = distances[ukey].distance + distance_fnc_(uv);
+        DistanceT       v_dist = distances[ukey].distance + distance_fnc_(*uv);
 
         if (v_dist < distances[vkey].distance) {
           distances[vkey] = {ukey, v_dist};
@@ -383,7 +384,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_t<G>& uv : edges(g_))
+        for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv)
           if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[inward_vertex_key(g_, uv)] = false;
       }
@@ -392,13 +393,13 @@ protected:
     // Detect negative edge cycles, if desired
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
-      for (edge_t<G>& uv : edges(g_)) {
+      for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv) {
         vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source
 
         vertex_key_t<G> vkey = outward_vertex_key(g_, uv);
-        if (distances[ukey].distance + distance_fnc_(uv) < distances[vkey].distance) {
+        if (distances[ukey].distance + distance_fnc_(*uv) < distances[vkey].distance) {
           neg_edge_cycles = true;
           break;
         }
@@ -438,7 +439,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
 
-  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, *begin(g)))));
+  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   fn.shortest_distances(source, result_iter, leaves_only);
 }
@@ -468,7 +469,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
       bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
       A                    alloc        = A()) {
-  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, *begin(g)))));
+  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   fn.shortest_paths(source, result_iter, leaves_only);
 }
@@ -507,7 +508,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
                                            DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
                                            A                    alloc        = A()) {
 
-  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, *begin(g)))));
+  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   return fn.shortest_distances(source, result_iter, leaves_only, detect_neg_edge_cycles);
 }
@@ -548,7 +549,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
             DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
             A                    alloc                  = A()) {
   //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
-  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, *begin(g)))));
+  using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   return fn.shortest_paths(source, result_iter, leaves_only, detect_neg_edge_cycles);
 }

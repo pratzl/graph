@@ -81,6 +81,20 @@ namespace detail {
   using iter_size_t = conditional_t<is_integral<iter_difference_t<I>>::value,
                                     make_unsigned<iter_difference_t<I>>,
                                     iter_difference_t<I>>;
+
+
+  template <typename C>
+  concept has_reserve_function = requires(C&& c) {
+    c.reserve(0);
+  };
+
+  template <has_reserve_function C, integral N>
+  void reserve(C& c, N n) {
+    c.reserve(n);
+  }
+
+  template <typename C, integral N>
+  void reserve(C& c, N n) {}
 } // namespace detail
 
 template <typename I, typename S>

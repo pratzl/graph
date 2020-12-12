@@ -7,10 +7,10 @@ using std::graph::make_ordered_pair;
 using std::graph::make_unordered_pair;
 
 TEST_CASE("ordered_pair", "[pair][ordered]") {
-  using PairT       = std::pair<int, int>;
-  using OPairT      = std::graph::ordered_pair<int, int>;
-  using first_type  = typename OPairT::first_type;
-  using second_type = typename OPairT::second_type;
+  using PairT  = std::pair<int, int>;
+  using OPairT = std::graph::ordered_pair<int, int>;
+  //using first_type  = typename OPairT::first_type;
+  //using second_type = typename OPairT::second_type;
 
   OPairT p1; // default construction
   REQUIRE(p1.first == 0);
@@ -67,10 +67,10 @@ TEST_CASE("ordered_pair", "[pair][ordered]") {
 }
 
 TEST_CASE("unordered_pair", "[pair][ordered]") {
-  using PairT       = std::pair<int, int>;
-  using OPairT      = std::graph::unordered_pair<int, int>;
-  using first_type  = typename OPairT::first_type;
-  using second_type = typename OPairT::second_type;
+  using PairT  = std::pair<int, int>;
+  using OPairT = std::graph::unordered_pair<int, int>;
+  //using first_type  = typename OPairT::first_type;
+  //using second_type = typename OPairT::second_type;
 
   OPairT p1; // default construction
   REQUIRE(p1.first == 0);
