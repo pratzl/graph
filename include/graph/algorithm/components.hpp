@@ -160,7 +160,7 @@ protected:
     stack_.push(u);
     in_stack_[u_key] = true;
 
-    for (edge_iterator_t<G> uv = edges_begin(graph_, u); uv != edges_end(graph_, u); ++uv) {
+    for (edge_iterator_t<G> uv = ranges::begin(edges(graph_, u)); uv != ranges::end(edges(graph_, u)); ++uv) {
       vertex_key_t<G> v_key = vertex_key(graph_, uv, u);
       if (visited_[v_key].discovered == undiscovered()) {
         eval_scc(vertex(graph_, uv, u), result_iter);

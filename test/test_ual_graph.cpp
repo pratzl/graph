@@ -49,6 +49,10 @@ using std::endl;
 using std::is_same;
 
 using std::ranges::find_if;
+using std::ranges::begin;
+using std::ranges::cbegin;
+using std::ranges::end;
+using std::ranges::cend;
 
 //namespace ranges = ::ranges;
 using namespace std::graph; // Bring graph types & functions into global namespace
@@ -232,7 +236,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 0;
   EXPECT_EQ("Augsburg", u->name);
   EXPECT_EQ(2, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(6, outward_vertex_key(g, uv));
   EXPECT_EQ("München", outward_vertex(g, uv)->name);
   EXPECT_EQ(84, uv->weight);
@@ -244,7 +248,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 1;
   EXPECT_EQ("Erfurt", u->name);
   EXPECT_EQ(1, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(1, outward_vertex_key(g, uv));
   EXPECT_EQ("Erfurt", outward_vertex(g, uv)->name);
   EXPECT_EQ(186, uv->weight);
@@ -252,7 +256,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 2;
   EXPECT_EQ("Frankfürt", u->name);
   EXPECT_EQ(3, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(5, outward_vertex_key(g, uv));
   EXPECT_EQ("Mannheim", outward_vertex(g, uv)->name);
   EXPECT_EQ(85, uv->weight);
@@ -268,7 +272,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 3;
   EXPECT_EQ("Karlsruhe", u->name);
   EXPECT_EQ(2, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(0, outward_vertex_key(g, uv));
   EXPECT_EQ("Augsburg", outward_vertex(g, uv)->name);
   EXPECT_EQ(250, uv->weight);
@@ -280,7 +284,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 4;
   EXPECT_EQ("Kassel", u->name);
   EXPECT_EQ(2, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(4, outward_vertex_key(g, uv));
   EXPECT_EQ("Kassel", outward_vertex(g, uv)->name);
   EXPECT_EQ(173, uv->weight);
@@ -292,7 +296,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 5;
   EXPECT_EQ("Mannheim", u->name);
   EXPECT_EQ(2, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(5, outward_vertex_key(g, uv));
   EXPECT_EQ("Mannheim", outward_vertex(g, uv)->name);
   EXPECT_EQ(85, uv->weight);
@@ -304,7 +308,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 6;
   EXPECT_EQ("München", u->name);
   EXPECT_EQ(3, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(6, outward_vertex_key(g, uv));
   EXPECT_EQ("München", outward_vertex(g, uv)->name);
   EXPECT_EQ(84, uv->weight);
@@ -320,7 +324,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 7;
   EXPECT_EQ("Nürnberg", u->name);
   EXPECT_EQ(3, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(8, outward_vertex_key(g, uv));
   EXPECT_EQ("Stuttgart", outward_vertex(g, uv)->name);
   EXPECT_EQ(183, uv->weight);
@@ -336,7 +340,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 8;
   EXPECT_EQ("Stuttgart", u->name);
   EXPECT_EQ(1, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(8, outward_vertex_key(g, uv));
   EXPECT_EQ("Stuttgart", outward_vertex(g, uv)->name);
   EXPECT_EQ(183, uv->weight);
@@ -344,7 +348,7 @@ TEST_CASE("ual init", "[ual][init]") {
   u = begin(g) + 9;
   EXPECT_EQ("Würzburg", u->name);
   EXPECT_EQ(3, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(9, outward_vertex_key(g, uv));
   EXPECT_EQ("Würzburg", outward_vertex(g, uv)->name);
   EXPECT_EQ(217, uv->weight);
@@ -371,20 +375,20 @@ TEST_CASE("ual graph functions", "[ual][graph][functions]") {
   EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
 
   size_t cnt = 0;
-  for (std::graph::vertex_iterator_t<Graph> u = std::graph::vertices_begin(g); u != std::graph::vertices_end(g);
+  for (std::graph::vertex_iterator_t<Graph> u = begin(std::graph::vertices(g)); u != end(std::graph::vertices(g));
        ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::vertices_begin(gc); u != std::graph::vertices_end(gc);
-       ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = begin(std::graph::vertices(gc));
+       u != end(std::graph::vertices(gc)); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = std::graph::vertices_cbegin(gc);
-       u != std::graph::vertices_cend(gc); ++u, ++cnt)
+  for (std::graph::const_vertex_iterator_t<Graph> u = cbegin(std::graph::vertices(gc));
+       u != cend(std::graph::vertices(gc)); ++u, ++cnt)
     ;
   EXPECT_EQ(std::graph::vertices_size(gc), cnt);
 
@@ -409,14 +413,14 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
-  std::graph::vertex_iterator_t<Graph>       ui  = std::graph::vertices_begin(g);
-  std::graph::const_vertex_iterator_t<Graph> uic = std::graph::vertices_cbegin(g);
+  std::graph::vertex_iterator_t<Graph>       ui  = begin(std::graph::vertices(g));
+  std::graph::const_vertex_iterator_t<Graph> uic = cbegin(std::graph::vertices(g));
   std::graph::vertex_t<Graph>&               u   = *ui;
   const std::graph::vertex_t<Graph>&         uc  = *uic;
 
   std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, ui);
   std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uic);
-  auto                            val   = std::graph::vertex_value(g, u);
+  auto                            val   = std::graph::vertex_value(g, ui);
 
   std::graph::vertex_iterator_t<Graph>       f1 = std::graph::find_vertex(g, 1);
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
@@ -429,26 +433,14 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
   {
     std::graph::vertex_edge_range_t<Graph>          uvr      = std::graph::edges(g, ui);
     std::graph::const_vertex_edge_range_t<Graph>    uvrc     = std::graph::edges(g, uic);
-    std::graph::vertex_edge_iterator_t<Graph>       uvi_beg1 = std::graph::edges_begin(g, ui);
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg2 = std::graph::edges_begin(g, uic);
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg3 = std::graph::edges_cbegin(g, ui);
-    std::graph::vertex_edge_iterator_t<Graph>       uvi_end1 = std::graph::edges_end(g, ui);
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = std::graph::edges_end(g, uic);
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = std::graph::edges_cend(g, ui);
+    std::graph::vertex_edge_iterator_t<Graph>       uvi_beg1 = begin(std::graph::edges(g, ui));
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg2 = begin(std::graph::edges(g, uic));
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg3 = cbegin(std::graph::edges(g, ui));
+    std::graph::vertex_edge_iterator_t<Graph>       uvi_end1 = end(std::graph::edges(g, ui));
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = end(std::graph::edges(g, uic));
+    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = end(std::graph::edges(g, ui));
     //EXPECT_EQ(std::graph::edges_size(g, u), uvr.size()); // forward-only range; size n/a
   }
-
-  /*{
-    std::graph::vertex_outward_edge_range_t<Graph>          uvr      = std::graph::outward_edges(g, u);
-    std::graph::const_vertex_outward_edge_range_t<Graph>    uvrc     = std::graph::outward_edges(g, uc);
-    std::graph::vertex_outward_edge_iterator_t<Graph>       uvi_beg1 = std::graph::outward_edges_begin(g, u);
-    std::graph::const_vertex_outward_edge_iterator_t<Graph> uvi_beg2 = std::graph::outward_edges_begin(g, uc);
-    std::graph::const_vertex_outward_edge_iterator_t<Graph> uvi_beg3 = std::graph::outward_edges_cbegin(g, u);
-    std::graph::vertex_outward_edge_iterator_t<Graph>       uvi_end1 = std::graph::outward_edges_end(g, u);
-    std::graph::const_vertex_outward_edge_iterator_t<Graph> uvi_end2 = std::graph::outward_edges_end(g, uc);
-    std::graph::const_vertex_outward_edge_iterator_t<Graph> uvi_end3 = std::graph::outward_edges_cend(g, u);
-    EXPECT_EQ(std::graph::outward_size(g, u), uvr.size());
-  }*/
 }
 
 TEST_CASE("ual edge functions", "[ual][edge][functions]") {
@@ -489,16 +481,16 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
 
   SECTION("const_iterator") {
     size_t                                cnt   = 0;
-    const_vertex_edge_iterator_t<Graph>   uv_it = edges_cbegin(g, u);
+    const_vertex_edge_iterator_t<Graph>   uv_it = cbegin(edges(g, u));
     const_vertex_vertex_iterator_t<Graph> u_it  = begin(vertices(g, u));
 
-    for (vertex_iterator_t<Graph> other = u; uv_it != edges_cend(g, u) && u_it != end(vertices(g, u));
+    for (vertex_iterator_t<Graph> other = u; uv_it != cend(edges(g, u)) && u_it != end(vertices(g, u));
          ++uv_it, ++u_it, ++cnt) {
       REQUIRE(outward_vertex_key(g, uv_it) == vertex_key(g, u_it));
     }
 
     REQUIRE(edges_size(g, u) == cnt);     // all edges/vertices visited?
-    REQUIRE(uv_it == edges_cend(g, u));   // reached the end?
+    REQUIRE(uv_it == cend(edges(g, u)));  // reached the end?
     REQUIRE(u_it == end(vertices(g, u))); // reached the end?
 
     REQUIRE(edges_size(g, u) >= 2);
@@ -509,16 +501,16 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
   }
   SECTION("iterator") {
     size_t                          cnt   = 0;
-    vertex_edge_iterator_t<Graph>   uv_it = edges_begin(g, u);
+    vertex_edge_iterator_t<Graph>   uv_it = begin(edges(g, u));
     vertex_vertex_iterator_t<Graph> u_it  = begin(vertices(g, u));
 
-    for (vertex_iterator_t<Graph> other = u; uv_it != edges_end(g, u) && u_it != end(vertices(g, u));
+    for (vertex_iterator_t<Graph> other = u; uv_it != end(edges(g, u)) && u_it != end(vertices(g, u));
          ++uv_it, ++u_it, ++cnt) {
       REQUIRE(outward_vertex_key(g, uv_it) == vertex_key(g, u_it));
     }
 
     REQUIRE(edges_size(g, u) == cnt);     // all edges/vertices visited?
-    REQUIRE(uv_it == edges_end(g, u));    // reached the end?
+    REQUIRE(uv_it == end(edges(g, u)));   // reached the end?
     REQUIRE(u_it == end(vertices(g, u))); // reached the end?
 
     REQUIRE(edges_size(g, u) >= 2);

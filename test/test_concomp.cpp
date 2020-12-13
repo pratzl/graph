@@ -27,6 +27,11 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
+using std::ranges::begin;
+using std::ranges::cbegin;
+using std::ranges::end;
+using std::ranges::cend;
+
 using namespace std::graph; // Bring graph functions into global namespace
 
 using DollarGraph = GraphXlate<daa_data_edge_mapper>::target_graph_t;
@@ -99,7 +104,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   u = begin(g) + 0;
   EXPECT_EQ("a1", u->name);
   EXPECT_EQ(1, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(2, outward_vertex_key(g, uv));
   EXPECT_EQ("b1", outward_vertex(g, uv)->name);
   EXPECT_EQ(100, uv->weight);
@@ -107,7 +112,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   u = begin(g) + 1;
   EXPECT_EQ("a2", u->name);
   EXPECT_EQ(1, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(3, outward_vertex_key(g, uv));
   EXPECT_EQ("b2", outward_vertex(g, uv)->name);
   EXPECT_EQ(100, uv->weight);
@@ -115,7 +120,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   u = begin(g) + 2;
   EXPECT_EQ("b1", u->name);
   EXPECT_EQ(2, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(4, outward_vertex_key(g, uv));
   EXPECT_EQ("c1", outward_vertex(g, uv)->name);
   EXPECT_EQ(50, uv->weight);
@@ -127,7 +132,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   u = begin(g) + 3;
   EXPECT_EQ("b2", u->name);
   EXPECT_EQ(2, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
   EXPECT_EQ(5, outward_vertex_key(g, uv));
   EXPECT_EQ("c2", outward_vertex(g, uv)->name);
   EXPECT_EQ(90, uv->weight);
@@ -139,12 +144,12 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   u = begin(g) + 4;
   EXPECT_EQ("c1", u->name);
   EXPECT_EQ(0, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
 
   u = begin(g) + 5;
   EXPECT_EQ("c2", u->name);
   EXPECT_EQ(0, edges_size(g, u));
-  uv = edges_begin(g, u);
+  uv = begin(edges(g, u));
 #endif
 }
 

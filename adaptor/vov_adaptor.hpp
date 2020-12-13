@@ -328,83 +328,16 @@ constexpr auto find_edge(const vov<Attributes...>&                    g,
 
 // Directed API (outward): Vertex functions
 template <typename... Attributes>
-constexpr auto outward_edges(vov<Attributes...>& g, std::graph::vertex_t<vov<Attributes...>>& u)
-      -> std::graph::vertex_outward_edge_range_t<vov<Attributes...>> {
-  return u;
+constexpr auto outward_edges(vov<Attributes...>& g, std::graph::vertex_iterator_t<vov<Attributes...>> u)
+      -> std::graph::vertex_outward_edge_range_t<vov<Attributes...>>& {
+  return *u;
 }
 template <typename... Attributes>
-constexpr auto outward_edges(const vov<Attributes...>& g, const std::graph::vertex_t<vov<Attributes...>>& u)
-      -> std::graph::const_vertex_outward_edge_range_t<vov<Attributes...>> {
-  return u;
+constexpr auto outward_edges(const vov<Attributes...>& g, std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
+      -> std::graph::const_vertex_outward_edge_range_t<vov<Attributes...>>& {
+  return *u;
 }
 
-template <typename... Attributes>
-constexpr auto edges_begin(vov<Attributes...>& g, std::graph::vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::vertex_edge_iterator_t<vov<Attributes...>> {
-  return u.begin();
-}
-template <typename... Attributes>
-constexpr auto edges_begin(const vov<Attributes...>& g, std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_edge_iterator_t<vov<Attributes...>> {
-  return u.begin();
-}
-template <typename... Attributes>
-constexpr auto edges_cbegin(const vov<Attributes...>& g, std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_edge_iterator_t<vov<Attributes...>> {
-  return u.begin();
-}
-
-template <typename... Attributes>
-constexpr auto edges_end(vov<Attributes...>& g, std::graph::vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::vertex_edge_iterator_t<vov<Attributes...>> {
-  return u.end();
-}
-template <typename... Attributes>
-constexpr auto edges_end(const vov<Attributes...>& g, std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_edge_iterator_t<vov<Attributes...>> {
-  return u.end();
-}
-template <typename... Attributes>
-constexpr auto edges_cend(const vov<Attributes...>& g, std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_edge_iterator_t<vov<Attributes...>> {
-  return u.end();
-}
-
-
-template <typename... Attributes>
-constexpr auto outward_edges_begin(vov<Attributes...>& g, std::graph::vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return u->begin();
-}
-template <typename... Attributes>
-constexpr auto outward_edges_begin(const vov<Attributes...>&                               g,
-                                   std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return u->begin();
-}
-template <typename... Attributes>
-constexpr auto outward_edges_cbegin(const vov<Attributes...>&                               g,
-                                    std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return u->begin();
-}
-
-template <typename... Attributes>
-constexpr auto outward_edges_end(vov<Attributes...>& g, std::graph::vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return u->end();
-}
-template <typename... Attributes>
-constexpr auto outward_edges_end(const vov<Attributes...>& g, std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return u->end();
-}
-template <typename... Attributes>
-constexpr auto outward_edges_cend(const vov<Attributes...>&                               g,
-                                  std::graph::const_vertex_iterator_t<vov<Attributes...>> u)
-      -> std::graph::const_vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return u->end();
-}
 
 template <typename... Attributes>
 constexpr auto outward_size(const vov<Attributes...>&                               g,

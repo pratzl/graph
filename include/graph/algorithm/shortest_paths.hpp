@@ -246,7 +246,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv)
+        for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv)
           if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[inward_vertex_key(g_, uv)] = false;
       }
@@ -357,7 +357,7 @@ protected:
     bool changed = true; // allows exiting early once results are stable
     for (size_t i = 1; changed && i < vertices_size(g_); ++i) {
       changed = false;
-      for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv) {
+      for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv) {
         vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source [yet]
@@ -384,7 +384,7 @@ protected:
       }
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
-        for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv)
+        for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv)
           if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
             leaf[inward_vertex_key(g_, uv)] = false;
       }
@@ -393,7 +393,7 @@ protected:
     // Detect negative edge cycles, if desired
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
-      for (edge_iterator_t<G> uv = edges_begin(g_); uv != edges_end(g_); ++uv) {
+      for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv) {
         vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source

@@ -112,6 +112,8 @@ Other Useful Tools
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
     - [x] use West const to mirror usage in std
     - [x] replace value(gve) with separate functions for graph_value(g), vertex_value(g,u), edge_value(g,uv)
+    - [x] replace vertex reference with vertex_iterator for vertex_value
+    - [x] replace edge reference with edge_iterators for edge_value (mult overloads for each edge iterator type)
     - [x] replace proposed arithmetic concept with arithmetic_v<T> (avoid barrier to acceptance)
     - [x] Should find_edge() return edge_range_t or vertex_edge_range_t? edge_range_t, find_vertex_edge() is used for vertex_edge_range_t
     - [x] Is there a reason user_value_type can't just be value_type? No: only key_type & value_type should be exposed.
@@ -123,6 +125,7 @@ Other Useful Tools
     - [ ] [paper] Give overview of different ranges
       - [ ] relate the ranges to the concepts
       - [ ] show relationship between uniform & directed functions
+    - [ ] move from std::graph to std
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -141,6 +144,7 @@ Other Useful Tools
     - [ ] support get(ordered_pair<T1,T2>) & get(unordered_pair<T1,T2>)
     - [ ] support piecewise_construct_t ctor
     - [ ] [paper] Add ordered_pair & unordered_pair to paper
+    - [ ] Should they be in std:: or std::graph:: ?
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
@@ -148,7 +152,7 @@ Other Useful Tools
     - [x] remove type defs on graph classes in paper (only ctors should exist)
     - [ ] assure CSR can be handled with the current graph ctors
     - [x] IndexT --> KeyT, integral concept
-    - [ ] Separate _impl files into _impl for the class and _api for the API adaptors
+    - [x] Separate _impl files into _impl for the class and _api for the API adaptors
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
@@ -170,8 +174,11 @@ Other Useful Tools
     - [x] support Compressed Sparse Row (CSR)?
       - [x] no: can't store vertex props; vertex lookup log(n)
   - [ ] support constexpr data structures (vector, array)
+  - [ ] create adaptors for directed graphs
+    - [ ] map Outward directed functions to Vertex-Edge & Vertex-Vertex functions (when present)
+    - [ ] map Inward directed functions to Vertex-Edge & Vertex-Vertex functions (when present)
 - [ ] C++20
-  - [ ] review use of sentinal
+  - [x] review use of sentinal; removed: it can be retrieved from a range type if needed
   - [ ] define graph module
   - [x] use spaceship operator (n/a b/c <, >, <=, >= isn't needed)
   - [ ] operator!= not needed when operator== defined? (part of spaceship operator)

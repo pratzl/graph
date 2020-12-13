@@ -93,7 +93,7 @@ public:
         , visited_(vertices_size(graph_), white, alloc)
         , parent_(vertices_size(graph_), ranges::end(vertices(graph_)), alloc) {
     if (seed != ranges::end(vertices(graph_))) {
-      stack_.push(stack_elem{seed, edges_begin(graph_, seed)});
+      stack_.push(stack_elem{seed, ranges::begin(edges(graph_, seed))});
       visited_[vertex_key(graph_, seed)] = grey;
     }
   }
@@ -198,7 +198,7 @@ protected:
       stack_.pop();
 
       // advance uv to next unvisited v vertex
-      vertex_edge_iterator_t<G> uv_end = edges_end(graph_, u);
+      vertex_edge_iterator_t<G> uv_end = ranges::end(edges(graph_, u));
       vertex_iterator_t<G>      v      = vertex_iterator_t<G>();
       vertex_key_t<G>           v_key  = vertex_key_t<G>();
       for (; uv != uv_end; ++uv) {
@@ -211,10 +211,10 @@ protected:
       if (uv == uv_end) {
         vertex_key_t<G> u_key = vertex_key(graph_, u);
         visited_[u_key]       = black;
-      } else {                                                 // (visited_[v_key] == white)
-        stack_.push(stack_elem{u, uv});                        // remember next edge to resume on for u
-        vertex_edge_iterator_t<G> vw = edges_begin(graph_, v); // may ==end(graph_,*v)
-        stack_.push(stack_elem{v, vw});                        // go level deaper in traversal
+      } else {                                                          // (visited_[v_key] == white)
+        stack_.push(stack_elem{u, uv});                                 // remember next edge to resume on for u
+        vertex_edge_iterator_t<G> vw = ranges::begin(edges(graph_, v)); // may ==end(graph_,*v)
+        stack_.push(stack_elem{v, vw});                                 // go level deaper in traversal
         visited_[v_key] = grey;
         parent_[v_key]  = u;
         return stack_.top();
@@ -265,7 +265,7 @@ public:
         , visited_(vertices_size(graph), white, alloc)
         , parent_(vertices_size(graph), ranges::end(vertices(graph)), alloc) {
     if (seed != ranges::end(vertices(graph_))) {
-      stack_.push({seed, edges_begin(graph_, seed)});
+      stack_.push({seed, ranges::begin(edges(graph_, seed))});
       visit(seed, grey);
     }
   }
@@ -398,7 +398,7 @@ public:
 
 protected:
   bool outward_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return uv != edges_end(graph_, u);
+    return uv != ranges::end(edges(graph_, u));
   }
 
   bool is_outward_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
@@ -429,7 +429,7 @@ protected:
         continue;
       } else if (is_outward_visited(stack_.top())) { // back edge?
         auto [u, uv]                     = stack_.top();
-        vertex_edge_iterator_t<G> uv_end = edges_end(graph_, u);
+        vertex_edge_iterator_t<G> uv_end = ranges::end(edges(graph_, u));
         stack_.pop();
         for (++uv; uv != uv_end && is_parent(u, uv); ++uv)
           ;
@@ -443,8 +443,8 @@ protected:
       } else { // go down a level
         auto [u, uv]                     = stack_.top();
         vertex_iterator_t<G>      v      = vertex(graph_, uv, u);
-        vertex_edge_iterator_t<G> vw     = edges_begin(graph_, v);
-        vertex_edge_iterator_t<G> vw_end = edges_end(graph_, v);
+        vertex_edge_iterator_t<G> vw     = ranges::begin(edges(graph_, v));
+        vertex_edge_iterator_t<G> vw_end = ranges::end(edges(graph_, v));
 
         // scan past parent of v (we have enough info so parent_[] isn't needed)
         for (; vw != vw_end && vertex(graph_, vw, v) == u; ++vw)

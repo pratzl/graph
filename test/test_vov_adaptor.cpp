@@ -72,7 +72,7 @@ TEST_CASE("vov graph", "[vov]") {
 #if 0
   for (std::graph::vertex_iterator_t<Graph> u = begin(g); u != end(g); ++u) {
     cout << "city[" << vertex_key(g, u) << "]\n";
-    for (std::graph::vertex_edge_iterator_t<Graph> uv = edges_begin(g, u); uv != edges_end(g,u); ++uv) {
+    for (std::graph::vertex_edge_iterator_t<Graph> uv = begin(edges(g, u)); uv != end(edges(g, u)); ++uv) {
       //graph::adaptor::value(uv);    // compiler error in msvc (bug?)
       cout << "  --> city[" << outward_vertex_key(g, uv) << "] " << get<1>(*uv) << "km\n";
     }

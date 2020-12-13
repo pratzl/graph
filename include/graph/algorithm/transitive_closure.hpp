@@ -44,7 +44,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 
 template <typename ExecutionPolicy, directed G, typename OutIter, typename A = allocator<bool>>
 requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
-warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
+                                     warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a dense graph using Warshall's algorithm.
@@ -60,7 +60,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
   vector<bool> reach(V * V, alloc);
   for (vertex_iterator_t<G> ui = begin(g); ui != end(g); ++ui) {
     size_t uoff = vertex_key(g, ui) * V;
-    for (vertex_edge_iterator_t<G> uv = edges_begin(g, ui); uv != edges_end(g, ui); ++uv)
+    for (vertex_edge_iterator_t<G> uv = ranges::begin(edges(g, ui)); uv != ranges::end(edges(g, ui)); ++uv)
       reach[uoff + vertex_key(g, uv, ui)] = true;
   }
 

@@ -53,26 +53,6 @@ template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 constexpr auto vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
       -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_begin(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
-      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_begin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_cbegin(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_end(directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
-      -> vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_end(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_cend(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g)
-      -> const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
-
 
 ///-------------------------------------------------------------------------------------
 /// dav_edge
@@ -383,10 +363,10 @@ public:
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
 public:
-  using base_type             = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
-  using graph_type            = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
-  using graph_user_value_type = GV;
-  using allocator_type        = A;
+  using base_type        = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
+  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+  using graph_value_type = GV;
+  using allocator_type   = A;
 
   using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
   using vertex_value_type     = VV;
@@ -442,8 +422,8 @@ public:
   directed_adjacency_vector(const directed_adjacency_vector&)         = default;
 
   directed_adjacency_vector(const allocator_type& alloc) noexcept;
-  directed_adjacency_vector(const graph_user_value_type&, const allocator_type& alloc = allocator_type());
-  directed_adjacency_vector(graph_user_value_type&&, const allocator_type& alloc = allocator_type());
+  directed_adjacency_vector(const graph_value_type&, const allocator_type& alloc = allocator_type());
+  directed_adjacency_vector(graph_value_type&&, const allocator_type& alloc = allocator_type());
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -579,6 +559,12 @@ public:
   vertex_iterator       find_vertex(vertex_key_type);
   const_vertex_iterator find_vertex(vertex_key_type) const;
 
+  constexpr vertex_edge_range       outward_edges(vertex_iterator u);
+  constexpr const_vertex_edge_range outward_edges(const_vertex_iterator u) const;
+
+  constexpr vertex_outward_vertex_range       outward_vertices(vertex_iterator u);
+  constexpr const_vertex_outward_vertex_range outward_vertices(const_vertex_iterator u) const;
+
 protected:
   void reserve_vertices(vertex_size_type);
   void resize_vertices(vertex_size_type);
@@ -619,7 +605,7 @@ private:
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
   using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
-  using graph_value_type = typename graph_type::graph_user_value_type;
+  using graph_value_type = typename graph_type::graph_value_type;
   using allocator_type   = typename graph_type::allocator_type;
 
   using vertex_type       = typename graph_type::vertex_type;

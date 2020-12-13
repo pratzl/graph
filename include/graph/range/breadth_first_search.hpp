@@ -207,8 +207,8 @@ protected:
   }
 
   void push_neighbors(vertex_iterator_t<G> u, size_t depth) {
-    vertex_edge_iterator_t<G> uv_end = edges_end(graph_, u);
-    for (vertex_edge_iterator_t<G> uv = edges_begin(graph_, u); uv != uv_end; ++uv) {
+    vertex_edge_iterator_t<G> uv_end = ranges::end(edges(graph_, u));
+    for (vertex_edge_iterator_t<G> uv = ranges::begin(edges(graph_, u)); uv != uv_end; ++uv) {
       vertex_iterator_t<G> v     = vertex(graph_, uv, u);
       vertex_key_t<G>      v_key = vertex_key(graph_, v);
       if (visited_[v_key] == white) {
@@ -381,7 +381,7 @@ public:
 
 protected:
   bool outward_exists(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
-    return uv != edges_end(graph_, u);
+    return uv != ranges::end(edges(graph_, u));
   }
 
   bool is_outward_visited(const_vertex_iterator_t<G> u, const_vertex_edge_iterator_t<G> uv) const {
@@ -404,8 +404,8 @@ protected:
   }
 
   void push_neighbors(vertex_iterator_t<G> u, vertex_iterator_t<G> v, size_t depth) {
-    vertex_edge_iterator_t<G> vw     = edges_begin(graph_, v);
-    vertex_edge_iterator_t<G> vw_end = edges_end(graph_, v);
+    vertex_edge_iterator_t<G> vw     = ranges::begin(edges(graph_, v));
+    vertex_edge_iterator_t<G> vw_end = ranges::end(edges(graph_, v));
     if (vw == vw_end || (edges_size(graph_, v) == 1 && vertex(graph_, vw, v) == u)) {
       queue_.push({v, vw_end, depth});
     } else {
@@ -440,7 +440,7 @@ protected:
           push_neighbors(u, v, d + 1);
         }
 
-        vertex_edge_iterator_t<G> uv_last = --edges_end(graph_, u);
+        vertex_edge_iterator_t<G> uv_last = --ranges::end(edges(graph_, u));
         if (uv == uv_last) // last edge of u?
           visit(u, black);
 
