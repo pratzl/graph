@@ -173,7 +173,8 @@ public:
   using vertex_labels_t     = std::vector<vertex_label_t>;
   using vertex_index_t      = std::graph::vertex_key_t<target_graph_t>;
   using vertex_value_t      = std::graph::vertex_value_t<target_graph_t>;
-  using target_edge_t       = typename target_graph_t::edge_value_type; // pair{ pair{u_label, v_label}, uv_value }
+  using target_edge_t       = std::pair<typename target_graph_t::edge_key_type,
+                                  typename target_graph_t::edge_value_type>; // pair{ pair{u_label, v_label}, uv_value }
   using target_edges_t      = std::vector<target_edge_t>;
 
 public:
@@ -220,8 +221,7 @@ protected:
       assert(to < vertex_labels_.size());
       edge_values.push_back({{from, to}, mapper_.edge_value(r)}); // pair{ pair{u_label, v_label}, uv_value }
     }
-    auto cmp = [](const typename target_graph_t::edge_value_type& lhs,
-                  const typename target_graph_t::edge_value_type& rhs) { return lhs.first.first < rhs.first.first; };
+    auto cmp = [](const target_edge_t& lhs, const target_edge_t& rhs) { return lhs.first.first < rhs.first.first; };
     ::ranges::actions::sort(edge_values, cmp);
     return edge_values;
   }

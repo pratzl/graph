@@ -45,28 +45,30 @@ Other Useful Tools
         data_* hold data to be used for tests
 
 ## Naming Conventions
-| Pattern           | Example              | Req'd? | Description                                                                          |
-| :---------------- | :------------------- | :----: | :----------------------------------------------------------------------------------- |
-| *_type            | edge_type            |   Y    | The full type stored in the graph                                                    |
-| *_value_type      | edge_value_type      |   Y    | The edge type defined by the graph, without the edge_key                             |
-| *_user_value_type | edge_user_value_type |   Y    | The user-defined type from the the template parameter (e.g EV)                       |
-|                   |                      |        |                                                                                      |
-| *_size_type       | vertex_size_type     |   Y    | The size_type defined by the underlying container, or size_t if there isn't one.     |
-| *_index_type      | vertex_index_type    |   n    | The type used for referring to a vertex when it's kept in a random_access container. |
-| *_key_type        | vertex_key_type      |   Y    | The key used for finding a vertex.                                                   |
+| Pattern      | Example           | Req'd? | Description                                                                                         |
+| :----------- | :---------------- | :----: | :-------------------------------------------------------------------------------------------------- |
+| *_type       | edge_type         |   Y    | The full type stored in the graph                                                                   |
+| *_value_type | edge_value_type   |   Y    | The edge type defined by the graph, without the edge_key                                            |
+|              |                   |        |                                                                                                     |
+| *_key_type   | vertex_key_type   |   Y    | The key used for finding a vertex.                                                                  |
+| *_size_type  | vertex_size_type  |   Y    | The unsigned size type defined by the underlying container.                                         |
+| *_ssize_type | vertex_size_type  |   Y    | The signed size type defined by the underlying container.                                           |
+| *_index_type | vertex_index_type |   n    | The type used for referring to a vertex when it's kept in a random_access container. Internal only. |
 
 
 ## ToDo
 
-- [ ] concepts
+- [ ] concepts & type traits
   - [x] vertex_c --> graph_vertex
-  - [ ] add type traits? (needed when concepts exist?)
+  - [x] add type traits? (needed when concepts exist?)
   - [ ] algorithms: refine concept requirements
-  - [ ] [paper] sparse/dense not defined;
+  - [x] [paper] sparse/dense not defined;
   - [x] compare to BGL concepts [Lumsdaine]: need to add concepts for adjacency, incidence, vertex_list, edge_list
-  - [x] allow vertex_key_t<G> to be non-integer [no; requires algo specialization, performance impact]
+  - [x] allow vertex_key_t<G> to be non-integer? [no; requires algo specialization, performance impact]
+  - [ ] [paper] extend graph_traits section to include other type traits
 - [ ] Algorithms
   - [x] Common
+    - [x] Replace vertex_user_value_type with vertex_value_type for undirected_adjacency_list
     - [x] Change contiguous --> random_access for requirements
     - [ ] Test with constexpr
   - [ ] Strongly-connected components: impl, test, update paper
@@ -109,21 +111,27 @@ Other Useful Tools
     - [x] Consider addition of [[nodiscard]] (std only uses it on empty & allocate, neither used in graph.hpp)
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
     - [x] use West const to mirror usage in std
-    - [ ] value(gve) needs a type defined (don't use decltype with call to undefined user_value)
-    - [x] replace proposed arithmetic concept with arithmetic_v<T>
+    - [x] replace value(gve) with separate functions for graph_value(g), vertex_value(g,u), edge_value(g,uv)
+    - [x] replace proposed arithmetic concept with arithmetic_v<T> (avoid barrier to acceptance)
     - [x] Should find_edge() return edge_range_t or vertex_edge_range_t? edge_range_t, find_vertex_edge() is used for vertex_edge_range_t
-    - [ ] Is there a reason user_value_type can't just be value_type?
-    - [ ] Add find_if() to all ranges
+    - [x] Is there a reason user_value_type can't just be value_type? No: only key_type & value_type should be exposed.
     - [ ] Decide: begin/end for all ranges, or none at all in favor of using begin(rng)/end(rng)
     - [ ] Define common implementations that each graph can optionally specialize
+      - [ ] degree()
+      - [ ] create default implementations of uniform API based on outgoing functions for directed graph
+    - [x] Replace vertex & edge references with iterators
+    - [ ] [paper] Give overview of different ranges
+      - [ ] relate the ranges to the concepts
+      - [ ] show relationship between uniform & directed functions
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
     - [x] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
     - [x] add vertices_size(g,u) [add impl]
     - [x] add vertices_ssize(g,u) [add impl]
-    - [ ] add graph_contains_vertex(g,ukey), graph_contains_edge(g, ukey, vkey), graph_contains_edge(g, u, v) [add impl]
+    - [ ] add contains_vertex(g,ukey), contains_edge(g, ukey, vkey), contains_edge(g, u, v) [add impl]
     - [x] vertex_key_type required to be integral
+  - [ ] Directed API
   - [ ] ordered_pair & unordered_pair
     - [x] initial implementation
     - [x] initial test impl
@@ -132,6 +140,7 @@ Other Useful Tools
     - [ ] support tuple_element<orderd_pair<T1,T2>> & tuple_element<unorderd_pair<T1,T2>>
     - [ ] support get(ordered_pair<T1,T2>) & get(unordered_pair<T1,T2>)
     - [ ] support piecewise_construct_t ctor
+    - [ ] [paper] Add ordered_pair & unordered_pair to paper
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
@@ -139,6 +148,7 @@ Other Useful Tools
     - [x] remove type defs on graph classes in paper (only ctors should exist)
     - [ ] assure CSR can be handled with the current graph ctors
     - [x] IndexT --> KeyT, integral concept
+    - [ ] Separate _impl files into _impl for the class and _api for the API adaptors
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
@@ -147,12 +157,14 @@ Other Useful Tools
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
     - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
     - [ ] create matching undirected adjacency vector with immutable edge values
+    - [ ] Replace allocator parameter with container parameters for vertices & edges
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
     - [x] implement with deque? [for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
     - [x] implement with map? (non-integer index) [no: too big of impact to algorithms]
     - [ ] [wait for P1709 review by LEWG] Create paper D2239R0 
+    - [ ] Replace allocator parameter with container parameter for vertices
   - [ ] Create paper for D2241R0 graph data structure design directions
     - [ ] describe rationale for data structures used
     - [x] support Compressed Sparse Row (CSR)?

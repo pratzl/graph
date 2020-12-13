@@ -81,7 +81,6 @@ struct graph_traits
   // vertex types - only if vertices defined for graph
   using vertex_type                  = ...; // all graph types
   using vertex_key_type              = ...; // 
-  using vertex_user_value_type       = ...; // all graph types
   using vertex_value_type            = ...; // all graph types
 
   // vertex collection types - only if graph-vertices defined
@@ -92,7 +91,6 @@ struct graph_traits
   // edge types 
   using edge_type                  = ...; // 
   using edge_key_type              = ...; // (e.g. ordered_pair<vertex_key_type,vertex_key_type>)
-  using edge_user_value_type       = ...; // 
   using edge_value_type            = ...; // 
 
   // graph-edge collection types - only if graph-edges defined by graph
@@ -128,19 +126,33 @@ struct graph_traits
 
 // clang-format off
 
-// directed = integral vertex key && edge key is ordered
+// directed = edge key is ordered
+template<typename G>
+using is_directed = is_base_of<ordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+                               typename graph_traits<G>::edge_key_type>;
+template<typename G>
+inline constexpr bool is_directed_v = is_directed<G>::value;
+
 template <typename G>
 concept directed 
-      =  is_integral_v<typename graph_traits<G>::vertex_key_type>
-      && is_base_of_v<ordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+      =  is_base_of_v<ordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
                       typename graph_traits<G>::edge_key_type>;
 
-// undirected = integral vertex key && edge key is unordered
+// undirected = edge key is unordered
+template <typename G>
+using is_undirected = is_base_of<unordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+                                 typename graph_traits<G>::edge_key_type>;
+template<typename G>
+inline constexpr bool is_undirected_v = is_undirected<G>::value;
+
 template <typename G>
 concept undirected
-      =  is_integral_v<typename graph_traits<G>::vertex_key_type>
-      && is_base_of_v<unordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+      =  is_base_of_v<unordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
                       typename graph_traits<G>::edge_key_type>;
+
+// directed or undirected
+template<typename G>
+inline constexpr bool is_directed_or_undirected_v = is_directed_v<G> || is_undirected_v<G>;
 
 template <typename G>
 concept directed_or_undirected = directed<G> || undirected<G>;
@@ -154,7 +166,7 @@ concept directed_or_undirected = directed<G> || undirected<G>;
 
 // Uniform API: Graph types
 template <directed_or_undirected G>
-using graph_value_t = typename graph_traits<G>::graph_user_value;
+using graph_value_t = typename graph_traits<G>::graph_value_type;
 
 // Uniform API: Vertex types
 template <directed_or_undirected G>
@@ -164,7 +176,7 @@ template <directed_or_undirected G>
 using vertex_key_t = typename graph_traits<G>::vertex_key_type;
 
 template <directed_or_undirected G>
-using vertex_value_t = typename graph_traits<G>::vertex_user_value_type;
+using vertex_value_t = typename graph_traits<G>::vertex_value_type;
 
 // Uniform API: Edge Types
 template <directed_or_undirected G>
@@ -174,7 +186,7 @@ template <directed_or_undirected G>
 using edge_key_t = typename graph_traits<G>::edge_key_type;
 
 template <directed_or_undirected G>
-using edge_value_t = typename graph_traits<G>::edge_user_value_type;
+using edge_value_t = typename graph_traits<G>::edge_value_type;
 
 // Uniform API: Graph-Vertex range types
 template <directed_or_undirected G>
@@ -260,10 +272,10 @@ using vertex_vertex_ssize_t = ranges::range_difference_t<typename graph_traits<G
 //
 
 // Uniform API: Common functions (accepts graph, vertex and edge)
-template <typename GVE>
-constexpr auto value(GVE& gve) -> decltype(user_value(gve)) {
-  return user_value(gve);
-}
+template <directed_or_undirected G>
+constexpr auto graph_value(G& g) -> graph_value_t<G>&;
+template <directed_or_undirected G>
+constexpr auto graph_value(G const& g) -> const graph_value_t<G>&;
 
 // Uniform API: Graph functions
 template <directed_or_undirected G>
@@ -282,6 +294,11 @@ constexpr bool contains_edge(G const& g, const_vertex_iterator_t<G> u, const_ver
 // Uniform API: Vertex functions
 template <directed_or_undirected G>
 constexpr auto vertex_key(const G&, const_vertex_iterator_t<G> u) -> vertex_key_t<G>;
+
+template <directed_or_undirected G>
+constexpr auto vertex_value(G& g, vertex_t<G>& u) -> vertex_value_t<G>&;
+template <directed_or_undirected G>
+constexpr auto vertex_value(const G& g, const vertex_t<G>& u) -> const vertex_value_t<G>&;
 
 template <directed_or_undirected G>
 void clear(G& g, vertex_iterator_t<G> u);
@@ -308,6 +325,11 @@ template <directed_or_undirected G>
 constexpr auto edge_key(G& g, const_vertex_iterator_t<G> u, const_vertex_iterator_t<G> v) -> edge_key_t<G>;
 template <directed_or_undirected G>
 constexpr auto edge_key(G& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey) -> edge_key_t<G>;
+
+template <directed_or_undirected G>
+constexpr auto edge_value(G& g, edge_t<G>& u) -> edge_value_t<G>&;
+template <directed_or_undirected G>
+constexpr auto edge_value(const G& g, const edge_t<G>& u) -> const edge_value_t<G>&;
 
 template <directed_or_undirected G>
 constexpr auto vertex(G& g, edge_iterator_t<G> uv, const_vertex_iterator_t<G> source) -> vertex_iterator_t<G>;
@@ -351,6 +373,7 @@ template <directed_or_undirected G>
 constexpr auto outward_vertex_key(const G&, const_edge_iterator_t<G> uv) -> vertex_key_t<G>;
 template <directed_or_undirected G>
 constexpr auto outward_vertex_key(const G&, const_vertex_edge_iterator_t<G> uv) -> vertex_key_t<G>;
+
 template <directed_or_undirected G>
 constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v)
       -> pair<vertex_edge_iterator_t<G>, bool>;
@@ -913,13 +936,6 @@ concept graph_vertex = true;
 template <typename V>
 concept graph_edge = true;
 
-template <typename G>
-concept graph_value = true;
-template <typename G>
-concept vertex_value = true;
-template <typename G>
-concept edge_value = true;
-
 template <typename Rng, typename G>
 concept vertex_path = true;
 template <typename Rng, typename G>
@@ -930,6 +946,37 @@ concept vertex_cycle = true;
 
 template <typename G>
 concept searchable_graph = true; // for DFS, BFS & TopoSort ranges
+
+template <typename G>
+concept incremental_vertex_graph = true; // add_vertex
+template <typename G>
+concept decremental_vertex_graph = true; // remove_vertex
+template <typename G>
+concept dynamic_vertex_graph = incremental_vertex_graph<G> && decremental_vertex_graph<G>;
+template <typename G>
+concept static_vertex_graph = !incremental_vertex_graph<G> && !decremental_vertex_graph<G>;
+
+template <typename G>
+concept incremental_edge_graph = true;
+/*template <typename G, typename K=vertex_key<G>, typename I=vertex_iterator<G>>
+concept incremental_edge_graph = requires(G& g, K ukey, K vkey, I u, I v) {
+      vertex_edge_iterator_t<G>; 
+      { create_edge(g, ukey, vkey) } -> std::convertible_to<pair<vertex_edge_iterator_t<G>, bool>>;
+      { create_edge(g, u,    v) }    -> std::convertible_to<pair<vertex_edge_iterator_t<G>, bool>>;
+      // consider: edges with required value that aren't default-constructable.
+      // We need to support either this, or creation with a value, to have a complete definition.
+};*/
+template <typename G>
+concept decremental_edge_graph = true; // remove_edge
+template <typename G>
+concept dynamic_edge_graph = incremental_edge_graph<G> && decremental_edge_graph<G>;
+template <typename G>
+concept static_edge_graph = !incremental_edge_graph<G> && !decremental_edge_graph<G>;
+
+template <typename G>
+concept dynamic_graph = dynamic_vertex_graph<G> && dynamic_edge_graph<G>;
+template <typename G>
+concept static_graph = static_vertex_graph<G> && static_edge_graph<G>;
 
 
 // Requirements for extracting vertex values from external sources for graph construction
