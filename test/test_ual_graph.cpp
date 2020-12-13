@@ -62,7 +62,9 @@ using Routes = routes_t;
 template <class OStream>
 OStream& operator<<(OStream& os, const Graph& g);
 
-const vector<Graph::edge_value_type>& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
+using edge_kv = std::pair<Graph::edge_key_type, Graph::edge_value_type>;
+
+const vector<edge_kv>& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
   return find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
@@ -116,7 +118,7 @@ TEST_CASE("ual initializer list", "[ual][init][initializer list]") {
 
 TEST_CASE("ual init", "[ual][init]") {
 #if 0
-  vector<Graph::edge_value_type> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
+  vector<Graph::edge_kv> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, daa_germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
@@ -414,7 +416,7 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
 
   std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, ui);
   std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uic);
-  auto                            val   = std::graph::value(u);
+  auto                            val   = std::graph::vertex_value(g, u);
 
   std::graph::vertex_iterator_t<Graph>       f1 = std::graph::find_vertex(g, 1);
   std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);

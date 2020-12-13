@@ -89,26 +89,24 @@ public:
   using base_type  = conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV>;
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
 
-  using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
-  using vertex_user_value_type = VV;
-  using vertex_key_type        = KeyT;
-  using vertex_index_type      = KeyT;
-  using vertex_value_type      = vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_value_type     = VV;
+  using vertex_key_type       = KeyT;
+  using vertex_index_type     = KeyT;
+  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_size_type      = typename vertex_set::size_type;
   using vertex_ssize_type     = typename vertex_set::difference_type;
 
-  using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
-  using edge_user_value_type = EV;
-  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
-  using edge_index_type      = KeyT;
-  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
-  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = DAV_EDGE_SET<edge_type, edge_allocator_type>;
+  using edge_type           = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_value_type     = EV;
+  using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_index_type     = KeyT;
+  using edge_allocator_type = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_set            = DAV_EDGE_SET<edge_type, edge_allocator_type>;
 
 public:
   dav_edge()                    = default;
@@ -119,8 +117,8 @@ public:
   dav_edge& operator=(dav_edge&&) = default;
 
   dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key);
-  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, const edge_user_value_type&);
-  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, edge_user_value_type&&);
+  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, const edge_value_type&);
+  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, edge_value_type&&);
 
   vertex_iterator       inward_vertex(graph_type&);
   const_vertex_iterator inward_vertex(const graph_type&) const;
@@ -152,26 +150,24 @@ public:
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
   using base_type  = conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV>;
 
-  using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
-  using vertex_user_value_type = VV;
-  using vertex_key_type        = KeyT;
-  using vertex_index_type      = KeyT;
-  using vertex_value_type      = vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_value_type     = VV;
+  using vertex_key_type       = KeyT;
+  using vertex_index_type     = KeyT;
+  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_size_type      = typename vertex_set::size_type;
   using vertex_ssize_type     = typename vertex_set::difference_type;
 
-  using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
-  using edge_user_value_type = EV;
-  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
-  using edge_index_type      = KeyT;
-  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
-  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = DAV_EDGE_SET<edge_type, edge_allocator_type>;
+  using edge_type           = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_value_type     = EV;
+  using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_index_type     = KeyT;
+  using edge_allocator_type = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_set            = DAV_EDGE_SET<edge_type, edge_allocator_type>;
 
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
@@ -189,8 +185,8 @@ public:
   dav_vertex& operator=(dav_vertex&&) = default;
 
   dav_vertex(vertex_set& vertices, vertex_index_type index);
-  dav_vertex(vertex_set& vertices, vertex_index_type index, const vertex_user_value_type&);
-  dav_vertex(vertex_set& vertices, vertex_index_type index, vertex_user_value_type&&);
+  dav_vertex(vertex_set& vertices, vertex_index_type index, const vertex_value_type&);
+  dav_vertex(vertex_set& vertices, vertex_index_type index, vertex_value_type&&);
 
   void            set_edge_begin(graph_type&, edge_iterator);
   void            set_edge_begin(edge_index_type);
@@ -207,21 +203,19 @@ public:
 
   using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
 
-  using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
-  using vertex_user_value_type = VV;
-  using vertex_key_type        = KeyT;
-  using vertex_value_type      = vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_value_type     = VV;
+  using vertex_key_type       = KeyT;
+  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
 
-  using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
-  using edge_user_value_type = typename edge_type::edge_user_value_type;
-  using edge_key_type        = typename edge_type::edge_key_type; // <from,to>
-  using edge_value_type      = typename edge_type::edge_value_type;
-  using edge_set             = typename edge_type::edge_set;
+  using edge_type       = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_value_type = typename edge_type::edge_value_type;
+  using edge_key_type   = typename edge_type::edge_key_type; // <from,to>
+  using edge_set        = typename edge_type::edge_set;
 
   using vertex_edge_iterator       = typename edge_set::iterator;
   using const_vertex_edge_iterator = typename edge_set::const_iterator;
@@ -394,13 +388,12 @@ public:
   using graph_user_value_type = GV;
   using allocator_type        = A;
 
-  using vertex_type            = dav_vertex<VV, EV, GV, KeyT, A>;
-  using vertex_user_value_type = VV;
-  using vertex_key_type        = KeyT;
-  using vertex_index_type      = KeyT;
-  using vertex_value_type      = vertex_type;
-  using vertex_allocator_type  = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set             = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_value_type     = VV;
+  using vertex_key_type       = KeyT;
+  using vertex_index_type     = KeyT;
+  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
+  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
 
   using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
   using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
@@ -409,13 +402,12 @@ public:
   using vertex_size_type      = ranges::range_size_t<vertex_range>;
   using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
 
-  using edge_type            = dav_edge<VV, EV, GV, KeyT, A>;
-  using edge_user_value_type = EV;
-  using edge_key_type        = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
-  using edge_index_type      = KeyT;
-  using edge_value_type      = pair<edge_key_type, edge_user_value_type>;
-  using edge_allocator_type  = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set             = DAV_EDGE_SET<edge_type, edge_allocator_type>;
+  using edge_type           = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_value_type     = EV;
+  using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_index_type     = KeyT;
+  using edge_allocator_type = typename allocator_traits<A>::template rebind_alloc<edge_type>;
+  using edge_set            = DAV_EDGE_SET<edge_type, edge_allocator_type>;
 
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
@@ -459,8 +451,8 @@ public:
   // the edges. Edges are scanned first to determine the highest number and
   // the vertices are resized to match the number.
   //
-  // Accessor functions are used to return the edge_key_type,
-  // edge_user_value_type and vertex_user_value_type.
+  // Accessor functions are used to return the edge_key_type and
+  // vertex_value_type.
   //
   // The order visited in the vertices determines their index
   // (and key/identity) in the internal vertices vector. The edge keys use
@@ -474,16 +466,16 @@ public:
   /// @tparam ERng      The edge data range.
   /// @tparam EKeyFnc   Function object to return edge_key_type of the
   ///                   ERng::value_type.
-  /// @tparam EValueFnc Function object to return the edge_user_value_type, or
-  ///                   a type that edge_user_value_type is constructible
+  /// @tparam EValueFnc Function object to return the edge_value_type, or
+  ///                   a type that edge_value_type is constructible
   ///                   from. If the return type is void or empty_value the
-  ///                   edge_user_value_type default constructor will be used
+  ///                   edge_value_type default constructor will be used
   ///                   to initialize the value.
   /// @tparam VRng      The vertex data range.
-  /// @tparam VValueFnc Function object to return the vertex_user_value_type,
-  ///                   or a type that vertex_user_value_type is constructible
+  /// @tparam VValueFnc Function object to return the vertex_value_type,
+  ///                   or a type that vertex_value_type is constructible
   ///                   from. If the return type is void or empty_value the
-  ///                   vertex_user_value_type default constructor will be
+  ///                   vertex_value_type default constructor will be
   ///                   used to initialize the value.
   ///
   /// @param erng       The container of edge data.
@@ -519,10 +511,10 @@ public:
   /// @tparam ERng      The edge data range.
   /// @tparam EKeyFnc   Function object to return edge_key_type of the
   ///                   ERng::value_type.
-  /// @tparam EValueFnc Function object to return the edge_user_value_type, or
-  ///                   a type that edge_user_value_type is constructible
+  /// @tparam EValueFnc Function object to return the edge_value_type, or
+  ///                   a type that edge_value_type is constructible
   ///                   from. If the return type is void or empty_value the
-  ///                   edge_user_value_type default constructor will be used
+  ///                   edge_value_type default constructor will be used
   ///                   to initialize the value.
   ///
   /// @param erng       The container of edge data.
@@ -551,9 +543,8 @@ public:
   ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
-  directed_adjacency_vector(
-        const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_user_value_type>>& ilist,
-        const A&                                                                               alloc = A());
+  directed_adjacency_vector(const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
+                            const A& alloc = A());
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
@@ -591,24 +582,24 @@ public:
 protected:
   void reserve_vertices(vertex_size_type);
   void resize_vertices(vertex_size_type);
-  void resize_vertices(vertex_size_type, const vertex_user_value_type&);
+  void resize_vertices(vertex_size_type, const vertex_value_type&);
 
   vertex_iterator create_vertex();
-  vertex_iterator create_vertex(vertex_user_value_type&&);
+  vertex_iterator create_vertex(vertex_value_type&&);
 
   template <class VV2>
-  vertex_iterator create_vertex(const VV2&); // vertex_user_value_type must be constructable from VV2
+  vertex_iterator create_vertex(const VV2&); // vertex_value_type must be constructable from VV2
 
 protected:
   void reserve_edges(edge_size_type);
 
   edge_iterator create_edge(vertex_key_type, vertex_key_type);
-  edge_iterator create_edge(vertex_key_type, vertex_key_type, edge_user_value_type&&);
+  edge_iterator create_edge(vertex_key_type, vertex_key_type, edge_value_type&&);
 
   template <class EV2>
   edge_iterator create_edge(vertex_key_type,
                             vertex_key_type,
-                            const EV2&); // EV2 must be accepted by vertex_user_value_type constructor
+                            const EV2&); // EV2 must be accepted by vertex_value_type constructor
 
 public:
   void clear();
@@ -627,19 +618,17 @@ private:
 
 template <typename VV, typename EV, typename GV, integral KeyT, typename A>
 struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  using graph_type            = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
-  using graph_user_value_type = typename graph_type::graph_user_value_type;
-  using allocator_type        = typename graph_type::allocator_type;
+  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+  using graph_value_type = typename graph_type::graph_user_value_type;
+  using allocator_type   = typename graph_type::allocator_type;
 
-  using vertex_type            = typename graph_type::vertex_type;
-  using vertex_key_type        = typename graph_type::vertex_key_type;
-  using vertex_user_value_type = typename graph_type::vertex_user_value_type;
-  using vertex_value_type      = typename graph_type::vertex_value_type;
+  using vertex_type       = typename graph_type::vertex_type;
+  using vertex_key_type   = typename graph_type::vertex_key_type;
+  using vertex_value_type = typename graph_type::vertex_value_type;
 
-  using edge_type            = typename graph_type::edge_type;
-  using edge_key_type        = typename graph_type::edge_key_type; // ordered_pair<from,to>
-  using edge_user_value_type = typename graph_type::edge_user_value_type;
-  using edge_value_type      = typename graph_type::edge_value_type;
+  using edge_type       = typename graph_type::edge_type;
+  using edge_key_type   = typename graph_type::edge_key_type; // ordered_pair<from,to>
+  using edge_value_type = typename graph_type::edge_value_type;
 
   using vertex_range       = typename graph_type::vertex_range;
   using const_vertex_range = typename graph_type::const_vertex_range;
@@ -669,4 +658,5 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
 
 #endif // DIRECTED_ADJ_ARRAY_HPP
 
+#include "detail/directed_adjacency_vector_api.hpp"
 #include "detail/directed_adjacency_vector_impl.hpp"

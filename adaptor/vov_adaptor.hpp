@@ -17,26 +17,24 @@
 
 template <typename... Attributes>
 struct std::graph::graph_traits<vov<Attributes...>> {
-  using graph_type            = vov<Attributes...>;
-  using graph_user_value_type = std::graph::empty_value;
+  using graph_type       = vov<Attributes...>;
+  using graph_value_type = std::graph::empty_value;
 
   using vertex_set              = typename graph_type::outer_container;
   using vertex_outward_edge_set = typename graph_type::inner_container;
 
-  using vertex_type            = typename vertex_set::value_type;
-  using vertex_key_type        = typename vertex_set::size_type;
-  using vertex_user_value_type = std::graph::empty_value;
-  using vertex_value_type      = vertex_type;
+  using vertex_type       = typename vertex_set::value_type;
+  using vertex_key_type   = typename vertex_set::size_type;
+  using vertex_value_type = std::graph::empty_value;
 
   using vertex_range       = decltype(make_subrange2(std::declval<vertex_set&>()));
   using const_vertex_range = decltype(make_subrange2(std::declval<const vertex_set&>()));
   using vertex_size_type   = typename vertex_set::size_type;
 
-  using edge_type            = typename vertex_outward_edge_set::value_type;
-  using edge_key_type        = std::pair<vertex_key_type, vertex_key_type>;
-  using edge_user_value_type = std::tuple<Attributes...>;
-  using edge_value_type      = edge_type;
-  using edge_size_type       = size_t;
+  using edge_type       = typename vertex_outward_edge_set::value_type;
+  using edge_key_type   = std::pair<vertex_key_type, vertex_key_type>;
+  using edge_value_type = std::tuple<Attributes...>;
+  using edge_size_type  = size_t;
 
   using vertex_outward_edge_range       = decltype(make_subrange2(std::declval<vertex_outward_edge_set&>()));
   using const_vertex_outward_edge_range = decltype(make_subrange2(std::declval<const vertex_outward_edge_set&>()));
