@@ -117,7 +117,7 @@ Other Useful Tools
     - [x] replace proposed arithmetic concept with arithmetic_v<T> (avoid barrier to acceptance)
     - [x] Should find_edge() return edge_range_t or vertex_edge_range_t? edge_range_t, find_vertex_edge() is used for vertex_edge_range_t
     - [x] Is there a reason user_value_type can't just be value_type? No: only key_type & value_type should be exposed.
-    - [ ] Decide: begin/end for all ranges, or none at all in favor of using begin(rng)/end(rng)
+    - [x] Remove all range-specific begin/end functions in favor of using begin(rng)/end(rng)
     - [ ] Define common implementations that each graph can optionally specialize
       - [ ] degree()
       - [ ] create default implementations of uniform API based on outgoing functions for directed graph
