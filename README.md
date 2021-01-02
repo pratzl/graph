@@ -125,7 +125,10 @@ Other Useful Tools
     - [ ] [paper] Give overview of different ranges
       - [ ] relate the ranges to the concepts
       - [ ] show relationship between uniform & directed functions
+    - [ ] Remove const_..._range types
     - [ ] move from std::graph to std
+    - [ ] Replace range types with references in API or graph_traits?
+    - [x] Return optional<T> instead of pair<T,bool>: create_vertex, create_edge, create_outward_edge, create_inward_edge
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -143,8 +146,8 @@ Other Useful Tools
     - [ ] support tuple_element<orderd_pair<T1,T2>> & tuple_element<unorderd_pair<T1,T2>>
     - [ ] support get(ordered_pair<T1,T2>) & get(unordered_pair<T1,T2>)
     - [ ] support piecewise_construct_t ctor
-    - [ ] [paper] Add ordered_pair & unordered_pair to paper
-    - [ ] Should they be in std:: or std::graph:: ?
+    - [x] [paper] Add ordered_pair & unordered_pair to paper
+    - [ ] Should they be in std:: or std::graph:: ? std (with graph)
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
