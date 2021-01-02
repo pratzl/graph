@@ -61,7 +61,7 @@
 #ifndef GRAPH_FWD_HPP
 #  define GRAPH_FWD_HPP
 
-namespace std::graph {
+namespace std {
 
 //
 // Graph Traits
@@ -1260,7 +1260,7 @@ concept edge_range_extractor = ranges::forward_range<ERng>&& invocable<EKeyFnc, 
 
 // clang-format on
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_FWD_HPP
 

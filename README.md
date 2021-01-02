@@ -126,7 +126,7 @@ Other Useful Tools
       - [ ] relate the ranges to the concepts
       - [ ] show relationship between uniform & directed functions
     - [ ] Remove const_..._range types
-    - [ ] move from std::graph to std
+    - [x] move from std::graph to std namespace
     - [ ] Replace range types with references in API or graph_traits?
     - [x] Return optional<T> instead of pair<T,bool>: create_vertex, create_edge, create_outward_edge, create_inward_edge
   - [ ] Uniform API
@@ -135,7 +135,7 @@ Other Useful Tools
     - [x] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
     - [x] add vertices_size(g,u) [add impl]
     - [x] add vertices_ssize(g,u) [add impl]
-    - [ ] add contains_vertex(g,ukey), contains_edge(g, ukey, vkey), contains_edge(g, u, v) [add impl]
+    - [x] add contains_vertex(g,ukey), contains_edge(g, ukey, vkey), contains_edge(g, u, v) [add impl]
     - [x] vertex_key_type required to be integral
   - [ ] Directed API
   - [ ] ordered_pair & unordered_pair
@@ -147,7 +147,7 @@ Other Useful Tools
     - [ ] support get(ordered_pair<T1,T2>) & get(unordered_pair<T1,T2>)
     - [ ] support piecewise_construct_t ctor
     - [x] [paper] Add ordered_pair & unordered_pair to paper
-    - [ ] Should they be in std:: or std::graph:: ? std (with graph)
+    - [x] Should they be in std:: or std::graph:: ? std (with graph)
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)

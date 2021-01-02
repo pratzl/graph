@@ -10,7 +10,7 @@
 #ifndef GRAPH_TOPO_SORT_HPP
 #  define GRAPH_TOPO_SORT_HPP
 
-namespace std::graph {
+namespace std {
 
 // clang-format off
 template <searchable_graph G, typename A = allocator<char>>
@@ -35,6 +35,6 @@ private:
 };
 
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_TOPO_SORT_HPP

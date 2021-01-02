@@ -10,7 +10,7 @@
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
-namespace std::graph {
+namespace std {
 
 #  define DAV_VERTEX_SET vector
 #  define DAV_EDGE_SET vector
@@ -640,7 +640,7 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
 };
 
 
-} // namespace std::graph
+} // namespace std
 
 #endif // DIRECTED_ADJ_ARRAY_HPP
 

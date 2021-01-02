@@ -56,7 +56,7 @@
 #ifndef GRAPH_DFS_HPP
 #  define GRAPH_DFS_HPP
 
-namespace std::graph {
+namespace std {
 
 
 //---------------------------------------------------------------------------------------
@@ -483,6 +483,6 @@ private:
   parent_type  parent_;  // vector<vertex_iterator_t<G>, >; only needed for undirected graphs
 };
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_DFS_HPP

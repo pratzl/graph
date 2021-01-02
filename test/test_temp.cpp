@@ -3,8 +3,6 @@
 #include <vector>
 #include <type_traits>
 
-//namespace ranges = ::ranges;
-
 namespace std {
 
 template <typename R,

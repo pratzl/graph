@@ -4,6 +4,7 @@
 #include "graph/range/breadth_first_search.hpp"
 #include "graph/algorithm/shortest_paths.hpp"
 #include "data_routes.hpp"
+#include "using_graph.hpp"
 #include <iostream>
 #include <catch2/catch.hpp>
 
@@ -48,17 +49,15 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
-using std::ranges::find_if;
-using std::ranges::begin;
-using std::ranges::cbegin;
-using std::ranges::end;
-using std::ranges::cend;
+using std::breadth_first_search_vertex_range;
+using std::breadth_first_search_edge_range;
+using std::depth_first_search_vertex_range;
+using std::depth_first_search_edge_range;
+using std::shortest_distance;
 
-//namespace ranges = ::ranges;
-using namespace std::graph; // Bring graph types & functions into global namespace
-using Graph      = std::graph::undirected_adjacency_list<name_value, weight_value>;
-using vtx_iter_t = std::graph::vertex_iterator_t<Graph>;
-using vtx_key_t  = std::graph::vertex_key_t<Graph>;
+using Graph      = std::undirected_adjacency_list<name_value, weight_value>;
+using vtx_iter_t = std::vertex_iterator_t<Graph>;
+using vtx_key_t  = std::vertex_key_t<Graph>;
 
 struct route;
 using Routes = routes_t;
@@ -71,7 +70,7 @@ using edge_kv = std::pair<Graph::edge_key_type, Graph::edge_value_type>;
 const vector<edge_kv>& ual_germany_edge_routes = germany_routes_undirected_graph.edge_values();
 
 vertex_iterator_t<Graph> find_city(Graph& g, string_view const city_name) {
-  return find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
+  return std::ranges::find_if(g, [&city_name](vertex_t<Graph>& u) { return u.name == city_name; });
 }
 
 static Graph create_germany_routes_graph() { return germany_routes_undirected_graph.create_graph(); }
@@ -95,7 +94,7 @@ OStream& operator<<(OStream& os, const Graph& g) {
 
 
 TEST_CASE("ual minsize", "[ual][minsize]") {
-  using G      = std::graph::undirected_adjacency_list<>;
+  using G      = std::undirected_adjacency_list<>;
   size_t vsize = sizeof(typename G::vertex_type);
   size_t esize = sizeof(typename G::edge_type);
 #ifdef _MSC_VER
@@ -369,39 +368,36 @@ TEST_CASE("ual graph functions", "[ual][graph][functions]") {
   const Graph& gc = create_germany_routes_graph();
 
   //EXPECT_EQ(true, (is_same<empty_value, decltype(value(g))>::value));
-  std::graph::vertex_range_t<Graph>       vr  = std::graph::vertices(g);
-  std::graph::const_vertex_range_t<Graph> vrc = std::graph::vertices(gc);
+  std::vertex_range_t<Graph>       vr  = std::vertices(g);
+  std::const_vertex_range_t<Graph> vrc = std::vertices(gc);
   EXPECT_EQ(vr.size(), vrc.size());
-  EXPECT_EQ(vr.size(), std::graph::vertices_size(gc));
+  EXPECT_EQ(vr.size(), std::vertices_size(gc));
 
   size_t cnt = 0;
-  for (std::graph::vertex_iterator_t<Graph> u = begin(std::graph::vertices(g)); u != end(std::graph::vertices(g));
-       ++u, ++cnt)
+  for (std::vertex_iterator_t<Graph> u = begin(std::vertices(g)); u != end(std::vertices(g)); ++u, ++cnt)
     ;
-  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+  EXPECT_EQ(std::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = begin(std::graph::vertices(gc));
-       u != end(std::graph::vertices(gc)); ++u, ++cnt)
+  for (std::const_vertex_iterator_t<Graph> u = begin(std::vertices(gc)); u != end(std::vertices(gc)); ++u, ++cnt)
     ;
-  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+  EXPECT_EQ(std::vertices_size(gc), cnt);
 
   cnt = 0;
-  for (std::graph::const_vertex_iterator_t<Graph> u = cbegin(std::graph::vertices(gc));
-       u != cend(std::graph::vertices(gc)); ++u, ++cnt)
+  for (std::const_vertex_iterator_t<Graph> u = cbegin(std::vertices(gc)); u != cend(std::vertices(gc)); ++u, ++cnt)
     ;
-  EXPECT_EQ(std::graph::vertices_size(gc), cnt);
+  EXPECT_EQ(std::vertices_size(gc), cnt);
 
-  //std::graph::reserve_vertices(g, 100); //undefined for semi-mutable graph
-  //std::graph::resisze_vertices(g, 100); //undefined for semi-mutable graph
+  //std::reserve_vertices(g, 100); //undefined for semi-mutable graph
+  //std::resisze_vertices(g, 100); //undefined for semi-mutable graph
 
-  std::graph::edge_range_t<Graph>       er       = std::graph::edges(g);
-  std::graph::const_edge_range_t<Graph> erc      = std::graph::edges(gc);
-  std::graph::edge_size_t<Graph>        edg_size = std::graph::edges_size(gc);
-  //EXPECT_EQ(std::graph::edges_size(gc), er.size());  // forward-only range; size n/a
-  //EXPECT_EQ(std::graph::edges_size(gc), erc.size()); // forward-only range; size n/a
-  // std::graph::reserve_edges(g,100); // undefined for semi-mutable graph
-  // std::graph::clear(g);             // undefined for semi-mutable graph
+  std::edge_range_t<Graph>       er       = std::edges(g);
+  std::const_edge_range_t<Graph> erc      = std::edges(gc);
+  std::edge_size_t<Graph>        edg_size = std::edges_size(gc);
+  //EXPECT_EQ(std::edges_size(gc), er.size());  // forward-only range; size n/a
+  //EXPECT_EQ(std::edges_size(gc), erc.size()); // forward-only range; size n/a
+  // std::reserve_edges(g,100); // undefined for semi-mutable graph
+  // std::clear(g);             // undefined for semi-mutable graph
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
 #elif TEST_OPTION == TEST_OPTION_GEN
@@ -413,43 +409,42 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
-  std::graph::vertex_iterator_t<Graph>       ui  = begin(std::graph::vertices(g));
-  std::graph::const_vertex_iterator_t<Graph> uic = cbegin(std::graph::vertices(g));
-  std::graph::vertex_t<Graph>&               u   = *ui;
-  const std::graph::vertex_t<Graph>&         uc  = *uic;
+  std::vertex_iterator_t<Graph>       ui  = begin(std::vertices(g));
+  std::const_vertex_iterator_t<Graph> uic = cbegin(std::vertices(g));
+  std::vertex_t<Graph>&               u   = *ui;
+  const std::vertex_t<Graph>&         uc  = *uic;
 
-  std::graph::vertex_key_t<Graph> vkey  = std::graph::vertex_key(g, ui);
-  std::graph::vertex_key_t<Graph> vkeyc = std::graph::vertex_key(g, uic);
-  auto                            val   = std::graph::vertex_value(g, ui);
+  std::vertex_key_t<Graph> vkey  = std::vertex_key(g, ui);
+  std::vertex_key_t<Graph> vkeyc = std::vertex_key(g, uic);
+  auto                     val   = std::vertex_value(g, ui);
 
-  std::graph::vertex_iterator_t<Graph>       f1 = std::graph::find_vertex(g, 1);
-  std::graph::const_vertex_iterator_t<Graph> f2 = std::graph::find_vertex(gc, 1);
+  std::vertex_iterator_t<Graph>       f1 = std::find_vertex(g, 1);
+  std::const_vertex_iterator_t<Graph> f2 = std::find_vertex(gc, 1);
   EXPECT_EQ(f1, f2);
 
-  vertex_iterator_t<Graph> f3 = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> f3 = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
   EXPECT_NE(f3, g.vertices().end());
   EXPECT_EQ(2, vertex_key(g, f3));
 
   {
-    std::graph::vertex_edge_range_t<Graph>          uvr      = std::graph::edges(g, ui);
-    std::graph::const_vertex_edge_range_t<Graph>    uvrc     = std::graph::edges(g, uic);
-    std::graph::vertex_edge_iterator_t<Graph>       uvi_beg1 = begin(std::graph::edges(g, ui));
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg2 = begin(std::graph::edges(g, uic));
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_beg3 = cbegin(std::graph::edges(g, ui));
-    std::graph::vertex_edge_iterator_t<Graph>       uvi_end1 = end(std::graph::edges(g, ui));
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end2 = end(std::graph::edges(g, uic));
-    std::graph::const_vertex_edge_iterator_t<Graph> uvi_end3 = end(std::graph::edges(g, ui));
-    //EXPECT_EQ(std::graph::edges_size(g, u), uvr.size()); // forward-only range; size n/a
+    std::vertex_edge_range_t<Graph>          uvr      = std::edges(g, ui);
+    std::const_vertex_edge_range_t<Graph>    uvrc     = std::edges(g, uic);
+    std::vertex_edge_iterator_t<Graph>       uvi_beg1 = begin(std::edges(g, ui));
+    std::const_vertex_edge_iterator_t<Graph> uvi_beg2 = begin(std::edges(g, uic));
+    std::const_vertex_edge_iterator_t<Graph> uvi_beg3 = cbegin(std::edges(g, ui));
+    std::vertex_edge_iterator_t<Graph>       uvi_end1 = end(std::edges(g, ui));
+    std::const_vertex_edge_iterator_t<Graph> uvi_end2 = end(std::edges(g, uic));
+    std::const_vertex_edge_iterator_t<Graph> uvi_end3 = end(std::edges(g, ui));
+    //EXPECT_EQ(std::edges_size(g, u), uvr.size()); // forward-only range; size n/a
   }
 }
 
 TEST_CASE("ual edge functions", "[ual][edge][functions]") {
-  using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
-  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
-  vertex_iterator_t<Graph> v = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Mannheim"; });
+  vertex_iterator_t<Graph> u = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> v = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Mannheim"; });
   EXPECT_NE(end(g), u);
   EXPECT_NE(end(g), v);
 
@@ -469,12 +464,11 @@ TEST_CASE("ual edge functions", "[ual][edge][functions]") {
 }
 
 TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
-  using namespace std::graph;
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
 
-  vertex_iterator_t<Graph> u    = find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u    = std::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
   vertex_key_t<Graph>      ukey = vertex_key(g, u);
   REQUIRE(edges_size(g, u) == vertices_size(g, u));
   REQUIRE(edges_ssize(g, u) == vertices_ssize(g, u));
@@ -979,17 +973,17 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
 }
 
 TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
-  using std::graph::dijkstra_shortest_distances;
-  using std::graph::dijkstra_shortest_paths;
-  using std::graph::shortest_distance;
-  using std::graph::shortest_path;
+  using std::dijkstra_shortest_distances;
+  using std::dijkstra_shortest_paths;
+  using std::shortest_distance;
+  using std::shortest_path;
 
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1084,15 +1078,15 @@ TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
 }
 
 TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
-  using std::graph::bellman_ford_shortest_distances;
-  using std::graph::shortest_distance;
+  using std::bellman_ford_shortest_distances;
+  using std::shortest_distance;
 
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1189,15 +1183,15 @@ TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
 
 
 TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
-  using std::graph::dijkstra_shortest_paths;
-  using std::graph::shortest_path;
+  using std::dijkstra_shortest_paths;
+  using std::shortest_path;
 
   using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
   using short_paths_t = vector<short_path_t>;
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
@@ -1368,15 +1362,15 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
 }
 
 TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
-  using std::graph::bellman_ford_shortest_paths;
-  using std::graph::shortest_path;
+  using std::bellman_ford_shortest_paths;
+  using std::shortest_path;
 
   using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
   using short_paths_t = vector<short_path_t>;
   short_paths_t short_paths;
 
   Graph                    g = create_germany_routes_graph();
-  vertex_iterator_t<Graph> u = find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
+  vertex_iterator_t<Graph> u = std::ranges::find_if(g, [](vertex_t<Graph>& uu) { return uu.name == "Frankfürt"; });
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 

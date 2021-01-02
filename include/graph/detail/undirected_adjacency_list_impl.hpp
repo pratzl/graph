@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-namespace std::graph {
+namespace std {
 
 ///-------------------------------------------------------------------------------------
 /// ual_vertex_edge_list
@@ -1144,6 +1144,6 @@ ual_vertex_vertex_iterator<VV, EV, GV, KeyT, A>::operator!=(const ual_vertex_ver
   return base_t::operator!=(rhs);
 }
 
-} // namespace std::graph
+} // namespace std
 
 #endif // UNDIRECTED_ADJ_LIST_IMPL_HPP

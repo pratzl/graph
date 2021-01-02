@@ -60,7 +60,7 @@ struct route {
 };
 
 struct daa_routes_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, std::graph::weight_value>;
+  using target_graph_t      = std::directed_adjacency_vector<std::name_value, std::weight_value>;
   using source_edge_range_t = routes_t;
   using source_edge_t       = source_edge_range_t::value_type;
 
@@ -69,11 +69,11 @@ struct daa_routes_edge_mapper {
   vertex_label_t inward_label(const source_edge_t& uv) const { return uv.from; }
   vertex_label_t outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.km; }
+  std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.km; }
 };
 
 struct ual_routes_edge_mapper {
-  using target_graph_t      = std::graph::undirected_adjacency_list<std::graph::name_value, std::graph::weight_value>;
+  using target_graph_t      = std::undirected_adjacency_list<std::name_value, std::weight_value>;
   using source_edge_range_t = routes_t;
   using source_edge_t       = source_edge_range_t::value_type;
 
@@ -82,7 +82,7 @@ struct ual_routes_edge_mapper {
   const vertex_label_t& inward_label(const source_edge_t& uv) const { return uv.from; }
   const vertex_label_t& outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.km; }
+  std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.km; }
 };
 
 
@@ -116,7 +116,7 @@ using data_edges_t    = std::vector<data_edge>;
 using vertex_labels_t = std::vector<std::string>;
 
 struct daa_data_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, dbl_weight_value>;
+  using target_graph_t      = std::directed_adjacency_vector<std::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;
 
@@ -125,11 +125,11 @@ struct daa_data_edge_mapper {
   vertex_label_t inward_label(const source_edge_t& uv) const { return uv.from; }
   vertex_label_t outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
+  std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 
 struct ual_data_edge_mapper {
-  using target_graph_t      = std::graph::undirected_adjacency_list<std::graph::name_value, dbl_weight_value>;
+  using target_graph_t      = std::undirected_adjacency_list<std::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;
 
@@ -138,7 +138,7 @@ struct ual_data_edge_mapper {
   const vertex_label_t& inward_label(const source_edge_t& uv) const { return uv.from; }
   const vertex_label_t& outward_label(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
+  std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 
 #if 0
@@ -156,7 +156,7 @@ struct vov_data_edge_mapper {
   const vertex_index_t& inward_index(const source_edge_t& uv) const { return uv.from; }
   const vertex_index_t& outward_index(const source_edge_t& uv) const { return uv.to; }
 
-  std::graph::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
+  std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 #endif
 
@@ -171,8 +171,8 @@ public:
   using source_edge_t       = typename Mapper::source_edge_t;
   using vertex_label_t      = typename Mapper::vertex_label_t;
   using vertex_labels_t     = std::vector<vertex_label_t>;
-  using vertex_index_t      = std::graph::vertex_key_t<target_graph_t>;
-  using vertex_value_t      = std::graph::vertex_value_t<target_graph_t>;
+  using vertex_index_t      = std::vertex_key_t<target_graph_t>;
+  using vertex_value_t      = std::vertex_value_t<target_graph_t>;
   using target_edge_t       = std::pair<typename target_graph_t::edge_key_type,
                                   typename target_graph_t::edge_value_type>; // pair{ pair{u_label, v_label}, uv_value }
   using target_edges_t      = std::vector<target_edge_t>;

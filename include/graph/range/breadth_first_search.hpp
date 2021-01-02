@@ -53,7 +53,7 @@
 #if !defined(GRAPH_BFS_HPP)
 #  define GRAPH_BFS_HPP
 
-namespace std::graph {
+namespace std {
 
 //----------------------------------------------------------------------------------------
 /// breadth-first search range for vertices, given a single seed vertex.
@@ -458,6 +458,6 @@ private:
   A              alloc_;
 };
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_BFS_HPP

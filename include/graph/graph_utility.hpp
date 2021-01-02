@@ -5,7 +5,7 @@
 #ifndef GRAPH_UTILITY_HPP
 #  define GRAPH_UTILITY_HPP
 
-namespace std::graph {
+namespace std {
 
 //--------------------------------------------------------------------------------------
 // graph_value<> - wraps scaler, union & reference user values for graph, vertex & edge
@@ -120,6 +120,6 @@ constexpr auto make_subrange2(R&& r)
   return {static_cast<R&&>(r)};
 }
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_UTILITY_HPP

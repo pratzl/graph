@@ -12,7 +12,7 @@
 #ifndef UNDIRECTED_ADJ_LIST_HPP
 #  define UNDIRECTED_ADJ_LIST_HPP
 
-namespace std::graph {
+namespace std {
 
 #  define UAL_VERTEX_SET vector
 
@@ -1032,7 +1032,7 @@ struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, A>> {
   using vertex_vertex_size_type   = typename vertex_type::vertex_vertex_size_type;
 };
 
-} // namespace std::graph
+} // namespace std
 
 #endif // UNDIRECTED_ADJ_LIST_HPP
 

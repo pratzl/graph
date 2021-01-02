@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-namespace std::graph {
+namespace std {
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list graph API
 ///
@@ -600,6 +600,6 @@ void clear(undirected_adjacency_list<VV, EV, GV, KeyT, A>& g) {
 // API: common container functions
 //
 
-} // namespace std::graph
+} // namespace std
 
 #endif // UNDIRECTED_ADJ_LIST_API_HPP
