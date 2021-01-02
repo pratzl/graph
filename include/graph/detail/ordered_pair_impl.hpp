@@ -1,7 +1,7 @@
 #ifndef ORDERED_PAIR_IMPL_HPP
 #define ORDERED_PAIR_IMPL_HPP
 
-namespace std::graph {
+namespace std {
 
 //
 // ordered_pair
@@ -131,6 +131,6 @@ constexpr auto make_unordered_pair(T1&& v1, T2&& v2) {
   return pair_t(forward<T1>(v1), forward<T2>(v2));
 }
 
-} // namespace std::graph
+} // namespace std
 
 #endif //ORDERED_PAIR_IMPL_HPP

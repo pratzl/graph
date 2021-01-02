@@ -7,7 +7,7 @@
 #ifndef ORDERED_PAIR_HPP
 #  define ORDERED_PAIR_HPP
 
-namespace std::graph {
+namespace std {
 
 //
 // ordered_pair
@@ -108,7 +108,7 @@ swap(unordered_pair<T1, T2>& v1,
 template <class T1, class T2>
 constexpr auto make_unordered_pair(T1&& v1, T2&& v2);
 
-} // namespace std::graph
+} // namespace std
 
 #endif
 
