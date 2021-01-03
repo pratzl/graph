@@ -125,14 +125,17 @@ Other Useful Tools
     - [ ] [paper] Give overview of different ranges
       - [ ] relate the ranges to the concepts
       - [ ] show relationship between uniform & directed functions
-    - [ ] move from std::graph to std
+    - [ ] Remove const_..._range types
+    - [x] move from std::graph to std namespace
+    - [ ] Replace range types with references in API or graph_traits?
+    - [x] Return optional<T> instead of pair<T,bool>: create_vertex, create_edge, create_outward_edge, create_inward_edge
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
     - [x] add vertices(g,u) -> vertex_vertex_range_t<G> & matching outward_vertices(g,u), inward_vertices(g,u) [add impl]
     - [x] add vertices_size(g,u) [add impl]
     - [x] add vertices_ssize(g,u) [add impl]
-    - [ ] add contains_vertex(g,ukey), contains_edge(g, ukey, vkey), contains_edge(g, u, v) [add impl]
+    - [x] add contains_vertex(g,ukey), contains_edge(g, ukey, vkey), contains_edge(g, u, v) [add impl]
     - [x] vertex_key_type required to be integral
   - [ ] Directed API
   - [ ] ordered_pair & unordered_pair
@@ -143,8 +146,8 @@ Other Useful Tools
     - [ ] support tuple_element<orderd_pair<T1,T2>> & tuple_element<unorderd_pair<T1,T2>>
     - [ ] support get(ordered_pair<T1,T2>) & get(unordered_pair<T1,T2>)
     - [ ] support piecewise_construct_t ctor
-    - [ ] [paper] Add ordered_pair & unordered_pair to paper
-    - [ ] Should they be in std:: or std::graph:: ?
+    - [x] [paper] Add ordered_pair & unordered_pair to paper
+    - [x] Should they be in std:: or std::graph:: ? std (with graph)
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
@@ -161,14 +164,14 @@ Other Useful Tools
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
     - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
     - [ ] create matching undirected adjacency vector with immutable edge values
-    - [ ] Replace allocator parameter with container parameters for vertices & edges
+    - [x] Add container parameters for vertices & edges
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
     - [x] implement with deque? [for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
     - [x] implement with map? (non-integer index) [no: too big of impact to algorithms]
     - [ ] [wait for P1709 review by LEWG] Create paper D2239R0 
-    - [ ] Replace allocator parameter with container parameter for vertices
+    - [x] Add container parameter for vertices
   - [ ] Create paper for D2241R0 graph data structure design directions
     - [ ] describe rationale for data structures used
     - [x] support Compressed Sparse Row (CSR)?

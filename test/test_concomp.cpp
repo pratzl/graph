@@ -4,6 +4,7 @@
 #include "graph/range/breadth_first_search.hpp"
 #include "graph/algorithm/components.hpp"
 #include "data_routes.hpp"
+#include "using_graph.hpp"
 #include <iostream>
 #include <catch2/catch.hpp>
 
@@ -26,13 +27,6 @@ using std::pair;
 using std::cout;
 using std::endl;
 using std::is_same;
-
-using std::ranges::begin;
-using std::ranges::cbegin;
-using std::ranges::end;
-using std::ranges::cend;
-
-using namespace std::graph; // Bring graph functions into global namespace
 
 using DollarGraph = GraphXlate<daa_data_edge_mapper>::target_graph_t;
 
@@ -162,7 +156,7 @@ TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][
   EXPECT_EQ(6, vertices_size(g));
   EXPECT_EQ(6, edges_size(g));
 
-  using comp_t  = std::graph::component<DollarGraph>;
+  using comp_t  = std::component<DollarGraph>;
   using comps_t = std::vector<comp_t>;
   comps_t comps;
 

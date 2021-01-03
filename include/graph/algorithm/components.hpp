@@ -8,7 +8,7 @@
 #ifndef GRAPH_COMPONENTS_HPP
 #  define GRAPH_COMPONENTS_HPP
 
-namespace std::graph {
+namespace std {
 
 template <typename G, integral CompT = uint32_t>
 struct component {
@@ -212,6 +212,6 @@ strongly_connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, 
 }
 
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_COMPONENTS_HPP

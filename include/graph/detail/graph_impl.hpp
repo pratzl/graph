@@ -2,8 +2,7 @@
 #ifndef GRAPH_FWD_IMPL_HPP
 #define GRAPH_FWD_IMPL_HPP
 
-namespace std::graph {
-
+namespace std {
 
 
 //
@@ -11,6 +10,6 @@ namespace std::graph {
 //
 
 
-} // namespace std::graph
+} // namespace std
 
 #endif // GRAPH_FWD_IMPL_HPP

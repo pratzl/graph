@@ -54,7 +54,7 @@
 #ifndef GRAPH_SHORTEST_PATHS_HPP
 #  define GRAPH_SHORTEST_PATHS_HPP
 
-namespace std::graph {
+namespace std {
 
 // forward declarations
 
@@ -555,6 +555,6 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 }
 
 
-} // namespace std::graph
+} // namespace std
 
 #endif //GRAPH_SHORTEST_PATHS_HPP

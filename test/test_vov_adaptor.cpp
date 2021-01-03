@@ -33,14 +33,14 @@ vov_germany_t get_germany_routes() {
         germany_routes_directed_graph.create_graph()); // translates string labels to indexes
 
   vov_germany_t routes(vertices_size(daa_routes_graph));
-  for (std::graph::edge_t<directed_graph_t>& uv : edges(daa_routes_graph)) {
-    std::graph::vertex_key_t<directed_graph_t> u_key = inward_vertex_key(daa_routes_graph, uv);
-    std::graph::vertex_key_t<directed_graph_t> v_key = outward_vertex_key(daa_routes_graph, uv);
+  for (std::edge_t<directed_graph_t>& uv : edges(daa_routes_graph)) {
+    std::vertex_key_t<directed_graph_t> u_key = inward_vertex_key(daa_routes_graph, uv);
+    std::vertex_key_t<directed_graph_t> v_key = outward_vertex_key(daa_routes_graph, uv);
     routes.push_back(u_key, v_key, uv.weight);
   }
 
-  //auto n = std::graph::vertices_size(routes);
-  //std::graph::vertex_key_t<vov_germany_t> ukey = std::graph::vertex_key(routes, std::graph::begin(routes));
+  //auto n = std::vertices_size(routes);
+  //std::vertex_key_t<vov_germany_t> ukey = std::vertex_key(routes, std::begin(routes));
   //cout << ukey;
 
   return routes;
@@ -48,9 +48,6 @@ vov_germany_t get_germany_routes() {
 
 
 TEST_CASE("vov graph", "[vov]") {
-  //using namespace graph::adaptor;
-  using namespace std::graph;
-
   using Graph = vov_germany_t;
   Graph g     = get_germany_routes();
 
@@ -61,8 +58,8 @@ TEST_CASE("vov graph", "[vov]") {
 
   using lhs  = std::forward_list<std::tuple<size_t, double>>;
   using rhs  = typename vov_germany_t::inner_container;
-  using et   = std::graph::edge_t<Graph>;
-  using evt  = std::graph::edge_value_t<Graph>;
+  using et   = std::edge_t<Graph>;
+  using evt  = std::edge_value_t<Graph>;
   using evt2 = typename vov_germany_t::inner_container::value_type;
   static_assert(std::is_same_v<lhs, rhs>, "not same");
   static_assert(std::is_same_v<et, std::tuple<size_t, double>>, "edge types not same");
@@ -70,9 +67,9 @@ TEST_CASE("vov graph", "[vov]") {
   static_assert(std::is_same_v<evt2, std::tuple<size_t, double>>, "edge value types2 not same");
 
 #if 0
-  for (std::graph::vertex_iterator_t<Graph> u = begin(g); u != end(g); ++u) {
+  for (std::vertex_iterator_t<Graph> u = begin(g); u != end(g); ++u) {
     cout << "city[" << vertex_key(g, u) << "]\n";
-    for (std::graph::vertex_edge_iterator_t<Graph> uv = begin(edges(g, u)); uv != end(edges(g, u)); ++uv) {
+    for (std::vertex_edge_iterator_t<Graph> uv = begin(edges(g, u)); uv != end(edges(g, u)); ++uv) {
       //graph::adaptor::value(uv);    // compiler error in msvc (bug?)
       cout << "  --> city[" << outward_vertex_key(g, uv) << "] " << get<1>(*uv) << "km\n";
     }
@@ -106,9 +103,8 @@ TEST_CASE("vov graph", "[vov]") {
 }
 
 TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
-  using namespace std::graph;
   using namespace graph::adaptor;
-  using std::graph::depth_first_search_vertex_range;
+  using std::depth_first_search_vertex_range;
   using Graph = vov_germany_t;
 
   vov_germany_t                   g = get_germany_routes();
@@ -116,7 +112,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u) {
-    //std::graph::vertex_key_t<Graph> ukey = vertex_key(g, u.operator->());
+    //std::vertex_key_t<Graph> ukey = vertex_key(g, u.operator->());
     // cout << string(u.depth() * 2, ' ') << vertex_key(g, u.operator->()) << endl;
   }
 

@@ -4,54 +4,130 @@
 #include "graph_utility.hpp"
 #include "ordered_pair.hpp"
 #include <vector>
-#include <deque>
 #include <cassert>
 
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
-namespace std::graph {
+namespace std {
 
-#  define DAV_VERTEX_SET vector
-#  define DAV_EDGE_SET vector
+
+// clang-format off
+template <template <typename T, typename A> class Container, typename Elem, typename Alloc>
+concept graph_random_access_container = requires {
+  true;
+  //allocator_traits<Alloc>::template rebind_alloc<Elem>;
+  //ranges::random_access_range<Container<Elem, Alloc>>;
+};
+/*                                     && is_default_constructible_v<Container<T, Alloc>> 
+                                     && is_copy_constructible_v<Container<T, Alloc>> 
+                                     && is_move_constructible_v<Container<T, Alloc>> 
+                                     && is_destructible_v<Container<T, Alloc>>
+                                     && requires {
+  { Container<T, Alloc>(Alloc()) } -> convertible_to<Container<T, Alloc>>;
+};*/
+
+//  requires graph_random_access_container<VContainer, dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>, 
+//                                         typename allocator_traits<Alloc>::template rebind_alloc<dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>
+//                                        >
+// clang-format on
 
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector forward declarations
 ///
-/// All vertices are kept in a single vector with an index for the first outward edge.
+/// All vertices are kept in a single random-access container with an index for the
+/// first outward edge in the edges container.
 ///
-/// All edges are kept in a single vector in the graph. Outgoing edges for a vertex are
-/// stored contiguously. Edges for vertex v must come after the previous vertex's edges.
-/// An edge holds the index for its outward vertex in the vertices vector, plus any
-/// user-defined values.
+/// All edges are kept in a single random-access container in the graph. Outgoing edges
+/// for a vertex are stored contiguously. Edges for vertex v must come after the
+/// previous vertex's edges. An edge holds the index for its outward vertex in the
+/// vertices container, plus any user-defined values.
+///
+/// A vector is used as the default container though any random-access container with
+/// <T,A> (type, allocator) template parameters can be used.
+///
 
-template <typename VV   = empty_value,
-          typename EV   = empty_value,
-          typename GV   = empty_value,
-          integral KeyT = uint32_t,
-          typename A    = allocator<char>>
-class directed_adjacency_vector;
-
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_vertex;
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_edge;
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+// clang-format off
+template <typename VV                                        = empty_value,
+          typename EV                                        = empty_value,
+          typename GV                                        = empty_value,
+          integral KeyT                                      = uint32_t,
+          template <typename V, typename A> class VContainer = vector,
+          template <typename E, typename A> class EContainer = vector,
+          typename Alloc                                     = allocator<char>>
+class directed_adjacency_vector;
+// clang-format on
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_const_vertex_vertex_iterator;
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_vertex_vertex_iterator;
 
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_size(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
-      -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+constexpr auto
+vertices_size(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) noexcept
+      -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-constexpr auto vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, A>& g) noexcept
-      -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, A>>;
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+constexpr auto
+vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) noexcept
+      -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
 
 
 ///-------------------------------------------------------------------------------------
@@ -60,33 +136,41 @@ constexpr auto vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, 
 /// @tparam VV   Vertex Value type. default = empty_value.
 /// @tparam EV   Edge Value type. default = empty_value.
 /// @tparam GV   Graph Value type. default = empty_value.
-/// @tparam KeyT The type used for the vertex key, and index into edge vector
+/// @tparam KeyT The type used for the vertex key, and index into edge container
 /// @tparam A    Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_edge : public conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV> {
 public:
   using base_type  = conditional_t<graph_value_needs_wrap<EV>::value, graph_value_wrapper<EV>, EV>;
-  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
 
-  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using vertex_value_type     = VV;
   using vertex_key_type       = KeyT;
   using vertex_index_type     = KeyT;
-  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<vertex_type>;
+  using vertex_set            = VContainer<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_size_type      = typename vertex_set::size_type;
   using vertex_ssize_type     = typename vertex_set::difference_type;
 
-  using edge_type           = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_type           = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type     = EV;
   using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_index_type     = KeyT;
-  using edge_allocator_type = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set            = DAV_EDGE_SET<edge_type, edge_allocator_type>;
+  using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
+  using edge_set            = EContainer<edge_type, edge_allocator_type>;
 
 public:
   dav_edge()                    = default;
@@ -121,33 +205,41 @@ private:
 /// @tparam VV   Vertex Value type. default = empty_value.
 /// @tparam EV   Edge Value type. default = empty_value.
 /// @tparam GV   Graph Value type. default = empty_value.
-/// @tparam KeyT The type used for the vertex key, and index into edge vector
+/// @tparam KeyT The type used for the vertex key, and index into edge container
 /// @tparam A    Allocator. default = std::allocator
 ///
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_vertex : public conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV> {
 public:
-  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using base_type  = conditional_t<graph_value_needs_wrap<VV>::value, graph_value_wrapper<VV>, VV>;
 
-  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using vertex_value_type     = VV;
   using vertex_key_type       = KeyT;
   using vertex_index_type     = KeyT;
-  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<vertex_type>;
+  using vertex_set            = VContainer<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_size_type      = typename vertex_set::size_type;
   using vertex_ssize_type     = typename vertex_set::difference_type;
 
-  using edge_type           = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_type           = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type     = EV;
   using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_index_type     = KeyT;
-  using edge_allocator_type = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set            = DAV_EDGE_SET<edge_type, edge_allocator_type>;
+  using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
+  using edge_set            = EContainer<edge_type, edge_allocator_type>;
 
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
@@ -176,23 +268,31 @@ private:
   edge_index_type first_edge_ = numeric_limits<edge_index_type>::max();
 };
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 class dav_const_vertex_vertex_iterator {
 public:
-  using this_t = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using this_t = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
 
-  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+  using graph_type = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
 
-  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using vertex_value_type     = VV;
   using vertex_key_type       = KeyT;
-  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<vertex_type>;
+  using vertex_set            = VContainer<vertex_type, vertex_allocator_type>;
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
 
-  using edge_type       = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_type       = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type = typename edge_type::edge_value_type;
   using edge_key_type   = typename edge_type::edge_key_type; // <from,to>
   using edge_set        = typename edge_type::edge_set;
@@ -258,11 +358,20 @@ protected:
   vertex_edge_iterator uv_;
 };
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class dav_vertex_vertex_iterator : public dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A> {
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+class dav_vertex_vertex_iterator
+      : public dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc> {
 public:
-  using this_t = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
-  using base_t = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using this_t = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
+  using base_t = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
 
   using graph_type           = typename base_t::graph_type;
   using vertex_type          = typename base_t::vertex_type;
@@ -336,13 +445,13 @@ public:
 ///			Properties may be modified.
 ///
 /// The time to construct the graph is O(V) + 2*O(E). The edges are scanned twice, the first
-/// time to identify the largest vertex index referenced (so the internal vertex vector is
-/// allocated only once), and the second time to build the internal edges vector.
+/// time to identify the largest vertex index referenced (so the internal vertex container is
+/// allocated only once), and the second time to build the internal edges container.
 ///
 /// When constructing the directed_adjacency_vector, vertices are identified by their index in the vertex
 /// container passed. Edges refer to their in/out vertices using the vertex index. If more
 /// vertices are referred to in the edges container in the constructor, then the internal
-/// vertex vector will be sized to accomodate the largest vertex index used by the edges.
+/// vertex container will be sized to accomodate the largest vertex index used by the edges.
 ///
 /// constructors accept a variety of containers, depending on the template parameters.
 /// vertices accept containers with 2 template parameters, like vector<T,A> and deque<T,A>
@@ -354,26 +463,39 @@ public:
 /// templatized graph free functions to work with the graph otherwise. While public member functions
 /// (besides constructors) may work, there is no guarantee they will work on all implementations.
 ///
-/// @tparam VV   Vertex Value type. default = empty_value.
-/// @tparam EV   Edge Value type. default = empty_value.
-/// @tparam GV   Graph Value type. default = empty_value.
-/// @tparam KeyT The type used for the vertex key, and index into edge vector
-/// @tparam A    Allocator. default = std::allocator
+/// @tparam VV              Vertex Value type. default = empty_value.
+/// @tparam EV              Edge Value type. default = empty_value.
+/// @tparam GV              Graph Value type. default = empty_value.
+/// @tparam KeyT            The type used for the vertex key, and index into edge container
+/// @tparam VContainer<V,A> Random-access container type used to store vertices (V) with allocator (A).
+/// @tparam EContainer<E,A> Random-access Container type used to store edges (E) with allocator (A).
+/// @tparam Alloc           Allocator. default = std::allocator
 //
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
+// clang-format off
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>
+// clang-format on
+{
 public:
   using base_type        = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
-  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using graph_value_type = GV;
-  using allocator_type   = A;
+  using allocator_type   = Alloc;
 
-  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, A>;
+  using vertex_type           = dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using vertex_value_type     = VV;
   using vertex_key_type       = KeyT;
   using vertex_index_type     = KeyT;
-  using vertex_allocator_type = typename allocator_traits<A>::template rebind_alloc<vertex_type>;
-  using vertex_set            = DAV_VERTEX_SET<vertex_type, vertex_allocator_type>;
+  using vertex_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<vertex_type>;
+  using vertex_set            = VContainer<vertex_type, vertex_allocator_type>;
 
   using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
   using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
@@ -382,12 +504,12 @@ public:
   using vertex_size_type      = ranges::range_size_t<vertex_range>;
   using vertex_ssize_type     = ranges::range_difference_t<vertex_range>;
 
-  using edge_type           = dav_edge<VV, EV, GV, KeyT, A>;
+  using edge_type           = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type     = EV;
   using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_index_type     = KeyT;
-  using edge_allocator_type = typename allocator_traits<A>::template rebind_alloc<edge_type>;
-  using edge_set            = DAV_EDGE_SET<edge_type, edge_allocator_type>;
+  using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
+  using edge_set            = EContainer<edge_type, edge_allocator_type>;
 
   using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
   using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
@@ -404,8 +526,9 @@ public:
   using vertex_outward_edge_iterator       = edge_iterator;
   using const_vertex_outward_edge_iterator = const_edge_iterator;
 
-  using vertex_outward_vertex_iterator       = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
-  using const_vertex_outward_vertex_iterator = dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, A>;
+  using vertex_outward_vertex_iterator = dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
+  using const_vertex_outward_vertex_iterator =
+        dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using vertex_outward_vertex_range =
         decltype(make_subrange2(vertex_outward_vertex_iterator(), vertex_outward_vertex_iterator()));
   using const_vertex_outward_vertex_range =
@@ -435,7 +558,7 @@ public:
   // vertex_value_type.
   //
   // The order visited in the vertices determines their index
-  // (and key/identity) in the internal vertices vector. The edge keys use
+  // (and key/identity) in the internal vertices container. The edge keys use
   // those values and are also expected to be ordered by their first (in)
   // vertex key and an exception is thrown if they aren't in
   // order. For these reasons, unordered (hash) containers won't work.
@@ -483,7 +606,7 @@ public:
                            const EValueFnc& evalue_fnc,
                            const VValueFnc& vvalue_fnc,
                            const GV&        gv    = GV(),
-                           const A&         alloc = A());
+                           const Alloc&     alloc = Alloc());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -512,7 +635,7 @@ public:
                             const EKeyFnc&   ekey_fnc, 
                             const EValueFnc& evalue_fnc, 
                             const GV&        gv = GV(), 
-                            const A&         alloc = A());
+                            const Alloc&     alloc = Alloc());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -524,7 +647,7 @@ public:
   /// @param alloc Allocator.
   ///
   directed_adjacency_vector(const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
-                            const A& alloc = A());
+                            const Alloc& alloc = Alloc());
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
@@ -534,7 +657,7 @@ public:
   /// @param alloc Allocator.
   ///
   directed_adjacency_vector(const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
-                            const A&                                                         alloc = A());
+                            const Alloc&                                                     alloc = Alloc());
 
   ~directed_adjacency_vector() = default;
 
@@ -602,9 +725,17 @@ private:
 };
 
 
-template <typename VV, typename EV, typename GV, integral KeyT, typename A>
-struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
-  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, A>;
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
+  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using graph_value_type = typename graph_type::graph_value_type;
   using allocator_type   = typename graph_type::allocator_type;
 
@@ -640,7 +771,7 @@ struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, A>> {
 };
 
 
-} // namespace std::graph
+} // namespace std
 
 #endif // DIRECTED_ADJ_ARRAY_HPP
 

@@ -2,13 +2,13 @@
 #include <tuple>
 #include <catch2/catch.hpp>
 
-using std::graph::ordered_pair;
-using std::graph::make_ordered_pair;
-using std::graph::make_unordered_pair;
+using std::ordered_pair;
+using std::make_ordered_pair;
+using std::make_unordered_pair;
 
 TEST_CASE("ordered_pair", "[pair][ordered]") {
   using PairT  = std::pair<int, int>;
-  using OPairT = std::graph::ordered_pair<int, int>;
+  using OPairT = std::ordered_pair<int, int>;
   //using first_type  = typename OPairT::first_type;
   //using second_type = typename OPairT::second_type;
 
@@ -68,7 +68,7 @@ TEST_CASE("ordered_pair", "[pair][ordered]") {
 
 TEST_CASE("unordered_pair", "[pair][ordered]") {
   using PairT  = std::pair<int, int>;
-  using OPairT = std::graph::unordered_pair<int, int>;
+  using OPairT = std::unordered_pair<int, int>;
   //using first_type  = typename OPairT::first_type;
   //using second_type = typename OPairT::second_type;
 

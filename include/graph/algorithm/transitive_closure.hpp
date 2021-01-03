@@ -14,7 +14,7 @@
 #ifndef GRAPH_TRANSITIVE_CLOSURE_HPP
 #  define GRAPH_TRANSITIVE_CLOSURE_HPP
 
-namespace std::graph {
+namespace std {
 
 template <directed G>
 struct reaches {
@@ -44,7 +44,7 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 
 template <typename ExecutionPolicy, directed G, typename OutIter, typename A = allocator<bool>>
 requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr void
-                                     warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
+warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a dense graph using Warshall's algorithm.
@@ -82,6 +82,6 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
   }
 }
 
-} // namespace std::graph
+} // namespace std
 
 #endif //GRAPH_TRANSITIVE_CLOSURE_HPP
