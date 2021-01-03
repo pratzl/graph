@@ -284,7 +284,7 @@ template <directed_or_undirected G>
 constexpr auto edge_key(G& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey) -> edge_key_t<G>;
 
 template <directed_or_undirected G>
-constexpr bool contains_vertex(G const& g, vertex_key_t<G> u);
+constexpr bool contains_vertex(G const& g, vertex_key_t<G> ukey);
 template <directed_or_undirected G>
 constexpr bool contains_edge(G const& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey);
 template <directed_or_undirected G>
@@ -1167,9 +1167,10 @@ concept edge_iterator = true; // edge_value, edge_key, vertex, vertex_key, ...ou
 
 template <typename G>
 concept edge_list_graph = true;
+
 template <typename G>
-concept vertex_list_graph = ranges::random_access_range<vertex_range_t<G>>
-                         && requires(G&& g, vertex_key_t<G> ukey, vertex_iterator_t<G> u) {
+concept vertex_list_graph = ranges::random_access_range<vertex_range_t<G>> 
+                         && requires(G&& g, vertex_key_t<G> ukey, vertex_iterator_t<G> u, vertex_iterator_t<G> v, vertex_range_t<G> urng) {
   graph_traits<G>::vertex_type;
   graph_traits<G>::vertex_key_type;
   graph_traits<G>::vertex_value_type;
@@ -1177,26 +1178,18 @@ concept vertex_list_graph = ranges::random_access_range<vertex_range_t<G>>
   graph_traits<G>::const_vertex_range;
   graph_traits<G>::vertex_size_type;
   is_same_v<vertex_t<G>, ranges::range_value_t<vertex_range_t<G>>>;
-  { vertex_key(g,u) } -> std::convertible_to<vertex_key_t<G>>;
-  { vertex_value(g,u) } -> std::convertible_to<vertex_value_t<G>>;
-  { find_vertex(g,ukey) } -> std::convertible_to<vertex_iterator_t<G>>;
-  //{ contains_vertex(g, ukey) } -> std::convertible_to<bool>;
-  /*vertex_key_t<G>;
-  vertex_value_t<G>;
-  vertex_size_t<G>;
-  vertex_ssize_t<G>;
-  vertex_range_t<G>;
-  const_vertex_range_t<G>;
-  vertex_iterator_t<G>;
-  const_vertex_iterator_t<G>;
-  is_same_v<vertex_t<G>, range_value_t<vertex_range_t<G>>>;
-  is_same_v<const vertex_t<G>, const_range_value_t<vertex_range_t<G>>>;
-  { vertex_key(g,u) } -> std::convertible_to<vertex_key_t<G>>;
-  { vertex_value(g,u) } -> std::convertible_to<value_type_t<G>>;
-  { find_vertex(g,ukey) } -> std::convertible_to<vertex_iterator_t<G>>;
-  { find_vertex(static_cast<const G&>(g),ukey) } -> std::convertible_to<const_vertex_iterator_t<G>>;
-  { contains_vertex(g, ukey) } -> std::convertible_to<bool>;*/
+  { vertices(g) } -> convertible_to<vertex_range_t<G>>;
+  { vertices_size(g) } -> convertible_to<vertex_size_t<G>>;
+  { vertices_ssize(g) } -> convertible_to<vertex_ssize_t<G>>;
+  { begin(g) } -> convertible_to<vertex_iterator_t<G>>;
+  { end(g) } -> convertible_to<vertex_iterator_t<G>>;
+  { vertex_key(g,u) } -> convertible_to<vertex_key_t<G>>;
+  { vertex_value(g,u) } -> convertible_to<vertex_value_t<G>&>;
+  { find_vertex(g,ukey) } -> convertible_to<vertex_iterator_t<G>>;
+  { contains_vertex(g, ukey) } -> convertible_to<bool>;
+  swap(u,v);
 };
+
 template <typename G>
 concept incidence_graph = true;
 template <typename G>

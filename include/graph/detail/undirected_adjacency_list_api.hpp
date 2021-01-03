@@ -1005,6 +1005,17 @@ constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, IndexT, A>
 // API graph functions
 //
 
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+void contains_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&              g,
+                     vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> ukey) {
+  return ukey >= 0 && ukey < g.vertices().size();
+}
 
 template <typename VV,
           typename EV,

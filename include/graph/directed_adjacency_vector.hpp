@@ -11,6 +11,27 @@
 
 namespace std {
 
+
+// clang-format off
+template <template <typename T, typename A> class Container, typename Elem, typename Alloc>
+concept graph_random_access_container = requires {
+  true;
+  //allocator_traits<Alloc>::template rebind_alloc<Elem>;
+  //ranges::random_access_range<Container<Elem, Alloc>>;
+};
+/*                                     && is_default_constructible_v<Container<T, Alloc>> 
+                                     && is_copy_constructible_v<Container<T, Alloc>> 
+                                     && is_move_constructible_v<Container<T, Alloc>> 
+                                     && is_destructible_v<Container<T, Alloc>>
+                                     && requires {
+  { Container<T, Alloc>(Alloc()) } -> convertible_to<Container<T, Alloc>>;
+};*/
+
+//  requires graph_random_access_container<VContainer, dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>, 
+//                                         typename allocator_traits<Alloc>::template rebind_alloc<dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>
+//                                        >
+// clang-format on
+
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector forward declarations
 ///
@@ -25,15 +46,6 @@ namespace std {
 /// A vector is used as the default container though any random-access container with
 /// <T,A> (type, allocator) template parameters can be used.
 ///
-
-template <typename VV                                        = empty_value,
-          typename EV                                        = empty_value,
-          typename GV                                        = empty_value,
-          integral KeyT                                      = uint32_t,
-          template <typename V, typename A> class VContainer = vector,
-          template <typename E, typename A> class EContainer = vector,
-          typename Alloc                                     = allocator<char>>
-class directed_adjacency_vector;
 
 template <typename VV,
           typename EV,
@@ -56,6 +68,17 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 class dav_edge;
+
+// clang-format off
+template <typename VV                                        = empty_value,
+          typename EV                                        = empty_value,
+          typename GV                                        = empty_value,
+          integral KeyT                                      = uint32_t,
+          template <typename V, typename A> class VContainer = vector,
+          template <typename E, typename A> class EContainer = vector,
+          typename Alloc                                     = allocator<char>>
+class directed_adjacency_vector;
+// clang-format on
 
 template <typename VV,
           typename EV,
@@ -448,6 +471,7 @@ public:
 /// @tparam EContainer<E,A> Random-access Container type used to store edges (E) with allocator (A).
 /// @tparam Alloc           Allocator. default = std::allocator
 //
+// clang-format off
 template <typename VV,
           typename EV,
           typename GV,
@@ -457,7 +481,9 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
+class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>
+// clang-format on
+{
 public:
   using base_type        = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
   using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;

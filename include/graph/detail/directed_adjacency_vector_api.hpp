@@ -27,6 +27,20 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
+void contains_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&              g,
+                     vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> ukey) {
+  return ukey >= 0 && ukey < g.vertices().size();
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 void clear(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) {
   g.clear();
 }
