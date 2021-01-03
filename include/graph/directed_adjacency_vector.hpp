@@ -446,7 +446,7 @@ public:
 /// @tparam KeyT            The type used for the vertex key, and index into edge container
 /// @tparam VContainer<V,A> Random-access container type used to store vertices (V) with allocator (A).
 /// @tparam EContainer<E,A> Random-access Container type used to store edges (E) with allocator (A).
-/// @tparam A               Allocator. default = std::allocator
+/// @tparam Alloc           Allocator. default = std::allocator
 //
 template <typename VV,
           typename EV,

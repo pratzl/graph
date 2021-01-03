@@ -164,14 +164,14 @@ Other Useful Tools
     - [x] rename directed_adjacency_array -> directed_adjacency_vector
     - [ ] [wait for P1709 review by LEWG] Create paper D2240R0
     - [ ] create matching undirected adjacency vector with immutable edge values
-    - [ ] Replace allocator parameter with container parameters for vertices & edges
+    - [x] Add container parameters for vertices & edges
   - [ ] unordered adjacency list
     - [x] implement with vector
     - [ ] extend to support constexpr array
     - [x] implement with deque? [for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
     - [x] implement with map? (non-integer index) [no: too big of impact to algorithms]
     - [ ] [wait for P1709 review by LEWG] Create paper D2239R0 
-    - [ ] Replace allocator parameter with container parameter for vertices
+    - [x] Add container parameter for vertices
   - [ ] Create paper for D2241R0 graph data structure design directions
     - [ ] describe rationale for data structures used
     - [x] support Compressed Sparse Row (CSR)?
