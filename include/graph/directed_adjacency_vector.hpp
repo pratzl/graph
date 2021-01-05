@@ -472,16 +472,15 @@ public:
 /// @tparam Alloc           Allocator. default = std::allocator
 //
 // clang-format off
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-class directed_adjacency_vector : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>
+template <typename                                VV,
+          typename                                EV,
+          typename                                GV,
+          integral                                KeyT,
+          template <typename V, typename A> class VContainer,
+          template <typename E, typename A> class EContainer,
+          typename                                Alloc>
+class directed_adjacency_vector 
+  : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>
 // clang-format on
 {
 public:
@@ -646,8 +645,12 @@ public:
   ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
-  directed_adjacency_vector(const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
-                            const Alloc& alloc = Alloc());
+  // clang-format off
+  directed_adjacency_vector(
+    const initializer_list<
+          tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
+    const Alloc&                                                     alloc = Alloc());
+  // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
@@ -656,8 +659,11 @@ public:
   ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
-  directed_adjacency_vector(const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
-                            const Alloc&                                                     alloc = Alloc());
+  // clang-format off
+  directed_adjacency_vector(
+    const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
+    const Alloc&                                                     alloc = Alloc());
+  // clang-format on
 
   ~directed_adjacency_vector() = default;
 
@@ -725,16 +731,18 @@ private:
 };
 
 
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-struct graph_traits<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
+// clang-format off
+template <typename                                VV,
+          typename                                EV,
+          typename                                GV,
+          integral                                KeyT,
+          template <typename V, typename A> class VContainer,
+          template <typename E, typename A> class EContainer,
+          typename                                Alloc>
+struct graph_traits<
+        directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>
+// clang-format on
+{
   using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using graph_value_type = typename graph_type::graph_value_type;
   using allocator_type   = typename graph_type::allocator_type;

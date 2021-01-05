@@ -727,14 +727,17 @@ public:
 /// @tparam VContainer<V,A> Random-access container type used to store vertices (V) with allocator (A).
 /// @tparam Alloc           Allocator. default = std::allocator
 ///
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-class undirected_adjacency_list : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
+// clang-format off
+template <typename                                VV,
+          typename                                EV,
+          typename                                GV,
+          integral                                KeyT,
+          template <typename V, typename A> class VContainer,
+          typename                                Alloc>
+class undirected_adjacency_list 
+  : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>
+// clang-format on
+{
 public:
   using base_type        = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
   using graph_type       = undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>;
@@ -943,7 +946,7 @@ public:
                             const EValueFnc& evalue_fnc,
                             const VValueFnc& vvalue_fnc,
                             const GV&        gv    = GV(),
-                            const Alloc&         alloc = Alloc());
+                            const Alloc&     alloc = Alloc());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -972,7 +975,7 @@ public:
                             const EKeyFnc&   ekey_fnc, 
                             const EValueFnc& evalue_fnc, 
                             const GV&        gv    = GV(), 
-                            const Alloc&         alloc = Alloc());
+                            const Alloc&     alloc = Alloc());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -982,8 +985,12 @@ public:
   ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
-  undirected_adjacency_list(const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
-                            const Alloc& alloc = Alloc());
+  // clang-format off
+  undirected_adjacency_list(
+    const initializer_list<
+          tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
+    const Alloc&                                                     alloc = Alloc());
+  // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
@@ -992,8 +999,11 @@ public:
   ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
-  undirected_adjacency_list(const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
-                            const Alloc&                                                     alloc = Alloc());
+  // clang-format off
+  undirected_adjacency_list(
+    const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
+    const Alloc&                                                     alloc = Alloc());
+  // clang-format on
 
   ~undirected_adjacency_list();
 
@@ -1084,14 +1094,16 @@ private:
   friend vertex_type;
 };
 
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+// clang-format off
+template <typename                                VV,
+          typename                                EV,
+          typename                                GV,
+          integral                                KeyT,
+          template <typename V, typename A> class VContainer,
+          typename                                Alloc>
+struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>
+// clang-format on
+{
   using graph_type       = undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>;
   using graph_value_type = typename graph_type::graph_value_type;
   using allocator_type   = typename graph_type::allocator_type;
