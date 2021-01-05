@@ -955,9 +955,8 @@ template <typename VV,
 constexpr auto outward_ssize(
       const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
       const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) noexcept
-      -> vertex_outward_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  using ssize_t =
-        vertex_outward_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
+      -> vertex_outward_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
+  using ssize_t = vertex_outward_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
   return static_cast<ssize_t>(outward_size(g));
 }
 

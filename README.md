@@ -148,6 +148,7 @@ Other Useful Tools
     - [ ] support piecewise_construct_t ctor
     - [x] [paper] Add ordered_pair & unordered_pair to paper
     - [x] Should they be in std:: or std::graph:: ? std (with graph)
+  - [ ] What functions can be defined globally as a default (e.g. contains_vertex(g,ukey))?
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)

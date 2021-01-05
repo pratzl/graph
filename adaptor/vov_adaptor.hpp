@@ -334,8 +334,8 @@ constexpr auto outward_size(const vov<Attributes...>& g, std::const_vertex_itera
 }
 template <typename... Attributes>
 constexpr auto outward_ssize(const vov<Attributes...>& g, std::const_vertex_iterator_t<vov<Attributes...>> u) noexcept
-      -> std::vertex_outward_edge_ssize_t<vov<Attributes...>> {
-  return static_cast<std::vertex_outward_edge_ssize_t<vov<Attributes...>>>(u->size());
+      -> std::vertex_outward_ssize_t<vov<Attributes...>> {
+  return static_cast<std::vertex_outward_ssize_t<vov<Attributes...>>>(u->size());
 }
 
 template <typename... Attributes>

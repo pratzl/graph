@@ -177,6 +177,9 @@ concept directed_or_undirected = directed<G> || undirected<G>;
 template <directed_or_undirected G>
 using graph_value_t = typename graph_traits<G>::graph_value_type;
 
+template <directed_or_undirected G>
+using graph_allocator_t = typename graph_traits<G>::allocator_type;
+
 // Uniform API: Vertex value types
 template <directed_or_undirected G>
 using vertex_t = typename graph_traits<G>::vertex_type;
@@ -284,7 +287,7 @@ template <directed_or_undirected G>
 constexpr auto edge_key(G& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey) -> edge_key_t<G>;
 
 template <directed_or_undirected G>
-constexpr bool contains_vertex(G const& g, vertex_key_t<G> ukey);
+constexpr bool contains_vertex(G const& g, vertex_key_t<G> ukey) noexcept;
 template <directed_or_undirected G>
 constexpr bool contains_edge(G const& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey);
 template <directed_or_undirected G>
@@ -671,7 +674,7 @@ constexpr auto erase_edges(G& g, vertex_vertex_range_t<G> uv) -> vertex_vertex_i
 template <directed G>
 using vertex_outward_size_t = typename graph_traits<G>::vertex_outward_size_type;
 template <directed G>
-using vertex_outward_edge_ssize_t = ranges::range_difference_t<typename graph_traits<G>::vertex_outward_edge_range>;
+using vertex_outward_ssize_t = ranges::range_difference_t<typename graph_traits<G>::vertex_outward_edge_range>;
 
 template <directed G>
 using vertex_outward_edge_range_t = typename graph_traits<G>::vertex_outward_edge_range;
@@ -700,7 +703,7 @@ using const_vertex_outward_vertex_iterator_t =
 template <directed G>
 constexpr auto outward_size(const G&, const_vertex_iterator_t<G> u) -> vertex_outward_size_t<G>;
 template <directed G>
-constexpr auto outward_ssize(const G&, const_vertex_iterator_t<G> u) -> vertex_outward_edge_ssize_t<G>;
+constexpr auto outward_ssize(const G&, const_vertex_iterator_t<G> u) -> vertex_outward_ssize_t<G>;
 
 
 // Directed API (outward): Vertex-Edge functions
