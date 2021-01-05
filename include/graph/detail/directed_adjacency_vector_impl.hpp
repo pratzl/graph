@@ -796,7 +796,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::directed_adjacency_vector(
-      const allocator_type& alloc) noexcept
+      const allocator_type& alloc)
       : vertices_(alloc), edges_(alloc), alloc_(alloc) {}
 
 template <typename VV,

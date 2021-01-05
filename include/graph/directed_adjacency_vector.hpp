@@ -539,13 +539,17 @@ public:
   using const_vertex_edge_iterator = const_edge_iterator;
 
 public:
-  directed_adjacency_vector() noexcept(noexcept(allocator_type()))    = default;
+  directed_adjacency_vector()                                         = default;
   directed_adjacency_vector(directed_adjacency_vector&& rhs) noexcept = default;
   directed_adjacency_vector(const directed_adjacency_vector&)         = default;
 
-  directed_adjacency_vector(const allocator_type& alloc) noexcept;
-  directed_adjacency_vector(const graph_value_type&, const allocator_type& alloc = allocator_type());
-  directed_adjacency_vector(graph_value_type&&, const allocator_type& alloc = allocator_type());
+  // clang-format off
+  directed_adjacency_vector(const allocator_type& alloc);
+  directed_adjacency_vector(const graph_value_type&, 
+                            const allocator_type& alloc = allocator_type());
+  directed_adjacency_vector(graph_value_type&&, 
+                            const allocator_type& alloc = allocator_type());
+  // clang-format on
 
   // The following constructors will load edges (and vertices) into the graph
   //

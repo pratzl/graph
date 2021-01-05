@@ -882,11 +882,17 @@ public:
   };
 
 public:
-  undirected_adjacency_list() noexcept(noexcept(allocator_type())) = default;
-  undirected_adjacency_list(const allocator_type& alloc) noexcept;
-  undirected_adjacency_list(const graph_value_type&, const allocator_type& alloc = allocator_type());
-  undirected_adjacency_list(graph_value_type&&, const allocator_type& alloc = allocator_type());
+  undirected_adjacency_list()                                         = default;
+  undirected_adjacency_list(undirected_adjacency_list&& rhs) noexcept = default;
+  undirected_adjacency_list(const undirected_adjacency_list&)         = default;
 
+  // clang-format off
+  undirected_adjacency_list(const allocator_type& alloc);
+  undirected_adjacency_list(const graph_value_type&, 
+                            const allocator_type& alloc = allocator_type());
+  undirected_adjacency_list(graph_value_type&&, 
+                            const allocator_type& alloc = allocator_type());
+  // clang-format on
 
   // The following constructors will load edges (and vertices) into the graph
   //
