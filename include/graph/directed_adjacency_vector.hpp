@@ -241,8 +241,8 @@ public:
   using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
   using edge_set            = EContainer<edge_type, edge_allocator_type>;
 
-  using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
-  using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
+  using edge_range          = decltype(detail::make_subrange(declval<edge_set&>()));
+  using const_edge_range    = decltype(detail::make_subrange(declval<const edge_set&>()));
   using edge_iterator       = ranges::iterator_t<edge_range>;
   using const_edge_iterator = ranges::iterator_t<const_edge_range>;
   using edge_size_type      = ranges::range_size_t<edge_range>;
@@ -496,8 +496,8 @@ public:
   using vertex_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<vertex_type>;
   using vertex_set            = VContainer<vertex_type, vertex_allocator_type>;
 
-  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
+  using vertex_range          = decltype(detail::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(detail::make_subrange(declval<const vertex_set&>()));
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
   using vertex_size_type      = ranges::range_size_t<vertex_range>;
@@ -510,8 +510,8 @@ public:
   using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
   using edge_set            = EContainer<edge_type, edge_allocator_type>;
 
-  using edge_range          = decltype(make_subrange2(declval<edge_set&>()));
-  using const_edge_range    = decltype(make_subrange2(declval<const edge_set&>()));
+  using edge_range          = decltype(detail::make_subrange(declval<edge_set&>()));
+  using const_edge_range    = decltype(detail::make_subrange(declval<const edge_set&>()));
   using edge_iterator       = ranges::iterator_t<edge_range>;
   using const_edge_iterator = ranges::iterator_t<const_edge_range>;
   using edge_size_type      = ranges::range_size_t<edge_range>;
@@ -529,9 +529,9 @@ public:
   using const_vertex_outward_vertex_iterator =
         dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using vertex_outward_vertex_range =
-        decltype(make_subrange2(vertex_outward_vertex_iterator(), vertex_outward_vertex_iterator()));
+        decltype(detail::make_subrange(vertex_outward_vertex_iterator(), vertex_outward_vertex_iterator()));
   using const_vertex_outward_vertex_range =
-        decltype(make_subrange2(const_vertex_outward_vertex_iterator(), const_vertex_outward_vertex_iterator()));
+        decltype(detail::make_subrange(const_vertex_outward_vertex_iterator(), const_vertex_outward_vertex_iterator()));
 
   using vertex_edge_range          = edge_range;
   using const_vertex_edge_range    = const_edge_range;

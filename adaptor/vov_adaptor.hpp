@@ -25,8 +25,8 @@ struct std::graph_traits<vov<Attributes...>> {
   using vertex_key_type   = typename vertex_set::size_type;
   using vertex_value_type = std::empty_value;
 
-  using vertex_range       = decltype(make_subrange2(std::declval<vertex_set&>()));
-  using const_vertex_range = decltype(make_subrange2(std::declval<const vertex_set&>()));
+  using vertex_range       = decltype(detail::make_subrange(std::declval<vertex_set&>()));
+  using const_vertex_range = decltype(detail::make_subrange(std::declval<const vertex_set&>()));
   using vertex_size_type   = typename vertex_set::size_type;
 
   using edge_type       = typename vertex_outward_edge_set::value_type;
@@ -34,9 +34,10 @@ struct std::graph_traits<vov<Attributes...>> {
   using edge_value_type = std::tuple<Attributes...>;
   using edge_size_type  = size_t;
 
-  using vertex_outward_edge_range       = decltype(make_subrange2(std::declval<vertex_outward_edge_set&>()));
-  using const_vertex_outward_edge_range = decltype(make_subrange2(std::declval<const vertex_outward_edge_set&>()));
-  using vertex_outward_size_type        = typename vertex_outward_edge_set::size_type;
+  using vertex_outward_edge_range = decltype(detail::make_subrange(std::declval<vertex_outward_edge_set&>()));
+  using const_vertex_outward_edge_range =
+        decltype(detail::make_subrange(std::declval<const vertex_outward_edge_set&>()));
+  using vertex_outward_size_type = typename vertex_outward_edge_set::size_type;
 
   // type aliases for Uniform API
   using vertex_edge_range       = vertex_outward_edge_range;
@@ -95,11 +96,11 @@ constexpr auto value(std::edge_t<vov<Attributes...>>& uv) -> std::edge_value_t<v
 
 template <typename... Attributes>
 constexpr auto vertices(vov<Attributes...>& g) -> std::vertex_range_t<vov<Attributes...>> {
-  return make_subrange2(g);
+  return detail::make_subrange(g);
 }
 template <typename... Attributes>
 constexpr auto vertices(const vov<Attributes...>& g) -> std::const_vertex_range_t<vov<Attributes...>> {
-  return make_subrange2(g);
+  return detail::make_subrange(g);
 }
 
 template <typename... Attributes>

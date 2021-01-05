@@ -144,8 +144,8 @@ public:
   using size_type       = size_t;
   using difference_type = ptrdiff_t;
 
-  using edge_range       = decltype(make_subrange2(iterator(), iterator()));
-  using const_edge_range = decltype(make_subrange2(const_iterator(), const_iterator()));
+  using edge_range       = decltype(detail::make_subrange(iterator(), iterator()));
+  using const_edge_range = decltype(detail::make_subrange(const_iterator(), const_iterator()));
 
 public:
   class const_iterator {
@@ -507,9 +507,9 @@ public:
 
   using vertex_vertex_iterator       = ual_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, Alloc>;
   using const_vertex_vertex_iterator = ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, Alloc>;
-  using vertex_vertex_range          = decltype(make_subrange2(vertex_vertex_iterator(), vertex_vertex_iterator()));
+  using vertex_vertex_range = decltype(detail::make_subrange(vertex_vertex_iterator(), vertex_vertex_iterator()));
   using const_vertex_vertex_range =
-        decltype(make_subrange2(const_vertex_vertex_iterator(), const_vertex_vertex_iterator()));
+        decltype(detail::make_subrange(const_vertex_vertex_iterator(), const_vertex_vertex_iterator()));
   using vertex_vertex_size_type  = edge_size_type;
   using vertex_vertex_ssize_type = edge_ssize_type;
 
@@ -755,8 +755,8 @@ public:
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
+  using vertex_range          = decltype(detail::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(detail::make_subrange(declval<const vertex_set&>()));
 
   using edge_type           = ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>;
   using edge_value_type     = EV;
@@ -775,8 +775,8 @@ public:
 
   class edge_iterator;       // (defined below)
   class const_edge_iterator; // (defined below)
-  using edge_range       = decltype(make_subrange2(edge_iterator(), edge_iterator()));
-  using const_edge_range = decltype(make_subrange2(const_edge_iterator(), const_edge_iterator()));
+  using edge_range       = decltype(detail::make_subrange(edge_iterator(), edge_iterator()));
+  using const_edge_range = decltype(detail::make_subrange(const_edge_iterator(), const_edge_iterator()));
 
   class const_edge_iterator {
   public:

@@ -329,7 +329,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
       -> vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return make_subrange2(g.vertices());
+  return detail::make_subrange(g.vertices());
 }
 
 template <typename VV,
@@ -343,7 +343,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
       -> const_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return make_subrange2(g.vertices());
+  return detail::make_subrange(g.vertices());
 }
 
 template <typename VV,

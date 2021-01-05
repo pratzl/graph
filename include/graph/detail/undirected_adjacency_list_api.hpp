@@ -229,7 +229,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g)
       -> vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return make_subrange2(g.vertices());
+  return detail::make_subrange(g.vertices());
 }
 
 template <typename VV,
@@ -241,7 +241,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g)
       -> const_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return make_subrange2(g.vertices());
+  return detail::make_subrange(g.vertices());
 }
 
 template <typename VV,
