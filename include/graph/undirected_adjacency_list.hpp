@@ -144,8 +144,8 @@ public:
   using size_type       = size_t;
   using difference_type = ptrdiff_t;
 
-  using edge_range       = decltype(make_subrange2(iterator(), iterator()));
-  using const_edge_range = decltype(make_subrange2(const_iterator(), const_iterator()));
+  using edge_range       = decltype(detail::make_subrange(iterator(), iterator()));
+  using const_edge_range = decltype(detail::make_subrange(const_iterator(), const_iterator()));
 
 public:
   class const_iterator {
@@ -507,9 +507,9 @@ public:
 
   using vertex_vertex_iterator       = ual_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, Alloc>;
   using const_vertex_vertex_iterator = ual_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, Alloc>;
-  using vertex_vertex_range          = decltype(make_subrange2(vertex_vertex_iterator(), vertex_vertex_iterator()));
+  using vertex_vertex_range = decltype(detail::make_subrange(vertex_vertex_iterator(), vertex_vertex_iterator()));
   using const_vertex_vertex_range =
-        decltype(make_subrange2(const_vertex_vertex_iterator(), const_vertex_vertex_iterator()));
+        decltype(detail::make_subrange(const_vertex_vertex_iterator(), const_vertex_vertex_iterator()));
   using vertex_vertex_size_type  = edge_size_type;
   using vertex_vertex_ssize_type = edge_ssize_type;
 
@@ -727,14 +727,17 @@ public:
 /// @tparam VContainer<V,A> Random-access container type used to store vertices (V) with allocator (A).
 /// @tparam Alloc           Allocator. default = std::allocator
 ///
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-class undirected_adjacency_list : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV> {
+// clang-format off
+template <typename                                VV,
+          typename                                EV,
+          typename                                GV,
+          integral                                KeyT,
+          template <typename V, typename A> class VContainer,
+          typename                                Alloc>
+class undirected_adjacency_list 
+  : public conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>
+// clang-format on
+{
 public:
   using base_type        = conditional_t<graph_value_needs_wrap<GV>::value, graph_value_wrapper<GV>, GV>;
   using graph_type       = undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>;
@@ -752,8 +755,8 @@ public:
 
   using vertex_iterator       = typename vertex_set::iterator;
   using const_vertex_iterator = typename vertex_set::const_iterator;
-  using vertex_range          = decltype(make_subrange2(declval<vertex_set&>()));
-  using const_vertex_range    = decltype(make_subrange2(declval<const vertex_set&>()));
+  using vertex_range          = decltype(detail::make_subrange(declval<vertex_set&>()));
+  using const_vertex_range    = decltype(detail::make_subrange(declval<const vertex_set&>()));
 
   using edge_type           = ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>;
   using edge_value_type     = EV;
@@ -772,8 +775,8 @@ public:
 
   class edge_iterator;       // (defined below)
   class const_edge_iterator; // (defined below)
-  using edge_range       = decltype(make_subrange2(edge_iterator(), edge_iterator()));
-  using const_edge_range = decltype(make_subrange2(const_edge_iterator(), const_edge_iterator()));
+  using edge_range       = decltype(detail::make_subrange(edge_iterator(), edge_iterator()));
+  using const_edge_range = decltype(detail::make_subrange(const_edge_iterator(), const_edge_iterator()));
 
   class const_edge_iterator {
   public:
@@ -879,11 +882,17 @@ public:
   };
 
 public:
-  undirected_adjacency_list() noexcept(noexcept(allocator_type())) = default;
-  undirected_adjacency_list(const allocator_type& alloc) noexcept;
-  undirected_adjacency_list(const graph_value_type&, const allocator_type& alloc = allocator_type());
-  undirected_adjacency_list(graph_value_type&&, const allocator_type& alloc = allocator_type());
+  undirected_adjacency_list()                                         = default;
+  undirected_adjacency_list(undirected_adjacency_list&& rhs) noexcept = default;
+  undirected_adjacency_list(const undirected_adjacency_list&)         = default;
 
+  // clang-format off
+  undirected_adjacency_list(const allocator_type& alloc);
+  undirected_adjacency_list(const graph_value_type&, 
+                            const allocator_type& alloc = allocator_type());
+  undirected_adjacency_list(graph_value_type&&, 
+                            const allocator_type& alloc = allocator_type());
+  // clang-format on
 
   // The following constructors will load edges (and vertices) into the graph
   //
@@ -943,7 +952,7 @@ public:
                             const EValueFnc& evalue_fnc,
                             const VValueFnc& vvalue_fnc,
                             const GV&        gv    = GV(),
-                            const Alloc&         alloc = Alloc());
+                            const Alloc&     alloc = Alloc());
   // clang-format on
 
   /// Constructor that takes edge & vertex ranges to create the graph.
@@ -972,7 +981,7 @@ public:
                             const EKeyFnc&   ekey_fnc, 
                             const EValueFnc& evalue_fnc, 
                             const GV&        gv    = GV(), 
-                            const Alloc&         alloc = Alloc());
+                            const Alloc&     alloc = Alloc());
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
@@ -982,8 +991,12 @@ public:
   ///              outward_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
-  undirected_adjacency_list(const initializer_list<tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
-                            const Alloc& alloc = Alloc());
+  // clang-format off
+  undirected_adjacency_list(
+    const initializer_list<
+          tuple<vertex_key_type, vertex_key_type, edge_value_type>>& ilist,
+    const Alloc&                                                     alloc = Alloc());
+  // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with edge values.
@@ -992,8 +1005,11 @@ public:
   ///              outward_vertex_key.
   /// @param alloc Allocator.
   ///
-  undirected_adjacency_list(const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
-                            const Alloc&                                                     alloc = Alloc());
+  // clang-format off
+  undirected_adjacency_list(
+    const initializer_list<tuple<vertex_key_type, vertex_key_type>>& ilist,
+    const Alloc&                                                     alloc = Alloc());
+  // clang-format on
 
   ~undirected_adjacency_list();
 
@@ -1084,14 +1100,16 @@ private:
   friend vertex_type;
 };
 
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+// clang-format off
+template <typename                                VV,
+          typename                                EV,
+          typename                                GV,
+          integral                                KeyT,
+          template <typename V, typename A> class VContainer,
+          typename                                Alloc>
+struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>
+// clang-format on
+{
   using graph_type       = undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>;
   using graph_value_type = typename graph_type::graph_value_type;
   using allocator_type   = typename graph_type::allocator_type;

@@ -62,17 +62,21 @@ template <typename G, typename A = allocator<vertex_iterator_t<G>>>
 using vertex_path_t = vector<vertex_iterator_t<G>, A>;
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
-using vertex_path_range = decltype(make_subrange2(declval<vertex_path_t<G, A>&>()));
+using vertex_path_range = decltype(detail::make_subrange(declval<vertex_path_t<G, A>&>()));
 
 template <typename G, typename A = allocator<edge_iterator_t<G>>>
 using edge_path_t = vector<edge_iterator_t<G>, A>;
 
 template <typename G, typename A>
-using edge_path_range = decltype(make_subrange2(declval<edge_path_t<G, A>&>()));
+using edge_path_range = decltype(detail::make_subrange(declval<edge_path_t<G, A>&>()));
 
 
+// clang-format off
 template <typename G, typename DistanceT, typename A = allocator<vertex_iterator_t<G>>>
-requires is_arithmetic_v<DistanceT> struct shortest_path2 {
+  requires is_arithmetic_v<DistanceT>
+struct shortest_path2
+// clang-format on
+{
   DistanceT               distance;
   vertex_path_range<G, A> vertex_path;
   edge_path_range<G, A>   path;
@@ -80,16 +84,24 @@ requires is_arithmetic_v<DistanceT> struct shortest_path2 {
 
 
 //! The return value of the shortest distance functions
+// clang-format off
 template <forward_iterator VertexIteratorT, typename DistanceT>
-requires is_arithmetic_v<DistanceT> struct shortest_distance {
+  requires is_arithmetic_v<DistanceT> 
+struct shortest_distance
+// clang-format on
+{
   VertexIteratorT first;                  // source vertex
   VertexIteratorT last;                   // last vertex in path
   DistanceT       distance = DistanceT(); // sum of the path's edge distances in the path
 };
 
 //! The return value of the shortest path functions
+// clang-format off
 template <forward_iterator VertexIteratorT, typename DistanceT, typename A = allocator<VertexIteratorT>>
-requires is_arithmetic_v<DistanceT> struct shortest_path {
+  requires is_arithmetic_v<DistanceT> 
+struct shortest_path
+// clang-format on
+{
   vector<VertexIteratorT, A> path;                   // vertices that make up the path
   DistanceT                  distance = DistanceT(); // sum of the path's edge distances in the path
 
@@ -103,7 +115,7 @@ requires is_arithmetic_v<DistanceT> struct shortest_path {
 
 //! Internal implementation of the Dijstra algorithm.
 //!
-template <typename G, typename DistFnc, typename DistanceT, typename A = allocator<DistanceT>>
+template <incidence_graph G, typename DistFnc, typename DistanceT, typename A = allocator<DistanceT>>
 class dijkstra_fn {
   enum colors : int8_t {
     white, // undiscovered
@@ -262,7 +274,7 @@ protected:
 
 //! Internal implementation of the Bellman-Ford algorithm.
 //!
-template <typename G, typename DistFnc, typename DistanceT, typename A = allocator<DistanceT>>
+template <incidence_graph G, typename DistFnc, typename DistanceT, typename A = allocator<DistanceT>>
 class bellman_ford_fn {
   struct vertex_dist { // --> template<G,DistanceT> path_detail; move outside function
     vertex_key_t<G> vtx_key  = numeric_limits<vertex_key_t<G>>::max();
@@ -430,14 +442,18 @@ protected:
 //!                    vertices on an edge. The default is to return a value of 1.
 //! @param alloc       The allocator to use for internal containers.
 //
-template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> void dijkstra_shortest_distances(
+// clang-format off
+template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> 
+void dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
       bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-      A                    alloc        = A()) {
+      A                    alloc        = A())
+// clang-format on
+{
 
   using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
@@ -460,15 +476,19 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 //!                    vertices on an edge. The default is to return a value of 1.
 //! @param alloc       The allocator to use for internal containers.
 //
-template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+// clang-format off
+template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
 //requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic; }
-requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> void dijkstra_shortest_paths(
+  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> 
+void dijkstra_shortest_paths(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
       bool const           leaves_only  = true,
       DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-      A                    alloc        = A()) {
+      A                    alloc        = A())
+// clang-format on
+{
   using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   fn.shortest_paths(source, result_iter, leaves_only);
@@ -497,16 +517,19 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 //! @return            true if a negateve edge cycle exists, which is only detected if
 //!                    detect_neg_edge_cycles is true.
 //
-template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> bool
-                                     bellman_ford_shortest_distances(
-                                           G&                   g,
-                                           vertex_iterator_t<G> source,
-                                           OutIter              result_iter,
-                                           bool const           leaves_only            = true,
-                                           bool const           detect_neg_edge_cycles = true,
-                                           DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
-                                           A                    alloc        = A()) {
+// clang-format off
+template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> 
+bool bellman_ford_shortest_distances(
+      G&                   g,
+      vertex_iterator_t<G> source,
+      OutIter              result_iter,
+      bool const           leaves_only            = true,
+      bool const           detect_neg_edge_cycles = true,
+      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
+      A                    alloc        = A())
+// clang-format on
+{
 
   using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
@@ -537,17 +560,20 @@ requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<
 //! @return            true if a negateve edge cycle exists, which is only detected if
 //!                    detect_neg_edge_cycles is true.
 //!
-template <typename G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-requires integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>>
-      //requires output_iterator<OutIter, typename OutIter::value_type>
-      bool bellman_ford_shortest_paths(
-            G&                   g,
-            vertex_iterator_t<G> source,
-            OutIter              result_iter,
-            bool const           leaves_only            = true,
-            bool const           detect_neg_edge_cycles = true,
-            DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
-            A                    alloc                  = A()) {
+// clang-format off
+template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>>
+  //requires output_iterator<OutIter, typename OutIter::value_type>
+bool bellman_ford_shortest_paths(
+      G&                   g,
+      vertex_iterator_t<G> source,
+      OutIter              result_iter,
+      bool const           leaves_only            = true,
+      bool const           detect_neg_edge_cycles = true,
+      DistFnc              distance_fnc           = [](edge_value_t<G>&) -> size_t { return 1; },
+      A                    alloc                  = A())
+// clang-format on
+{
   //static_assert(is_same<invoke_result<DistFnc(edge_value_t<G>&)>, DistanceT>::value);
   using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   bellman_ford_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);

@@ -796,7 +796,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::directed_adjacency_vector(
-      const allocator_type& alloc) noexcept
+      const allocator_type& alloc)
       : vertices_(alloc), edges_(alloc), alloc_(alloc) {}
 
 template <typename VV,
@@ -867,7 +867,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dire
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_outward_edges(make_subrange2(t, u));
+      t = finalize_outward_edges(detail::make_subrange(t, u));
 
       edge_iterator uv;
       if constexpr (same_as<decltype(evalue_fnc(edge_data)), void>) {
@@ -879,7 +879,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dire
     }
 
     // assure begin edge is set for remaining vertices w/o edges
-    finalize_outward_edges(make_subrange2(t, vertices_.end()));
+    finalize_outward_edges(detail::make_subrange(t, vertices_.end()));
   }
 }
 
@@ -939,14 +939,14 @@ directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dire
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_outward_edges(make_subrange2(t, u));
+      t = finalize_outward_edges(detail::make_subrange(t, u));
 
       edges_.emplace_back(edge_type(ukey, vkey, uv_val));
       u->set_edge_begin(static_cast<edge_index_type>(edges_.size() - 1));
     }
 
     // assure begin edge is set for remaining vertices w/o edges
-    finalize_outward_edges(make_subrange2(t, vertices_.end()));
+    finalize_outward_edges(detail::make_subrange(t, vertices_.end()));
   }
 }
 
@@ -983,7 +983,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dire
         throw_unordered_edges();
 
       // assure begin edge is set for vertices w/o edges
-      t = finalize_outward_edges(make_subrange2(t, u));
+      t = finalize_outward_edges(detail::make_subrange(t, u));
 
       edge_iterator uv;
       uv = create_edge(ukey, vkey);
@@ -991,7 +991,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dire
     }
 
     // assure begin edge is set for remaining vertices w/o edges
-    finalize_outward_edges(make_subrange2(t, vertices_.end()));
+    finalize_outward_edges(detail::make_subrange(t, vertices_.end()));
   }
 }
 

@@ -1170,8 +1170,7 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::undirected_adjacency_list(
-      const allocator_type& alloc) noexcept
+undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::undirected_adjacency_list(const allocator_type& alloc)
       : vertices_(alloc), edge_alloc_(alloc) {}
 
 template <typename VV,

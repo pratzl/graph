@@ -95,30 +95,31 @@ namespace detail {
 
   template <typename C, integral N>
   void reserve(C& c, N n) {}
+
+  template <typename I, typename S>
+  constexpr ranges::subrange<I, S> make_subrange(I i, S s) {
+    return {i, s};
+  }
+
+  template <typename I, typename S>
+  requires input_or_output_iterator<I>&& sentinel_for<S, I>            //
+        constexpr ranges::subrange<I, S, ranges::subrange_kind::sized> //
+        make_subrange(I i, S s, detail::iter_size_t<I> n) {
+    return {i, s, n};
+  }
+
+  template <typename R>
+  constexpr auto make_subrange(R&& r)
+        -> ranges::subrange<ranges::iterator_t<R>,
+                            ranges::sentinel_t<R>,
+                            (ranges::sized_range<R> || sized_sentinel_for<ranges::sentinel_t<R>, ranges::iterator_t<R>>)
+                                  ? ranges::subrange_kind::sized
+                                  : ranges::subrange_kind::unsized> //
+  {
+    return {static_cast<R&&>(r)};
+  }
+
 } // namespace detail
-
-template <typename I, typename S>
-constexpr ranges::subrange<I, S> make_subrange2(I i, S s) {
-  return {i, s};
-}
-
-template <typename I, typename S>
-requires input_or_output_iterator<I>&& sentinel_for<S, I>            //
-      constexpr ranges::subrange<I, S, ranges::subrange_kind::sized> //
-      make_subrange2(I i, S s, detail::iter_size_t<I> n) {
-  return {i, s, n};
-}
-
-template <typename R>
-constexpr auto make_subrange2(R&& r)
-      -> ranges::subrange<ranges::iterator_t<R>,
-                          ranges::sentinel_t<R>,
-                          (ranges::sized_range<R> || sized_sentinel_for<ranges::sentinel_t<R>, ranges::iterator_t<R>>)
-                                ? ranges::subrange_kind::sized
-                                : ranges::subrange_kind::unsized> //
-{
-  return {static_cast<R&&>(r)};
-}
 
 } // namespace std
 

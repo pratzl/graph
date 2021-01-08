@@ -64,7 +64,7 @@ namespace std {
 ///
 
 // clang-format off
-template <searchable_graph G, typename A = allocator<char>>
+template <incidence_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
         && ranges::random_access_range<vertex_range_t<G>> 
 class depth_first_search_vertex_range
@@ -235,7 +235,7 @@ private:
 /// depth-first search range for edges, given a single seed vertex.
 ///
 // clang-format off
-template <searchable_graph G, typename A = allocator<char>>
+template <incidence_graph G, typename A = allocator<char>>
 requires integral<vertex_key_t<G>>
       && ranges::random_access_range<vertex_range_t<G>> 
 class depth_first_search_edge_range
