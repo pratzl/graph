@@ -29,8 +29,12 @@ struct component {
 //---------------------------------------------------------------------------------------
 // Connected Components (for undirected graphs)
 //
-template <undirected G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> class con_comp_fn {
+// clang-format off
+template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+  requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
+class con_comp_fn
+// clang-format on
+{
 public:
   using graph_type            = G;
   using allocator_type        = A;
@@ -89,16 +93,22 @@ protected:
   component_number_type curr_comp_ = 0;
 };
 
-template <undirected G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> void
-connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A()) {
+// clang-format off
+template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+  requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
+void connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A())
+// clang-format on
+{
   con_comp_fn cc(g, alloc);
   cc(start, result_iter);
 }
 
-template <undirected G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> void
-connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A()) {
+// clang-format off
+template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+  requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
+void connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A())
+// clang-format on
+{
   con_comp_fn cc(g, alloc);
   cc(rng, result_iter);
 }
@@ -106,8 +116,12 @@ connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc =
 //---------------------------------------------------------------------------------------
 // Strongly Connected Components (Tarjen's algorithm for directed graphs)
 //
-template <directed G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> class tarjen_scc_fn {
+// clang-format off
+template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+  requires directed<G> && output_iterator<OutIter, component<G, CompT>> 
+class tarjen_scc_fn
+// clang-format on
+{
 public:
   using graph_type            = G;
   using allocator_type        = A;
@@ -197,16 +211,22 @@ protected:
   component_number_type curr_comp_ = 0;
 };
 
-template <directed G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> void
-strongly_connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A()) {
+// clang-format off
+template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+  requires directed<G> && output_iterator<OutIter, component<G, CompT>> 
+void strongly_connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A())
+// clang-format on
+{
   tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
   scc(start, result_iter);
 }
 
+// clang-format off
 template <directed G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-requires output_iterator<OutIter, component<G, CompT>> void
-strongly_connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A()) {
+  requires incidence_graph<G> && output_iterator<OutIter, component<G, CompT>> 
+void strongly_connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A())
+// clang-format on
+{
   tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
   scc(rng, result_iter);
 }

@@ -50,12 +50,6 @@
     5.  The common begin(g)/end(g), find(g,v) and find_if(g,p) assume the range of vertices for a graph
         (not edges).
 
-   TODO
-	1.	Extend compressed_adj_array to support:
-		a.	in edges?
-	2.	Add reverse_graph (swap in/out edges)
-	3.	Add adj_matrix impl
-
 */
 
 #ifndef GRAPH_FWD_HPP
@@ -1168,48 +1162,73 @@ concept edge_range = true;
 template <typename G, typename EI>
 concept edge_iterator = true; // edge_value, edge_key, vertex, vertex_key, ...outward, ...inward
 
-template <typename G>
-concept edge_list_graph = true;
+template<typename G>
+concept graph_value_types = requires {
+  graph_traits<G>::graph_type;
+  graph_traits<G>::graph_value_type;
+  graph_traits<G>::allocator_type; // e.g. allocator<char>
+};
 
-template <typename G>
-concept vertex_list_graph = ranges::random_access_range<vertex_range_t<G>> 
-                         && requires(G&& g, vertex_key_t<G> ukey, vertex_iterator_t<G> u, vertex_iterator_t<G> v, vertex_range_t<G> urng) {
+template<typename G>
+concept vertex_value_types = requires {
   graph_traits<G>::vertex_type;
   graph_traits<G>::vertex_key_type;
   graph_traits<G>::vertex_value_type;
+};
+
+template<typename G>
+concept edge_value_types = requires {
+  graph_traits<G>::edge_type;
+  graph_traits<G>::edge_key_type;
+  graph_traits<G>::edge_value_type;
+
+  graph_traits<G>::vertex_key_type;
+  derived_from<graph_traits<G>::edge_key_type, ordered_pair<graph_traits<G>::vertex_key_type,graph_traits<G>::vertex_key_type>>
+  || derived_from<graph_traits<G>::edge_key_type, unordered_pair<graph_traits<G>::vertex_key_type,graph_traits<G>::vertex_key_type>>;
+};
+template <typename G>
+concept vertex_list_graph = ranges::random_access_range<vertex_range_t<G>> 
+                         //&& ranges::random_access_range<G> // == vertex_range_t<G>
+                         //&& graph_value_types<G>
+                         //&& vertex_value_types<G>
+                         && requires(G&&                  g, 
+                                     vertex_key_t<G>      ukey, 
+                                     vertex_iterator_t<G> u, 
+                                     vertex_iterator_t<G> v) {
   graph_traits<G>::vertex_range;
-  graph_traits<G>::const_vertex_range;
   graph_traits<G>::vertex_size_type;
   is_same_v<vertex_t<G>, ranges::range_value_t<vertex_range_t<G>>>;
-  { vertices(g) } -> convertible_to<vertex_range_t<G>>;
-  { vertices_size(g) } -> convertible_to<vertex_size_t<G>>;
-  { vertices_ssize(g) } -> convertible_to<vertex_ssize_t<G>>;
-  { begin(g) } -> convertible_to<vertex_iterator_t<G>>;
-  { end(g) } -> convertible_to<vertex_iterator_t<G>>;
-  { vertex_key(g,u) } -> convertible_to<vertex_key_t<G>>;
-  { vertex_value(g,u) } -> convertible_to<vertex_value_t<G>&>;
-  { find_vertex(g,ukey) } -> convertible_to<vertex_iterator_t<G>>;
-  { contains_vertex(g, ukey) } -> convertible_to<bool>;
+  { vertices(g) }       -> same_as<vertex_range_t<G>>;
+  { vertices_size(g) }  -> same_as<vertex_size_t<G>>;
+  { vertices_ssize(g) } -> same_as<vertex_ssize_t<G>>;
+  { begin(g) } -> convertible_to<const_vertex_iterator_t<G>>;
+  { end(g) } -> convertible_to<const_vertex_iterator_t<G>>;
+  { vertex_key(g,u) } -> same_as<vertex_key_t<G>>;
+  { vertex_value(g,u) } -> same_as<vertex_value_t<G>&>;
+  { find_vertex(g,ukey) } -> convertible_to<const_vertex_iterator_t<G>>;
+  { contains_vertex(g, ukey) } -> same_as<bool>;
   swap(u,v);
 };
 
 template <typename G>
-concept incidence_graph = true;
+concept edge_list_graph = true;
+
+template <typename G>
+concept incidence_graph = ranges::forward_range<edge_range_t<G>> 
+                       //&& edge_value_types<G>
+                       && directed_or_undirected<G> ;
 template <typename G>
 concept adjacency_graph = true;
 template <typename G>
 concept adjacency_matrix = true;
 
-template <typename Rng, typename G>
+template <typename G, typename Rng>
 concept vertex_path = true;
-template <typename Rng, typename G>
+template <typename G, typename Rng>
 concept edge_path = true;
 
-template <typename Rng, typename G>
+template <typename G, typename Rng>
 concept vertex_cycle = true;
-
-template <typename G>
-concept searchable_graph = true; // for DFS, BFS & TopoSort ranges
 
 template <typename G>
 concept incremental_vertex_graph = true; // add_vertex
