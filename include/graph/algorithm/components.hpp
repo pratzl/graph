@@ -118,7 +118,7 @@ void connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A al
 //
 // clang-format off
 template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-  requires directed<G> && output_iterator<OutIter, component<G, CompT>> 
+  requires directed<G> && output_iterator<OutIter, component<G, CompT>>
 class tarjen_scc_fn
 // clang-format on
 {

@@ -7,9 +7,9 @@ This library is in the alpha stage that may include significant changes to the i
 ### Prerequesites
 
 1. A C++ compiler that supports Concepts and has the \<concepts\> header (gcc10, MSVC latest)
-1. CMake 3.16 or later
-1. Python3
-1. Conan package manager (Python)
+2. CMake 3.16 or later
+3. Python3
+4. Conan package manager (Python: pip install conan)
 
 ### Cloning & Building
 
@@ -148,9 +148,15 @@ Other Useful Tools
     - [ ] support piecewise_construct_t ctor
     - [x] [paper] Add ordered_pair & unordered_pair to paper
     - [x] Should they be in std:: or std::graph:: ? std (with graph)
-  - [ ] What functions can be defined globally as a default (e.g. contains_vertex(g,ukey))?
-  - [ ] Adaptors
-    - [ ] 
+  - [ ] What functions can be defined globally as a default (e.g. contains_vertex(g,ukey), degree(g,u))?
+  - [ ] Extenders
+    - [ ] adjacency_extender
+    - [ ] edge_list_extender
+  - [ ] Mappers
+    - [ ] outward_to_uniform_incidence
+    - [ ] outward_to_uniform_adjacency
+    - [ ] inward_to_uniform_incidence
+    - [ ] inward_to_uniform_adjacency
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
