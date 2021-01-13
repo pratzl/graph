@@ -1,3 +1,5 @@
+![Build with gcc-10](https://github.com/pratzl/graph/workflows/Build%20with%20gcc-10/badge.svg?branch=master)
+
 # Graph Library Proposal for the C++ Standard
 
 This library is in the alpha stage that may include significant changes to the interface. It is not recommended for general use.
@@ -93,7 +95,9 @@ Other Useful Tools
   - [ ] shortest paths
     - [ ] Replace shortest_path with shortest_path2
     - [ ] Replace first/last with range in shortest_distance?
-    - [ ] Review template arguments
+    - [ ] distance_fnc should take edge iterator (not reference)
+    - [ ] dikstra impl requires incidence_graph & edge_list_graph
+    - [ ] bellman_ford impl requires edge_list_graph only
 - [ ] Iterators
   - [ ] DFS
     - [ ] validate const iterator
@@ -168,6 +172,7 @@ Other Useful Tools
     - [ ] assure CSR can be handled with the current graph ctors
     - [x] IndexT --> KeyT, integral concept
     - [x] Separate _impl files into _impl for the class and _api for the API adaptors
+    - [ ] Verify that value types can be a variant
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
