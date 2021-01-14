@@ -2,6 +2,7 @@ name: CMake
 
 on:
   push: [ $default-branch ]
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -28,4 +29,3 @@ jobs:
 
     - name: make
         make
-        
