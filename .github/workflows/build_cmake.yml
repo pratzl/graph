@@ -18,12 +18,10 @@ jobs:
 
     - name: prep
       run: |
-        sudo apt-get install -y python3 python3-pip
         sudo pip3 install conan
-        sudo apt-get install -y gcc-10 g++10
-        update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 90 --slave /usr/bin/g++ g++ /usr/bin/g++-10
-        update-alternatives --install /usr/bin/cc  cc /usr/bin/gcc 30
-        update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 90 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+        sudo update-alternatives --install /usr/bin/cc  cc /usr/bin/gcc 30
+        sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30
 
     - name: cmake
       run: |
