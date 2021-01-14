@@ -601,8 +601,8 @@ public:
             typename EValueFnc, 
             typename VRng, 
             typename VValueFnc>
-    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
-          && vertex_range_extractor<VRng, VValueFnc>
+    requires edge_value_extractor<ERng, EKeyFnc, EValueFnc> 
+          &&  vertex_value_extractor<VRng, VValueFnc>
   directed_adjacency_vector(const ERng&     erng,
                            const VRng&      vrng,
                            const EKeyFnc&   ekey_fnc,
@@ -633,7 +633,7 @@ public:
   ///
   // clang-format off
   template <typename ERng, typename EKeyFnc, typename EValueFnc>
-    requires edge_range_extractor<ERng, EKeyFnc, EValueFnc>
+    requires edge_value_extractor<ERng, EKeyFnc, EValueFnc>
   directed_adjacency_vector(const ERng&     rng, 
                             const EKeyFnc&   ekey_fnc, 
                             const EValueFnc& evalue_fnc, 

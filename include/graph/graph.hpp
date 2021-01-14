@@ -79,18 +79,17 @@ struct graph_traits
   using edge_key_type              = ...; // ordered_pair | unordered_pair
   using edge_value_type            = ...;
 
+  // The following 4 ranges are used by algorithms
   using vertex_range               = ...;
   using vertex_edge_range          = ...;
+  using edge_range                 = ...; // optional
+  using vertex_vertex_range        = ...; // optional
 
-  // The following are optional
-  using edge_range                 = ...;
-  using vertex_vertex_range        = ...;
-
-  // The following are only for directed graphs and are optional
-  using vertex_outward_edge_range   = ...; 
-  using vertex_outward_vertex_range = ...; 
-  using vertex_inward_edge_range    = ...; 
-  using vertex_inward_vertex_range  = ...; 
+  // The following are only for directed graphs
+  using vertex_outward_edge_range   = ...; // optional
+  using vertex_outward_vertex_range = ...; // optional
+  using vertex_inward_edge_range    = ...; // optional
+  using vertex_inward_vertex_range  = ...; // optional
 };
 */
 
@@ -1126,141 +1125,244 @@ using is_vertex_vertex_iterator = bool_constant<true>;
 // clang-format off
 
 template<typename G>
-concept graph_value_types = requires(G& g) {
-  graph_traits<G>::graph_type;
-  graph_traits<G>::graph_value_type;
-  graph_traits<G>::allocator_type; // e.g. allocator<char>
-  is_same_v<G, graph_traits<G>::graph_type>;
-};
+concept graph_value_types = 
+  requires(G& g1, G& g2) {
+    graph_traits<G>::graph_type;
+    graph_traits<G>::graph_value_type;
+    graph_traits<G>::allocator_type;
+    is_same_v<G, graph_traits<G>::graph_type>;
+    semiregular<graph_value_t<G>>;
+    { graph_value(g1) } -> convertible_to<graph_value_t<G>&>;
+    { swap(g1,g2) };
+  };
 
 template<typename G>
-concept vertex_value_types = requires(G& g) {
-  graph_traits<G>::vertex_type;
-  graph_traits<G>::vertex_key_type;
-  graph_traits<G>::vertex_value_type;
-};
+concept vertex_value_types = 
+  requires(G& g) {
+    graph_traits<G>::vertex_type;
+    graph_traits<G>::vertex_key_type;
+    graph_traits<G>::vertex_value_type;
+    semiregular<vertex_value_t<G>>;
+  };
 
 template<typename G>
-concept edge_value_types = requires(G& g) {
-  graph_traits<G>::edge_type;
-  graph_traits<G>::edge_key_type;
-  graph_traits<G>::edge_value_type;
-  graph_traits<G>::vertex_key_type;
+concept edge_value_types = 
+  requires(G& g) {
+    graph_traits<G>::edge_type;
+    graph_traits<G>::edge_key_type;
+    graph_traits<G>::edge_value_type;
+    graph_traits<G>::vertex_key_type;
+    semiregular<edge_value_t<G>>;
 
-  // edge_key_type = ordered_pair<K,K> | unordered_pair<K,K>
-  derived_from<edge_key_t<G>, ordered_pair<vertex_key_t<G>,vertex_key_t<G>>> ||
-  derived_from<edge_key_t<G>, unordered_pair<vertex_key_t<G>,vertex_key_t<G>>>;
-};
-
-template<typename R>
-concept graph_standard_range = ranges::sized_range<R> && semiregular<R> && requires(R& r) {
-  { cbegin(r) } -> same_as<ranges::iterator_t<const R>>;
-  { cend(r) } -> same_as<ranges::sentinel_t<const R>>;
-  { ssize(r) } -> same_as<ranges::range_difference_t<R>>;
-  { empty(r) } -> same_as<bool>;
-};
+    // edge_key_type = ordered_pair<K,K> | unordered_pair<K,K>
+    derived_from<edge_key_t<G>, ordered_pair<vertex_key_t<G>,vertex_key_t<G>>> ||
+    derived_from<edge_key_t<G>, unordered_pair<vertex_key_t<G>,vertex_key_t<G>>>;
+  };
 
 template<typename G, typename VR>
-concept vertex_range = ranges::random_access_range<VR>
-                    && graph_standard_range<VR>
-                    && requires(VR& vr, ranges::iterator_t<VR> u) {
-                      is_same_v<vertex_t<G>, ranges::range_value_t<VR>>;
-                      { vertex_key(vr,u) } -> same_as<vertex_key_t<G>>;
-                      { vertex_value(vr,u) } -> same_as<vertex_value_t<G>&>;
-                    };
+concept vertex_range = 
+  ranges::random_access_range<VR> &&
+  ranges::sized_range<VR> &&
+  requires(VR& vr, ranges::iterator_t<VR> u, vertex_key_t<G> ukey) {
+    is_same_v<vertex_t<G>, ranges::range_value_t<VR>>;
+    { vertex_key(vr,u) } -> same_as<vertex_key_t<G>>;
+    { vertex_value(vr,u) } -> same_as<vertex_value_t<G>&>;
+    { find_vertex(vr,ukey) } -> same_as<vertex_iterator_t<G>>;
+    { contains_vertex(vr, ukey) } -> same_as<bool>;
+    { empty(vr) } -> same_as<bool>;
+  };
 
 template<typename G, typename R>
-concept edge_range = ranges::forward_range<R>
-                  && graph_standard_range<R>
-                  && requires(G& g, ranges::iterator_t<R> uv) {
-                      { edge_key(g,uv) }   -> same_as<edge_key_t<G>>;
-                      { edge_value(g,uv) } -> same_as<edge_value_t<G>&>;
-                  };
+concept basic_edge_range = 
+  ranges::forward_range<R> &&
+  requires(G&                                    g, 
+           R&                                    r,
+           ranges::iterator_t<R>                 uv, 
+           ranges::iterator_t<vertex_range_t<G>> u, 
+           ranges::iterator_t<vertex_range_t<G>> src, 
+           vertex_key_t<G>                       src_key) {
+    { vertex(g, uv, src) } -> same_as<ranges::iterator_t<vertex_range_t<G>>>;
+    { vertex_key(g, uv, src_key) } -> same_as<ranges::iterator_t<vertex_range_t<G>>>;
+    { outward_vertex(g, uv) } -> same_as<ranges::iterator_t<vertex_range_t<G>>>;
+    { outward_vertex_key(g, uv) } -> same_as<vertex_key_t<G>>;
+    { inward_vertex(g, uv) } -> same_as<ranges::iterator_t<vertex_range_t<G>>>;
+    { inward_vertex_key(g, uv) } -> same_as<vertex_key_t<G>>;
+    { empty(r) } -> same_as<bool>;
+  };
 
 template<typename G, typename R>
-concept incidence_edge_range = edge_range<G,R>
-                            && requires(R& r) {
-                              true;
-                              //is_same<range_value_t<R>, edge_t<G>;
-                              //{ degree(r) } -> same_as<ranges::range_difference_t<VL>>;
-                            };
+concept incidence_edge_range = 
+  basic_edge_range<G,R> &&
+  ranges::sized_range<R> &&
+  is_same_v<ranges::range_value_t<R>, edge_t<G>> &&
+  requires(G& g, R& r, ranges::iterator_t<R> uv) {
+    { edge_key(g,uv) }   -> same_as<edge_key_t<G>>;
+    { edge_value(g,uv) } -> same_as<edge_value_t<G>&>;
+    //{ degree(r) } -> same_as<ranges::range_size_t<VL>>;
+  };
 
 template<typename G, typename R>
-concept adjacency_edge_range = edge_range<G,R>
-                            && requires(R& r) {
-                              true;
-                              //is_same<range_value_t<R>, vertex_t<G>;
-                              //{ degree(r) } -> same_as<ranges::range_difference_t<VL>>;
-                            };
+concept adjacency_edge_range = 
+  basic_edge_range<G,R> &&
+  ranges::sized_range<R> &&
+  is_same_v<ranges::range_value_t<R>, vertex_t<G>> &&
+  requires(R& r) {
+    true;
+    //{ degree(r) } -> same_as<ranges::range_size_t<VL>>;
+  };
 
 template <typename G>
-concept vertex_list_graph = vertex_range<G,typename graph_traits<G>::vertex_range> // vertex_range is a vertex_range
-                         && vertex_range<G,G>                             // graph is an alias of the vertex_range
-                         && graph_value_types<G>
-                         && vertex_value_types<G>
-                         && requires(G&&                  g, 
-                                     vertex_key_t<G>      ukey, 
-                                     vertex_iterator_t<G> u, 
-                                     vertex_iterator_t<G> v) {
-  { graph_value(g) } -> same_as<graph_value_t<G>&>;
-  { vertices(g) } -> same_as<vertex_range_t<G>>;
-  { find_vertex(g,ukey) } -> same_as<vertex_iterator_t<G>>;
-  { contains_vertex(g, ukey) } -> same_as<bool>;
-  swap(u,v);
-};
+concept vertex_list_graph = 
+  vertex_range<G, vertex_range_t<G>> && // vertex_range is a vertex_range
+  vertex_range<G,G> &&                  // graph is an alias of vertex_range
+  graph_value_types<G> &&
+  vertex_value_types<G> &&
+  requires(G& g) {
+    { vertices(g) } -> same_as<vertex_range_t<G>>;
+  };
 
 template <typename G>
-concept edge_list_graph = true;
+concept incidence_graph = 
+  requires(G&                                    g, 
+           ranges::iterator_t<vertex_range_t<G>> u, 
+           ranges::iterator_t<vertex_range_t<G>> v,
+           vertex_key_t<G>                       ukey,
+           vertex_key_t<G>                       vkey) {
+    vertex_list_graph<G>;
+    incidence_edge_range<G, vertex_edge_range_t<G>>;
+    edge_value_types<G>;
+    { find_vertex_edge(g, u, v) }       -> same_as<ranges::iterator_t<vertex_edge_range_t<G>>>;
+    { find_vertex_edge(g, ukey, vkey) } -> same_as<ranges::iterator_t<vertex_edge_range_t<G>>>;
+  };
 
 template <typename G>
-concept incidence_graph = ranges::forward_range<edge_range_t<G>>;
-                       //&& edge_value_types<G>;
+concept adjacency_graph = 
+  vertex_list_graph<G> &&
+  adjacency_edge_range<G, vertex_vertex_range_t<G>> &&
+  requires(G&                                    g, 
+           ranges::iterator_t<vertex_range_t<G>> u, 
+           ranges::iterator_t<vertex_range_t<G>> v,
+           vertex_key_t<G>                       ukey,
+           vertex_key_t<G>                       vkey) {
+    { find_vertex_vertex(g, u, v) }       -> same_as<ranges::iterator_t<vertex_vertex_range_t<G>>>;
+    { find_vertex_vertex(g, ukey, vkey) } -> same_as<ranges::iterator_t<vertex_vertex_range_t<G>>>;
+  };
+
+template <typename G>
+concept edge_list_graph = 
+  vertex_list_graph<G> &&
+  basic_edge_range<G, edge_range_t<G>> &&
+  is_same_v<ranges::range_value_t<edge_range_t<G>>, edge_t<G>> &&
+  edge_value_types<G> &&
+  requires(G&                                    g, 
+           ranges::iterator_t<vertex_range_t<G>> u, 
+           ranges::iterator_t<vertex_range_t<G>> v,
+           vertex_key_t<G>                       ukey,
+           vertex_key_t<G>                       vkey) {
+    { find_edge(g, u, v) }       -> same_as<ranges::iterator_t<edge_range_t<G>>>;
+    { find_edge(g, ukey, vkey) } -> same_as<ranges::iterator_t<edge_range_t<G>>>;
+  };
 
 template<typename G>
-concept incidence_graph_new = vertex_list_graph<G>
-                           && edge_range<G, typename graph_traits<G>::vertex_edge_range>
-                           && edge_value_types<G>;
+concept outward_incidence_graph = 
+  vertex_list_graph<G> &&
+  incidence_edge_range<G, vertex_outward_edge_range_t<G>> &&
+  edge_value_types<G>;
 
 template <typename G>
-concept adjacency_graph = vertex_list_graph<G>
-                        && edge_range<G, typename graph_traits<G>::vertex_vertex_range>
-                        && edge_value_types<G>;
+concept outward_adjacency_graph = 
+  vertex_list_graph<G> &&
+  adjacency_edge_range<G, vertex_outward_vertex_range_t<G>> &&
+  edge_value_types<G>;
+
+template<typename G>
+concept inward_incidence_graph = 
+  vertex_list_graph<G> &&
+  incidence_edge_range<G, vertex_inward_edge_range_t<G>> &&
+  edge_value_types<G>;
 
 template <typename G>
-concept adjacency_matrix = requires(vertex_iterator_t<G> u, vertex_iterator_t<G> v) {
-  { contains_edge(u,v) } -> same_as<bool>;
-  { contains_edge(vertex_key(u),vertex_key(v)) } -> same_as<bool>;
-};
-
-template <typename G, typename Rng>
-concept vertex_path = true;
-template <typename G, typename Rng>
-concept edge_path = true;
-
-template <typename G, typename Rng>
-concept vertex_cycle = true;
+concept inward_adjacency_graph = 
+  vertex_list_graph<G> &&
+  adjacency_edge_range<G, vertex_inward_vertex_range_t<G>> &&
+  edge_value_types<G>;
 
 template <typename G>
-concept incremental_vertex_graph = true; // add_vertex
+concept adjacency_matrix = 
+  requires(ranges::iterator_t<vertex_range_t<G>> u, 
+           ranges::iterator_t<vertex_range_t<G>> v,
+           vertex_key_t<G>                       ukey,
+           vertex_key_t<G>                       vkey) {
+    { contains_edge(u,v) } -> same_as<bool>;
+    { contains_edge(ukey,vkey) } -> same_as<bool>;
+  };
+
 template <typename G>
-concept decremental_vertex_graph = true; // remove_vertex
+concept incremental_vertex_graph = 
+  requires(G&                  g, 
+          vertex_value_t<G>&& val) {
+    { create_vertex(g) } -> same_as<optional<ranges::iterator_t<vertex_range_t<G>>>>;
+    { create_vertex(g,val) } -> same_as<optional<ranges::iterator_t<vertex_range_t<G>>>>;
+    { create_vertex(g,move(val)) } -> same_as<optional<ranges::iterator_t<vertex_range_t<G>>>>;
+  };
+
+template <typename G>
+concept decremental_vertex_graph = 
+  requires(G&                                    g,
+           ranges::iterator_t<vertex_range_t<G>> u,
+           vertex_key_t<G>                       ukey,
+           vertex_range_t<G>&                    r) {
+    { erase_vertex(g, u) };
+    { erase_vertex(g, ukey) };
+    { erase_vertices(g, r) };
+  };
+
 template <typename G>
 concept dynamic_vertex_graph = incremental_vertex_graph<G> && decremental_vertex_graph<G>;
 template <typename G>
 concept static_vertex_graph = !incremental_vertex_graph<G> && !decremental_vertex_graph<G>;
 
 template <typename G>
-concept incremental_edge_graph = true;
-/*template <typename G, typename K=vertex_key_t<G>, typename I=vertex_iterator_t<G>>
-concept incremental_edge_graph = requires(G& g, K ukey, K vkey, I u, I v) {
-      vertex_edge_iterator_t<G>; 
-      { create_edge(g, ukey, vkey) } -> std::convertible_to<optional<vertex_edge_iterator_t<G>>>;
-      { create_edge(g, u,    v) }    -> std::convertible_to<optional<vertex_edge_iterator_t<G>>>;
-      // consider: edges with required value that aren't default-constructable.
-      // We need to support either this, or creation with a value, to have a complete definition.
-};*/
+concept incremental_edge_graph = 
+  requires(G&                                    g,
+           ranges::iterator_t<vertex_range_t<G>> u,
+           ranges::iterator_t<vertex_range_t<G>> v,
+           vertex_key_t<G>                       ukey,
+           vertex_key_t<G>                       vkey,
+           edge_value_t<G>&&                     val) {
+    { create_edge(g, u,    v) }            -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+    { create_edge(g, u,    v, val) }       -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+    { create_edge(g, u,    v, move(val)) } -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+    
+    { create_edge(g, ukey, vkey) } -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+    { create_edge(g, ukey, vkey, val) } -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+    { create_edge(g, ukey, vkey, move(val)) } -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+    // consider: edges with required value that aren't default-constructable.
+    // We need to support either this, or creation with a value, to have a complete definition.
+  };
+
+template <typename G, typename ER>
+concept decremental_edge_range = 
+  requires(G&                                    g,
+           ER                                    er,
+           ranges::iterator_t<ER>                uv) {
+    { erase_edge(g,uv) } -> std::convertible_to<optional<ranges::iterator_t<ER>>>;
+    { erase_edge(g,er) };
+  };
+
 template <typename G>
-concept decremental_edge_graph = true; // remove_edge
+concept decremental_edge_graph = 
+  (decremental_edge_range<G,vertex_edge_range_t<G>> || 
+    decremental_edge_range<G,vertex_vertex_range_t<G>> || 
+    decremental_edge_range<G,vertex_edge_range_t<G>>) &&
+  requires(G&                                    g,
+           ranges::iterator_t<vertex_range_t<G>> u,
+           ranges::iterator_t<vertex_range_t<G>> v,
+           vertex_key_t<G>                       ukey,
+           vertex_key_t<G>                       vkey) {
+    { erase_edge(g,u,v) };
+    { erase_edge(g,ukey,vkey) };
+  };
 template <typename G>
 concept dynamic_edge_graph = incremental_edge_graph<G> && decremental_edge_graph<G>;
 template <typename G>
@@ -1272,16 +1374,26 @@ template <typename G>
 concept static_graph = static_vertex_graph<G> && static_edge_graph<G>;
 
 
+template <typename G, typename Rng>
+concept vertex_path = true;
+template <typename G, typename Rng>
+concept edge_path = true;
+
+template <typename G, typename Rng>
+concept vertex_cycle = true;
+
 // Requirements for extracting vertex values from external sources for graph construction
 template <typename VRng, typename VValueFnc>
-concept vertex_range_extractor = ranges::input_range<VRng>&& invocable<VValueFnc, typename VRng::value_type>;
+concept  vertex_value_extractor = ranges::input_range<VRng>
+                              && invocable<VValueFnc, typename VRng::value_type>;
 
 // Requirements for extracting edge values from external sources for graph construction
 // ERng is a forward_range because it is traversed twice; once to get the max vertex_key
 // and a second time to load the edges.
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-concept edge_range_extractor = ranges::forward_range<ERng>&& invocable<EKeyFnc, typename ERng::value_type>&&
-                                                             invocable<EValueFnc, typename ERng::value_type>;
+concept edge_value_extractor = ranges::forward_range<ERng>
+                            && invocable<EKeyFnc, typename ERng::value_type>
+                            && invocable<EValueFnc, typename ERng::value_type>;
 
 // clang-format on
 

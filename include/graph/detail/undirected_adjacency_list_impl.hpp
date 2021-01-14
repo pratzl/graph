@@ -1199,7 +1199,7 @@ undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::undirected_adjac
 // clang-format off
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, typename Alloc>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-  requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> && vertex_range_extractor<VRng, VValueFnc>
+  requires edge_value_extractor<ERng, EKeyFnc, EValueFnc> &&  vertex_value_extractor<VRng, VValueFnc>
 undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::undirected_adjacency_list(const ERng&      erng,
                                                                               const VRng&      vrng,
                                                                               const EKeyFnc&   ekey_fnc,
@@ -1248,7 +1248,7 @@ undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::undirected_adjac
 // clang-format off
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, typename Alloc>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-  requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> 
+  requires edge_value_extractor<ERng, EKeyFnc, EValueFnc> 
 undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::undirected_adjacency_list(const ERng&      erng, 
                                                                               const EKeyFnc&   ekey_fnc, 
                                                                               const EValueFnc& evalue_fnc, 

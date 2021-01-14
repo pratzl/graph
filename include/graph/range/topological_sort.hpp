@@ -15,7 +15,6 @@ namespace std {
 // clang-format off
 template <incidence_graph G, typename A = allocator<char>>
   requires integral<vertex_key_t<G>>
-        && ranges::random_access_range<vertex_range_t<G>> 
 class topological_sort_vertex_range
 // clang-format on
 {

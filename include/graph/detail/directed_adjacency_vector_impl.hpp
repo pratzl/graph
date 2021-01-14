@@ -829,7 +829,7 @@ directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dire
 // clang-format off
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, template <typename E, typename A> class EContainer, typename Alloc>
 template <typename ERng, typename EKeyFnc, typename EValueFnc, typename VRng, typename VValueFnc>
-  requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> && vertex_range_extractor<VRng, VValueFnc>
+  requires edge_value_extractor<ERng, EKeyFnc, EValueFnc> &&  vertex_value_extractor<VRng, VValueFnc>
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::directed_adjacency_vector(const ERng&     erng,
                                             const VRng&     vrng,
                                             const EKeyFnc&  ekey_fnc,
@@ -893,7 +893,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 template <typename ERng, typename EKeyFnc, typename EValueFnc>
-requires edge_range_extractor<ERng, EKeyFnc, EValueFnc> //
+requires edge_value_extractor<ERng, EKeyFnc, EValueFnc> //
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::directed_adjacency_vector(
       const ERng& erng, const EKeyFnc& ekey_fnc, const EValueFnc& evalue_fnc, const GV& gv, const Alloc& alloc)
       : directed_adjacency_vector(

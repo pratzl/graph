@@ -91,6 +91,8 @@ Other Useful Tools
     - [ ] [paper] update description with missing info
     - [ ] [paper] add example
   - [ ] shortest paths
+    - [ ] Replace shortest_path with shortest_path2
+    - [ ] Replace first/last with range in shortest_distance?
     - [ ] Review template arguments
 - [ ] Iterators
   - [ ] DFS
@@ -157,6 +159,7 @@ Other Useful Tools
     - [ ] outward_to_uniform_adjacency
     - [ ] inward_to_uniform_incidence
     - [ ] inward_to_uniform_adjacency
+  - [ ] How to support a bitartite graph (multiple vector types)?
 - [ ] Data structures
   - [ ] Common
     - [x] remove edge & vertex definitions in paper (distracting & not referenced)
