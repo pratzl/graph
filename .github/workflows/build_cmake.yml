@@ -32,4 +32,4 @@ jobs:
     - name: make
       run: |
         cd build
-	make
+        make
