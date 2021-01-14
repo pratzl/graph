@@ -32,4 +32,4 @@ jobs:
         cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
     - name: make
-        run: make
+      run: make
