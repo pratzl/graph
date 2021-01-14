@@ -1,3 +1,5 @@
+![Build with gcc-10](https://github.com/pratzl/graph/workflows/Build%20with%20gcc-10/badge.svg?branch=master)
+
 # Graph Library Proposal for the C++ Standard
 
 This library is in the alpha stage that may include significant changes to the interface. It is not recommended for general use.
