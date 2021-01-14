@@ -1,8 +1,10 @@
 name: CMake
 
 on:
-  push: [ $default-branch ]
+  push: 
+    branches: [ master ]
   workflow_dispatch: 
+    branches: [ master ]
 
 jobs:
   build:
