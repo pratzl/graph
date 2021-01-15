@@ -444,7 +444,7 @@ protected:
 //
 // clang-format off
 template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> 
+  requires integral<vertex_key_t<G>> //&& output_iterator<OutIter, shortest_distance<ranges::iterator_t<vertex_range_t<G>>, decltype(DistFnc(declval(edge_value_t<G>(declval(G&)))))>
 void dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,

@@ -1,10 +1,9 @@
 //
 // Author: Phil Ratzloff
 //
-//
-// TODO
-//
-// ISSUES / QUESTIONS
+// Algorithms:
+//  dfs_transitive_closure
+//  warshall_transitive_closure
 //
 
 #include "../graph.hpp"
@@ -18,8 +17,8 @@ namespace std {
 
 template <directed G>
 struct reaches {
-  vertex_iterator_t<G> from;
-  vertex_iterator_t<G> to;
+  ranges::iterator_t<vertex_range_t<G>> from;
+  ranges::iterator_t<vertex_range_t<G>> to;
 };
 
 //template <directed_graph G, output_iterator<reaches<vertex_iterator_t<G>>> OutIter>
@@ -27,10 +26,11 @@ struct reaches {
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
 /// vertices. This algorithm specializes on a sparse graph. Complexity is same as DFS: V(VE).
+///
 // clang-format off
 template <incidence_graph G, typename OutIter, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> constexpr 
-void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A())
+  requires integral<vertex_key_t<G>> && output_iterator<OutIter, reaches<G>>
+constexpr void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 // clang-format on
 {
   using reach_t = reaches<G>;
@@ -47,8 +47,8 @@ void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 
 // clang-format off
 template <typename ExecutionPolicy, incidence_graph G, typename OutIter, typename A = allocator<bool>>
-  requires directed<G> && integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr 
-void warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
+  requires directed<G> && integral<vertex_key_t<G>> && output_iterator<OutIter, reaches<G>>
+constexpr void warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
 // clang-format on
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
@@ -59,8 +59,8 @@ void warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_
 ///
 // clang-format off
 template <incidence_graph G, typename OutIter, typename A = allocator<bool>>
-  requires directed<G> && integral<vertex_key_t<G>>&& ranges::random_access_range<vertex_range_t<G>> constexpr 
-void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A())
+  requires directed<G> && integral<vertex_key_t<G>> && output_iterator<OutIter, reaches<G>>
+constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 // clang-format on
 {
   size_t const V = vertices_size(g);
