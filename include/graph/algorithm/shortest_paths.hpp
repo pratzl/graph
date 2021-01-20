@@ -79,7 +79,7 @@ struct shortest_path2
 {
   DistanceT               distance;
   vertex_path_range<G, A> vertex_path;
-  edge_path_range<G, A>   path;
+  edge_path_range<G, A>   edge_path;
 };
 
 
@@ -443,8 +443,15 @@ protected:
 //! @param alloc       The allocator to use for internal containers.
 //
 // clang-format off
-template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> //&& output_iterator<OutIter, shortest_distance<ranges::iterator_t<vertex_range_t<G>>, decltype(DistFnc(declval(edge_value_t<G>(declval(G&)))))>
+template <incidence_graph G, 
+          typename OutIter, 
+          typename DistFnc, 
+          typename A = allocator<char>>
+  requires integral<vertex_key_t<G>> && 
+           is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>> &&
+           output_iterator<OutIter, 
+                        shortest_distance<ranges::iterator_t<vertex_range_t<G>>, 
+                                          invoke_result_t<DistFnc, edge_value_t<G>&>>>
 void dijkstra_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
@@ -454,7 +461,6 @@ void dijkstra_shortest_distances(
       A                    alloc        = A())
 // clang-format on
 {
-
   using distance_t = decltype(distance_fnc(*ranges::begin(edges(g, begin(g)))));
   dijkstra_fn<G, DistFnc, distance_t, A> fn(g, distance_fnc, alloc);
   fn.shortest_distances(source, result_iter, leaves_only);
@@ -477,15 +483,20 @@ void dijkstra_shortest_distances(
 //! @param alloc       The allocator to use for internal containers.
 //
 // clang-format off
-template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
+template <incidence_graph G, 
+          typename OutIter, 
+          typename DistFnc, 
+          typename A = allocator<char>>
 //requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic; }
-  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> 
+  requires integral<vertex_key_t<G>> && 
+           is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>>
 void dijkstra_shortest_paths(
       G&                   g,
       vertex_iterator_t<G> source,
       OutIter              result_iter,
       bool const           leaves_only  = true,
-      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t { return 1; },
+      DistFnc              distance_fnc = [](edge_value_t<G>&) -> size_t
+                                               { return 1; },
       A                    alloc        = A())
 // clang-format on
 {
@@ -518,8 +529,15 @@ void dijkstra_shortest_paths(
 //!                    detect_neg_edge_cycles is true.
 //
 // clang-format off
-template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>> 
+template <incidence_graph G, 
+          typename OutIter, 
+          typename DistFnc, 
+          typename A = allocator<char>>
+  requires integral<vertex_key_t<G>> && 
+           is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>> &&
+           output_iterator<OutIter,
+                  shortest_distance<ranges::iterator_t<vertex_range_t<G>>,
+                       invoke_result_t<DistFnc, edge_value_t<G>&>>>
 bool bellman_ford_shortest_distances(
       G&                   g,
       vertex_iterator_t<G> source,
@@ -561,8 +579,12 @@ bool bellman_ford_shortest_distances(
 //!                    detect_neg_edge_cycles is true.
 //!
 // clang-format off
-template <incidence_graph G, typename OutIter, typename DistFnc, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> && ranges::random_access_range<vertex_range_t<G>>
+template <incidence_graph G, 
+          typename OutIter, 
+          typename DistFnc, 
+          typename A = allocator<char>>
+  requires integral<vertex_key_t<G>> &&
+           is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>>
   //requires output_iterator<OutIter, typename OutIter::value_type>
 bool bellman_ford_shortest_paths(
       G&                   g,

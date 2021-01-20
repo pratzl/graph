@@ -30,7 +30,10 @@ struct component {
 // Connected Components (for undirected graphs)
 //
 // clang-format off
-template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <incidence_graph G, 
+          typename        OutIter, 
+          integral        CompT = uint32_t, 
+          typename        A     = allocator<char>>
   requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
 class con_comp_fn
 // clang-format on
@@ -73,7 +76,7 @@ protected:
     while (!stack_.empty()) {
       vertex_iterator_t<G> u = stack_.top();
       stack_.pop();
-      for (vertex_iterator_t<G> v = begin(graph_, *u); v != end(graph_, *u); ++u) {
+      for (vertex_edge_iterator_t<G> v = begin(graph_, u); v != end(graph_, u); ++u) {
         vertex_key_t<G> v_key = vertex_key(graph_, v, u);
         if (!visited_[v_key]) {
           stack_.push(v);
@@ -94,9 +97,15 @@ protected:
 };
 
 // clang-format off
-template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <incidence_graph G, 
+          typename        OutIter, 
+          integral        CompT = uint32_t, 
+          typename        A     = allocator<char>>
   requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
-void connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A())
+void connected_components(G&                   g, 
+                          vertex_iterator_t<G> start, 
+                          OutIter              result_iter, 
+                          A                    alloc = A())
 // clang-format on
 {
   con_comp_fn cc(g, alloc);
@@ -104,9 +113,15 @@ void connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter,
 }
 
 // clang-format off
-template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
+template <incidence_graph G, 
+          typename        OutIter, 
+          integral        CompT = uint32_t, 
+          typename        A     = allocator<char>>
   requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
-void connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A())
+void connected_components(G&                g, 
+                          vertex_range_t<G> rng, 
+                          OutIter           result_iter, 
+                          A                 alloc = A())
 // clang-format on
 {
   con_comp_fn cc(g, alloc);
@@ -174,7 +189,7 @@ protected:
     stack_.push(u);
     in_stack_[u_key] = true;
 
-    for (edge_iterator_t<G> uv = ranges::begin(edges(graph_, u)); uv != ranges::end(edges(graph_, u)); ++uv) {
+    for (vertex_edge_iterator_t<G> uv = ranges::begin(edges(graph_, u)); uv != ranges::end(edges(graph_, u)); ++uv) {
       vertex_key_t<G> v_key = vertex_key(graph_, uv, u);
       if (visited_[v_key].discovered == undiscovered()) {
         eval_scc(vertex(graph_, uv, u), result_iter);
@@ -212,9 +227,15 @@ protected:
 };
 
 // clang-format off
-template <incidence_graph G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-  requires directed<G> && output_iterator<OutIter, component<G, CompT>> 
-void strongly_connected_components(G& g, vertex_iterator_t<G> start, OutIter result_iter, A alloc = A())
+template <incidence_graph G, 
+          typename        OutIter, 
+          integral        CompT = uint32_t, 
+          typename        A     = allocator<char>>
+  requires directed<G> && output_iterator<OutIter, component<G, CompT>>
+void strongly_connected_components(G&                   g, 
+                                   vertex_iterator_t<G> start, 
+                                   OutIter              result_iter, 
+                                   A                    alloc = A())
 // clang-format on
 {
   tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
@@ -222,9 +243,15 @@ void strongly_connected_components(G& g, vertex_iterator_t<G> start, OutIter res
 }
 
 // clang-format off
-template <directed G, typename OutIter, integral CompT = uint32_t, typename A = allocator<char>>
-  requires incidence_graph<G> && output_iterator<OutIter, component<G, CompT>> 
-void strongly_connected_components(G& g, vertex_range_t<G> rng, OutIter result_iter, A alloc = A())
+template <incidence_graph G, 
+          typename        OutIter, 
+          integral        CompT = uint32_t, 
+          typename        A     = allocator<char>>
+  requires directed<G> && output_iterator<OutIter, component<G, CompT>> 
+void strongly_connected_components(G&                g, 
+                                   vertex_range_t<G> rng, 
+                                   OutIter           result_iter, 
+                                   A alloc           = A())
 // clang-format on
 {
   tarjen_scc_fn<G, OutIter, CompT, A> scc(g, alloc);
