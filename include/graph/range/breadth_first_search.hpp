@@ -79,7 +79,7 @@ class breadth_first_search_vertex_range
 
 public:
   breadth_first_search_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
-        : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
+        : graph_(graph), queue_(alloc), visited_(ranges::size(graph), white, alloc), alloc_(alloc) {
     if (seed != ranges::end(vertices(graph_))) {
       queue_.push(queue_elem{seed, 1});
       visited_[vertex_key(graph_, seed)] = grey;
@@ -252,7 +252,7 @@ class breadth_first_search_edge_range
 
 public:
   breadth_first_search_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
-        : graph_(graph), queue_(alloc), visited_(vertices_size(graph), white, alloc), alloc_(alloc) {
+        : graph_(graph), queue_(alloc), visited_(ranges::size(graph), white, alloc), alloc_(alloc) {
     if (seed != ranges::end(vertices(graph_))) {
       push_neighbors(ranges::end(vertices(graph_)), seed, 1);
     }
@@ -403,7 +403,7 @@ protected:
   void push_neighbors(vertex_iterator_t<G> u, vertex_iterator_t<G> v, size_t depth) {
     vertex_edge_iterator_t<G> vw     = ranges::begin(edges(graph_, v));
     vertex_edge_iterator_t<G> vw_end = ranges::end(edges(graph_, v));
-    if (vw == vw_end || (edges_size(graph_, v) == 1 && vertex(graph_, vw, v) == u)) {
+    if (vw == vw_end || (ranges::size(edges(graph_, v)) == 1 && vertex(graph_, vw, v) == u)) {
       queue_.push({v, vw_end, depth});
     } else {
       for (; vw != vw_end; ++vw) {

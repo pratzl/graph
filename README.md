@@ -47,15 +47,15 @@ Other Useful Tools
         data_* hold data to be used for tests
 
 ## Naming Conventions
-| Pattern      | Example           | Req'd? | Description                                                                                         |
-| :----------- | :---------------- | :----: | :-------------------------------------------------------------------------------------------------- |
-| *_type       | edge_type         |   Y    | The full type stored in the graph                                                                   |
-| *_value_type | edge_value_type   |   Y    | The edge type defined by the graph, without the edge_key                                            |
-|              |                   |        |                                                                                                     |
-| *_key_type   | vertex_key_type   |   Y    | The key used for finding a vertex.                                                                  |
-| *_size_type  | vertex_size_type  |   Y    | The unsigned size type defined by the underlying container.                                         |
-| *_ssize_type | vertex_size_type  |   Y    | The signed size type defined by the underlying container.                                           |
-| *_index_type | vertex_index_type |   n    | The type used for referring to a vertex when it's kept in a random_access container. Internal only. |
+| Pattern           | Example           | Req'd? | Description                                                                                         |
+| :---------------- | :---------------- | :----: | :-------------------------------------------------------------------------------------------------- |
+| *_type            | edge_type         |   Y    | The full type stored in the graph                                                                   |
+| *_value_type      | edge_value_type   |   Y    | The edge type defined by the graph, without the edge_key                                            |
+|                   |                   |        |                                                                                                     |
+| *_key_type        | vertex_key_type   |   Y    | The key used for finding a vertex.                                                                  |
+| *_size_type       | vertex_size_type  |   Y    | The unsigned size type defined by the underlying container.                                         |
+| *_difference_type | vertex_size_type  |   Y    | The signed size type defined by the underlying container.                                           |
+| *_index_type      | vertex_index_type |   n    | The type used for referring to a vertex when it's kept in a random_access container. Internal only. |
 
 
 ## ToDo
@@ -63,7 +63,7 @@ Other Useful Tools
 - [ ] concepts & type traits
   - [x] vertex_c --> graph_vertex
   - [x] add type traits? (needed when concepts exist?)
-  - [ ] algorithms: refine concept requirements
+  - [x] algorithms: refine concept requirements
   - [x] [paper] sparse/dense not defined;
   - [x] compare to BGL concepts [Lumsdaine]: need to add concepts for adjacency, incidence, vertex_list, edge_list
   - [x] allow vertex_key_t<G> to be non-integer? [no; requires algo specialization, performance impact]
@@ -98,7 +98,7 @@ Other Useful Tools
     - [ ] distance_fnc should take edge iterator (not reference)
     - [ ] dikstra impl requires incidence_graph & edge_list_graph
     - [ ] bellman_ford impl requires edge_list_graph only
-- [ ] Iterators
+- [ ] Ranges/Iterators
   - [ ] DFS
     - [ ] validate const iterator
   - [ ] BFS
@@ -112,7 +112,7 @@ Other Useful Tools
   - [x] Common
     - [x] Replace type...const& --> const_type&
     - [x] Add ssize defs & implementations for vertices, edge, outward_edges & inward_edges
-    - [x] Add free functions for size, ssize, begin, end for each graph data structure (assume vertices)
+    - [x] Add free functions for size, ssize, begin, end, empty for each graph data structure (assume vertices)
     - [x] Remove degree functions (alias of size not needed)
     - [x] Consider addition of [[nodiscard]] (std only uses it on empty & allocate, neither used in graph.hpp)
     - [x] const_vertex_key_type --> vertex_key_type, const_edge_key_type --> edge_key_type
@@ -125,16 +125,17 @@ Other Useful Tools
     - [x] Is there a reason user_value_type can't just be value_type? No: only key_type & value_type should be exposed.
     - [x] Remove all range-specific begin/end functions in favor of using begin(rng)/end(rng)
     - [ ] Define common implementations that each graph can optionally specialize
-      - [ ] degree()
+      - [x] degree()
       - [ ] create default implementations of uniform API based on outgoing functions for directed graph
     - [x] Replace vertex & edge references with iterators
     - [ ] [paper] Give overview of different ranges
       - [ ] relate the ranges to the concepts
       - [ ] show relationship between uniform & directed functions
-    - [ ] Remove const_..._range types
     - [x] move from std::graph to std namespace
     - [ ] Replace range types with references in API or graph_traits?
     - [x] Return optional<T> instead of pair<T,bool>: create_vertex, create_edge, create_outward_edge, create_inward_edge
+    - [x] Create concept-based functions to consolidate definitions (e.g. edge properties)
+    - [x] Rename ssize_t to difference_t (and related) to match naming in std
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
@@ -252,7 +253,7 @@ Other Useful Tools
     - [x] replace *reinterpret_cast<T*>(nullptr), with declval<T&>() 
   - [ ] Jens Mauer
     - [x] graph_traits<>
-    - [ ] functions are missing concepts
+    - [x] functions are missing concepts
     - [x] noexcept shouldn't be on all functions
     - [ ] (final comment review)
   - [ ] Andrew Sutton
@@ -264,7 +265,7 @@ Other Useful Tools
     - [ ] Add new concepts
       - [ ] Path
       - [ ] Cycle
-      - [ ] add/delete vertices|edges
+      - [x] add/delete vertices|edges
     - [ ] (final comment review)
   - [ ] Andrey Nikolaev & Tatyana Bysheva (Intel)
     - [ ] Consider adding undirected_adjacency_vector & directed_adjacency_list (perf vs. mutabilty)
@@ -282,15 +283,15 @@ Other Useful Tools
     - [ ] consider creating a subgraph_view<G>
     - [x] consider adding edge_key<G>, edge_key(g,uv) & edge_key(g,u,v)
     - [ ] Are const versions of algos needed? (If I pass a const graph g, are all dependent types const?)
-    - [ ] Consider re-adding degree() (alias of size or ssize)
+    - [ ] Consider re-adding degree() (alias of size or ssize) : alias of ranges::size(rng)
   - [ ] Leanne/Jing Dong <jdleanne@gmail.com> 10/7/20
     - [ ] Recommend adding incidence matrix
   - [ ] SG19 Review 10/8/20
     - [x] Remove unneeded const types in graph_traits
     - [x] Use iterator_t<range> to define types in graph_traits when possible
     - [ ] Move graph data structures into separate proposals
-    - [ ] Other
-      - [ ] using map<K,V> for vertices is possible, but requires different algorithms to match
+    - [x] Other
+      - [x] using map<K,V> for vertices is possible, but requires different algorithms to match
     - [ ] ToDo
       - [ ] concepts: incidence_list, vertex_list, edge_list, path, cycle, add/del vertex/edge
       - [ ] constexpr everywhere? (vector, array)

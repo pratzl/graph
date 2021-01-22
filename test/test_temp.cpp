@@ -36,3 +36,17 @@ TEST_CASE("test is_floating_point", "[test][temp][is_floating_point]") {
   bool is_fl2 = std::is_floating_point_v<::ranges::projected<::ranges::iterator_t<R>, P>::value_type>;
   //bool is_fl3 = std::is_floating_point<std::projected<::ranges::iterator_t<R>, P>::value_type>::value;
 }
+
+
+TEST_CASE("[conversion]", "[conversion]") {
+  using std::is_convertible_v;
+  using std::is_same_v;
+  using V = std::vector<int>;
+  REQUIRE(is_convertible_v<V::iterator, V::const_iterator>);
+  REQUIRE(!is_convertible_v<V::const_iterator, V::iterator>);
+  REQUIRE(!is_convertible_v<V::const_iterator, double*>);
+  REQUIRE(is_convertible_v<int, const int&>);
+  REQUIRE(!is_convertible_v<const int, int&>);
+  REQUIRE(is_same_v<int, int>);
+  REQUIRE(!is_same_v<int, const int>);
+}

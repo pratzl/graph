@@ -63,7 +63,7 @@ template <incidence_graph G, typename OutIter, typename A = allocator<bool>>
 constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 // clang-format on
 {
-  size_t const V = vertices_size(g);
+  size_t const V = ranges::size(g);
 
   vector<bool> reach(V * V, alloc);
   for (vertex_iterator_t<G> ui = begin(g); ui != end(g); ++ui) {

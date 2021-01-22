@@ -1006,7 +1006,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::finalize_outward_edges(vertex_range vr) {
+directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::finalize_outward_edges(vertex_subrange vr) {
   for (auto& u : vr)
     u.set_edge_begin(*this, edges_.end());
   return ranges::end(vr);
@@ -1170,11 +1170,13 @@ template <typename VV,
 constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_edges(vertex_iterator u) {
   if (u == vertices_.end())
-    return {edges_.end(), edges_.end()};
-  else if (u != --vertices_.end())
-    return {edges_.begin() + u->edge_begin_index(), edges_.begin() + (u + 1)->edge_begin_index()};
-  else
-    return {edges_.begin() + u->edge_begin_index(), edges_.end()};
+    return {edges_.end(), edges_.end(), 0};
+  else if (u != --vertices_.end()) {
+    auto v = u + 1;
+    return {edges_.begin() + u->edge_begin_index(), edges_.begin() + v->edge_begin_index(),
+            v->edge_begin_index() - u->edge_begin_index()};
+  } else
+    return {edges_.begin() + u->edge_begin_index(), edges_.end(), edges_.size() - u->edge_begin_index()};
 }
 
 template <typename VV,
@@ -1190,11 +1192,13 @@ constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, ECont
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_edges(
       const_vertex_iterator u) const {
   if (u == vertices_.end())
-    return {edges_.end(), edges_.end()};
-  else if (u != --vertices_.end())
-    return {edges_.begin() + u->edge_begin_index(), edges_.begin() + (u + 1)->edge_begin_index()};
-  else
-    return {edges_.begin() + u->edge_begin_index(), edges_.end()};
+    return {edges_.end(), edges_.end(), 0};
+  else if (u != --vertices_.end()) {
+    auto v = u + 1;
+    return {edges_.begin() + u->edge_begin_index(), edges_.begin() + v->edge_begin_index(),
+            v->edge_begin_index() - u->edge_begin_index()};
+  } else
+    return {edges_.begin() + u->edge_begin_index(), edges_.end(), edges_.size() - u->edge_begin_index()};
 }
 
 template <typename VV,
@@ -1210,13 +1214,16 @@ constexpr
       typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_outward_vertex_range
       directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertices(vertex_iterator u) {
   if (u == vertices_.end())
-    return {vertex_outward_vertex_iterator(*this, edges_.end()), vertex_outward_vertex_iterator(*this, edges_.end())};
-  else if (u != --vertices_.end())
+    return {vertex_outward_vertex_iterator(*this, edges_.end()), vertex_outward_vertex_iterator(*this, edges_.end()),
+            0};
+  else if (u != --vertices_.end()) {
+    auto v = u + 1;
     return {vertex_outward_vertex_iterator(*this, edges_.begin() + u->edge_begin_index()),
-            vertex_outward_vertex_iterator(*this, edges_.begin() + (u + 1)->edge_begin_index())};
-  else
+            vertex_outward_vertex_iterator(*this, edges_.begin() + v->edge_begin_index()),
+            v->edge_begin_index() - u->edge_begin_index()};
+  } else
     return {vertex_outward_vertex_iterator(*this, edges_.begin() + u->edge_begin_index()),
-            vertex_outward_vertex_iterator(*this, edges_.end())};
+            vertex_outward_vertex_iterator(*this, edges_.end()), edges_.size() - u->edge_begin_index()};
 }
 
 template <typename VV,
