@@ -147,8 +147,8 @@ public:
   template <typename OutIter>
   void shortest_distances(vertex_iterator_t<G> source, OutIter result_iter, bool const leaves_only) {
     // find the paths
-    vertex_dist_cont distances(vertices_size(g_), alloc_);
-    vector<bool>     leaf(vertices_size(g_), alloc_);
+    vertex_dist_cont distances(ranges::size(g_), alloc_);
+    vector<bool>     leaf(ranges::size(g_), alloc_);
     find_paths(source, distances, leaves_only, leaf);
 
     // output distances to the output iterator
@@ -166,8 +166,8 @@ public:
   template <typename OutIter>
   void shortest_paths(vertex_iterator_t<G> source, OutIter result_iter, bool const leaves_only) {
     // find the paths
-    vertex_dist_cont distances(vertices_size(g_), alloc_);
-    vector<bool>     leaf(vertices_size(g_), alloc_);
+    vertex_dist_cont distances(ranges::size(g_), alloc_);
+    vector<bool>     leaf(ranges::size(g_), alloc_);
     find_paths(source, distances, leaves_only, leaf);
 
     // output paths to the output iterator
@@ -215,7 +215,7 @@ protected:
       }
     };
     priority_queue<q_vertex_dist, vector<q_vertex_dist>> q(alloc_);
-    vector<bool>                                         in_q(vertices_size(g_), alloc_);
+    vector<bool>                                         in_q(ranges::size(g_), alloc_);
 
     q.push({source_key, 0});
     in_q[source_key] = true;
@@ -303,8 +303,8 @@ public:
                           bool const           leaves_only,
                           bool const           detect_neg_edge_cycles) {
     // find the paths
-    vertex_dist_cont distance(vertices_size(g_), alloc_);
-    vector<bool>     leaf(vertices_size(g_), alloc_);
+    vertex_dist_cont distance(ranges::size(g_), alloc_);
+    vector<bool>     leaf(ranges::size(g_), alloc_);
     bool             neg_edge_cycles = find_paths(source, distance, leaf, leaves_only, detect_neg_edge_cycles);
     if (neg_edge_cycles)
       return true;
@@ -328,8 +328,8 @@ public:
                       bool const           leaves_only,
                       bool const           detect_neg_edge_cycles) {
     // find the paths
-    vertex_dist_cont distances(vertices_size(g_), alloc_);
-    vector<bool>     leaf(vertices_size(g_), alloc_);
+    vertex_dist_cont distances(ranges::size(g_), alloc_);
+    vector<bool>     leaf(ranges::size(g_), alloc_);
     bool             neg_edge_cycles = find_paths(source, distances, leaf, leaves_only, detect_neg_edge_cycles);
     if (neg_edge_cycles)
       return true;
@@ -367,7 +367,7 @@ protected:
 
     // find the shortest paths
     bool changed = true; // allows exiting early once results are stable
-    for (size_t i = 1; changed && i < vertices_size(g_); ++i) {
+    for (size_t i = 1; changed && i < ranges::size(g_); ++i) {
       changed = false;
       for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv) {
         vertex_key_t<G> ukey = inward_vertex_key(g_, uv);

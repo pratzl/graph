@@ -329,7 +329,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
       -> vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return detail::make_subrange(g.vertices());
+  return g.vertices();
 }
 
 template <typename VV,
@@ -343,38 +343,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
       -> const_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return detail::make_subrange(g.vertices());
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-vertices_size(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) noexcept
-      -> vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return g.vertices().size();
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) noexcept
-      -> vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  using ssize_t = vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
-  return static_cast<ssize_t>(g.vertices().size());
+  return g.vertices();
 }
 
 template <typename VV,
@@ -438,34 +407,6 @@ template <typename VV,
 constexpr auto edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
       -> const_edge_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
   return g.edges();
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto edges_size(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) noexcept
-      -> edge_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return g.edges().size();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto edges_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) noexcept
-      -> edge_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  using ssize_t = edge_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
-  return static_cast<ssize_t>(g.edges().size());
 }
 
 // (erase_edge & reserve_edges not supported because the graph is immutable)
@@ -534,39 +475,6 @@ edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, 
       const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
       -> const_vertex_edge_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
   return outward_edges(g, u);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-edges_size(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-           const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
-      -> vertex_edge_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return outward_size(g, u);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-edges_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-            const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
-      -> vertex_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return static_cast<vertex_edge_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>>(
-        outward_size(g, u));
 }
 
 template <typename VV,
@@ -716,38 +624,6 @@ constexpr auto vertices(const directed_adjacency_vector<VV, EV, GV, KeyT, VConta
                         vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> ukey)
       -> const_vertex_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
   return g.find_vertex(ukey)->vertices();
-}
-
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-vertices_size(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-              const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
-      -> vertex_vertex_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return edges_size(g, u);
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-vertices_ssize(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-               const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
-      -> vertex_vertex_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return edges_ssize(g, u);
 }
 
 
@@ -920,44 +796,6 @@ outward_edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, ECon
               const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
       -> const_vertex_outward_edge_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
   return g.outward_edges(u);
-}
-
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto outward_size(
-      const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-      const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) noexcept
-      -> vertex_outward_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  using vertex_edge_size_type =
-        vertex_edge_size_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
-  if (&*u != &g.vertices().back())
-    return (u + 1)->edge_begin_index() - u->edge_begin_index();
-  else
-    return static_cast<vertex_edge_size_type>(g.edges().size()) - u->edge_begin_index();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto outward_ssize(
-      const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-      const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) noexcept
-      -> vertex_outward_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  using ssize_t = vertex_outward_ssize_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>;
-  return static_cast<ssize_t>(outward_size(g));
 }
 
 

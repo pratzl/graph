@@ -89,8 +89,8 @@ public:
   depth_first_search_vertex_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph)
         , stack_(alloc)
-        , visited_(vertices_size(graph_), white, alloc)
-        , parent_(vertices_size(graph_), ranges::end(vertices(graph_)), alloc) {
+        , visited_(ranges::size(graph_), white, alloc)
+        , parent_(ranges::size(graph_), ranges::end(vertices(graph_)), alloc) {
     if (seed != ranges::end(vertices(graph_))) {
       stack_.push(stack_elem{seed, ranges::begin(edges(graph_, seed))});
       visited_[vertex_key(graph_, seed)] = grey;
@@ -260,8 +260,8 @@ public:
   depth_first_search_edge_range(G& graph, vertex_iterator_t<G> seed, A alloc = A())
         : graph_(graph)
         , stack_(alloc)
-        , visited_(vertices_size(graph), white, alloc)
-        , parent_(vertices_size(graph), ranges::end(vertices(graph)), alloc) {
+        , visited_(ranges::size(graph), white, alloc)
+        , parent_(ranges::size(graph), ranges::end(vertices(graph)), alloc) {
     if (seed != ranges::end(vertices(graph_))) {
       stack_.push({seed, ranges::begin(edges(graph_, seed))});
       visit(seed, grey);

@@ -49,6 +49,8 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
+using std::ranges::size;
+
 using std::breadth_first_search_vertex_range;
 using std::breadth_first_search_edge_range;
 using std::depth_first_search_vertex_range;
@@ -108,9 +110,9 @@ TEST_CASE("ual minsize", "[ual][minsize]") {
 
 TEST_CASE("ual empty", "[ual][empty]") {
   Graph g;
-  auto  ans = edges_size(g);
-  EXPECT_EQ(0, vertices_size(g));
-  EXPECT_EQ(0, edges_size(g));
+  auto  ans = size(edges(g));
+  EXPECT_EQ(0, size(g));
+  EXPECT_EQ(0, size(edges(g)));
 }
 
 TEST_CASE("ual initializer list", "[ual][init][initializer list]") {
@@ -125,8 +127,8 @@ TEST_CASE("ual init", "[ual][init]") {
   Graph                          g(germany_cities, daa_germany_edge_routes);
 #endif
   Graph g = create_germany_routes_graph();
-  EXPECT_EQ(germany_cities().size(), vertices_size(g));
-  EXPECT_EQ(ual_germany_edge_routes.size(), edges_size(g));
+  EXPECT_EQ(germany_cities().size(), size(g));
+  EXPECT_EQ(ual_germany_edge_routes.size(), size(edges(g)));
 
 #if 0
   cout << endl << "Cities:" << endl;
@@ -211,12 +213,12 @@ TEST_CASE("ual init", "[ual][init]") {
   cout << "vertex_iterator_t<Graph>      u; \n";
   cout << "vertex_edge_iterator_t<Graph> uv;\n";
 
-  for (size_t ui = 0; ui < vertices_size(g); ++ui) {
+  for (size_t ui = 0; ui < size(g); ++ui) {
     cout << "\n";
     u = begin(g) + ui;
     cout << "u = begin(g) + " << ui << ";\n";
     cout << "EXPECT_EQ(\"" << u->name << "\", u->name);\n";
-    cout << "EXPECT_EQ(" << edges_size(g, u) << ", edges_size(g, u));\n";
+    cout << "EXPECT_EQ(" << size(edges(g, u)) << ", size(edges(g, u)));\n";
     cout << "uv = begin(g, *u);\n";
     size_t uvi = 0;
     for (uv = begin(g, *u); uv != end(g, *u); ++uv, ++uvi) {
@@ -234,7 +236,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 0;
   EXPECT_EQ("Augsburg", u->name);
-  EXPECT_EQ(2, edges_size(g, u));
+  EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(6, outward_vertex_key(g, uv));
   EXPECT_EQ("München", outward_vertex(g, uv)->name);
@@ -246,7 +248,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 1;
   EXPECT_EQ("Erfurt", u->name);
-  EXPECT_EQ(1, edges_size(g, u));
+  EXPECT_EQ(1, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(1, outward_vertex_key(g, uv));
   EXPECT_EQ("Erfurt", outward_vertex(g, uv)->name);
@@ -254,7 +256,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 2;
   EXPECT_EQ("Frankfürt", u->name);
-  EXPECT_EQ(3, edges_size(g, u));
+  EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(5, outward_vertex_key(g, uv));
   EXPECT_EQ("Mannheim", outward_vertex(g, uv)->name);
@@ -270,7 +272,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 3;
   EXPECT_EQ("Karlsruhe", u->name);
-  EXPECT_EQ(2, edges_size(g, u));
+  EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(0, outward_vertex_key(g, uv));
   EXPECT_EQ("Augsburg", outward_vertex(g, uv)->name);
@@ -282,7 +284,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 4;
   EXPECT_EQ("Kassel", u->name);
-  EXPECT_EQ(2, edges_size(g, u));
+  EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(4, outward_vertex_key(g, uv));
   EXPECT_EQ("Kassel", outward_vertex(g, uv)->name);
@@ -294,7 +296,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 5;
   EXPECT_EQ("Mannheim", u->name);
-  EXPECT_EQ(2, edges_size(g, u));
+  EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(5, outward_vertex_key(g, uv));
   EXPECT_EQ("Mannheim", outward_vertex(g, uv)->name);
@@ -306,7 +308,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 6;
   EXPECT_EQ("München", u->name);
-  EXPECT_EQ(3, edges_size(g, u));
+  EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(6, outward_vertex_key(g, uv));
   EXPECT_EQ("München", outward_vertex(g, uv)->name);
@@ -322,7 +324,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 7;
   EXPECT_EQ("Nürnberg", u->name);
-  EXPECT_EQ(3, edges_size(g, u));
+  EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(8, outward_vertex_key(g, uv));
   EXPECT_EQ("Stuttgart", outward_vertex(g, uv)->name);
@@ -338,7 +340,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 8;
   EXPECT_EQ("Stuttgart", u->name);
-  EXPECT_EQ(1, edges_size(g, u));
+  EXPECT_EQ(1, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(8, outward_vertex_key(g, uv));
   EXPECT_EQ("Stuttgart", outward_vertex(g, uv)->name);
@@ -346,7 +348,7 @@ TEST_CASE("ual init", "[ual][init]") {
 
   u = begin(g) + 9;
   EXPECT_EQ("Würzburg", u->name);
-  EXPECT_EQ(3, edges_size(g, u));
+  EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(9, outward_vertex_key(g, uv));
   EXPECT_EQ("Würzburg", outward_vertex(g, uv)->name);
@@ -371,31 +373,31 @@ TEST_CASE("ual graph functions", "[ual][graph][functions]") {
   std::vertex_range_t<Graph>       vr  = std::vertices(g);
   std::const_vertex_range_t<Graph> vrc = std::vertices(gc);
   EXPECT_EQ(vr.size(), vrc.size());
-  EXPECT_EQ(vr.size(), std::vertices_size(gc));
+  EXPECT_EQ(vr.size(), std::ranges::size(gc));
 
   size_t cnt = 0;
   for (std::vertex_iterator_t<Graph> u = begin(std::vertices(g)); u != end(std::vertices(g)); ++u, ++cnt)
     ;
-  EXPECT_EQ(std::vertices_size(gc), cnt);
+  EXPECT_EQ(std::ranges::size(gc), cnt);
 
   cnt = 0;
   for (std::const_vertex_iterator_t<Graph> u = begin(std::vertices(gc)); u != end(std::vertices(gc)); ++u, ++cnt)
     ;
-  EXPECT_EQ(std::vertices_size(gc), cnt);
+  EXPECT_EQ(std::ranges::size(gc), cnt);
 
   cnt = 0;
   for (std::const_vertex_iterator_t<Graph> u = cbegin(std::vertices(gc)); u != cend(std::vertices(gc)); ++u, ++cnt)
     ;
-  EXPECT_EQ(std::vertices_size(gc), cnt);
+  EXPECT_EQ(std::ranges::size(gc), cnt);
 
   //std::reserve_vertices(g, 100); //undefined for semi-mutable graph
   //std::resisze_vertices(g, 100); //undefined for semi-mutable graph
 
   std::edge_range_t<Graph>       er       = std::edges(g);
   std::const_edge_range_t<Graph> erc      = std::edges(gc);
-  std::edge_size_t<Graph>        edg_size = std::edges_size(gc);
-  //EXPECT_EQ(std::edges_size(gc), er.size());  // forward-only range; size n/a
-  //EXPECT_EQ(std::edges_size(gc), erc.size()); // forward-only range; size n/a
+  std::edge_size_t<Graph>        edg_size = size(std::edges(gc));
+  //EXPECT_EQ(size(std::edges(gc)), er.size());  // forward-only range; size n/a
+  //EXPECT_EQ(size(std::edges(gc)), erc.size()); // forward-only range; size n/a
   // std::reserve_edges(g,100); // undefined for semi-mutable graph
   // std::clear(g);             // undefined for semi-mutable graph
 
@@ -435,7 +437,7 @@ TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
     std::vertex_edge_iterator_t<Graph>       uvi_end1 = end(std::edges(g, ui));
     std::const_vertex_edge_iterator_t<Graph> uvi_end2 = end(std::edges(g, uic));
     std::const_vertex_edge_iterator_t<Graph> uvi_end3 = end(std::edges(g, ui));
-    //EXPECT_EQ(std::edges_size(g, u), uvr.size()); // forward-only range; size n/a
+    //EXPECT_EQ(std::size(edges(g, u)), uvr.size()); // forward-only range; size n/a
   }
 }
 
@@ -467,11 +469,10 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
-
   vertex_iterator_t<Graph> u    = std::ranges::find_if(g, [](vertex_t<Graph>& u2) { return u2.name == "Frankfürt"; });
   vertex_key_t<Graph>      ukey = vertex_key(g, u);
-  REQUIRE(edges_size(g, u) == vertices_size(g, u));
-  REQUIRE(edges_ssize(g, u) == vertices_ssize(g, u));
+  REQUIRE(size(edges(g, u)) == size(vertices(g, u)));
+  REQUIRE(ssize(edges(g, u)) == ssize(vertices(g, u)));
 
   SECTION("const_iterator") {
     size_t                                cnt   = 0;
@@ -483,11 +484,11 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
       REQUIRE(outward_vertex_key(g, uv_it) == vertex_key(g, u_it));
     }
 
-    REQUIRE(edges_size(g, u) == cnt);     // all edges/vertices visited?
+    REQUIRE(size(edges(g, u)) == cnt);    // all edges/vertices visited?
     REQUIRE(uv_it == cend(edges(g, u)));  // reached the end?
     REQUIRE(u_it == end(vertices(g, u))); // reached the end?
 
-    REQUIRE(edges_size(g, u) >= 2);
+    REQUIRE(size(edges(g, u)) >= 2);
     u_it = begin(vertices(g, u));
     ++u_it;
     --u_it;
@@ -503,11 +504,11 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
       REQUIRE(outward_vertex_key(g, uv_it) == vertex_key(g, u_it));
     }
 
-    REQUIRE(edges_size(g, u) == cnt);     // all edges/vertices visited?
+    REQUIRE(size(edges(g, u)) == cnt);    // all edges/vertices visited?
     REQUIRE(uv_it == end(edges(g, u)));   // reached the end?
     REQUIRE(u_it == end(vertices(g, u))); // reached the end?
 
-    REQUIRE(edges_size(g, u) >= 2);
+    REQUIRE(size(edges(g, u)) >= 2);
     u_it = begin(vertices(g, u));
     ++u_it;
     --u_it;

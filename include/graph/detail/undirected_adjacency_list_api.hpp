@@ -229,7 +229,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g)
       -> vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return detail::make_subrange(g.vertices());
+  return g.vertices();
 }
 
 template <typename VV,
@@ -241,32 +241,7 @@ template <typename VV,
           typename Alloc>
 constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g)
       -> const_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return detail::make_subrange(g.vertices());
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto vertices_size(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g) noexcept
-      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return g.vertices().size();
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto vertices_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g) noexcept
-      -> vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  using ssize_t = vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>;
-  return static_cast<ssize_t>(g.vertices().size());
+  return g.vertices();
 }
 
 template <typename VV,
@@ -359,30 +334,6 @@ template <typename VV,
 constexpr auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g)
       -> const_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
   return g.edges();
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto edges_size(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g) noexcept
-      -> edge_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return g.edges_size();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto edges_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g) noexcept
-      -> edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  using ssize_t = edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>;
-  return static_cast<ssize_t>(g.edges().size());
 }
 
 template <typename VV,
@@ -598,33 +549,6 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-constexpr auto edges_size(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-                          const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u)
-      -> vertex_edge_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return u->edges_size();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto
-edges_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-            const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) noexcept
-      -> vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  using ssize_t = vertex_edge_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>;
-  return static_cast<ssize_t>(u->edges_size());
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
 constexpr auto find_vertex_edge(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
                                 vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u,
                                 vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> v)
@@ -771,31 +695,6 @@ constexpr auto vertices(const undirected_adjacency_list<VV, EV, GV, KeyT, VConta
                         const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u)
       -> const_vertex_vertex_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
   return u->vertices(g, vertex_key(g, u));
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto vertices_size(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-                             const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u)
-      -> vertex_vertex_size_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return edges_size(g, u);
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto vertices_ssize(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-                              const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u)
-      -> vertex_vertex_ssize_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return edges_ssize(g, u);
 }
 
 

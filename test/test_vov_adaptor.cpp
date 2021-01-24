@@ -39,7 +39,7 @@ vov_germany_t get_germany_routes() {
     routes.push_back(u_key, v_key, uv.weight);
   }
 
-  //auto n = std::vertices_size(routes);
+  //auto n = std::ranges::size(routes);
   //std::vertex_key_t<vov_germany_t> ukey = std::vertex_key(routes, std::begin(routes));
   //cout << ukey;
 
@@ -51,10 +51,10 @@ TEST_CASE("vov graph", "[vov]") {
   using Graph = vov_germany_t;
   Graph g     = get_germany_routes();
 
-  //auto n = vertices_size(g);
+  //auto n = size(g);
 
-  REQUIRE(10 == vertices_size(g));
-  REQUIRE(11 == edges_size(g));
+  REQUIRE(10 == size(g));
+  REQUIRE(11 == size(edges(g)));
 
   using lhs  = std::forward_list<std::tuple<size_t, double>>;
   using rhs  = typename vov_germany_t::inner_container;

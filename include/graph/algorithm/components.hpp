@@ -148,8 +148,8 @@ public:
         : graph_(g)
         , alloc_(alloc)
         , stack_(alloc)
-        , visited_(vertices_size(g), alloc)
-        , in_stack_(vertices_size(g), alloc) {}
+        , visited_(ranges::size(g), alloc)
+        , in_stack_(ranges::size(g), alloc) {}
 
   void operator()(vertex_iterator_t<G> start, OutIter result_iter) { eval_scc(start, result_iter); }
 

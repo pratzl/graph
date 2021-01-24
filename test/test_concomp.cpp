@@ -28,17 +28,19 @@ using std::cout;
 using std::endl;
 using std::is_same;
 
+using std::ranges::size;
+
 using DollarGraph = GraphXlate<daa_data_edge_mapper>::target_graph_t;
 
 
 TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   DollarGraph g = dollar_directed_graph.create_graph();
-  EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));
-  EXPECT_EQ(dollar_directed_graph.edge_values().size(), edges_size(g));
+  EXPECT_EQ(dollar_directed_graph.vertex_values().size(), size(g));
+  EXPECT_EQ(dollar_directed_graph.edge_values().size(), size(edges(g)));
 
-  EXPECT_EQ(6, vertices_size(g));
-  EXPECT_EQ(6, edges_size(g));
+  EXPECT_EQ(6, size(g));
+  EXPECT_EQ(6, size(edges(g)));
 
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   for (vertex_t<DollarGraph>& u : vertices(g)) {
@@ -74,12 +76,12 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   cout << "vertex_iterator_t<DollarGraph>      u; \n";
   cout << "vertex_edge_iterator_t<DollarGraph> uv;\n";
 
-  for (size_t ui = 0; ui < vertices_size(g); ++ui) {
+  for (size_t ui = 0; ui < size(g); ++ui) {
     cout << "\n";
     u = begin(g) + ui;
     cout << "u = begin(g) + " << ui << ";\n";
     cout << "EXPECT_EQ(\"" << u->name << "\", u->name);\n";
-    cout << "EXPECT_EQ(" << edges_size(g, u) << ", edges_size(g, u));\n";
+    cout << "EXPECT_EQ(" << size(edges(g, u)) << ", size(edges(g, u)));\n";
     cout << "uv = begin(g, *u);\n";
     size_t uvi = 0;
     for (uv = begin(g, *u); uv != end(g, *u); ++uv, ++uvi) {
@@ -97,7 +99,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   u = begin(g) + 0;
   EXPECT_EQ("a1", u->name);
-  EXPECT_EQ(1, edges_size(g, u));
+  EXPECT_EQ(1, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(2, outward_vertex_key(g, uv));
   EXPECT_EQ("b1", outward_vertex(g, uv)->name);
@@ -105,7 +107,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   u = begin(g) + 1;
   EXPECT_EQ("a2", u->name);
-  EXPECT_EQ(1, edges_size(g, u));
+  EXPECT_EQ(1, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(3, outward_vertex_key(g, uv));
   EXPECT_EQ("b2", outward_vertex(g, uv)->name);
@@ -113,7 +115,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   u = begin(g) + 2;
   EXPECT_EQ("b1", u->name);
-  EXPECT_EQ(2, edges_size(g, u));
+  EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(4, outward_vertex_key(g, uv));
   EXPECT_EQ("c1", outward_vertex(g, uv)->name);
@@ -125,7 +127,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   u = begin(g) + 3;
   EXPECT_EQ("b2", u->name);
-  EXPECT_EQ(2, edges_size(g, u));
+  EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
   EXPECT_EQ(5, outward_vertex_key(g, uv));
   EXPECT_EQ("c2", outward_vertex(g, uv)->name);
@@ -137,12 +139,12 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 
   u = begin(g) + 4;
   EXPECT_EQ("c1", u->name);
-  EXPECT_EQ(0, edges_size(g, u));
+  EXPECT_EQ(0, size(edges(g, u)));
   uv = begin(edges(g, u));
 
   u = begin(g) + 5;
   EXPECT_EQ("c2", u->name);
-  EXPECT_EQ(0, edges_size(g, u));
+  EXPECT_EQ(0, size(edges(g, u)));
   uv = begin(edges(g, u));
 #endif
 }
@@ -150,11 +152,11 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
 TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][connected]") {
 
   DollarGraph g = dollar_directed_graph.create_graph();
-  EXPECT_EQ(dollar_directed_graph.vertex_values().size(), vertices_size(g));
-  EXPECT_EQ(dollar_directed_graph.edge_values().size(), edges_size(g));
+  EXPECT_EQ(dollar_directed_graph.vertex_values().size(), size(g));
+  EXPECT_EQ(dollar_directed_graph.edge_values().size(), size(edges(g)));
 
-  EXPECT_EQ(6, vertices_size(g));
-  EXPECT_EQ(6, edges_size(g));
+  EXPECT_EQ(6, size(g));
+  EXPECT_EQ(6, size(edges(g)));
 
   using comp_t  = std::component<DollarGraph>;
   using comps_t = std::vector<comp_t>;

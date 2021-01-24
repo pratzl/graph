@@ -12,7 +12,7 @@ namespace std {
 //
 template <directed_or_undirected G>
 constexpr bool contains_vertex(G const& g, vertex_key_t<G> ukey) noexcept {
-  return ukey >= 0 && ukey < static_cast<vertex_key_t<G>>(vertices_size(g));
+  return ukey >= 0 && ukey < static_cast<vertex_key_t<G>>(size(g));
 }
 
 

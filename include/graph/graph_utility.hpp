@@ -7,6 +7,25 @@
 
 namespace std {
 
+//
+// Default implementations
+//
+template <directed_or_undirected G>
+constexpr auto degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_edge_size_t<G> {
+  return size(edges(g, u));
+}
+
+template <directed G>
+constexpr auto outward_degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_outward_edge_size_t<G> {
+  return size(outward_edges(g, u));
+}
+
+template <directed G>
+constexpr auto inward_degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_inward_edge_size_t<G> {
+  return size(inward_edges(g, u));
+}
+
+
 //--------------------------------------------------------------------------------------
 // graph_value<> - wraps scaler, union & reference user values for graph, vertex & edge
 //
