@@ -12,26 +12,6 @@
 namespace std {
 
 
-// clang-format off
-template <template <typename T, typename A> class Container, typename Elem, typename Alloc>
-concept graph_random_access_container = requires {
-  true;
-  //allocator_traits<Alloc>::template rebind_alloc<Elem>;
-  //ranges::random_access_range<Container<Elem, Alloc>>;
-};
-/*                                     && is_default_constructible_v<Container<T, Alloc>> 
-                                     && is_copy_constructible_v<Container<T, Alloc>> 
-                                     && is_move_constructible_v<Container<T, Alloc>> 
-                                     && is_destructible_v<Container<T, Alloc>>
-                                     && requires {
-  { Container<T, Alloc>(Alloc()) } -> convertible_to<Container<T, Alloc>>;
-};*/
-
-//  requires graph_random_access_container<VContainer, dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>, 
-//                                         typename allocator_traits<Alloc>::template rebind_alloc<dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>
-//                                        >
-// clang-format on
-
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector forward declarations
 ///

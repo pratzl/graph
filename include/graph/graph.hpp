@@ -79,7 +79,7 @@ struct graph_traits
   using edge_key_type              = ...; // ordered_pair | unordered_pair
   using edge_value_type            = ...;
 
-  // The following 4 ranges are used by algorithms
+  // The following 4 range sets are used by algorithms
   using vertex_range               = ...;
   using const_vertex_range         = ...;
 
@@ -150,13 +150,17 @@ concept directed_or_undirected = directed<G> || undirected<G>;
 
 // iterator concepts
 template <typename G, typename EI>
-concept edge_iterator = forward_iterator<EI> && 
-                        convertible_to<iter_value_t<EI>, 
-                                       add_lvalue_reference<typename graph_traits<G>::edge_value_type>>;
+concept edge_iterator = 
+  forward_iterator<EI> && 
+  convertible_to<iter_value_t<EI>, 
+                 add_lvalue_reference<
+                    typename graph_traits<G>::edge_value_type>>;
 template <typename G, typename EI>
-concept const_edge_iterator = forward_iterator<EI> && 
-                              convertible_to<iter_value_t<EI>, 
-                                      add_const<add_lvalue_reference<typename graph_traits<G>::edge_value_type>>>;
+concept const_edge_iterator = 
+  forward_iterator<EI> && 
+  convertible_to<iter_value_t<EI>, 
+                 add_const<add_lvalue_reference<
+                    typename graph_traits<G>::edge_value_type>>>;
 
 
 // Requirements for extracting vertex values from external sources for graph construction
@@ -216,6 +220,8 @@ template <typename G>
 using vertex_iterator_t = ranges::iterator_t<typename graph_traits<G>::vertex_range>;
 template <directed_or_undirected G>
 using const_vertex_iterator_t = ranges::iterator_t<typename graph_traits<G>::const_vertex_range>;
+template <typename G>
+using vertex_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_range>;
 
 template <directed_or_undirected G>
 using vertex_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_range>;
@@ -233,6 +239,8 @@ template <directed_or_undirected G>
 using edge_iterator_t = ranges::iterator_t<typename graph_traits<G>::edge_range>;
 template <directed_or_undirected G>
 using const_edge_iterator_t = ranges::iterator_t<typename graph_traits<G>::const_edge_range>;
+template <directed_or_undirected G>
+using edge_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::edge_range>;
 
 template <directed_or_undirected G>
 using edge_size_t = ranges::range_size_t<typename graph_traits<G>::edge_range>;
@@ -250,6 +258,8 @@ template <directed_or_undirected G>
 using vertex_edge_iterator_t = ranges::iterator_t<typename graph_traits<G>::vertex_edge_range>;
 template <directed_or_undirected G>
 using const_vertex_edge_iterator_t = ranges::iterator_t<typename graph_traits<G>::const_vertex_edge_range>;
+template <directed_or_undirected G>
+using vertex_edge_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_edge_range>;
 
 template <directed_or_undirected G>
 using vertex_edge_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_edge_range>;
@@ -266,6 +276,8 @@ template <directed_or_undirected G>
 using vertex_vertex_iterator_t = ranges::iterator_t<typename graph_traits<G>::vertex_vertex_range>;
 template <directed_or_undirected G>
 using const_vertex_vertex_iterator_t = ranges::iterator_t<typename graph_traits<G>::const_vertex_vertex_range>;
+template <directed_or_undirected G>
+using vertex_vertex_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_vertex_range>;
 
 template <directed_or_undirected G>
 using vertex_vertex_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_vertex_range>;
@@ -303,14 +315,17 @@ constexpr auto vertex_value(const G& g, const_vertex_iterator_t<G> u) -> const v
 template <directed_or_undirected G>
 constexpr auto degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_edge_size_t<G>;
 
+// range functions defined for graph to alias vertices(g) [see graph_utilities.hpp]
 
 // Edge properties
 
 // clang-format off
 template <directed_or_undirected G>
-constexpr auto edge_key(G& g, const_vertex_iterator_t<G> u, const_vertex_iterator_t<G> v) -> edge_key_t<G>;
+constexpr auto edge_key(G& g, const_vertex_iterator_t<G> u, 
+                              const_vertex_iterator_t<G> v) -> edge_key_t<G>;
 template <directed_or_undirected G>
-constexpr auto edge_key(G& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey) -> edge_key_t<G>;
+constexpr auto edge_key(G& g, vertex_key_t<G> ukey, 
+                              vertex_key_t<G> vkey) -> edge_key_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
@@ -603,6 +618,8 @@ using vertex_outward_edge_iterator_t = ranges::iterator_t<typename graph_traits<
 template <directed G>
 using const_vertex_outward_edge_iterator_t =
       ranges::iterator_t<typename graph_traits<G>::const_vertex_outward_edge_range>;
+template <directed G>
+using vertex_outward_edge_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_outward_edge_range>;
 
 template <directed G>
 using vertex_outward_edge_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_outward_edge_range>;
@@ -621,6 +638,8 @@ using vertex_outward_vertex_iterator_t = ranges::iterator_t<typename graph_trait
 template <directed G>
 using const_vertex_outward_vertex_iterator_t =
       ranges::iterator_t<typename graph_traits<G>::const_vertex_outward_vertex_range>;
+template <directed G>
+using vertex_outward_vertex_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_outward_vertex_range>;
 
 template <directed G>
 using vertex_outward_vertex_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_outward_vertex_range>;
@@ -676,29 +695,8 @@ constexpr auto find_outward_vertex(const G&, vertex_key_t<G> ukey, vertex_key_t<
       -> const_vertex_outward_vertex_iterator_t<G>;
 
 // Directed API (outward): Modifying functions
-template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v)
-      -> optional<vertex_outward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&)
-      -> optional<vertex_outward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&&)
-      -> optional<vertex_outward_edge_iterator_t<G>>;
-
-template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>)
-      -> optional<vertex_outward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&)
-      -> optional<vertex_outward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&&)
-      -> optional<vertex_outward_edge_iterator_t<G>>;
-
-
 template <directed G>
-constexpr void clear_outward_edges(G& g, vertex_iterator_t<G>& u);
+constexpr void clear_outward_edges(G& g, vertex_iterator_t<G> u);
 
 // also see erase_edge(g,uv), erase_edges(g,uv_rng)
 
@@ -718,6 +716,8 @@ using vertex_inward_edge_iterator_t = ranges::iterator_t<typename graph_traits<G
 template <directed G>
 using const_vertex_inward_edge_iterator_t =
       ranges::iterator_t<typename graph_traits<G>::const_vertex_inward_edge_range>;
+template <directed G>
+using vertex_inward_edge_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_inward_edge_range>;
 
 template <directed G>
 using vertex_inward_edge_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_inward_edge_range>;
@@ -735,6 +735,8 @@ using vertex_inward_vertex_iterator_t = ranges::iterator_t<typename graph_traits
 template <directed G>
 using const_vertex_inward_vertex_iterator_t =
       ranges::iterator_t<typename graph_traits<G>::const_vertex_inward_vertex_range>;
+template <directed G>
+using vertex_inward_vertex_sentinel_t = ranges::sentinel_t<typename graph_traits<G>::vertex_inward_vertex_range>;
 
 template <directed G>
 using vertex_inward_vertex_size_t = ranges::range_size_t<typename graph_traits<G>::vertex_inward_vertex_range>;
@@ -790,25 +792,6 @@ constexpr auto find_inward_vertex(const G&, vertex_key_t<G> ukey, vertex_key_t<G
 
 
 // Directed API (inward): Modifying Functions
-
-template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v)
-      -> optional<vertex_inward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&)
-      -> optional<vertex_inward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&&)
-      -> optional<vertex_inward_edge_iterator_t<G>>;
-
-template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>) -> optional<vertex_inward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&)
-      -> optional<vertex_inward_edge_iterator_t<G>>;
-template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&&)
-      -> optional<vertex_inward_edge_iterator_t<G>>;
 
 template <directed G>
 constexpr void clear_inward_edges(G& g, vertex_iterator_t<G> u);
@@ -1059,7 +1042,9 @@ concept incremental_vertex_graph =
           vertex_value_t<G>&& val) {
     { create_vertex(g) } -> convertible_to<optional<ranges::iterator_t<vertex_range_t<G>>>>;
     { create_vertex(g,val) } -> convertible_to<optional<ranges::iterator_t<vertex_range_t<G>>>>;
-    { create_vertex(g,move(val)) } -> convertible_to<optional<ranges::iterator_t<vertex_range_t<G>>>>;
+    { create_vertex(g,move(val)) } 
+      -> convertible_to<optional<ranges::iterator_t<vertex_range_t<G>>>>;
+    //{create_vertices(g,vrng,vvalue_fnc)};
   };
 
 template <typename G>
@@ -1094,18 +1079,22 @@ concept incremental_edge_graph =
     
     {create_edge(g,ukey,vkey)} -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
     {create_edge(g,ukey,vkey,val)} -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
-    {create_edge(g,ukey,vkey,move(val))} -> same_as<optional<vertex_edge_iterator_t<G>>>;
-    // consider: edges with required value that aren't default-constructable.
-    // We need to support either this, or creation with a value, to have a complete definition.
+    {create_edge(g,ukey,vkey,move(val))} -> convertible_to<optional<vertex_edge_iterator_t<G>>>;
+
+    //{create_edges(g,erng,ekey_fnc,evalue_fnc)};
+    //{create_edges(g,erng,vrng,ekey_fnc,evalue_fnc,vvalue_fnc)};
   };
+  // consider: edges with required value that aren't default-constructable.
+  // We need to support either this, or creation with a value, to have a complete definition.
 
 template <typename G, typename ER>
 concept decremental_edge_range = 
   requires(G&                                    g,
            ER                                    er,
            ranges::iterator_t<ER>                uv) {
+    is_same_v<ranges::range_value_t<ER>, edge_value_t<G>>;
     { erase_edge(g,uv) } -> std::same_as<optional<ranges::iterator_t<ER>>>;
-    { erase_edge(g,er) };
+    { erase_edges(g,er) };
   };
 
 template <typename G>
