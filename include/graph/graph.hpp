@@ -115,26 +115,30 @@ struct graph_traits
 
 // directed = edge key is ordered
 template<typename G>
-using is_directed = is_base_of<ordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+using is_directed = is_base_of<ordered_pair<typename graph_traits<G>::vertex_key_type, 
+                                            typename graph_traits<G>::vertex_key_type>,
                                typename graph_traits<G>::edge_key_type>;
 template<typename G>
 inline constexpr bool is_directed_v = is_directed<G>::value;
 
 template <typename G>
 concept directed 
-      =  is_base_of_v<ordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+      =  is_base_of_v<ordered_pair<typename graph_traits<G>::vertex_key_type, 
+                                   typename graph_traits<G>::vertex_key_type>,
                       typename graph_traits<G>::edge_key_type>;
 
 // undirected = edge key is unordered
 template <typename G>
-using is_undirected = is_base_of<unordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+using is_undirected = is_base_of<unordered_pair<typename graph_traits<G>::vertex_key_type, 
+                                                typename graph_traits<G>::vertex_key_type>,
                                  typename graph_traits<G>::edge_key_type>;
 template<typename G>
 inline constexpr bool is_undirected_v = is_undirected<G>::value;
 
 template <typename G>
 concept undirected
-      =  is_base_of_v<unordered_pair<typename graph_traits<G>::vertex_key_type, typename graph_traits<G>::vertex_key_type>,
+      =  is_base_of_v<unordered_pair<typename graph_traits<G>::vertex_key_type, 
+                                     typename graph_traits<G>::vertex_key_type>,
                       typename graph_traits<G>::edge_key_type>;
 
 // directed or undirected
@@ -144,15 +148,7 @@ inline constexpr bool is_directed_or_undirected_v = is_directed_v<G> || is_undir
 template <typename G>
 concept directed_or_undirected = directed<G> || undirected<G>;
 
-// vertex & edge iterator concepts
-template <typename G, typename VI>
-concept vertex_iterator = random_access_iterator<VI> && 
-                          convertible_to<iter_value_t<VI>, 
-                                         add_lvalue_reference<typename graph_traits<G>::vertex_value_type>>;
-template <typename G, typename VI>
-concept const_vertex_iterator = random_access_iterator<VI> && 
-                                convertible_to<iter_value_t<VI>, 
-                                         add_const<add_lvalue_reference<typename graph_traits<G>::vertex_value_type>>>;
+// iterator concepts
 template <typename G, typename EI>
 concept edge_iterator = forward_iterator<EI> && 
                         convertible_to<iter_value_t<EI>, 
@@ -329,13 +325,15 @@ template <directed_or_undirected G, typename EI>
 constexpr auto edge_value(const G& g, EI u) -> const edge_value_t<G>&;
 
 
-template <directed_or_undirected G, typename EI, typename VI>
-  requires edge_iterator<G,EI> && const_vertex_iterator<G,VI>
-constexpr auto vertex(G& g, EI uv, VI source) -> vertex_iterator_t<G>;
+template <directed_or_undirected G, typename EI>
+  requires edge_iterator<G,EI>
+constexpr auto vertex(G& g, EI uv, const_vertex_iterator_t<G> source) 
+  -> vertex_iterator_t<G>;
 
-template <directed_or_undirected G, typename EI, typename VI>
-  requires const_edge_iterator<G,EI> && const_vertex_iterator<G,VI>
-constexpr auto vertex(const G&, EI uv, VI source) -> const_vertex_iterator_t<G>;
+template <directed_or_undirected G, typename EI>
+  requires const_edge_iterator<G,EI>
+constexpr auto vertex(const G&, EI uv, const_vertex_iterator_t<G> source) 
+  -> const_vertex_iterator_t<G>;
 
 template <directed G, typename EI>
   requires edge_iterator<G,EI>
@@ -348,11 +346,13 @@ constexpr auto vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires edge_iterator<G,EI>
-constexpr auto vertex(G& g, EI uv, vertex_key_t<G> source_key) -> vertex_iterator_t<G>;
+constexpr auto vertex(G& g, EI uv, vertex_key_t<G> source_key) 
+  -> vertex_iterator_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
-constexpr auto vertex(const G&, EI uv, vertex_key_t<G> source_key) -> const_vertex_iterator_t<G>;
+constexpr auto vertex(const G&, EI uv, vertex_key_t<G> source_key) 
+  -> const_vertex_iterator_t<G>;
 
 template <directed G, typename EI>
   requires edge_iterator<G,EI>
@@ -363,13 +363,15 @@ template <directed G, typename EI>
 constexpr auto vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
 
 
-template <directed_or_undirected G, typename EI, typename VI>
-  requires const_edge_iterator<G,EI> && const_vertex_iterator<G,VI>
-constexpr auto vertex_key(const G&, EI uv, VI source) -> vertex_key_t<G>;
+template <directed_or_undirected G, typename EI>
+  requires const_edge_iterator<G,EI>
+constexpr auto vertex_key(const G&, EI uv, const_vertex_iterator_t<G> source) 
+  -> vertex_key_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
-constexpr auto vertex_key(const G&, EI uv, vertex_key_t<G> source_key) -> vertex_key_t<G>;
+constexpr auto vertex_key(const G&, EI uv, vertex_key_t<G> source_key) 
+  -> vertex_key_t<G>;
 
 template <directed G, typename EI>
   requires const_edge_iterator<G,EI>
@@ -502,7 +504,7 @@ constexpr auto create_vertex(G& g) -> optional<vertex_iterator_t<G>>;
 template <directed_or_undirected G>
 constexpr auto create_vertex(G& g, const vertex_value_t<G>&) -> optional<vertex_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_vertex(G& g, vertex_value_t<G> &&) -> optional<vertex_iterator_t<G>>;
+constexpr auto create_vertex(G& g, vertex_value_t<G>&&) -> optional<vertex_iterator_t<G>>;
 
 // clang-format off
 template <directed_or_undirected G, typename VRng, typename VValueFnc>
@@ -527,7 +529,7 @@ template <directed_or_undirected G>
 constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&)
       -> optional<vertex_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G> &&)
+constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&&)
       -> optional<vertex_edge_iterator_t<G>>;
 
 template <directed_or_undirected G>
@@ -536,7 +538,7 @@ template <directed_or_undirected G>
 constexpr auto create_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&)
       -> optional<vertex_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G> &&)
+constexpr auto create_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&&)
       -> optional<vertex_edge_iterator_t<G>>;
 
 // clang-format off
@@ -681,7 +683,7 @@ template <directed_or_undirected G>
 constexpr auto create_outward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&)
       -> optional<vertex_outward_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G> &&)
+constexpr auto create_outward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&&)
       -> optional<vertex_outward_edge_iterator_t<G>>;
 
 template <directed_or_undirected G>
@@ -691,7 +693,7 @@ template <directed_or_undirected G>
 constexpr auto create_outward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&)
       -> optional<vertex_outward_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_outward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G> &&)
+constexpr auto create_outward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&&)
       -> optional<vertex_outward_edge_iterator_t<G>>;
 
 
@@ -796,7 +798,7 @@ template <directed_or_undirected G>
 constexpr auto create_inward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&)
       -> optional<vertex_inward_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G> &&)
+constexpr auto create_inward_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&&)
       -> optional<vertex_inward_edge_iterator_t<G>>;
 
 template <directed_or_undirected G>
@@ -805,7 +807,7 @@ template <directed_or_undirected G>
 constexpr auto create_inward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&)
       -> optional<vertex_inward_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_inward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G> &&)
+constexpr auto create_inward_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&&)
       -> optional<vertex_inward_edge_iterator_t<G>>;
 
 template <directed G>
@@ -1132,8 +1134,7 @@ concept static_graph = static_vertex_graph<G> && static_edge_graph<G>;
 
 template <typename G, typename Path>
 concept vertex_path = ranges::forward_range<Path> && 
-                      (const_vertex_iterator<G,ranges::range_value_t<Path>> || 
-                        vertex_iterator<G,ranges::range_value_t<Path>>); 
+                      convertible_to<ranges::range_value_t<Path>, vertex_iterator_t<G>>;
 
 template <typename G, typename Path>
 concept edge_path = ranges::forward_range<Path> && 
@@ -1142,9 +1143,7 @@ concept edge_path = ranges::forward_range<Path> &&
 
 template <typename G, typename Path>
 concept vertex_cycle = ranges::forward_range<Path> && 
-                      (const_vertex_iterator<G,ranges::range_value_t<Path>> || 
-                        vertex_iterator<G,ranges::range_value_t<Path>>);
-
+                      convertible_to<ranges::range_value_t<Path>, vertex_iterator_t<G>>;
 
 // clang-format on
 
