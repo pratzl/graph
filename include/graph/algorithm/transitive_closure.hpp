@@ -46,9 +46,17 @@ constexpr void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 }
 
 // clang-format off
-template <typename ExecutionPolicy, incidence_graph G, typename OutIter, typename A = allocator<bool>>
-  requires directed<G> && integral<vertex_key_t<G>> && output_iterator<OutIter, reaches<G>>
-constexpr void warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIter result_iter, A alloc = A());
+template <typename        ExecutionPolicy, 
+          incidence_graph G, 
+          typename        OutIter, 
+          typename        A = allocator<bool>>
+  requires directed<G> && 
+           integral<vertex_key_t<G>> && 
+           output_iterator<OutIter, reaches<G>>
+constexpr void warshall_transitive_closure(ExecutionPolicy&& policy, 
+                                           G&                g, 
+                                           OutIter           result_iter, 
+                                           A                 alloc = A());
 // clang-format on
 
 /// Transitive closure returns all vertices that can be reached from a source vertex, for all source
@@ -59,7 +67,9 @@ constexpr void warshall_transitive_closure(ExecutionPolicy&& policy, G& g, OutIt
 ///
 // clang-format off
 template <incidence_graph G, typename OutIter, typename A = allocator<bool>>
-  requires directed<G> && integral<vertex_key_t<G>> && output_iterator<OutIter, reaches<G>>
+  requires directed<G> &&
+           integral<vertex_key_t<G>> && 
+           output_iterator<OutIter, reaches<G>>
 constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 // clang-format on
 {

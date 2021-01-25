@@ -444,9 +444,9 @@ protected:
 //
 // clang-format off
 template <incidence_graph G, 
-          typename OutIter, 
-          typename DistFnc, 
-          typename A = allocator<char>>
+          typename        OutIter, 
+          typename        DistFnc, 
+          typename        A = allocator<char>>
   requires integral<vertex_key_t<G>> && 
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>> &&
            output_iterator<OutIter, 
@@ -484,9 +484,9 @@ void dijkstra_shortest_distances(
 //
 // clang-format off
 template <incidence_graph G, 
-          typename OutIter, 
-          typename DistFnc, 
-          typename A = allocator<char>>
+          typename        OutIter, 
+          typename        DistFnc, 
+          typename        A = allocator<char>>
 //requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic; }
   requires integral<vertex_key_t<G>> && 
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>>
@@ -530,9 +530,9 @@ void dijkstra_shortest_paths(
 //
 // clang-format off
 template <incidence_graph G, 
-          typename OutIter, 
-          typename DistFnc, 
-          typename A = allocator<char>>
+          typename        OutIter, 
+          typename        DistFnc, 
+          typename        A = allocator<char>>
   requires integral<vertex_key_t<G>> && 
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>> &&
            output_iterator<OutIter,
@@ -580,9 +580,9 @@ bool bellman_ford_shortest_distances(
 //!
 // clang-format off
 template <incidence_graph G, 
-          typename OutIter, 
-          typename DistFnc, 
-          typename A = allocator<char>>
+          typename        OutIter, 
+          typename        DistFnc, 
+          typename        A = allocator<char>>
   requires integral<vertex_key_t<G>> &&
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>>
   //requires output_iterator<OutIter, typename OutIter::value_type>

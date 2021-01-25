@@ -67,7 +67,8 @@ Other Useful Tools
   - [x] [paper] sparse/dense not defined;
   - [x] compare to BGL concepts [Lumsdaine]: need to add concepts for adjacency, incidence, vertex_list, edge_list
   - [x] allow vertex_key_t<G> to be non-integer? [no; requires algo specialization, performance impact]
-  - [ ] [paper] extend graph_traits section to include other type traits
+  - [ ] Add create_edges to incremental edge concepts
+  - [ ] Add create_vertices to incremental vertex concepts
 - [ ] Algorithms
   - [x] Common
     - [x] Replace vertex_user_value_type with vertex_value_type for undirected_adjacency_list
@@ -101,8 +102,10 @@ Other Useful Tools
 - [ ] Ranges/Iterators
   - [ ] DFS
     - [ ] validate const iterator
+    - [ ] update examples to reflect changes
   - [ ] BFS
     - [ ] validate const iterator
+    - [ ] update examples to reflect changes
   - [ ] Topological Sort
     - [ ] implement
     - [ ] test
@@ -144,6 +147,8 @@ Other Useful Tools
     - [x] add vertices_ssize(g,u) [add impl]
     - [x] add contains_vertex(g,ukey), contains_edge(g, ukey, vkey), contains_edge(g, u, v) [add impl]
     - [x] vertex_key_type required to be integral
+    - [x] add sentinel types for each range (completeness)
+    - [x] add helper functions to assure graph is an alias of vertices(g)
   - [ ] Directed API
   - [ ] ordered_pair & unordered_pair
     - [x] initial implementation
@@ -174,6 +179,7 @@ Other Useful Tools
     - [x] IndexT --> KeyT, integral concept
     - [x] Separate _impl files into _impl for the class and _api for the API adaptors
     - [ ] Verify that value types can be a variant
+    - [ ] Add random_access_contraints for user-defined containers
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
