@@ -7,7 +7,7 @@
 // for a single source vertex.
 //
 // The algorithms are designed to work with both directed & undirected graphs
-// by using general functions such as vertex() and edges() instead of outward_vertex()
+// by using general functions such as vertex() and edges() instead of target_vertex()
 // and outward_edges().
 //
 // Dijktra's shortest path algorithm runs in O(|E| + |V|log|V|) time and supports non-negative
@@ -259,8 +259,8 @@ protected:
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
         for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv)
-          if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
-            leaf[inward_vertex_key(g_, uv)] = false;
+          if (target_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
+            leaf[source_vertex_key(g_, uv)] = false;
       }
     }
   }
@@ -370,11 +370,11 @@ protected:
     for (size_t i = 1; changed && i < ranges::size(g_); ++i) {
       changed = false;
       for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv) {
-        vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
+        vertex_key_t<G> ukey = source_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source [yet]
 
-        vertex_key_t<G> vkey   = outward_vertex_key(g_, uv);
+        vertex_key_t<G> vkey   = target_vertex_key(g_, uv);
         DistanceT       v_dist = distances[ukey].distance + distance_fnc_(*uv);
 
         if (v_dist < distances[vkey].distance) {
@@ -397,8 +397,8 @@ protected:
       // turn off leaf for vertices that are previous to other vertices
       if (reached > 1) {
         for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv)
-          if (outward_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
-            leaf[inward_vertex_key(g_, uv)] = false;
+          if (target_vertex_key(g_, uv) != numeric_limits<vertex_key_t<G>>::max())
+            leaf[source_vertex_key(g_, uv)] = false;
       }
     }
 
@@ -406,11 +406,11 @@ protected:
     bool neg_edge_cycles = false;
     if (detect_neg_edge_cycles) {
       for (edge_iterator_t<G> uv = begin(edges(g_)); uv != end(edges(g_)); ++uv) {
-        vertex_key_t<G> ukey = inward_vertex_key(g_, uv);
+        vertex_key_t<G> ukey = source_vertex_key(g_, uv);
         if (distances[ukey].vtx_key == numeric_limits<vertex_key_t<G>>::max())
           continue; // ukey not connected to source
 
-        vertex_key_t<G> vkey = outward_vertex_key(g_, uv);
+        vertex_key_t<G> vkey = target_vertex_key(g_, uv);
         if (distances[ukey].distance + distance_fnc_(*uv) < distances[vkey].distance) {
           neg_edge_cycles = true;
           break;
@@ -447,7 +447,8 @@ template <incidence_graph G,
           typename        OutIter, 
           typename        DistFnc, 
           typename        A = allocator<char>>
-  requires integral<vertex_key_t<G>> && 
+  requires ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> && 
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>> &&
            output_iterator<OutIter, 
                         shortest_distance<ranges::iterator_t<vertex_range_t<G>>, 
@@ -488,7 +489,8 @@ template <incidence_graph G,
           typename        DistFnc, 
           typename        A = allocator<char>>
 //requires (edge_t<G>& uv) { output_iterator<OutIter, typename OutIter::value_type> && Distant && DistFnc(uv) -> arithmetic; }
-  requires integral<vertex_key_t<G>> && 
+  requires ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> && 
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>>
 void dijkstra_shortest_paths(
       G&                   g,
@@ -533,7 +535,8 @@ template <incidence_graph G,
           typename        OutIter, 
           typename        DistFnc, 
           typename        A = allocator<char>>
-  requires integral<vertex_key_t<G>> && 
+  requires ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> && 
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>> &&
            output_iterator<OutIter,
                   shortest_distance<ranges::iterator_t<vertex_range_t<G>>,
@@ -583,7 +586,8 @@ template <incidence_graph G,
           typename        OutIter, 
           typename        DistFnc, 
           typename        A = allocator<char>>
-  requires integral<vertex_key_t<G>> &&
+  requires ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> &&
            is_arithmetic_v<invoke_result_t<DistFnc, edge_value_t<G>&>>
   //requires output_iterator<OutIter, typename OutIter::value_type>
 bool bellman_ford_shortest_paths(

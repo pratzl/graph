@@ -101,7 +101,10 @@ template <incidence_graph G,
           typename        OutIter, 
           integral        CompT = uint32_t, 
           typename        A     = allocator<char>>
-  requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
+  requires directed<G> && 
+           ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> &&
+           output_iterator<OutIter, component<G, CompT>> 
 void connected_components(G&                   g, 
                           vertex_iterator_t<G> start, 
                           OutIter              result_iter, 
@@ -117,7 +120,10 @@ template <incidence_graph G,
           typename        OutIter, 
           integral        CompT = uint32_t, 
           typename        A     = allocator<char>>
-  requires undirected<G> && output_iterator<OutIter, component<G, CompT>> 
+  requires undirected<G> && 
+           ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> &&
+           output_iterator<OutIter, component<G, CompT>> 
 void connected_components(G&                g, 
                           vertex_range_t<G> rng, 
                           OutIter           result_iter, 
@@ -231,7 +237,10 @@ template <incidence_graph G,
           typename        OutIter, 
           integral        CompT = uint32_t, 
           typename        A     = allocator<char>>
-  requires directed<G> && output_iterator<OutIter, component<G, CompT>>
+  requires directed<G> && 
+           ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> &&
+           output_iterator<OutIter, component<G, CompT>> 
 void strongly_connected_components(G&                   g, 
                                    vertex_iterator_t<G> start, 
                                    OutIter              result_iter, 
@@ -247,7 +256,10 @@ template <incidence_graph G,
           typename        OutIter, 
           integral        CompT = uint32_t, 
           typename        A     = allocator<char>>
-  requires directed<G> && output_iterator<OutIter, component<G, CompT>> 
+  requires directed<G> && 
+           ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> &&
+           output_iterator<OutIter, component<G, CompT>> 
 void strongly_connected_components(G&                g, 
                                    vertex_range_t<G> rng, 
                                    OutIter           result_iter, 

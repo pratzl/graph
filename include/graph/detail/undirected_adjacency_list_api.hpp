@@ -713,92 +713,10 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-constexpr auto outward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
-                              edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->outward_vertex(g);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto outward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
-                              const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->outward_vertex(g);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto outward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
-                              vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
-      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->outward_vertex(g);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto
-outward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
-               const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
-      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->outward_vertex(g);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto
-outward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
-                   const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->outward_vertex_key(g);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto
-outward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
-                   const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
-      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->outward_vertex_key(g);
-}
-
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto inward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+constexpr auto target_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
                              edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->inward_vertex(g);
+  return uv->target_vertex(g);
 }
 
 template <typename VV,
@@ -808,10 +726,10 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-constexpr auto inward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+constexpr auto target_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
                              const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->inward_vertex(g);
+  return uv->target_vertex(g);
 }
 
 template <typename VV,
@@ -821,10 +739,10 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-constexpr auto inward_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
+constexpr auto target_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
                              vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->inward_vertex(g);
+  return uv->target_vertex(g);
 }
 
 template <typename VV,
@@ -835,10 +753,10 @@ template <typename VV,
           class VContainer,
           typename Alloc>
 constexpr auto
-inward_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
+target_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
               const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->inward_vertex(g);
+  return uv->target_vertex(g);
 }
 
 template <typename VV,
@@ -849,10 +767,10 @@ template <typename VV,
           class VContainer,
           typename Alloc>
 constexpr auto
-inward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+target_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
                   const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->inward_vertex_key(g);
+  return uv->target_vertex_key(g);
 }
 
 template <typename VV,
@@ -863,10 +781,92 @@ template <typename VV,
           class VContainer,
           typename Alloc>
 constexpr auto
-inward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
+target_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
                   const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return uv->inward_vertex_key(g);
+  return uv->target_vertex_key(g);
+}
+
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto source_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+                             edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->source_vertex(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto source_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+                             const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->source_vertex(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto source_vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
+                             vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->source_vertex(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto
+source_vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
+              const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
+      -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->source_vertex(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto
+source_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+                  const_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->source_vertex_key(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto
+source_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                        g,
+                  const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->source_vertex_key(g);
 }
 
 
@@ -881,21 +881,21 @@ inward_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv->outward_vertex(g);
+  return uv->target_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(const undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
                       const_vertex_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> uv)
       -> const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv->outward_vertex(g);
+  return uv->target_vertex(g);
 }
 
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, IndexT, A>&         g,
                           const_vertex_edge_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> uv)
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
-  return uv->outward_vertex_key(g);
+  return uv->target_vertex_key(g);
 }
 #endif
 

@@ -6,7 +6,7 @@
 // breadth-first search graph algorithms for vertices and edges.
 //
 // The algorithms are designed to work with both directed & undirected graphs
-// by using general functions such as vertex() and edges() instead of outward_vertex()
+// by using general functions such as vertex() and edges() instead of target_vertex()
 // and outward_edges().
 //
 // The ranges have the following assumptions and behavior
@@ -60,7 +60,7 @@ namespace std {
 ///
 // clang-format off
 template <incidence_graph G, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> 
+  requires ranges::random_access_range<vertex_range_t<G>> && integral<vertex_key_t<G>> 
 class breadth_first_search_vertex_range
 // clang-format on
 {
@@ -232,7 +232,7 @@ private:
 ///
 // clang-format off
 template <incidence_graph G, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>>
+  requires ranges::random_access_range<vertex_range_t<G>> && integral<vertex_key_t<G>>
 class breadth_first_search_edge_range
 // clang-format on
 {
@@ -306,9 +306,9 @@ public:
     bool   is_back_edge() const { return bfs_->is_back_edge(elem_); }
     bool   is_path_end() const { return !outward_exists(); }
 
-    vertex_iterator_type outward_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, *this->elem_.u); }
-    vertex_iterator_type inward_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, outward_vertex()); }
-    vertex_iterator_type back_vertex() const { return outward_exists() ? outward_vertex() : elem_.u; }
+    vertex_iterator_type target_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, *this->elem_.u); }
+    vertex_iterator_type source_vertex() const { return vertex(this->bfs_->graph_, *this->elem_.uv, target_vertex()); }
+    vertex_iterator_type back_vertex() const { return outward_exists() ? target_vertex() : elem_.u; }
 
   protected:
     bool outward_exists() const { return bfs_->outward_exists(elem_); }
@@ -362,9 +362,9 @@ public:
       return tmp;
     }
 
-    vertex_iterator_type outward_vertex() const { return vertex(this->bfs_->graph_, this->elem_.uv, this->elem_.u); }
-    vertex_iterator_type inward_vertex() const { return vertex(this->bfs_->graph_, this->elem_.uv, outward_vertex()); }
-    vertex_iterator_type back_vertex() const { return this->outward_exists() ? outward_vertex() : this->elem_.u; }
+    vertex_iterator_type target_vertex() const { return vertex(this->bfs_->graph_, this->elem_.uv, this->elem_.u); }
+    vertex_iterator_type source_vertex() const { return vertex(this->bfs_->graph_, this->elem_.uv, target_vertex()); }
+    vertex_iterator_type back_vertex() const { return this->outward_exists() ? target_vertex() : this->elem_.u; }
   };
 
 public:

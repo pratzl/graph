@@ -133,23 +133,23 @@ public:
   dav_edge& operator=(dav_edge&) = default;
   dav_edge& operator=(dav_edge&&) = default;
 
-  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key);
-  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, const edge_value_type&);
-  dav_edge(vertex_key_type inward_vertex_key, vertex_key_type outward_vertex_key, edge_value_type&&);
+  dav_edge(vertex_key_type source_vertex_key, vertex_key_type target_vertex_key);
+  dav_edge(vertex_key_type source_vertex_key, vertex_key_type target_vertex_key, const edge_value_type&);
+  dav_edge(vertex_key_type source_vertex_key, vertex_key_type target_vertex_key, edge_value_type&&);
 
-  vertex_iterator       inward_vertex(graph_type&);
-  const_vertex_iterator inward_vertex(const graph_type&) const;
-  vertex_key_type       inward_vertex_key() const noexcept;
+  vertex_iterator       source_vertex(graph_type&);
+  const_vertex_iterator source_vertex(const graph_type&) const;
+  vertex_key_type       source_vertex_key() const noexcept;
 
-  vertex_iterator       outward_vertex(graph_type&);
-  const_vertex_iterator outward_vertex(const graph_type&) const;
-  vertex_key_type       outward_vertex_key() const noexcept;
+  vertex_iterator       target_vertex(graph_type&);
+  const_vertex_iterator target_vertex(const graph_type&) const;
+  vertex_key_type       target_vertex_key() const noexcept;
 
   edge_key_type edge_key() const noexcept;
 
 private:
-  vertex_key_type inward_vertex_;
-  vertex_key_type outward_vertex_;
+  vertex_key_type source_vertex_;
+  vertex_key_type target_vertex_;
 };
 
 ///-------------------------------------------------------------------------------------
@@ -272,8 +272,8 @@ public:
   constexpr dav_const_vertex_vertex_iterator& operator=(dav_const_vertex_vertex_iterator&&) = default;
 
 public:
-  constexpr const_vertex_iterator outward_vertex(graph_type const&) const;
-  constexpr vertex_key_type       outward_vertex_key() const;
+  constexpr const_vertex_iterator target_vertex(graph_type const&) const;
+  constexpr vertex_key_type       target_vertex_key() const;
 
   constexpr reference operator*() const noexcept;
   constexpr pointer   operator->() const noexcept;
@@ -288,7 +288,7 @@ public:
   constexpr dav_const_vertex_vertex_iterator& operator-=(const difference_type distance) noexcept;
   constexpr dav_const_vertex_vertex_iterator  operator-(const difference_type distance) const noexcept;
 
-  reference operator[](const difference_type distance) const noexcept { return *uv_[distance].outward_vertex(*g_); }
+  reference operator[](const difference_type distance) const noexcept { return *uv_[distance].target_vertex(*g_); }
 
   constexpr bool operator==(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
   constexpr bool operator!=(const dav_const_vertex_vertex_iterator& rhs) const noexcept;
@@ -354,7 +354,7 @@ public:
   constexpr dav_vertex_vertex_iterator& operator=(dav_vertex_vertex_iterator&&) = default;
 
 public:
-  constexpr vertex_iterator outward_vertex(graph_type&);
+  constexpr vertex_iterator target_vertex(graph_type&);
 
   constexpr reference operator*() const;
   constexpr pointer   operator->() const;
@@ -597,11 +597,11 @@ public:
   // clang-format on
 
   /// Constructor for easy creation of a graph that takes an initializer
-  /// list with a tuple with 3 edge elements: inward_vertex_key,
-  /// outward_vertex_key and edge_value.
+  /// list with a tuple with 3 edge elements: source_vertex_key,
+  /// target_vertex_key and edge_value.
   ///
-  /// @param ilist Initializer list of tuples with inward_vertex_key,
-  ///              outward_vertex_key and the edge value.
+  /// @param ilist Initializer list of tuples with source_vertex_key,
+  ///              target_vertex_key and the edge value.
   /// @param alloc Allocator.
   ///
   // clang-format off
@@ -614,8 +614,8 @@ public:
   /// Constructor for easy creation of a graph that takes an initializer
   /// list with a tuple with 2 edge elements.
   ///
-  /// @param ilist Initializer list of tuples with inward_vertex_key and
-  ///              outward_vertex_key.
+  /// @param ilist Initializer list of tuples with source_vertex_key and
+  ///              target_vertex_key.
   /// @param alloc Allocator.
   ///
   // clang-format off
