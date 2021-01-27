@@ -32,7 +32,7 @@
         a type/function to the outward form of the type or function. For instance, find_vertex_edge()
         would alias find_vertex_outward_edge(). Additional notes:
         a.  An edge is associated with 2 vertices, so the concept of in/out isn't eliminated entirely
-            for undirected graphs. It still has an inward_vertex & outward_vertex but there is no implied
+            for undirected graphs. It still has an source_vertex & target_vertex but there is no implied
             directionality with them.
         b.  A graph can be viewed as a range of ranges, with the vertices being the outer range and
             the edges being the inner range. [Andrew Lumsdaine]
@@ -399,25 +399,25 @@ constexpr auto vertex_key(const G&, EI uv) -> vertex_key_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires edge_iterator<G,EI>
-constexpr auto outward_vertex(G& g, EI uv) -> vertex_iterator_t<G>;
+constexpr auto target_vertex(G& g, EI uv) -> vertex_iterator_t<G>;
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
-constexpr auto outward_vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
+constexpr auto target_vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
-constexpr auto outward_vertex_key(const G&, EI uv) -> vertex_key_t<G>;
+constexpr auto target_vertex_key(const G&, EI uv) -> vertex_key_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires edge_iterator<G,EI>
-constexpr auto inward_vertex(G& g, EI uv) -> vertex_iterator_t<G>;
+constexpr auto source_vertex(G& g, EI uv) -> vertex_iterator_t<G>;
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
-constexpr auto inward_vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
+constexpr auto source_vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
 
 template <directed_or_undirected G, typename EI>
   requires const_edge_iterator<G,EI>
-constexpr auto inward_vertex_key(const G&, EI uv) -> vertex_key_t<G>;
+constexpr auto source_vertex_key(const G&, EI uv) -> vertex_key_t<G>;
 // clang-format on
 
 
@@ -845,7 +845,7 @@ concept edge_value_types =
 
 template<typename G, typename VR>
 concept vertex_range = 
-  ranges::random_access_range<VR> &&
+  ranges::forward_range<VR> &&
   ranges::sized_range<VR> &&
   requires(VR& vr, ranges::iterator_t<VR> u, vertex_key_t<G> ukey) {
     is_same_v<vertex_t<G>, ranges::range_value_t<VR>>;
@@ -869,10 +869,10 @@ concept basic_edge_range =
            vertex_key_t<G>                       src_key) {
     { vertex(g, uv, src) } -> convertible_to<ranges::iterator_t<vertex_range_t<G>>>;
     { vertex_key(g, uv, src_key) } -> convertible_to<ranges::iterator_t<vertex_range_t<G>>>;
-    { outward_vertex(g, uv) } -> convertible_to<ranges::iterator_t<vertex_range_t<G>>>;
-    { outward_vertex_key(g, uv) } -> convertible_to<vertex_key_t<G>>;
-    { inward_vertex(g, uv) } -> convertible_to<ranges::iterator_t<vertex_range_t<G>>>;
-    { inward_vertex_key(g, uv) } -> convertible_to<vertex_key_t<G>>;
+    { target_vertex(g, uv) } -> convertible_to<ranges::iterator_t<vertex_range_t<G>>>;
+    { target_vertex_key(g, uv) } -> convertible_to<vertex_key_t<G>>;
+    { source_vertex(g, uv) } -> convertible_to<ranges::iterator_t<vertex_range_t<G>>>;
+    { source_vertex_key(g, uv) } -> convertible_to<vertex_key_t<G>>;
     { size(r) } -> convertible_to<ranges::range_size_t<R>>;
     { ssize(r) } -> convertible_to<ranges::range_difference_t<R>>;
     { empty(r) } -> convertible_to<bool>;

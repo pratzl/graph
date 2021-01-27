@@ -225,8 +225,8 @@ TEST_CASE("ual init", "[ual][init]") {
       if (uvi > 0) {
         cout << "++uv;\n";
       }
-      cout << "EXPECT_EQ(" << outward_vertex_key(g, uv) << ", outward_vertex_key(g, uv));\n";
-      cout << "EXPECT_EQ(\"" << outward_vertex(g, uv)->name << "\", outward_vertex(g, *uv)->name);\n";
+      cout << "EXPECT_EQ(" << target_vertex_key(g, uv) << ", target_vertex_key(g, uv));\n";
+      cout << "EXPECT_EQ(\"" << target_vertex(g, uv)->name << "\", target_vertex(g, *uv)->name);\n";
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
     }
   }
@@ -238,128 +238,128 @@ TEST_CASE("ual init", "[ual][init]") {
   EXPECT_EQ("Augsburg", u->name);
   EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(6, outward_vertex_key(g, uv));
-  EXPECT_EQ("München", outward_vertex(g, uv)->name);
+  EXPECT_EQ(6, target_vertex_key(g, uv));
+  EXPECT_EQ("München", target_vertex(g, uv)->name);
   EXPECT_EQ(84, uv->weight);
   ++uv;
-  EXPECT_EQ(0, outward_vertex_key(g, uv));
-  EXPECT_EQ("Augsburg", outward_vertex(g, uv)->name);
+  EXPECT_EQ(0, target_vertex_key(g, uv));
+  EXPECT_EQ("Augsburg", target_vertex(g, uv)->name);
   EXPECT_EQ(250, uv->weight);
 
   u = begin(g) + 1;
   EXPECT_EQ("Erfurt", u->name);
   EXPECT_EQ(1, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(1, outward_vertex_key(g, uv));
-  EXPECT_EQ("Erfurt", outward_vertex(g, uv)->name);
+  EXPECT_EQ(1, target_vertex_key(g, uv));
+  EXPECT_EQ("Erfurt", target_vertex(g, uv)->name);
   EXPECT_EQ(186, uv->weight);
 
   u = begin(g) + 2;
   EXPECT_EQ("Frankfürt", u->name);
   EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(5, outward_vertex_key(g, uv));
-  EXPECT_EQ("Mannheim", outward_vertex(g, uv)->name);
+  EXPECT_EQ(5, target_vertex_key(g, uv));
+  EXPECT_EQ("Mannheim", target_vertex(g, uv)->name);
   EXPECT_EQ(85, uv->weight);
   ++uv;
-  EXPECT_EQ(9, outward_vertex_key(g, uv));
-  EXPECT_EQ("Würzburg", outward_vertex(g, uv)->name);
+  EXPECT_EQ(9, target_vertex_key(g, uv));
+  EXPECT_EQ("Würzburg", target_vertex(g, uv)->name);
   EXPECT_EQ(217, uv->weight);
   ++uv;
-  EXPECT_EQ(4, outward_vertex_key(g, uv));
-  EXPECT_EQ("Kassel", outward_vertex(g, uv)->name);
+  EXPECT_EQ(4, target_vertex_key(g, uv));
+  EXPECT_EQ("Kassel", target_vertex(g, uv)->name);
   EXPECT_EQ(173, uv->weight);
 
   u = begin(g) + 3;
   EXPECT_EQ("Karlsruhe", u->name);
   EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(0, outward_vertex_key(g, uv));
-  EXPECT_EQ("Augsburg", outward_vertex(g, uv)->name);
+  EXPECT_EQ(0, target_vertex_key(g, uv));
+  EXPECT_EQ("Augsburg", target_vertex(g, uv)->name);
   EXPECT_EQ(250, uv->weight);
   ++uv;
-  EXPECT_EQ(3, outward_vertex_key(g, uv));
-  EXPECT_EQ("Karlsruhe", outward_vertex(g, uv)->name);
+  EXPECT_EQ(3, target_vertex_key(g, uv));
+  EXPECT_EQ("Karlsruhe", target_vertex(g, uv)->name);
   EXPECT_EQ(80, uv->weight);
 
   u = begin(g) + 4;
   EXPECT_EQ("Kassel", u->name);
   EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(4, outward_vertex_key(g, uv));
-  EXPECT_EQ("Kassel", outward_vertex(g, uv)->name);
+  EXPECT_EQ(4, target_vertex_key(g, uv));
+  EXPECT_EQ("Kassel", target_vertex(g, uv)->name);
   EXPECT_EQ(173, uv->weight);
   ++uv;
-  EXPECT_EQ(6, outward_vertex_key(g, uv));
-  EXPECT_EQ("München", outward_vertex(g, uv)->name);
+  EXPECT_EQ(6, target_vertex_key(g, uv));
+  EXPECT_EQ("München", target_vertex(g, uv)->name);
   EXPECT_EQ(502, uv->weight);
 
   u = begin(g) + 5;
   EXPECT_EQ("Mannheim", u->name);
   EXPECT_EQ(2, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(5, outward_vertex_key(g, uv));
-  EXPECT_EQ("Mannheim", outward_vertex(g, uv)->name);
+  EXPECT_EQ(5, target_vertex_key(g, uv));
+  EXPECT_EQ("Mannheim", target_vertex(g, uv)->name);
   EXPECT_EQ(85, uv->weight);
   ++uv;
-  EXPECT_EQ(3, outward_vertex_key(g, uv));
-  EXPECT_EQ("Karlsruhe", outward_vertex(g, uv)->name);
+  EXPECT_EQ(3, target_vertex_key(g, uv));
+  EXPECT_EQ("Karlsruhe", target_vertex(g, uv)->name);
   EXPECT_EQ(80, uv->weight);
 
   u = begin(g) + 6;
   EXPECT_EQ("München", u->name);
   EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(6, outward_vertex_key(g, uv));
-  EXPECT_EQ("München", outward_vertex(g, uv)->name);
+  EXPECT_EQ(6, target_vertex_key(g, uv));
+  EXPECT_EQ("München", target_vertex(g, uv)->name);
   EXPECT_EQ(84, uv->weight);
   ++uv;
-  EXPECT_EQ(6, outward_vertex_key(g, uv));
-  EXPECT_EQ("München", outward_vertex(g, uv)->name);
+  EXPECT_EQ(6, target_vertex_key(g, uv));
+  EXPECT_EQ("München", target_vertex(g, uv)->name);
   EXPECT_EQ(502, uv->weight);
   ++uv;
-  EXPECT_EQ(6, outward_vertex_key(g, uv));
-  EXPECT_EQ("München", outward_vertex(g, uv)->name);
+  EXPECT_EQ(6, target_vertex_key(g, uv));
+  EXPECT_EQ("München", target_vertex(g, uv)->name);
   EXPECT_EQ(167, uv->weight);
 
   u = begin(g) + 7;
   EXPECT_EQ("Nürnberg", u->name);
   EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(8, outward_vertex_key(g, uv));
-  EXPECT_EQ("Stuttgart", outward_vertex(g, uv)->name);
+  EXPECT_EQ(8, target_vertex_key(g, uv));
+  EXPECT_EQ("Stuttgart", target_vertex(g, uv)->name);
   EXPECT_EQ(183, uv->weight);
   ++uv;
-  EXPECT_EQ(6, outward_vertex_key(g, uv));
-  EXPECT_EQ("München", outward_vertex(g, uv)->name);
+  EXPECT_EQ(6, target_vertex_key(g, uv));
+  EXPECT_EQ("München", target_vertex(g, uv)->name);
   EXPECT_EQ(167, uv->weight);
   ++uv;
-  EXPECT_EQ(7, outward_vertex_key(g, uv));
-  EXPECT_EQ("Nürnberg", outward_vertex(g, uv)->name);
+  EXPECT_EQ(7, target_vertex_key(g, uv));
+  EXPECT_EQ("Nürnberg", target_vertex(g, uv)->name);
   EXPECT_EQ(103, uv->weight);
 
   u = begin(g) + 8;
   EXPECT_EQ("Stuttgart", u->name);
   EXPECT_EQ(1, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(8, outward_vertex_key(g, uv));
-  EXPECT_EQ("Stuttgart", outward_vertex(g, uv)->name);
+  EXPECT_EQ(8, target_vertex_key(g, uv));
+  EXPECT_EQ("Stuttgart", target_vertex(g, uv)->name);
   EXPECT_EQ(183, uv->weight);
 
   u = begin(g) + 9;
   EXPECT_EQ("Würzburg", u->name);
   EXPECT_EQ(3, size(edges(g, u)));
   uv = begin(edges(g, u));
-  EXPECT_EQ(9, outward_vertex_key(g, uv));
-  EXPECT_EQ("Würzburg", outward_vertex(g, uv)->name);
+  EXPECT_EQ(9, target_vertex_key(g, uv));
+  EXPECT_EQ("Würzburg", target_vertex(g, uv)->name);
   EXPECT_EQ(217, uv->weight);
   ++uv;
-  EXPECT_EQ(1, outward_vertex_key(g, uv));
-  EXPECT_EQ("Erfurt", outward_vertex(g, uv)->name);
+  EXPECT_EQ(1, target_vertex_key(g, uv));
+  EXPECT_EQ("Erfurt", target_vertex(g, uv)->name);
   EXPECT_EQ(186, uv->weight);
   ++uv;
-  EXPECT_EQ(7, outward_vertex_key(g, uv));
-  EXPECT_EQ("Nürnberg", outward_vertex(g, uv)->name);
+  EXPECT_EQ(7, target_vertex_key(g, uv));
+  EXPECT_EQ("Nürnberg", target_vertex(g, uv)->name);
   EXPECT_EQ(103, uv->weight);
 #endif
 }
@@ -453,8 +453,8 @@ TEST_CASE("ual edge functions", "[ual][edge][functions]") {
   edge_iterator_t<Graph> uv = find_edge(g, u, v); // find edge Frankfurt --> Mannheim
   EXPECT_NE(std::ranges::end(edges(g)), uv);
   EXPECT_EQ(v, vertex(g, uv, u));
-  EXPECT_EQ(v, outward_vertex(g, uv));
-  EXPECT_EQ(u, inward_vertex(g, uv));
+  EXPECT_EQ(v, target_vertex(g, uv));
+  EXPECT_EQ(u, source_vertex(g, uv));
   edge_iterator_t<Graph> uv2 = find_edge(g, vertex_key(g, u), vertex_key(g, v));
   EXPECT_EQ(uv, uv2);
 
@@ -481,7 +481,7 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
 
     for (vertex_iterator_t<Graph> other = u; uv_it != cend(edges(g, u)) && u_it != end(vertices(g, u));
          ++uv_it, ++u_it, ++cnt) {
-      REQUIRE(outward_vertex_key(g, uv_it) == vertex_key(g, u_it));
+      REQUIRE(target_vertex_key(g, uv_it) == vertex_key(g, u_it));
     }
 
     REQUIRE(size(edges(g, u)) == cnt);    // all edges/vertices visited?
@@ -501,7 +501,7 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
 
     for (vertex_iterator_t<Graph> other = u; uv_it != end(edges(g, u)) && u_it != end(vertices(g, u));
          ++uv_it, ++u_it, ++cnt) {
-      REQUIRE(outward_vertex_key(g, uv_it) == vertex_key(g, u_it));
+      REQUIRE(target_vertex_key(g, uv_it) == vertex_key(g, u_it));
     }
 
     REQUIRE(size(edges(g, u)) == cnt);    // all edges/vertices visited?
@@ -588,7 +588,7 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
 #if TEST_OPTION == TEST_OPTION_OUTPUT
   int ln = 0;
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv, ++ln) {
-    vertex_iterator_t<Graph> u     = uv.inward_vertex();
+    vertex_iterator_t<Graph> u     = uv.source_vertex();
     vertex_key_t<Graph>      u_key = vertex_key(g, *u);
     if (uv.is_path_end()) {
       cout << string(uv.depth() * 2, ' ') << "view " << u->name << endl;
@@ -638,10 +638,10 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
       cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
     } else {
       cout << "EXPECT_FALSE(uv.is_back_edge());\n";
-      cout << "EXPECT_EQ(\"" << inward_vertex(g, uv.operator->())->name
-           << "\", inward_vertex(g, uv.operator->())->name);\n";
-      cout << "EXPECT_EQ(\"" << outward_vertex(g, uv.operator->())->name
-           << "\", outward_vertex(g, uv.operator->())->name);\n";
+      cout << "EXPECT_EQ(\"" << source_vertex(g, uv.operator->())->name
+           << "\", source_vertex(g, uv.operator->())->name);\n";
+      cout << "EXPECT_EQ(\"" << target_vertex(g, uv.operator->())->name
+           << "\", target_vertex(g, uv.operator->())->name);\n";
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
       cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
     }
@@ -650,36 +650,36 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
   depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
 
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Frankfürt", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("Mannheim", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Frankfürt", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Mannheim", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(85, uv->weight);
   EXPECT_EQ(1, uv.depth());
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Mannheim", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("Karlsruhe", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Mannheim", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Karlsruhe", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(80, uv->weight);
   EXPECT_EQ(2, uv.depth());
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Karlsruhe", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("Augsburg", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Karlsruhe", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Augsburg", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(250, uv->weight);
   EXPECT_EQ(3, uv.depth());
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Augsburg", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("München", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Augsburg", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("München", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(84, uv->weight);
   EXPECT_EQ(4, uv.depth());
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Kassel", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("München", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Kassel", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("München", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(502, uv->weight);
   EXPECT_EQ(5, uv.depth());
 
@@ -691,15 +691,15 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Nürnberg", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("München", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Nürnberg", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("München", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(167, uv->weight);
   EXPECT_EQ(5, uv.depth());
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Nürnberg", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("Stuttgart", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Nürnberg", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Stuttgart", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(183, uv->weight);
   EXPECT_EQ(6, uv.depth());
 
@@ -710,8 +710,8 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Würzburg", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("Nürnberg", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Würzburg", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Nürnberg", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(103, uv->weight);
   EXPECT_EQ(6, uv.depth());
 
@@ -723,8 +723,8 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
 
   ++uv;
   EXPECT_FALSE(uv.is_back_edge());
-  EXPECT_EQ("Würzburg", inward_vertex(g, uv.operator->())->name);
-  EXPECT_EQ("Erfurt", outward_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Würzburg", source_vertex(g, uv.operator->())->name);
+  EXPECT_EQ("Erfurt", target_vertex(g, uv.operator->())->name);
   EXPECT_EQ(186, uv->weight);
   EXPECT_EQ(7, uv.depth());
 

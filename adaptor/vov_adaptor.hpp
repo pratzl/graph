@@ -58,12 +58,12 @@ constexpr auto vertices(const vov<Attributes...>& g) -> std::const_vertex_range_
 }
 
 template <typename... Attributes>
-constexpr auto outward_vertex_key(const vov<Attributes...>& g, std::const_edge_iterator_t<vov<Attributes...>> uv)
+constexpr auto target_vertex_key(const vov<Attributes...>& g, std::const_edge_iterator_t<vov<Attributes...>> uv)
       -> std::vertex_key_t<vov<Attributes...>> {
   return std::get<0>(uv);
 }
 template <typename... Attributes>
-constexpr auto outward_vertex_key(const vov<Attributes...>& g, std::const_vertex_edge_iterator_t<vov<Attributes...>> uv)
+constexpr auto target_vertex_key(const vov<Attributes...>& g, std::const_vertex_edge_iterator_t<vov<Attributes...>> uv)
       -> std::vertex_key_t<vov<Attributes...>> {
   return std::get<0>(uv);
 }
@@ -71,7 +71,7 @@ constexpr auto outward_vertex_key(const vov<Attributes...>& g, std::const_vertex
 template <typename... Attributes>
 constexpr auto vertex_key(const vov<Attributes...>& g, std::const_edge_iterator_t<vov<Attributes...>> uv)
       -> std::vertex_key_t<vov<Attributes...>> {
-  return outward_vertex_key(g, uv);
+  return target_vertex_key(g, uv);
   //return std::get<0>(uv);
 }
 
@@ -80,14 +80,14 @@ constexpr auto vertex_key(const vov<Attributes...>&                        g,
                           std::const_edge_iterator_t<vov<Attributes...>>   uv,
                           std::const_vertex_iterator_t<vov<Attributes...>> source)
       -> std::vertex_key_t<vov<Attributes...>> {
-  return outward_vertex_key(g, uv);
+  return target_vertex_key(g, uv);
 }
 
 template <typename... Attributes>
 constexpr auto vertex_key(const vov<Attributes...>&                      g,
                           std::const_edge_iterator_t<vov<Attributes...>> uv,
                           std::vertex_key_t<vov<Attributes...>> source_key) -> std::vertex_key_t<vov<Attributes...>> {
-  return outward_vertex_key(g, source_key);
+  return target_vertex_key(g, source_key);
 }
 
 template <typename... Attributes>
@@ -95,14 +95,14 @@ constexpr auto vertex_key(const vov<Attributes...>&                             
                           std::const_vertex_edge_iterator_t<vov<Attributes...>> uv,
                           std::const_vertex_iterator_t<vov<Attributes...>>      source)
       -> std::vertex_key_t<vov<Attributes...>> {
-  return outward_vertex_key(g, uv);
+  return target_vertex_key(g, uv);
 }
 
 template <typename... Attributes>
 constexpr auto vertex_key(const vov<Attributes...>&                             g,
                           std::const_vertex_edge_iterator_t<vov<Attributes...>> uv,
                           std::vertex_key_t<vov<Attributes...>> source_key) -> std::vertex_key_t<vov<Attributes...>> {
-  return outward_vertex_key(g, source_key);
+  return target_vertex_key(g, source_key);
 }
 
 
@@ -113,13 +113,13 @@ constexpr auto vertex_key(const vov<Attributes...>& g, std::const_vertex_iterato
 }
 
 template <typename... Attributes>
-constexpr auto outward_vertex(vov<Attributes...>& g, std::vertex_edge_iterator_t<vov<Attributes...>> uv)
+constexpr auto target_vertex(vov<Attributes...>& g, std::vertex_edge_iterator_t<vov<Attributes...>> uv)
       -> std::vertex_iterator_t<vov<Attributes...>> {
   return g.begin() + static_cast<typename vov<Attributes...>::difference_type>(vertex_key(g, uv));
 }
 
 template <typename... Attributes>
-constexpr auto outward_vertex(const vov<Attributes...>& g, std::const_vertex_edge_iterator_t<vov<Attributes...>> uv)
+constexpr auto target_vertex(const vov<Attributes...>& g, std::const_vertex_edge_iterator_t<vov<Attributes...>> uv)
       -> std::const_vertex_iterator_t<vov<Attributes...>> {
   return g.begin() + vertex_key(g, uv);
 }
@@ -127,13 +127,13 @@ constexpr auto outward_vertex(const vov<Attributes...>& g, std::const_vertex_edg
 template <typename... Attributes>
 constexpr auto vertex(vov<Attributes...>& g, std::edge_iterator_t<vov<Attributes...>> uv)
       -> std::vertex_iterator_t<vov<Attributes...>> {
-  return outward_vertex(g, uv);
+  return target_vertex(g, uv);
 }
 
 template <typename... Attributes>
 constexpr auto vertex(const vov<Attributes...>& g, std::const_edge_iterator_t<vov<Attributes...>> uv)
       -> std::const_vertex_iterator_t<vov<Attributes...>> {
-  return outward_vertex(g, uv);
+  return target_vertex(g, uv);
 }
 
 template <typename... Attributes>
@@ -141,7 +141,7 @@ constexpr auto vertex(vov<Attributes...>&                              g,
                       std::edge_iterator_t<vov<Attributes...>>         uv,
                       std::const_vertex_iterator_t<vov<Attributes...>> source)
       -> std::vertex_iterator_t<vov<Attributes...>> {
-  return outward_vertex(g, uv);
+  return target_vertex(g, uv);
 }
 
 template <typename... Attributes>
@@ -149,13 +149,13 @@ constexpr auto vertex(const vov<Attributes...>&                        g,
                       std::const_edge_iterator_t<vov<Attributes...>>   uv,
                       std::const_vertex_iterator_t<vov<Attributes...>> source)
       -> std::const_vertex_iterator_t<vov<Attributes...>> {
-  return outward_vertex(g, uv);
+  return target_vertex(g, uv);
 }
 
 template <typename... Attributes>
 constexpr auto edge_key(const vov<Attributes...>& g, const std::edge_t<vov<Attributes...>>& uv)
       -> std::edge_key_t<vov<Attributes...>> {
-  return std::edge_key_t<vov<Attributes...>>(inward_vertex_key(g, uv), outward_vertex_key(g, uv));
+  return std::edge_key_t<vov<Attributes...>>(source_vertex_key(g, uv), target_vertex_key(g, uv));
 }
 template <typename... Attributes>
 constexpr auto edge_key(const vov<Attributes...>&                        g,
@@ -246,14 +246,14 @@ template <typename... Attributes>
 constexpr auto
 find_outward_edge(vov<Attributes...>& g, std::vertex_t<vov<Attributes...>>& u, std::vertex_t<vov<Attributes...>>& v)
       -> std::vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*outward_vertex(g, uv) == &v; });
+  return ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*target_vertex(g, uv) == &v; });
 }
 template <typename... Attributes>
 constexpr auto find_outward_edge(const vov<Attributes...>&                g,
                                  const std::vertex_t<vov<Attributes...>>& u,
                                  const std::vertex_t<vov<Attributes...>>& v)
       -> std::const_vertex_outward_edge_iterator_t<vov<Attributes...>> {
-  return ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*outward_vertex(g, uv) == &v; });
+  return ranges::find_if(outward_edges(g, u), [&g, &v](auto uv) { return &*target_vertex(g, uv) == &v; });
 }
 
 template <typename... Attributes>
@@ -286,7 +286,7 @@ template <typename... Attributes>
 constexpr auto erase_edge(vov<Attributes...>& g, std::vertex_outward_edge_iterator_t<vov<Attributes...>> uv)
       -> std::vertex_outward_edge_iterator_t<vov<Attributes...>> {
   using G             = vov<Attributes...>;
-  std::vertex_t<G>& u = inward_vertex(g, uv);
+  std::vertex_t<G>& u = source_vertex(g, uv);
   u.erase(uv);
 }
 

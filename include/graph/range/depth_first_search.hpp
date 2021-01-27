@@ -6,7 +6,7 @@
 // depth-first search graph algorithms for vertices and edges.
 //
 // The algorithms are designed to work with both directed & undirected graphs
-// by using general functions such as vertex() and edges() instead of outward_vertex()
+// by using general functions such as vertex() and edges() instead of target_vertex()
 // and outward_edges().
 //
 // The ranges have the following assumptions and behavior
@@ -34,7 +34,7 @@
 //  7.  [SG19] Support graphs with non-consecutive integers
 //  8.  Test with array<>
 //  9.  Test with unordered graph
-//  10. const_iterators should return const_vertex_iterator<G> for back_vertex() & outward_vertex()
+//  10. const_iterators should return const_vertex_iterator<G> for back_vertex() & target_vertex()
 //
 // ISSUES / QUESTIONS
 //  1.  Range holds the state, not the iterator. is there a better design?
@@ -65,7 +65,7 @@ namespace std {
 
 // clang-format off
 template <incidence_graph G, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>>
+  requires ranges::random_access_range<vertex_range_t<G>> && integral<vertex_key_t<G>>
 class depth_first_search_vertex_range
 // clang-format on
 {
@@ -235,7 +235,7 @@ private:
 ///
 // clang-format off
 template <incidence_graph G, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>>
+  requires ranges::random_access_range<vertex_range_t<G>> && integral<vertex_key_t<G>>
 class depth_first_search_edge_range
 // clang-format on
 {
@@ -314,9 +314,9 @@ public:
     bool operator==(const const_iterator& rhs) const { return elem_.u == rhs.elem_.u; }
     bool operator!=(const const_iterator& rhs) const { return !operator==(rhs); }
 
-    vertex_iterator_type inward_vertex() const { return elem_.u; }
-    vertex_iterator_type outward_vertex() const { return vertex(dfs_->graph_, elem_.uv, elem_.u); }
-    vertex_iterator_type back_vertex() const { return outward_vertex(); }
+    vertex_iterator_type source_vertex() const { return elem_.u; }
+    vertex_iterator_type target_vertex() const { return vertex(dfs_->graph_, elem_.uv, elem_.u); }
+    vertex_iterator_type back_vertex() const { return target_vertex(); }
 
     size_t depth() const { return dfs_->stack_.size(); }
 
@@ -380,9 +380,9 @@ public:
       return tmp;
     }
 
-    vertex_iterator_type inward_vertex() const { return this->elem_.u; }
-    vertex_iterator_type outward_vertex() const { return vertex(this->dfs_->graph_, this->elem_.uv, this->elem_.u); }
-    vertex_iterator_type back_vertex() const { return outward_vertex(); }
+    vertex_iterator_type source_vertex() const { return this->elem_.u; }
+    vertex_iterator_type target_vertex() const { return vertex(this->dfs_->graph_, this->elem_.uv, this->elem_.u); }
+    vertex_iterator_type back_vertex() const { return target_vertex(); }
   };
 
 public:

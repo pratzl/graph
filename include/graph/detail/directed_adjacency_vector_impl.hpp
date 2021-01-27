@@ -21,9 +21,9 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dav_edge(vertex_key_type inward_vertex_key,
-                                                                    vertex_key_type outward_vertex_key)
-      : base_type(), inward_vertex_(inward_vertex_key), outward_vertex_(outward_vertex_key) {}
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dav_edge(vertex_key_type source_vertex_key,
+                                                                    vertex_key_type target_vertex_key)
+      : base_type(), source_vertex_(source_vertex_key), target_vertex_(target_vertex_key) {}
 
 template <typename VV,
           typename EV,
@@ -34,10 +34,10 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dav_edge(vertex_key_type        inward_vertex_key,
-                                                                    vertex_key_type        outward_vertex_key,
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dav_edge(vertex_key_type        source_vertex_key,
+                                                                    vertex_key_type        target_vertex_key,
                                                                     const edge_value_type& val)
-      : base_type(val), inward_vertex_(inward_vertex_key), outward_vertex_(outward_vertex_key) {}
+      : base_type(val), source_vertex_(source_vertex_key), target_vertex_(target_vertex_key) {}
 
 template <typename VV,
           typename EV,
@@ -48,10 +48,10 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dav_edge(vertex_key_type   inward_vertex_key,
-                                                                    vertex_key_type   outward_vertex_key,
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::dav_edge(vertex_key_type   source_vertex_key,
+                                                                    vertex_key_type   target_vertex_key,
                                                                     edge_value_type&& val)
-      : base_type(move(val)), inward_vertex_(inward_vertex_key), outward_vertex_(outward_vertex_key) {}
+      : base_type(move(val)), source_vertex_(source_vertex_key), target_vertex_(target_vertex_key) {}
 
 template <typename VV,
           typename EV,
@@ -63,8 +63,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::inward_vertex(graph_type& g) {
-  return g.vertices().begin() + inward_vertex_;
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_vertex(graph_type& g) {
+  return g.vertices().begin() + source_vertex_;
 }
 
 template <typename VV,
@@ -77,8 +77,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::inward_vertex(const graph_type& g) const {
-  return g.vertices().begin() + inward_vertex_;
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_vertex(const graph_type& g) const {
+  return g.vertices().begin() + source_vertex_;
 }
 
 template <typename VV,
@@ -91,8 +91,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::inward_vertex_key() const noexcept {
-  return inward_vertex_;
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_vertex_key() const noexcept {
+  return source_vertex_;
 }
 
 
@@ -106,8 +106,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertex(graph_type& g) {
-  return g.vertices().begin() + outward_vertex_;
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex(graph_type& g) {
+  return g.vertices().begin() + target_vertex_;
 }
 
 template <typename VV,
@@ -120,8 +120,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertex(const graph_type& g) const {
-  return g.vertices().begin() + outward_vertex_;
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex(const graph_type& g) const {
+  return g.vertices().begin() + target_vertex_;
 }
 
 template <typename VV,
@@ -134,8 +134,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertex_key() const noexcept {
-  return outward_vertex_;
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex_key() const noexcept {
+  return target_vertex_;
 }
 
 template <typename VV,
@@ -149,7 +149,7 @@ template <typename VV,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_key_type
 dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_key() const noexcept {
-  return edge_key_type(inward_vertex_, outward_vertex_);
+  return edge_key_type(source_vertex_, target_vertex_);
 }
 
 
@@ -261,9 +261,9 @@ template <typename VV,
           typename Alloc>
 constexpr
       typename dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-      dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertex(
+      dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex(
             graph_type const& g) const {
-  return uv_->outward_vertex(g);
+  return uv_->target_vertex(g);
 }
 
 template <typename VV,
@@ -276,8 +276,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 constexpr typename dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
-dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertex_key() const {
-  return uv_->outward_vertex_key();
+dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex_key() const {
+  return uv_->target_vertex_key();
 }
 
 template <typename VV,
@@ -291,7 +291,7 @@ template <typename VV,
           typename Alloc>
 constexpr typename dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::reference
 dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::operator*() const noexcept {
-  return *uv_->outward_vertex(*g_);
+  return *uv_->target_vertex(*g_);
 }
 template <typename VV,
           typename EV,
@@ -535,8 +535,8 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 constexpr typename dav_const_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_vertex(graph_type& g) {
-  return uv_->outward_vertex(g);
+dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex(graph_type& g) {
+  return uv_->target_vertex(g);
 }
 
 template <typename VV,
@@ -550,7 +550,7 @@ template <typename VV,
           typename Alloc>
 constexpr typename dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::reference
 dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::operator*() const {
-  return *const_cast<edge_type&>(*uv_).outward_vertex(const_cast<graph_type&>(*g_));
+  return *const_cast<edge_type&>(*uv_).target_vertex(const_cast<graph_type&>(*g_));
 }
 template <typename VV,
           typename EV,
@@ -699,7 +699,7 @@ template <typename VV,
 typename dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::reference
 dav_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::operator[](
       const difference_type distance) const noexcept {
-  return *uv_[distance].outward_vertex(*g_);
+  return *uv_[distance].target_vertex(*g_);
 }
 
 template <typename VV,

@@ -29,7 +29,9 @@ struct reaches {
 ///
 // clang-format off
 template <incidence_graph G, typename OutIter, typename A = allocator<char>>
-  requires integral<vertex_key_t<G>> && output_iterator<OutIter, reaches<G>>
+  requires ranges::random_access_range<vertex_range_t<G>> && 
+           integral<vertex_key_t<G>> && 
+           output_iterator<OutIter, reaches<G>>
 constexpr void dfs_transitive_closure(G& g, OutIter result_iter, A alloc = A())
 // clang-format on
 {
@@ -51,6 +53,7 @@ template <typename        ExecutionPolicy,
           typename        OutIter, 
           typename        A = allocator<bool>>
   requires directed<G> && 
+           ranges::random_access_range<vertex_range_t<G>> && 
            integral<vertex_key_t<G>> && 
            output_iterator<OutIter, reaches<G>>
 constexpr void warshall_transitive_closure(ExecutionPolicy&& policy, 
@@ -68,6 +71,7 @@ constexpr void warshall_transitive_closure(ExecutionPolicy&& policy,
 // clang-format off
 template <incidence_graph G, typename OutIter, typename A = allocator<bool>>
   requires directed<G> &&
+           ranges::random_access_range<vertex_range_t<G>> && 
            integral<vertex_key_t<G>> && 
            output_iterator<OutIter, reaches<G>>
 constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = A())

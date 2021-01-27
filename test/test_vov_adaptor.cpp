@@ -34,8 +34,8 @@ vov_germany_t get_germany_routes() {
 
   vov_germany_t routes(vertices_size(daa_routes_graph));
   for (std::edge_t<directed_graph_t>& uv : edges(daa_routes_graph)) {
-    std::vertex_key_t<directed_graph_t> u_key = inward_vertex_key(daa_routes_graph, uv);
-    std::vertex_key_t<directed_graph_t> v_key = outward_vertex_key(daa_routes_graph, uv);
+    std::vertex_key_t<directed_graph_t> u_key = source_vertex_key(daa_routes_graph, uv);
+    std::vertex_key_t<directed_graph_t> v_key = target_vertex_key(daa_routes_graph, uv);
     routes.push_back(u_key, v_key, uv.weight);
   }
 
@@ -71,7 +71,7 @@ TEST_CASE("vov graph", "[vov]") {
     cout << "city[" << vertex_key(g, u) << "]\n";
     for (std::vertex_edge_iterator_t<Graph> uv = begin(edges(g, u)); uv != end(edges(g, u)); ++uv) {
       //graph::adaptor::value(uv);    // compiler error in msvc (bug?)
-      cout << "  --> city[" << outward_vertex_key(g, uv) << "] " << get<1>(*uv) << "km\n";
+      cout << "  --> city[" << target_vertex_key(g, uv) << "] " << get<1>(*uv) << "km\n";
     }
   }
 #endif
