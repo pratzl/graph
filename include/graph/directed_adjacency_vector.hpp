@@ -384,6 +384,7 @@ public:
   }
 };
 
+
 /// A simple semi-mutable graph emphasizing performance and space.
 ///
 /// directed_adjacency_vector is a compressed adjacency array graph with the following characteristics:

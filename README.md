@@ -180,6 +180,7 @@ Other Useful Tools
     - [x] Separate _impl files into _impl for the class and _api for the API adaptors
     - [ ] Verify that value types can be a variant
     - [ ] Add random_access_contraints for user-defined containers
+    - [ ] Add optional vertex count parameter to edges ctor to prevent req of scanning edges
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]
