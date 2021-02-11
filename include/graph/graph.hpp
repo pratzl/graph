@@ -318,16 +318,21 @@ using vertex_vertex_difference_t = ranges::range_difference_t<typename graph_tra
 
 // Graph properties
 template <directed_or_undirected G>
-constexpr auto graph_value(G& g) -> graph_value_t<G>&;
+constexpr auto graph_value(G& g) -> add_rvalue_reference<graph_value_t<G>>;
 template <directed_or_undirected G>
-constexpr auto graph_value(G const& g) -> const graph_value_t<G>&;
+constexpr auto graph_value(G const& g) -> add_const<add_lvalue_reference<graph_value_t<G>>>;
 
 template <directed_or_undirected G>
-constexpr bool contains_vertex(G const& g, vertex_key_t<G> ukey) noexcept;
+constexpr auto allocator(G& g) -> graph_allocator_t<G>;
+
 template <directed_or_undirected G>
-constexpr bool contains_edge(G const& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey);
+constexpr bool contains_vertex(const G& g, vertex_key_t<G> ukey) noexcept;
+
+// (for adjacency_matrix graphs only)
 template <directed_or_undirected G>
-constexpr bool contains_edge(G const& g, const_vertex_iterator_t<G> u, const_vertex_iterator_t<G> v);
+constexpr bool contains_edge(const G& g, vertex_key_t<G> ukey, vertex_key_t<G> vkey);
+template <directed_or_undirected G>
+constexpr bool contains_edge(const G& g, const_vertex_iterator_t<G> u, const_vertex_iterator_t<G> v);
 
 
 // Vertex properties
@@ -373,16 +378,16 @@ constexpr auto vertex(G& g, I uv, const_vertex_iterator_t<G> source)
   -> vertex_iterator_t<G>;
 
 template <directed_or_undirected G, typename EI>
-  requires (const_edge_iterator<G,I> || const_adjacency_iterator<G,I>)
+  requires (const_edge_iterator<G,EI> || const_adjacency_iterator<G,EI>)
 constexpr auto vertex(const G&, EI uv, const_vertex_iterator_t<G> source) 
   -> const_vertex_iterator_t<G>;
 
 template <directed G, typename EI>
-  requires (edge_iterator<G,I> || adjacency_iterator<G,I>)
+  requires (edge_iterator<G,EI> || adjacency_iterator<G,EI>)
 constexpr auto vertex(G& g, EI uv) -> vertex_iterator_t<G>;
 
 template <directed G, typename EI>
-  requires (const_edge_iterator<G,I> || const_adjacency_iterator<G,I>)
+  requires (const_edge_iterator<G,EI> || const_adjacency_iterator<G,EI>)
 constexpr auto vertex(const G&, EI uv) -> const_vertex_iterator_t<G>;
 
 
@@ -453,11 +458,6 @@ void clear(G& g);
 
 template <directed_or_undirected G>
 void reserve_vertices(G& g, vertex_size_t<G>) {}
-template <directed_or_undirected G>
-void reserve_edges(G& g, edge_size_t<G>);
-
-template <directed_or_undirected G>
-void resize_vertices(G& g, vertex_size_t<G>) {}
 
 // Uniform API: Graph-Vertex range functions
 // includes ranges functions: begin(g)/end(g), cbegin(g)/cend(g), size(g), ssize(g), empty(g)
@@ -537,7 +537,7 @@ constexpr auto create_vertex(G& g) -> optional<vertex_iterator_t<G>>;
 template <directed_or_undirected G>
 constexpr auto create_vertex(G& g, const vertex_value_t<G>&) -> optional<vertex_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_vertex(G& g, vertex_value_t<G>&&) -> optional<vertex_iterator_t<G>>;
+constexpr auto create_vertex(G& g, vertex_value_t<G> &&) -> optional<vertex_iterator_t<G>>;
 
 // clang-format off
 template <directed_or_undirected G, typename VRng, typename VValueFnc>
@@ -562,7 +562,7 @@ template <directed_or_undirected G>
 constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&)
       -> optional<vertex_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G>&&)
+constexpr auto create_edge(G& g, vertex_iterator_t<G> u, vertex_iterator_t<G> v, edge_value_t<G> &&)
       -> optional<vertex_edge_iterator_t<G>>;
 
 template <directed_or_undirected G>
@@ -571,7 +571,7 @@ template <directed_or_undirected G>
 constexpr auto create_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&)
       -> optional<vertex_edge_iterator_t<G>>;
 template <directed_or_undirected G>
-constexpr auto create_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G>&&)
+constexpr auto create_edge(G& g, vertex_key_t<G>, vertex_key_t<G>, edge_value_t<G> &&)
       -> optional<vertex_edge_iterator_t<G>>;
 
 // clang-format off
@@ -831,7 +831,7 @@ concept graph_value_types = requires(G& g1, G& g2) {
     graph_traits<G>::graph_type;
     graph_traits<G>::graph_value_type;
     graph_traits<G>::allocator_type;
-    convertible_to<G, graph_traits<G>::graph_type>;
+    convertible_to<G, typename graph_traits<G>::graph_type>;
     semiregular<graph_value_t<G>>;
     { graph_value(g1) } -> convertible_to<graph_value_t<G>&>;
     { swap(g1,g2) };

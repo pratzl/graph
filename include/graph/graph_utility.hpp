@@ -25,6 +25,7 @@ constexpr auto inward_degree(const G& g, const_vertex_iterator_t<G> u) noexcept 
   return size(inward_edges(g, u));
 }
 
+#  if 0
 // The graph is an alias of vertices(g)
 template <vertex_list_graph G>
 constexpr auto size(const G& g) noexcept -> vertex_size_t<G> {
@@ -54,6 +55,7 @@ template <vertex_list_graph G>
 constexpr auto empty(G& g) -> bool {
   return ranges::empty(vertices(g)); // for exposition
 }
+#  endif
 
 //--------------------------------------------------------------------------------------
 // graph_value<> - wraps scaler, union & reference user values for graph, vertex & edge

@@ -16,35 +16,8 @@ namespace std {
 // Helper Functions
 
 //
-// Uniform API: Graph functions
+// Uniform API: Graph property functions
 //
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-void contains_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&              g,
-                     vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> ukey) {
-  return ukey >= 0 && ukey < g.vertices().size();
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-void clear(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) {
-  g.clear();
-}
-
 template <typename VV,
           typename EV,
           typename GV,
@@ -73,8 +46,66 @@ constexpr auto graph_value(const directed_adjacency_vector<VV, EV, GV, KeyT, VCo
   return user_value(g);
 }
 
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+constexpr auto graph_allocator(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
+      -> const graph_allocator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
+  return g.allocator();
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+void contains_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&              g,
+                     vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> ukey) {
+  return ukey >= 0 && ukey < g.vertices().size();
+}
+
 //
-// API vertex functions
+// Uniform API: Graph mutable functions
+//
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+void clear(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g) {
+  g.clear();
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+void swap(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g1,
+          directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g2) {
+  g1.swap(g2);
+}
+
+//
+// API vertex property functions
 //
 template <typename VV,
           typename EV,
