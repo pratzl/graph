@@ -25,38 +25,6 @@ constexpr auto inward_degree(const G& g, const_vertex_iterator_t<G> u) noexcept 
   return size(inward_edges(g, u));
 }
 
-#  if 0
-// The graph is an alias of vertices(g)
-template <vertex_list_graph G>
-constexpr auto size(const G& g) noexcept -> vertex_size_t<G> {
-  return ranges::size(vertices(g)); // for exposition
-}
-template <vertex_list_graph G>
-constexpr auto ssize(const G& g) noexcept -> vertex_difference_t<G> {
-  return ranges::ssize(vertices(g)); // for exposition
-}
-template <vertex_list_graph G>
-constexpr auto begin(G& g) -> ranges::iterator_t<vertex_range_t<G>> {
-  return ranges::begin(vertices(g)); // for exposition
-}
-template <vertex_list_graph G>
-constexpr auto end(G& g) -> ranges::sentinel_t<vertex_range_t<G>> {
-  return ranges::end(vertices(g)); // for exposition
-}
-template <vertex_list_graph G>
-constexpr auto cbegin(G& g) -> ranges::iterator_t<const_vertex_range_t<G>> {
-  return ranges::cbegin(vertices(g)); // for exposition
-}
-template <vertex_list_graph G>
-constexpr auto cend(G& g) -> ranges::sentinel_t<const_vertex_range_t<G>> {
-  return ranges::cend(vertices(g)); // for exposition
-}
-template <vertex_list_graph G>
-constexpr auto empty(G& g) -> bool {
-  return ranges::empty(vertices(g)); // for exposition
-}
-#  endif
-
 //--------------------------------------------------------------------------------------
 // graph_value<> - wraps scaler, union & reference user values for graph, vertex & edge
 //

@@ -67,8 +67,9 @@ Other Useful Tools
   - [x] [paper] sparse/dense not defined;
   - [x] compare to BGL concepts [Lumsdaine]: need to add concepts for adjacency, incidence, vertex_list, edge_list
   - [x] allow vertex_key_t<G> to be non-integer? [no; requires algo specialization, performance impact]
-  - [ ] Add create_edges to incremental edge concepts
-  - [ ] Add create_vertices to incremental vertex concepts
+  - [x] Add create_edges to incremental edge concepts
+  - [x] Add create_vertices to incremental vertex concepts
+  - [ ] Remove types (only functions); return types not important?
 - [ ] Algorithms
   - [x] Common
     - [x] Replace vertex_user_value_type with vertex_value_type for undirected_adjacency_list
