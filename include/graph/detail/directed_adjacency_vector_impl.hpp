@@ -1259,6 +1259,20 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
+constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::allocator_type
+directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::allocator() const {
+  return alloc_;
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::begin() {
   return vertices_.begin();

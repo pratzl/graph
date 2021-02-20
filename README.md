@@ -67,8 +67,9 @@ Other Useful Tools
   - [x] [paper] sparse/dense not defined;
   - [x] compare to BGL concepts [Lumsdaine]: need to add concepts for adjacency, incidence, vertex_list, edge_list
   - [x] allow vertex_key_t<G> to be non-integer? [no; requires algo specialization, performance impact]
-  - [ ] Add create_edges to incremental edge concepts
-  - [ ] Add create_vertices to incremental vertex concepts
+  - [x] Add create_edges to incremental edge concepts
+  - [x] Add create_vertices to incremental vertex concepts
+  - [ ] Remove types (only functions); return types not important?
 - [ ] Algorithms
   - [x] Common
     - [x] Replace vertex_user_value_type with vertex_value_type for undirected_adjacency_list
@@ -180,6 +181,7 @@ Other Useful Tools
     - [x] Separate _impl files into _impl for the class and _api for the API adaptors
     - [ ] Verify that value types can be a variant
     - [ ] Add random_access_contraints for user-defined containers
+    - [ ] Add optional vertex count parameter to edges ctor to prevent req of scanning edges
   - [ ] directed adjacency vector
     - [x] implement with vector
     - [x] implement with deque? [easy when edgeset=deque<edge>, for vertex_set=deque<> vertex_key must be stored in vertex b/c vertex_key can't be calc'd with vertex*]

@@ -384,6 +384,7 @@ public:
   }
 };
 
+
 /// A simple semi-mutable graph emphasizing performance and space.
 ///
 /// directed_adjacency_vector is a compressed adjacency array graph with the following characteristics:
@@ -652,6 +653,8 @@ public:
 
   constexpr vertex_outward_vertex_range       outward_vertices(vertex_iterator u);
   constexpr const_vertex_outward_vertex_range outward_vertices(const_vertex_iterator u) const;
+
+  constexpr allocator_type allocator() const;
 
 protected:
   void reserve_vertices(vertex_size_type);
