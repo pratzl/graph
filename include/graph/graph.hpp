@@ -872,7 +872,7 @@ concept vertex_range = requires(G&                     g,
     { degree(g,u) } -> convertible_to<ranges::range_size_t<VR>>;
     { find_vertex(g,ukey) } -> convertible_to<vertex_iterator_t<G>>;
     { contains_vertex(g, ukey) } -> convertible_to<bool>;
-    { empty(vr) } -> auto;
+    { empty(vr) } -> convertible_to<bool>;
   };
 
 template<typename G, typename R>

@@ -130,7 +130,7 @@ struct assign_traits_const
 //struct assign_traits_const_t = typename assign_traits_const<G, Traits>::type;
 
 
-TEST_CASE("[const traits]", "[traits2][const]") {
+TEST_CASE("[const traits2]", "[traits2][const]") {
   //using Obj = thongs_t<const Object>;
   using Obj = const Object;
   static_assert(is_const_v<Obj>);
