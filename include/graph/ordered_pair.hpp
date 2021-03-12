@@ -42,12 +42,57 @@ struct ordered_pair : public pair<T1, T2> {
   swap(ordered_pair& other) noexcept(is_nothrow_swappable_v<first_type>&& is_nothrow_swappable_v<second_type>);
 };
 
+#  if defined(_MSC_VER)
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+
+#  else
 template <typename T1, typename T2>
-auto operator<=>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+[[nodiscard]] constexpr auto operator<=>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
 template <typename T1, typename T2>
-auto operator<=>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+[[nodiscard]] constexpr auto operator<=>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
 template <typename T1, typename T2>
-auto operator<=>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+[[nodiscard]] constexpr auto operator<=>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2);
+#  endif // _MSC_VER
+
 
 template <typename T1, typename T2>
 constexpr void
@@ -92,12 +137,55 @@ struct unordered_pair : public pair<T1, T2> {
   swap(unordered_pair& other) noexcept(is_nothrow_swappable_v<first_type>&& is_nothrow_swappable_v<second_type>);
 };
 
+#  if defined(_MSC_VER)
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+#  else
 template <typename T1, typename T2>
-auto operator<=>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+[[nodiscard]] auto operator<=>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
 template <typename T1, typename T2>
-auto operator<=>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
+[[nodiscard]] auto operator<=>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2);
 template <typename T1, typename T2>
-auto operator<=>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+[[nodiscard]] auto operator<=>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2);
+#  endif
 
 template <typename T1, typename T2>
 constexpr void

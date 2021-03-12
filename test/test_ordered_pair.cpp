@@ -2,13 +2,14 @@
 #include <tuple>
 #include <catch2/catch.hpp>
 
+using std::pair;
 using std::ordered_pair;
 using std::make_ordered_pair;
 using std::make_unordered_pair;
 
 TEST_CASE("ordered_pair", "[pair][ordered]") {
-  using PairT  = std::pair<int, int>;
-  using OPairT = std::ordered_pair<int, int>;
+  using PairT  = ::std::pair<int, int>;
+  using OPairT = ::std::ordered_pair<int, int>;
   //using first_type  = typename OPairT::first_type;
   //using second_type = typename OPairT::second_type;
 

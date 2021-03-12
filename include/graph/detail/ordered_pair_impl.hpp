@@ -40,18 +40,114 @@ constexpr void ordered_pair<T1, T2>::swap(ordered_pair& other) noexcept(
   base_t::swap(other);
 }
 
+#if defined(_MSC_VER)
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator==(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator!=(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator<(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator>(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator<=(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator>=(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator==(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator!=(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator<(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator>(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator<=(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator>=(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator==(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator!=(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator<(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator>(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator<=(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  return operator>=(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+#else
 template <typename T1, typename T2>
-auto operator<=>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+[[nodiscard]] constexpr auto operator<=>(const ordered_pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
   return operator<=>(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
 }
 template <typename T1, typename T2>
-auto operator<=>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
-  return operator<=>(static_cast<const pair<T1, T2>&>(v1), v2);
+[[nodiscard]] constexpr auto operator<=>(const ordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  const pair<T1, T2>& v1b(v1);
+  return              operator<=>(v1b, v2);
 }
 template <typename T1, typename T2>
-auto operator<=>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
-  return operator<=>(v1, static_cast<const pair<T1, T2>&>(v2));
+[[nodiscard]] constexpr auto operator<=>(const pair<T1, T2>& v1, const ordered_pair<T1, T2>& v2) {
+  const pair<T1, T2>& v2b(v2);
+  return              operator<=>(v1, v2b);
 }
+#endif
 
 template <typename T1, typename T2>
 constexpr void
@@ -104,18 +200,112 @@ constexpr void unordered_pair<T1, T2>::swap(unordered_pair& other) noexcept(
   base_t::swap(other);
 }
 
+#if defined(_MSC_VER)
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator==(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator!=(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator<(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator>(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator<=(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator>=(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
+}
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator==(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator!=(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator<(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator>(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator<=(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+  return operator>=(static_cast<const pair<T1, T2>&>(v1), v2);
+}
+
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator==(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator==(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator!=(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator!=(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator<(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator>(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator<=(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator<=(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+
+template <class T1, class T2>
+[[nodiscard]] constexpr bool operator>=(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+  return operator>=(v1, static_cast<const pair<T1, T2>&>(v2));
+}
+#else
 template <typename T1, typename T2>
-auto operator<=>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+[[nodiscard]] auto operator<=>(const unordered_pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
   return operator<=>(static_cast<const pair<T1, T2>&>(v1), static_cast<const pair<T1, T2>&>(v2));
 }
 template <typename T1, typename T2>
-auto operator<=>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
+[[nodiscard]] auto operator<=>(const unordered_pair<T1, T2>& v1, const pair<T1, T2>& v2) {
   return operator<=>(static_cast<const pair<T1, T2>&>(v1), v2);
 }
 template <typename T1, typename T2>
-auto operator<=>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
+[[nodiscard]] auto operator<=>(const pair<T1, T2>& v1, const unordered_pair<T1, T2>& v2) {
   return operator<=>(v1, static_cast<const pair<T1, T2>&>(v2));
 }
+#endif
 
 template <typename T1, typename T2>
 constexpr void
