@@ -99,13 +99,8 @@ TEST_CASE("ual minsize", "[ual][minsize]") {
   using G      = std::undirected_adjacency_list<>;
   size_t vsize = sizeof(typename G::vertex_type);
   size_t esize = sizeof(typename G::edge_type);
-#ifdef _MSC_VER
-  EXPECT_EQ(12, sizeof(typename G::vertex_type)); // vertex size = 4 bytes
-  EXPECT_EQ(24, sizeof(typename G::edge_type));   // edge size = 8 bytes
-#else
-  EXPECT_EQ(24, sizeof(typename G::vertex_type)); // vertex size = 4 bytes
-  EXPECT_EQ(48, sizeof(typename G::edge_type));   // edge size = 8 bytes
-#endif
+  EXPECT_EQ((sizeof(void*) == 4 ? 12 : 24), sizeof(typename G::vertex_type)); // vertex size = 12|24 bytes
+  EXPECT_EQ((sizeof(void*) == 4 ? 24 : 48), sizeof(typename G::edge_type));   // edge size = 24|48 bytes
 }
 
 TEST_CASE("ual empty", "[ual][empty]") {
