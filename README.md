@@ -100,6 +100,7 @@ Other Useful Tools
     - [ ] distance_fnc should take edge iterator (not reference)
     - [ ] dikstra impl requires incidence_graph & edge_list_graph
     - [ ] bellman_ford impl requires edge_list_graph only
+    - [ ] allow output iterator to stop iteration? (for current path only, or completely)
 - [ ] Ranges/Iterators
   - [ ] DFS
     - [ ] validate const iterator
@@ -140,6 +141,7 @@ Other Useful Tools
     - [x] Return optional<T> instead of pair<T,bool>: create_vertex, create_edge, create_outward_edge, create_inward_edge
     - [x] Create concept-based functions to consolidate definitions (e.g. edge properties)
     - [x] Rename ssize_t to difference_t (and related) to match naming in std
+    - [ ] Implement as customization points (https://stackoverflow.com/questions/53495848/what-are-customization-point-objects-and-how-to-use-them)
   - [ ] Uniform API
     - [x] vertices_begin/end --> vertices_begin/end
     - [x] edges_begin/end --> edges_begin/end? replace begin/end(g,u)?
