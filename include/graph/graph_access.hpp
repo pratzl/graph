@@ -18,6 +18,50 @@ namespace _detail {
 } // namespace _detail
 
 
+namespace _graph_value_ {
+  template <typename T>
+  void graph_value(std::initializer_list<T>) = delete;
+
+  template <typename G, typename VI>
+  concept _vtx_has_member = requires(G&& g, VI u) {
+    forward_iterator<VI>;
+    { forward<VI>(u)->graph_value(forward<G>(g)) } -> ranges::forward_range;
+  };
+  template <typename G, typename VI>
+  concept _vtx_has_ADL = requires(G&& g, VI u) {
+    is_reference_v<G>;
+    forward_iterator<VI>;
+    { graph_value(forward<G>(g), forward<VI>(u)) } -> ranges::forward_range;
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
+    static consteval bool _vtx_fnc_except() {
+      if constexpr (_vtx_has_member<G, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>()->graph_value(declval<G&&>())));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return noexcept(_detail::_decay_copy(graph_value(declval<G&&>(), declval<VI>())));
+    }
+
+  public:
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
+    constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
+      if constexpr (_vtx_has_member<G, VI>)
+        return forward<G>(u)->graph_value(forward<G>(g));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return graph_value(forward<G>(g), forward<G>(u));
+    }
+  };
+} // namespace _graph_value_
+
+inline namespace _cpo_ {
+  inline constexpr _graph_value_::fn graph_value{};
+}
+
+
 namespace _vertices_ {
   template <typename T>
   void vertices(std::initializer_list<T>) = delete;
@@ -93,6 +137,104 @@ namespace _vertices_ {
 
 inline namespace _cpo_ {
   inline constexpr _vertices_::fn vertices{};
+}
+
+
+namespace _vertex_key_ {
+  template <typename T>
+  void vertex_key(std::initializer_list<T>) = delete;
+
+  template <typename G, typename VI>
+  concept _vtx_has_member = requires(G&& g, VI u) {
+    forward_iterator<VI>;
+    { forward<VI>(u)->vertex_key(forward<G>(g)) } -> ranges::forward_range;
+  };
+  template <typename G, typename VI>
+  concept _vtx_has_ADL = requires(G&& g, VI u) {
+    is_reference_v<G>;
+    forward_iterator<VI>;
+    { vertex_key(forward<G>(g), forward<VI>(u)) } -> ranges::forward_range;
+  };
+  template <typename G, typename VI>
+  concept _vtx_is_rnd = requires(G&& g, VI u) {
+    is_reference_v<G>;
+    random_access_iterator<VI>;
+    convertible_to<VI, decltype(vertices(begin(g)))>;
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rnd<G, VI>
+    static consteval bool _vtx_fnc_except() {
+      if constexpr (_vtx_has_member<G, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>()->vertex_key(declval<G&&>())));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return noexcept(_detail::_decay_copy(vertex_key(declval<G&&>(), declval<VI>())));
+      else if constexpr (_vtx_is_rnd<G, VI>)
+        return noexcept(declval<VI>() - declval<VI>());
+    }
+
+  public:
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rnd<G, VI>
+    constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
+      if constexpr (_vtx_has_member<G, VI>)
+        return forward<G>(u)->vertex_key(forward<G>(g));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return vertex_key(forward<G>(g), forward<G>(u));
+      else if constexpr (_vtx_is_rnd<G, VI>)
+        return u - begin(vertices(g)); // default impl if not defined
+    }
+  };
+} // namespace _vertex_key_
+
+inline namespace _cpo_ {
+  inline constexpr _vertex_key_::fn vertex_key{};
+}
+
+
+namespace _vertex_value_ {
+  template <typename T>
+  void vertex_value(std::initializer_list<T>) = delete;
+
+  template <typename G, typename VI>
+  concept _vtx_has_member = requires(G&& g, VI u) {
+    forward_iterator<VI>;
+    { forward<VI>(u)->vertex_value(forward<G>(g)) } -> ranges::forward_range;
+  };
+  template <typename G, typename VI>
+  concept _vtx_has_ADL = requires(G&& g, VI u) {
+    is_reference_v<G>;
+    forward_iterator<VI>;
+    { vertex_value(forward<G>(g), forward<VI>(u)) } -> ranges::forward_range;
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
+    static consteval bool _vtx_fnc_except() {
+      if constexpr (_vtx_has_member<G, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>()->vertex_value(declval<G&&>())));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return noexcept(_detail::_decay_copy(vertex_value(declval<G&&>(), declval<VI>())));
+    }
+
+  public:
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
+    constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
+      if constexpr (_vtx_has_member<G, VI>)
+        return forward<G>(u)->vertex_value(forward<G>(g));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return vertex_value(forward<G>(g), forward<G>(u));
+    }
+  };
+} // namespace _vertex_value_
+
+inline namespace _cpo_ {
+  inline constexpr _vertex_value_::fn vertex_value{};
 }
 
 } // namespace std

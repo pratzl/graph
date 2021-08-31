@@ -83,7 +83,7 @@ template <typename G>
 using edge_iterator_t = ranges::iterator_t<edge_range_t<G>>;
 
 template <typename G>
-using vertex_edge_range_t = decltype(edges(declval<G&>(), declval(vertex_iterator_t<G&>())));
+using vertex_edge_range_t = decltype(edges(declval<G&&>(), declval(vertex_iterator_t<G>())));
 template <typename G>
 using vertex_edge_iterator_t = ranges::iterator_t<vertex_edge_range_t<G>>;
 
@@ -156,7 +156,6 @@ concept vertex_list_graph = requires(G&&                  g,
     ranges::sized_range<vertex_range_t<G>>;
     vertex_t<G>;
     vertex_key_t<G>;
-    //{ empty(vr) } -> convertible_to<bool>;
     { find_vertex(g,ukey) } -> convertible_to<vertex_iterator_t<G>>;
   };
 
@@ -169,7 +168,6 @@ concept basic_edge_range =
            vertex_iterator_t<G>   src, 
            vertex_key_t<G>        src_key) {
     ranges::forward_range<ER>;
-    //ranges::sized_range<ER>;
     edge_t<G, ER>;
     edge_key_t<G, ranges::iterator_t<ER>>;
     //{ vertex(g, uv) } -> convertible_to<vertex_iterator_t<G>>;
