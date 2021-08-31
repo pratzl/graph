@@ -51,6 +51,7 @@ using std::is_same;
 
 using std::ranges::size;
 
+#ifdef CPO
 using std::breadth_first_search_vertex_range;
 using std::breadth_first_search_edge_range;
 using std::depth_first_search_vertex_range;
@@ -117,15 +118,15 @@ TEST_CASE("ual initializer list", "[ual][init][initializer list]") {
 }
 
 TEST_CASE("ual init", "[ual][init]") {
-#if 0
+#  if 0
   vector<Graph::edge_kv> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, daa_germany_edge_routes);
-#endif
+#  endif
   Graph g = create_germany_routes_graph();
   EXPECT_EQ(germany_cities().size(), size(g));
   EXPECT_EQ(ual_germany_edge_routes.size(), size(edges(g)));
 
-#if 0
+#  if 0
   cout << endl << "Cities:" << endl;
   for (auto& city : germany_cities)
     cout << "  " << (&city - germany_cities.data()) << ". " << city << endl;
@@ -133,7 +134,7 @@ TEST_CASE("ual init", "[ual][init]") {
   cout << endl << "Routes:" << endl;
   for (auto& r : daa_germany_edge_routes)
     cout << "  " << germany_cities[r.first.first] << " --> " << germany_cities[r.first.second] << " " << r.second.weight << "km" << endl;
-#endif
+#  endif
 
   // iterate thru vertices range
   size_t nVertices = 0;
@@ -160,7 +161,7 @@ TEST_CASE("ual init", "[ual][init]") {
     ++n;
   EXPECT_EQ(ual_germany_edge_routes.size() * 2, n);
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "\nGermany Routes"
        << "\n-------------------------------" << g << endl;
 
@@ -201,7 +202,7 @@ TEST_CASE("ual init", "[ual][init]") {
       <--> [7 Nürnberg] 103km
   */
 
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   vertex_iterator_t<Graph>      u;
   vertex_edge_iterator_t<Graph> uv;
 
@@ -225,7 +226,7 @@ TEST_CASE("ual init", "[ual][init]") {
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
     }
   }
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   vertex_iterator_t<Graph>      u;
   vertex_edge_iterator_t<Graph> uv;
 
@@ -356,7 +357,7 @@ TEST_CASE("ual init", "[ual][init]") {
   EXPECT_EQ(7, target_vertex_key(g, uv));
   EXPECT_EQ("Nürnberg", target_vertex(g, uv)->name);
   EXPECT_EQ(103, uv->weight);
-#endif
+#  endif
 }
 
 
@@ -396,10 +397,10 @@ TEST_CASE("ual graph functions", "[ual][graph][functions]") {
   // std::reserve_edges(g,100); // undefined for semi-mutable graph
   // std::clear(g);             // undefined for semi-mutable graph
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
-#endif
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
+#  endif
 }
 
 TEST_CASE("ual vertex functions", "[ual][vertex][functions]") {
@@ -514,8 +515,8 @@ TEST_CASE("ual vertex-vertex range", "[ual][vertex_vertex][range]") {
 TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 
-#if 0
-#elif TEST_OPTION == TEST_OPTION_OUTPUT
+#  if 0
+#  elif TEST_OPTION == TEST_OPTION_OUTPUT
   depth_first_search_vertex_range dfs_vtx_rng(g, find_city(g, "Frankfürt"));
   for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
@@ -549,8 +550,8 @@ TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
     Würzburg
     Erfurt
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
   depth_first_search_vertex_range                  dfs_vtx_rng(g, find_city(g, "Frankfürt"));
   depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
   EXPECT_EQ("Frankfürt", u->name);
@@ -573,14 +574,14 @@ TEST_CASE("ual dfs vertex", "[ual][dfs][vertex]") {
   EXPECT_EQ(7, u.depth());
   EXPECT_EQ("Erfurt", (++u)->name);
   EXPECT_EQ(8, u.depth());
-#endif
+#  endif
 }
 
 TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
   Graph                         g = create_germany_routes_graph();
   depth_first_search_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   int ln = 0;
   for (auto uv = dfs_edge_rng.begin(); uv != dfs_edge_rng.end(); ++uv, ++ln) {
     vertex_iterator_t<Graph> u     = uv.source_vertex();
@@ -612,7 +613,7 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
   travel Frankfürt --> Würzburg 217km [back edge]
   travel Frankfürt --> Kassel 173km [back edge]
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   cout << "depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();\n"
        << "\n";
   size_t uvi = 0;
@@ -641,7 +642,7 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
       cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
     }
   }
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   depth_first_search_edge_range<Graph>::iterator uv = dfs_edge_rng.begin();
 
   EXPECT_FALSE(uv.is_back_edge());
@@ -739,14 +740,14 @@ TEST_CASE("ual dfs edge", "[ual][dfs][edge]") {
   EXPECT_FALSE(uv.is_path_end());
   EXPECT_EQ("Kassel", uv.back_vertex()->name);
   EXPECT_EQ(1, uv.depth());
-#endif
+#  endif
 }
 
 TEST_CASE("ual bfs vertex", "[ual][bfs][vertex]") {
   Graph                             g = create_germany_routes_graph();
   breadth_first_search_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   for (auto u = bfs_vtx_rng.begin(); u != bfs_vtx_rng.end(); ++u)
     cout << string(u.depth() * 2, ' ') << u->name << endl;
 
@@ -762,8 +763,8 @@ TEST_CASE("ual bfs vertex", "[ual][bfs][vertex]") {
             Augsburg
             Stuttgart
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
   breadth_first_search_vertex_range<Graph>::iterator u = bfs_vtx_rng.begin();
   EXPECT_EQ("Frankfürt", u->name);
   EXPECT_EQ(1, u.depth());
@@ -785,14 +786,14 @@ TEST_CASE("ual bfs vertex", "[ual][bfs][vertex]") {
   EXPECT_EQ(4, u.depth());
   EXPECT_EQ("Stuttgart", (++u)->name);
   EXPECT_EQ(4, u.depth());
-#endif
+#  endif
 }
 
 TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
   Graph                           g = create_germany_routes_graph();
   breadth_first_search_edge_range bfs_edge_rng(g, find_city(g, "Frankfürt"));
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   for (auto uv = bfs_edge_rng.begin(); uv != bfs_edge_rng.end(); ++uv) {
     vertex_iterator_t<Graph> v     = uv.back_vertex();
     vertex_key_t<Graph>      v_key = vertex_key(g, v);
@@ -824,7 +825,7 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
             travel Augsburg --> München 84km [back edge]
             view Stuttgart
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   cout << "breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();\n"
        << "\n";
   size_t uvi = 0;
@@ -850,7 +851,7 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
     }
     cout << "EXPECT_EQ(" << uv.depth() << ", uv.depth());\n";
   }
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   breadth_first_search_edge_range<Graph>::iterator uv = bfs_edge_rng.begin();
 
   EXPECT_FALSE(uv.is_path_end());
@@ -965,7 +966,7 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
   EXPECT_TRUE(uv.is_path_end());
   EXPECT_EQ("Stuttgart", uv.back_vertex()->name);
   EXPECT_EQ(4, uv.depth());
-#endif
+#  endif
 }
 
 TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
@@ -983,7 +984,7 @@ TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   dijkstra_shortest_distances(g, u, back_inserter(short_dists), false, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
@@ -1010,8 +1011,8 @@ TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
     Frankfürt --> München  487km
     Frankfürt --> Stuttgart  503km
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
   {
     dijkstra_shortest_distances(g, u, back_inserter(short_dists), false, weight_fnc);
     EXPECT_EQ("Frankfürt", short_dists[0].first->name);
@@ -1070,7 +1071,7 @@ TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
     EXPECT_EQ("Stuttgart", short_dists[2].last->name);
     EXPECT_EQ(503, short_dists[2].distance);
   }
-#endif
+#  endif
 }
 
 TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
@@ -1086,7 +1087,7 @@ TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   bellman_ford_shortest_distances(g, u, back_inserter(short_dists), false, true, weight_fnc);
   for (short_dist_t& sd : short_dists)
     cout << sd.first->name << " --> " << sd.last->name << "  " << sd.distance << "km\n";
@@ -1113,8 +1114,8 @@ TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
     Frankfürt --> München  487km
     Frankfürt --> Stuttgart  503km
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
   {
     bellman_ford_shortest_distances(g, u, back_inserter(short_dists), false, true, weight_fnc);
 
@@ -1174,7 +1175,7 @@ TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
     EXPECT_EQ("Stuttgart", short_dists[2].last->name);
     EXPECT_EQ(503, short_dists[2].distance);
   }
-#endif
+#  endif
 }
 
 
@@ -1191,7 +1192,7 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
@@ -1230,7 +1231,7 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
     Frankfürt --> Würzburg --> Nürnberg --> München  487km
     Frankfürt --> Würzburg --> Nürnberg --> Stuttgart  503km
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   {
     cout << "{\n";
     dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, weight_fnc);
@@ -1267,7 +1268,7 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
     cout << "}\n";
   }
 
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   {
     dijkstra_shortest_paths(g, u, back_inserter(short_paths), false, weight_fnc);
 
@@ -1354,7 +1355,7 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
     EXPECT_EQ("Nürnberg", short_paths[2].path[2]->name);
     EXPECT_EQ("Stuttgart", short_paths[2].path[3]->name);
   }
-#endif
+#  endif
 }
 
 TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
@@ -1370,7 +1371,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
 
   auto weight_fnc = [](edge_value_t<Graph>& uv) -> int { return uv.weight; };
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
   for (short_path_t& sp : short_paths) {
     for (size_t i = 0; i < sp.path.size(); ++i) {
@@ -1409,7 +1410,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
     Frankfürt --> Würzburg --> Nürnberg --> München  487km
     Frankfürt --> Würzburg --> Nürnberg --> Stuttgart  503km
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   {
     cout << "{\n";
     bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
@@ -1447,7 +1448,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
     }
     cout << "}\n";
   }
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   {
     bool neg_edge_cycle_exists = bellman_ford_shortest_paths(g, u, back_inserter(short_paths), false, true, weight_fnc);
     EXPECT_FALSE(neg_edge_cycle_exists);
@@ -1535,5 +1536,7 @@ TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
     EXPECT_EQ("Nürnberg", short_paths[2].path[2]->name);
     EXPECT_EQ("Stuttgart", short_paths[2].path[3]->name);
   }
-#endif
+#  endif
 }
+
+#endif // CPO

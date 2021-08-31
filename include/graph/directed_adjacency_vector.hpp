@@ -2,7 +2,6 @@
 //	Author: J. Phillip Ratzloff
 //
 #include "graph_utility.hpp"
-#include "ordered_pair.hpp"
 #include <vector>
 #include <cassert>
 
@@ -120,7 +119,7 @@ public:
 
   using edge_type           = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type     = EV;
-  using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_key_type       = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_index_type     = KeyT;
   using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
   using edge_set            = EContainer<edge_type, edge_allocator_type>;
@@ -189,7 +188,7 @@ public:
 
   using edge_type           = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type     = EV;
-  using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_key_type       = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_index_type     = KeyT;
   using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
   using edge_set            = EContainer<edge_type, edge_allocator_type>;
@@ -459,7 +458,7 @@ public:
 
   using edge_type           = dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
   using edge_value_type     = EV;
-  using edge_key_type       = ordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_key_type       = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_index_type     = KeyT;
   using edge_allocator_type = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
   using edge_set            = EContainer<edge_type, edge_allocator_type>;
@@ -693,6 +692,7 @@ private:
 };
 
 
+#  ifdef CPO
 // clang-format off
 template <typename                                VV,
           typename                                EV,
@@ -714,7 +714,7 @@ struct graph_traits<
   using vertex_value_type = typename graph_type::vertex_value_type;
 
   using edge_type       = typename graph_type::edge_type;
-  using edge_key_type   = ordered_pair<vertex_key_type, vertex_key_type>;
+  using edge_key_type   = pair<vertex_key_type, vertex_key_type>;
   using edge_value_type = typename graph_type::edge_value_type;
 
   using vertex_range       = typename graph_type::vertex_range;
@@ -735,7 +735,7 @@ struct graph_traits<
   using vertex_vertex_range       = vertex_outward_vertex_range;
   using const_vertex_vertex_range = const_vertex_outward_vertex_range;
 };
-
+#  endif
 
 } // namespace std
 

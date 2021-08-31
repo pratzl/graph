@@ -58,6 +58,7 @@
 
 namespace std {
 
+#  ifdef CPO
 
 //---------------------------------------------------------------------------------------
 /// depth-first search range for vertices, given a single seed vertex.
@@ -480,6 +481,8 @@ private:
   visited_type visited_; // vector<colors, >
   parent_type  parent_;  // vector<vertex_iterator_t<G>, >; only needed for undirected graphs
 };
+
+#  endif // CPO
 
 } // namespace std
 

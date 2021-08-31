@@ -14,7 +14,9 @@ using std::ranges::range_value_t;
 using std::ranges::range_reference_t;
 
 
-#if 0
+#ifdef CPO
+
+#  if 0
 namespace std {
 
 template <typename R,
@@ -39,7 +41,7 @@ TEST_CASE("test", "[test][temp]") {
   std::vector<double> vec{1, 2, 3, 4, 5};
   //double              m = std::mean(vec);
 }
-#endif
+#  endif
 
 TEST_CASE("test is_floating_point", "[test][temp][is_floating_point]") {
   //
@@ -152,3 +154,5 @@ TEST_CASE("[const traits2]", "[traits2][const]") {
 
   //using tt = typename assign_traits_const<Object, trial_traits>::thong_type;
 }
+
+#endif // CPO

@@ -30,6 +30,8 @@ using std::is_same;
 
 using std::ranges::size;
 
+#ifdef CPO
+
 using DollarGraph = GraphXlate<daa_data_edge_mapper>::target_graph_t;
 
 
@@ -42,7 +44,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   EXPECT_EQ(6, size(g));
   EXPECT_EQ(6, size(edges(g)));
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   for (vertex_t<DollarGraph>& u : vertices(g)) {
     vertex_key_t<DollarGraph> u_key  = vertex_key(g, u);
     const string&             u_name = value(u).name;
@@ -69,7 +71,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
     [4] c1
     [5] c2
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   vertex_iterator_t<DollarGraph>      u;
   vertex_edge_iterator_t<DollarGraph> uv;
 
@@ -93,7 +95,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
       cout << "EXPECT_EQ(" << uv->weight << ", uv->weight);\n";
     }
   }
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   vertex_iterator_t<DollarGraph>      u;
   vertex_edge_iterator_t<DollarGraph> uv;
 
@@ -146,7 +148,7 @@ TEST_CASE("daa dollar structure", "[daa][dollar][structure]") {
   EXPECT_EQ("c2", u->name);
   EXPECT_EQ(0, size(edges(g, u)));
   uv = begin(edges(g, u));
-#endif
+#  endif
 }
 
 TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][connected]") {
@@ -165,7 +167,7 @@ TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][
   //strongly_connected_components(g, vertices(g), std::back_inserter(comps));
   strongly_connected_components(g, begin(vertices(g)) + 2, std::back_inserter(comps));
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   cout << "Dollar strongly connected components\n";
   for (const comp_t& comp : comps) {
     cout << "[" << comp.component_number << "] " << comp.vertex->name << "\n";
@@ -173,7 +175,9 @@ TEST_CASE("daa dollar stongly connected components", "[daa][dollar][components][
 
   /* Output
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
-#elif TEST_OPTION == TEST_OPTION_TEST
-#endif
+#  elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_TEST
+#  endif
 }
+
+#endif // CPO

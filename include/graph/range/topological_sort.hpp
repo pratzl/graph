@@ -12,6 +12,7 @@
 
 namespace std {
 
+#  ifdef CPO
 // clang-format off
 template <incidence_graph G, typename A = allocator<char>>
   requires ranges::random_access_range<vertex_range_t<G>> && integral<vertex_key_t<G>>
@@ -33,6 +34,7 @@ private:
   G&        graph_;
 };
 
+#  endif // CPO
 
 } // namespace std
 

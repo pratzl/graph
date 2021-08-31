@@ -15,7 +15,9 @@
 
 namespace std {
 
-template <directed G>
+#  ifdef CPO
+
+template <typename G>
 struct reaches {
   ranges::iterator_t<vertex_range_t<G>> from;
   ranges::iterator_t<vertex_range_t<G>> to;
@@ -103,6 +105,8 @@ constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = 
         *result_iter = {begin(g) + ukey, begin(g) + vkey};
   }
 }
+
+#  endif // CPO
 
 } // namespace std
 

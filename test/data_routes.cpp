@@ -6,6 +6,8 @@
 using std::vector;
 using std::string;
 
+#ifdef CPO
+
 routes_t const germany_routes{
       {"Frankfürt", "Mannheim", 85}, {"Frankfürt", "Würzburg", 217}, {"Frankfürt", "Kassel", 173},
       {"Mannheim", "Karlsruhe", 80}, {"Karlsruhe", "Augsburg", 250}, {"Augsburg", "München", 84},
@@ -97,3 +99,5 @@ data_edges_t const candle_edges = {
 
 GraphXlate<daa_data_edge_mapper> candle_directed_graph(daa_data_edge_mapper(), candle_edges);
 GraphXlate<ual_data_edge_mapper> candle_undirected_graph(ual_data_edge_mapper(), candle_edges);
+
+#endif // CPO

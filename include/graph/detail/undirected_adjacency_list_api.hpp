@@ -8,6 +8,8 @@
 #include <stdexcept>
 
 namespace std {
+
+#ifdef CPO
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list graph API
 ///
@@ -877,7 +879,7 @@ source_vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, 
 // todo: outward_vertices
 
 
-#if 0
+#  if 0
 template <typename VV, typename EV, typename GV, typename IndexT, typename A>
 constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, IndexT, A>& g, vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> uv)
       -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
@@ -897,7 +899,7 @@ constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, IndexT, A>
       -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, IndexT, A>> {
   return uv->target_vertex_key(g);
 }
-#endif
+#  endif
 
 
 //
@@ -931,6 +933,8 @@ void clear(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g) {
 //
 // API: common container functions
 //
+
+#endif // CPO
 
 } // namespace std
 

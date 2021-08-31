@@ -22,6 +22,7 @@ using std::cout;
 using std::endl;
 
 
+#ifdef CPO
 namespace graph::adaptor {} // namespace graph::adaptor
 
 using vov_germany_t      = vov<double>;
@@ -66,7 +67,7 @@ TEST_CASE("vov graph", "[vov]") {
   static_assert(std::is_same_v<evt, std::tuple<double>>, "edge value types not same");
   static_assert(std::is_same_v<evt2, std::tuple<size_t, double>>, "edge value types2 not same");
 
-#if 0
+#  if 0
   for (std::vertex_iterator_t<Graph> u = begin(g); u != end(g); ++u) {
     cout << "city[" << vertex_key(g, u) << "]\n";
     for (std::vertex_edge_iterator_t<Graph> uv = begin(edges(g, u)); uv != end(edges(g, u)); ++uv) {
@@ -74,7 +75,7 @@ TEST_CASE("vov graph", "[vov]") {
       cout << "  --> city[" << target_vertex_key(g, uv) << "] " << get<1>(*uv) << "km\n";
     }
   }
-#endif
+#  endif
   /* Output: seed = Frankfürt
     Germany Routes
     -------------------------------
@@ -110,7 +111,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   vov_germany_t                   g = get_germany_routes();
   depth_first_search_vertex_range dfs_vtx_rng(g, begin(g) + 2); // "Frankfürt"
 
-#if TEST_OPTION == TEST_OPTION_OUTPUT
+#  if TEST_OPTION == TEST_OPTION_OUTPUT
   for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u) {
     //std::vertex_key_t<Graph> ukey = vertex_key(g, u.operator->());
     // cout << string(u.depth() * 2, ' ') << vertex_key(g, u.operator->()) << endl;
@@ -147,7 +148,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
       3
       0
   */
-#elif TEST_OPTION == TEST_OPTION_GEN
+#  elif TEST_OPTION == TEST_OPTION_GEN
   int i = 0;
   for (depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin(); u != dfs_vtx_rng.end(); ++u, ++i) {
     if (i == 0)
@@ -156,7 +157,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
       cout << "EXPECT_EQ(" << vertex_key(g, u) << ", vertex_key(g, ++u));\n";
     cout << "EXPECT_EQ(" << u.depth() << ", u.depth());\n";
   }
-#elif TEST_OPTION == TEST_OPTION_TEST
+#  elif TEST_OPTION == TEST_OPTION_TEST
   depth_first_search_vertex_range<Graph>::iterator u = dfs_vtx_rng.begin();
   EXPECT_EQ(2, vertex_key(g, u));
   EXPECT_EQ(1, u.depth());
@@ -178,5 +179,7 @@ TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   EXPECT_EQ(3, u.depth());
   EXPECT_EQ(0, vertex_key(g, ++u));
   EXPECT_EQ(4, u.depth());
-#endif // TEST_OPTION==
+#  endif // TEST_OPTION==
 }
+
+#endif // CPO

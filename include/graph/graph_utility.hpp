@@ -10,20 +10,6 @@ namespace std {
 //
 // Default implementations
 //
-template <directed_or_undirected G>
-constexpr auto degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_edge_size_t<G> {
-  return size(edges(g, u));
-}
-
-template <directed G>
-constexpr auto outward_degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_outward_edge_size_t<G> {
-  return size(outward_edges(g, u));
-}
-
-template <directed G>
-constexpr auto inward_degree(const G& g, const_vertex_iterator_t<G> u) noexcept -> vertex_inward_edge_size_t<G> {
-  return size(inward_edges(g, u));
-}
 
 //--------------------------------------------------------------------------------------
 // graph_value<> - wraps scaler, union & reference user values for graph, vertex & edge
@@ -120,9 +106,9 @@ namespace detail {
   }
 
   template <typename I, typename S>
-  requires input_or_output_iterator<I>&& sentinel_for<S, I>            //
-        constexpr ranges::subrange<I, S, ranges::subrange_kind::sized> //
-        make_subrange(I i, S s, detail::iter_size_t<I> n) {
+  requires input_or_output_iterator<I> && sentinel_for<S, I>     //
+  constexpr ranges::subrange<I, S, ranges::subrange_kind::sized> //
+  make_subrange(I i, S s, detail::iter_size_t<I> n) {
     return {i, s, n};
   }
 

@@ -2,7 +2,6 @@
 //	Author: J. Phillip Ratzloff
 //
 #include "graph_utility.hpp"
-#include "ordered_pair.hpp"
 #include <vector>
 #include <ranges>
 #include <cassert>
@@ -396,7 +395,7 @@ public:
   using vertex_index          = KeyT;
   using vertex_value_type     = VV;
 
-  using edge_key_type        = unordered_pair<vertex_key_type, vertex_key_type>;
+  using edge_key_type        = pair<vertex_key_type, vertex_key_type>;
   using edge_value_type      = EV;
   using edge_type            = ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>;
   using edge_allocator_type  = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
@@ -764,7 +763,7 @@ public:
   using edge_type            = ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>;
   using edge_value_type      = EV;
   using edge_allocator_type  = typename allocator_traits<Alloc>::template rebind_alloc<edge_type>;
-  using edge_key_type        = unordered_pair<vertex_key_type, vertex_key_type>; // <from,to>
+  using edge_key_type        = pair<vertex_key_type, vertex_key_type>; // <from,to>
   using edge_size_type       = typename edge_type::edge_size_type;
   using edge_difference_type = typename edge_type::edge_difference_type;
   // edge_set, edge_index_type n/a
@@ -1103,6 +1102,7 @@ private:
   friend vertex_type;
 };
 
+#  ifdef CPO
 // clang-format off
 template <typename                                VV,
           typename                                EV,
@@ -1122,7 +1122,7 @@ struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Allo
   using vertex_value_type = typename graph_type::vertex_value_type;
 
   using edge_type       = typename graph_type::edge_type;
-  using edge_key_type   = unordered_pair<vertex_key_type, vertex_key_type>;
+  using edge_key_type   = pair<vertex_key_type, vertex_key_type>;
   using edge_value_type = typename graph_type::edge_value_type;
 
   using vertex_range       = typename graph_type::vertex_range;
@@ -1137,6 +1137,7 @@ struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Allo
   using vertex_vertex_range       = typename vertex_type::vertex_vertex_range;
   using const_vertex_vertex_range = typename vertex_type::const_vertex_vertex_range;
 };
+#  endif
 
 } // namespace std
 

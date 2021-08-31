@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#ifdef CPO
 
 //---------------------------------------------------------------------------------------
 // forward declarations
@@ -141,7 +142,7 @@ struct ual_data_edge_mapper {
   std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
 
-#if 0
+#  if 0
 struct vov_data_edge_mapper {
   using target_graph_t      = vov<double>;
   using source_edge_range_t = data_edges_t;
@@ -158,7 +159,7 @@ struct vov_data_edge_mapper {
 
   std::edge_value_t<target_graph_t> edge_value(const source_edge_t& uv) const { return uv.weight; }
 };
-#endif
+#  endif
 
 //---------------------------------------------------------------------------------------
 // Translates raw edge data into intermediate forms that can easily be used for
@@ -231,3 +232,5 @@ private:
   vertex_labels_t vertex_labels_;
   target_edges_t  edge_values_;
 };
+
+#endif // CPO

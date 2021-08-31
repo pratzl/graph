@@ -15,6 +15,7 @@ namespace std {
 
 // Helper Functions
 
+#  ifdef CPO
 //
 // Uniform API: Graph property functions
 //
@@ -445,7 +446,7 @@ constexpr auto edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContaine
 //
 // Uniform API: Vertex-Edge range functions
 //
-#  if 0 // edge_iterator == vertex_edge_iterator; don't define to avoid duplicate definitions
+#    if 0 // edge_iterator == vertex_edge_iterator; don't define to avoid duplicate definitions
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, template <typename E, typename A> class EContainer, typename Alloc>
 constexpr auto vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                        g,
                           const_vertex_edge_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> uv,
@@ -475,7 +476,7 @@ constexpr auto edge_value(const directed_adjacency_vector<VV, EV, GV, KeyT, VCon
       -> const edge_value_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>& {
   return user_value(*uv);
 }
-#  endif
+#    endif
 
 template <typename VV,
           typename EV,
@@ -713,14 +714,14 @@ target_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, 
   return uv->target_vertex_key();
 }
 
-#  if 0 // edge_iterator == vertex_edge_iterator; don't define to avoid duplicate definitions
+#    if 0 // edge_iterator == vertex_edge_iterator; don't define to avoid duplicate definitions
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, template <typename E, typename A> class EContainer, typename Alloc>
 constexpr auto target_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                        g,
                                   const_vertex_edge_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> uv)
       -> vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
   return uv->target_vertex_key();
 }
-#  endif
+#    endif
 
 template <typename VV,
           typename EV,
@@ -770,7 +771,7 @@ source_vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, 
   return uv->source_vertex_key();
 }
 
-#  if 0 // edge_iterator == vertex_edge_iterator; don't define to avoid duplicate definitions
+#    if 0 // edge_iterator == vertex_edge_iterator; don't define to avoid duplicate definitions
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, template <typename E, typename A> class EContainer, typename Alloc>
 constexpr auto source_vertex(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                        g,
                              vertex_edge_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> uv)
@@ -791,7 +792,7 @@ constexpr auto source_vertex_key(const directed_adjacency_vector<VV, EV, GV, Key
       -> vertex_key_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
   return uv->source_vertex_key();
 }
-#  endif
+#    endif
 
 //
 // Directed API (outward): Vertex-Edge functions
@@ -986,6 +987,7 @@ find_vertex_edge(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, E
 //
 // API graph functions
 //
+#  endif // CPO
 
 } // namespace std
 

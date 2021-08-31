@@ -55,6 +55,8 @@
 
 namespace std {
 
+#  ifdef CPO
+
 //----------------------------------------------------------------------------------------
 /// breadth-first search range for vertices, given a single seed vertex.
 ///
@@ -418,9 +420,9 @@ protected:
   queue_elem advance() {
     while (!queue_.empty()) {
       auto [u, uv, d] = queue_.front();
-#  ifdef _DEBUG
+#    ifdef _DEBUG
       vertex_key_t<G> u_key = vertex_key(graph_, u);
-#  endif
+#    endif
       queue_.pop();
       if (queue_.empty())
         break;
@@ -429,9 +431,9 @@ protected:
         visit(u, black);
         return queue_.front(); // next sibling/cousin of uv, or next generation (whatever is in the queue)
       } else {
-#  ifdef _DEBUG
+#    ifdef _DEBUG
         vertex_key_t<G> v_key = vertex_key(graph_, uv, u);
-#  endif
+#    endif
         if (!is_outward_visited(u, uv)) {
           vertex_iterator_t<G> v = vertex(graph_, uv, u);
           push_neighbors(u, v, d + 1);
@@ -454,6 +456,8 @@ private:
   vector<colors> visited_;
   A              alloc_;
 };
+
+#  endif // CPO
 
 } // namespace std
 

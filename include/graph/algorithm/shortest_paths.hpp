@@ -56,6 +56,8 @@
 
 namespace std {
 
+#  ifdef CPO
+
 // forward declarations
 
 template <typename G, typename A = allocator<vertex_iterator_t<G>>>
@@ -606,6 +608,7 @@ bool bellman_ford_shortest_paths(
   return fn.shortest_paths(source, result_iter, leaves_only, detect_neg_edge_cycles);
 }
 
+#  endif // CPO
 
 } // namespace std
 
