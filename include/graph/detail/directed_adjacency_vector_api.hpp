@@ -350,19 +350,6 @@ vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContai
 //
 // Uniform API: Graph-Vertex range functions
 //
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
-      -> vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
-  return g.vertices();
-}
 
 template <typename VV,
           typename EV,
@@ -373,11 +360,12 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-constexpr auto vertices(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>& g)
-      -> const_vertex_range_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> {
+constexpr auto vertices(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&& g) {
   return g.vertices();
 }
+#  endif // CPO
 
+#  ifdef CPO
 template <typename VV,
           typename EV,
           typename GV,

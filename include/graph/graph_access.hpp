@@ -23,22 +23,24 @@ namespace _vertices_ {
   void vertices(std::initializer_list<T>) = delete;
 
   template <typename G>
-  concept _gph_has_member = requires(G g) {
+  concept _gph_has_rng = ranges::forward_range<G>;
+  template <typename G>
+  concept _gph_has_member = requires(G&& g) {
     { forward<G>(g).vertices() } -> ranges::forward_range;
   };
-  template <typename G, typename VI>
-  concept _vtx_has_member = requires(G g, VI u) {
-    forward_iterator<VI>;
-    { forward<VI>(u)->vertices(forward<G>(g)) } -> ranges::forward_range;
-  };
-
   template <typename G>
-  concept _gph_has_ADL = requires(G g) {
+  concept _gph_has_ADL = requires(G&& g) {
     is_reference_v<G>;
     { vertices(forward<G>(g)) } -> ranges::forward_range;
   };
+
   template <typename G, typename VI>
-  concept _vtx_has_ADL = requires(G g, VI u) {
+  concept _vtx_has_member = requires(G&& g, VI u) {
+    forward_iterator<VI>;
+    { forward<VI>(u)->vertices(forward<G>(g)) } -> ranges::forward_range;
+  };
+  template <typename G, typename VI>
+  concept _vtx_has_ADL = requires(G&& g, VI u) {
     is_reference_v<G>;
     forward_iterator<VI>;
     { vertices(forward<G>(g), forward<VI>(u)) } -> ranges::forward_range;
@@ -47,28 +49,32 @@ namespace _vertices_ {
   struct fn {
   private:
     template <typename G>
-    requires _gph_has_member<G> || _gph_has_ADL<G>
+    requires _gph_has_member<G> || _gph_has_rng<G> || _gph_has_ADL<G>
     static consteval bool _gph_fnc_except() {
-      if constexpr (_gph_has_member<G>)
-        return noexcept(_detail::_decay_copy(declval<G>().vertices()));
+      if constexpr (_gph_has_rng<G>)
+        return noexcept(_detail::_decay_copy(declval<G&&>()));
+      else if constexpr (_gph_has_member<G>)
+        return noexcept(_detail::_decay_copy(declval<G&&>().vertices()));
       else if constexpr (_gph_has_ADL<G>)
-        return noexcept(_detail::_decay_copy(vertices(declval<G>())));
+        return noexcept(_detail::_decay_copy(vertices(declval<G&&>())));
     }
 
     template <typename G, typename VI>
     requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
     static consteval bool _vtx_fnc_except() {
       if constexpr (_vtx_has_member<G, VI>)
-        return noexcept(_detail::_decay_copy(declval<VI>()->vertices(declval<G>())));
+        return noexcept(_detail::_decay_copy(declval<VI>()->vertices(declval<G&&>())));
       else if constexpr (_vtx_has_ADL<G, VI>)
-        return noexcept(_detail::_decay_copy(vertices(declval<G>(), declval<VI>())));
+        return noexcept(_detail::_decay_copy(vertices(declval<G&&>(), declval<VI>())));
     }
 
   public:
     template <typename G>
-    requires _gph_has_member<G> || _gph_has_ADL<G>
-    constexpr auto operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
-      if constexpr (_gph_has_member<G>)
+    requires _gph_has_member<G> || _gph_has_rng<G> || _gph_has_ADL<G>
+    constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
+      if constexpr (_gph_has_rng<G>)
+        return forward<G>(g);
+      else if constexpr (_gph_has_member<G>)
         return forward<G>(g).vertices();
       else if constexpr (_gph_has_ADL<G>)
         return vertices(forward<G>(g));
@@ -76,7 +82,7 @@ namespace _vertices_ {
 
     template <typename G, typename VI>
     requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
-    constexpr auto operator()(G&& g, VI&& u) const noexcept(_vtx_fnc_except<G, VI>()) {
+    constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
       if constexpr (_vtx_has_member<G, VI>)
         return forward<G>(u)->vertices(forward<G>(g));
       else if constexpr (_vtx_has_ADL<G, VI>)

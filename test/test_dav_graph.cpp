@@ -41,8 +41,8 @@ using std::depth_first_search_edge_range;
 using std::shortest_distance;
 #endif // CPO
 
+using Graph = std::directed_adjacency_vector<name_value, weight_value>;
 #ifdef CPO
-using Graph      = std::directed_adjacency_vector<name_value, weight_value>;
 using vtx_iter_t = std::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::vertex_key_t<Graph>;
 
@@ -75,15 +75,44 @@ OStream& operator<<(OStream& os, const Graph& g) {
   os << "\n";
   return os;
 }
+#endif // CPO
+
+template <typename T>
+constexpr bool is_constant(const T&) {
+  return true;
+}
+template <typename T>
+constexpr bool is_constant(T&) {
+  return false;
+}
+
+TEST_CASE("dav accessors", "[dav][accessors]") {
+  // non-const
+  {
+    using G = std::directed_adjacency_vector<>;
+    G     g;
+    auto& vv = std::vertices(g);
+    REQUIRE(!is_constant(vv));
+  }
+
+  // const
+  {
+    using G = const std::directed_adjacency_vector<>;
+    G     g;
+    auto& vv = std::vertices(g);
+    REQUIRE(is_constant(vv));
+  }
+}
 
 
-TEST_CASE("daa minsize", "[dav][minsize]") {
+#ifdef CPO
+TEST_CASE("dav minsize", "[dav][minsize]") {
   using G = std::directed_adjacency_vector<>;
   EXPECT_EQ(4, sizeof(G::vertex_type)); // vertex size = 4 bytes
   EXPECT_EQ(8, sizeof(G::edge_type));   // edge size = 8 bytes
 }
 
-TEST_CASE("daa empty", "[dav][empty]") {
+TEST_CASE("dav empty", "[dav][empty]") {
   Graph g;
   EXPECT_EQ(0, size(g));
   EXPECT_EQ(0, size(edges(g)));
@@ -91,14 +120,14 @@ TEST_CASE("daa empty", "[dav][empty]") {
   //EXPECT_EQ(sizeof(Graph::vertex_size_type) + sizeof(weight_value), sizeof(Graph::edge_type));
 }
 
-TEST_CASE("daa initializer list", "[dav][init][initializer list]") {
+TEST_CASE("dav initializer list", "[dav][init][initializer list]") {
   //using edge_key_val = std::tuple<vertex_key_t<Graph>, vertex_key_t<Graph>, edge_value_t<Graph>>;
   Graph g0{};                     // empty graph
   Graph g1{{1, 2, 3}};            // one edge
   Graph g2{{1, 2, 3}, {4, 5, 6}}; // two edges
 }
 
-TEST_CASE("daa example 1", "[dav][example][1]") {
+TEST_CASE("dav example 1", "[dav][example][1]") {
   using std::directed_adjacency_vector;
   using std::ranges::end;
   struct route_mi {
@@ -123,7 +152,7 @@ TEST_CASE("daa example 1", "[dav][example][1]") {
   REQUIRE(size(edges(g)) == 2);
 }
 
-TEST_CASE("daa example 2", "[dav][example][2]") {
+TEST_CASE("dav example 2", "[dav][example][2]") {
   using std::directed_adjacency_vector;
   using G = directed_adjacency_vector<empty_value, weight_value>;
 
@@ -132,7 +161,7 @@ TEST_CASE("daa example 2", "[dav][example][2]") {
   REQUIRE(size(edges(g)) == 2);
 }
 
-TEST_CASE("daa init", "[dav][init]") {
+TEST_CASE("dav init", "[dav][init]") {
 #  if 0
   vector<Graph::edge_kv> daa_germany_edge_routes = to_edge_values(routes, germany_cities);
   Graph                          g(germany_cities, daa_germany_edge_routes);
@@ -321,7 +350,7 @@ TEST_CASE("daa init", "[dav][init]") {
 #  endif
 }
 
-TEST_CASE("daa graph functions", "[dav][graph][functions]") {
+TEST_CASE("dav graph functions", "[dav][graph][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = create_germany_routes_graph();
 
@@ -363,7 +392,7 @@ TEST_CASE("daa graph functions", "[dav][graph][functions]") {
 #  endif
 }
 
-TEST_CASE("daa vertex functions", "[dav][vertex][functions]") {
+TEST_CASE("dav vertex functions", "[dav][vertex][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
@@ -409,7 +438,7 @@ TEST_CASE("daa vertex functions", "[dav][vertex][functions]") {
   }
 }
 
-TEST_CASE("daa edge functions", "[dav][edge][functions]") {
+TEST_CASE("dav edge functions", "[dav][edge][functions]") {
   Graph        g  = create_germany_routes_graph();
   const Graph& gc = g;
 
@@ -502,7 +531,7 @@ TEST_CASE("dav vertex-vertex range", "[dav][vertex_vertex][range]") {
   }
 }
 
-TEST_CASE("daa dfs vertex", "[dav][dfs][vertex]") {
+TEST_CASE("dav dfs vertex", "[dav][dfs][vertex]") {
   Graph g = create_germany_routes_graph();
 
 #  if TEST_OPTION == TEST_OPTION_OUTPUT
@@ -566,7 +595,7 @@ TEST_CASE("daa dfs vertex", "[dav][dfs][vertex]") {
 #  endif
 }
 
-TEST_CASE("daa dfs edge", "[dav][dfs][edge]") {
+TEST_CASE("dav dfs edge", "[dav][dfs][edge]") {
   Graph                         g = create_germany_routes_graph();
   depth_first_search_edge_range dfs_edge_rng(g, find_city(g, "Frankfürt"));
 
@@ -733,7 +762,7 @@ TEST_CASE("daa dfs edge", "[dav][dfs][edge]") {
 #  endif
 }
 
-TEST_CASE("daa bfs vertex", "[dav][bfs][vertex]") {
+TEST_CASE("dav bfs vertex", "[dav][bfs][vertex]") {
   Graph                             g = create_germany_routes_graph();
   breadth_first_search_vertex_range bfs_vtx_rng(g, find_city(g, "Frankfürt"));
 
@@ -950,7 +979,7 @@ TEST_CASE("cass bfs edge", "[dav][bfs][edge]") {
 #  endif
 }
 
-TEST_CASE("daa dijkstra distance", "[dav][dikjstra][distance]") {
+TEST_CASE("dav dijkstra distance", "[dav][dikjstra][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -1050,7 +1079,7 @@ TEST_CASE("daa dijkstra distance", "[dav][dikjstra][distance]") {
 #  endif
 }
 
-TEST_CASE("daa bellman-ford distance", "[dav][bellman-ford][distance]") {
+TEST_CASE("dav bellman-ford distance", "[dav][bellman-ford][distance]") {
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
   short_dists_t short_dists;
@@ -1151,7 +1180,7 @@ TEST_CASE("daa bellman-ford distance", "[dav][bellman-ford][distance]") {
 #  endif
 }
 
-TEST_CASE("daa dijkstra shortest path", "[dav][dikjstra][path]") {
+TEST_CASE("dav dijkstra shortest path", "[dav][dikjstra][path]") {
   using std::dijkstra_shortest_paths;
   using std::shortest_path;
 
@@ -1329,7 +1358,7 @@ TEST_CASE("daa dijkstra shortest path", "[dav][dikjstra][path]") {
 #  endif
 }
 
-TEST_CASE("daa bellman-fort shortest path", "[dav][bellman-ford][path]") {
+TEST_CASE("dav bellman-fort shortest path", "[dav][bellman-ford][path]") {
   using std::bellman_ford_shortest_paths;
   using std::shortest_path;
 
@@ -1511,7 +1540,7 @@ TEST_CASE("daa bellman-fort shortest path", "[dav][bellman-ford][path]") {
 }
 
 
-TEST_CASE("daa dfs transitive closure", "[dav][dfs][transitive closure]") {
+TEST_CASE("dav dfs transitive closure", "[dav][dfs][transitive closure]") {
   using std::dfs_transitive_closure;
   using std::reaches;
 
@@ -1642,7 +1671,7 @@ TEST_CASE("daa dfs transitive closure", "[dav][dfs][transitive closure]") {
 }
 
 
-TEST_CASE("daa warshall transitive closure", "[dav][warshall][transitive closure]") {
+TEST_CASE("dav warshall transitive closure", "[dav][warshall][transitive closure]") {
   using std::warshall_transitive_closure;
   using std::reaches;
 
