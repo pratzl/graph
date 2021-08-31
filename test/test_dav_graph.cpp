@@ -39,7 +39,9 @@ using std::breadth_first_search_edge_range;
 using std::depth_first_search_vertex_range;
 using std::depth_first_search_edge_range;
 using std::shortest_distance;
+#endif // CPO
 
+#ifdef CPO
 using Graph      = std::directed_adjacency_vector<name_value, weight_value>;
 using vtx_iter_t = std::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::vertex_key_t<Graph>;

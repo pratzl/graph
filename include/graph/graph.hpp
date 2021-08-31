@@ -2,6 +2,7 @@
 #include <ranges>
 #include <type_traits>
 #include <optional>
+#include "graph_access.hpp"
 
 /* 
     This header's organization
