@@ -22,37 +22,39 @@ namespace _graph_value_ {
   template <typename T>
   void graph_value(std::initializer_list<T>) = delete;
 
-  template <typename G, typename VI>
-  concept _vtx_has_member = requires(G&& g, VI u) {
-    forward_iterator<VI>;
-    { forward<VI>(u)->graph_value(forward<G>(g)) } -> ranges::forward_range;
+  template <typename G>
+  concept _gph_has_member = requires(G&& g) {
+    {forward<G>(g).graph_value()};
   };
-  template <typename G, typename VI>
-  concept _vtx_has_ADL = requires(G&& g, VI u) {
-    is_reference_v<G>;
-    forward_iterator<VI>;
-    { graph_value(forward<G>(g), forward<VI>(u)) } -> ranges::forward_range;
+  template <typename G>
+  concept _gph_has_ADL = requires(G&& g) {
+    //is_reference_v<G>;
+    //convertible<G, ::vol_graph>;
+    //same<G, ::vol_graph>;
+    {graph_value(forward<G>(g))};
+    true;
   };
 
   struct fn {
   private:
-    template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
-    static consteval bool _vtx_fnc_except() {
-      if constexpr (_vtx_has_member<G, VI>)
-        return noexcept(_detail::_decay_copy(declval<VI>()->graph_value(declval<G&&>())));
-      else if constexpr (_vtx_has_ADL<G, VI>)
-        return noexcept(_detail::_decay_copy(graph_value(declval<G&&>(), declval<VI>())));
+    template <typename G>
+    requires _gph_has_member<G> || _gph_has_ADL<G>
+    static consteval bool _gph_fnc_except() {
+      if constexpr (_gph_has_member<G>)
+        return noexcept(_detail::_decay_copy(declval<G>().graph_value()));
+      else if constexpr (_gph_has_ADL<G>)
+        return noexcept(_detail::_decay_copy(graph_value(declval<G&&>())));
     }
 
   public:
-    template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
-    constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
-      if constexpr (_vtx_has_member<G, VI>)
-        return forward<G>(u)->graph_value(forward<G>(g));
-      else if constexpr (_vtx_has_ADL<G, VI>)
-        return graph_value(forward<G>(g), forward<G>(u));
+    // g.graph_value(), graph_value(g)
+    template <typename G>
+    requires _gph_has_member<G> || _gph_has_ADL<G>
+    constexpr auto operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
+      if constexpr (_gph_has_member<G>)
+        return forward<G>(g).graph_value();
+      else if constexpr (_gph_has_ADL<G>)
+        return graph_value(forward<G>(g));
     }
   };
 } // namespace _graph_value_
@@ -113,6 +115,7 @@ namespace _vertices_ {
     }
 
   public:
+    // g.vertices(), vertices(g), g
     template <typename G>
     requires _gph_has_member<G> || _gph_has_ADL<G> || _gph_has_rng<G>
     constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
@@ -124,6 +127,7 @@ namespace _vertices_ {
         return g;
     }
 
+    // u->vertices(g), vertices(g,u)
     template <typename G, typename VI>
     requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
     constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
@@ -156,7 +160,7 @@ namespace _vertex_key_ {
     { vertex_key(forward<G>(g), forward<VI>(u)) } -> ranges::forward_range;
   };
   template <typename G, typename VI>
-  concept _vtx_is_rnd = requires(G&& g, VI u) {
+  concept _vtx_is_rng = requires(G&& g, VI u) {
     is_reference_v<G>;
     random_access_iterator<VI>;
     //convertible_to<VI, decltype(vertices(begin(g)))>;
@@ -165,25 +169,26 @@ namespace _vertex_key_ {
   struct fn {
   private:
     template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rnd<G, VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rng<G, VI>
     static consteval bool _vtx_fnc_except() {
       if constexpr (_vtx_has_member<G, VI>)
         return noexcept(_detail::_decay_copy(declval<VI>()->vertex_key(declval<G&&>())));
       else if constexpr (_vtx_has_ADL<G, VI>)
         return noexcept(_detail::_decay_copy(vertex_key(declval<G&&>(), declval<VI>())));
-      else if constexpr (_vtx_is_rnd<G, VI>)
+      else if constexpr (_vtx_is_rng<G, VI>)
         return noexcept(declval<VI>() - declval<VI>());
     }
 
   public:
+    // u->vertex_key(g), vertex_key(g,u), (u - begin(vertices(g)))
     template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rnd<G, VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rng<G, VI>
     constexpr auto operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
       if constexpr (_vtx_has_member<G, VI>)
         return forward<G>(u)->vertex_key(forward<G>(g));
       else if constexpr (_vtx_has_ADL<G, VI>)
         return vertex_key(forward<G>(g), forward<G>(u));
-      else if constexpr (_vtx_is_rnd<G, VI>)
+      else if constexpr (_vtx_is_rng<G, VI>)
         return u - begin(vertices(g)); // default impl if not defined
     }
   };
@@ -222,6 +227,7 @@ namespace _vertex_value_ {
     }
 
   public:
+    // u->vertex_value(g), vertex_value(g,u)
     template <typename G, typename VI>
     requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
     constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
@@ -280,17 +286,18 @@ namespace _edges_ {
     }
 
     template <typename G, typename VI>
-    requires _vtx_has_rng<G, VI> || _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_has_rng<G, VI>
     static consteval bool _vtx_fnc_except() {
-      if constexpr (_vtx_has_rng<G, VI>)
-        return noexcept(_detail::_decay_copy(*declval<VI>()));
-      else if constexpr (_vtx_has_member<G, VI>)
+      if constexpr (_vtx_has_member<G, VI>)
         return noexcept(_detail::_decay_copy(declval<VI>()->edges(declval<G&&>())));
       else if constexpr (_vtx_has_ADL<G, VI>)
         return noexcept(_detail::_decay_copy(edges(declval<G&&>(), declval<VI>())));
+      else if constexpr (_vtx_has_rng<G, VI>)
+        return noexcept(_detail::_decay_copy(*declval<VI>()));
     }
 
   public:
+    // edges(g), g->edges()
     template <typename G>
     requires _gph_has_member<G> || _gph_has_ADL<G>
     constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
@@ -300,15 +307,16 @@ namespace _edges_ {
         return edges(forward<G>(g));
     }
 
+    // edges(g,u), u->edges(g), *u
     template <typename G, typename VI>
-    requires _vtx_has_rng<G, VI> || _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_has_rng<G, VI>
     constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
-      if constexpr (_vtx_has_rng<G, VI>)
-        return *u;
-      else if constexpr (_vtx_has_member<G, VI>)
+      if constexpr (_vtx_has_member<G, VI>)
         return forward<G>(u)->edges(forward<G>(g));
       else if constexpr (_vtx_has_ADL<G, VI>)
         return edges(forward<G>(g), forward<G>(u));
+      else if constexpr (_vtx_has_rng<G, VI>)
+        return *u;
     }
   };
 } // namespace _edges_
@@ -316,6 +324,7 @@ namespace _edges_ {
 inline namespace _cpo_ {
   inline constexpr _edges_::fn edges{};
 }
+
 
 } // namespace std
 
