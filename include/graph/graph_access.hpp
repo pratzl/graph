@@ -67,8 +67,6 @@ namespace _vertices_ {
   void vertices(std::initializer_list<T>) = delete;
 
   template <typename G>
-  concept _gph_has_rng = ranges::forward_range<G>;
-  template <typename G>
   concept _gph_has_member = requires(G&& g) {
     { forward<G>(g).vertices() } -> ranges::forward_range;
   };
@@ -77,6 +75,8 @@ namespace _vertices_ {
     is_reference_v<G>;
     { vertices(forward<G>(g)) } -> ranges::forward_range;
   };
+  template <typename G>
+  concept _gph_has_rng = ranges::forward_range<G>;
 
   template <typename G, typename VI>
   concept _vtx_has_member = requires(G&& g, VI u) {
@@ -93,14 +93,14 @@ namespace _vertices_ {
   struct fn {
   private:
     template <typename G>
-    requires _gph_has_rng<G> || _gph_has_member<G> || _gph_has_ADL<G>
+    requires _gph_has_member<G> || _gph_has_ADL<G> || _gph_has_rng<G>
     static consteval bool _gph_fnc_except() {
-      if constexpr (_gph_has_rng<G>)
-        return noexcept(_detail::_decay_copy(declval<G&&>()));
-      else if constexpr (_gph_has_member<G>)
+      if constexpr (_gph_has_member<G>)
         return noexcept(_detail::_decay_copy(declval<G&&>().vertices()));
       else if constexpr (_gph_has_ADL<G>)
         return noexcept(_detail::_decay_copy(vertices(declval<G&&>())));
+      else if constexpr (_gph_has_rng<G>)
+        return noexcept(_detail::_decay_copy(declval<G&&>()));
     }
 
     template <typename G, typename VI>
@@ -114,14 +114,14 @@ namespace _vertices_ {
 
   public:
     template <typename G>
-    requires _gph_has_rng<G> || _gph_has_member<G> || _gph_has_ADL<G>
+    requires _gph_has_member<G> || _gph_has_ADL<G> || _gph_has_rng<G>
     constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
-      if constexpr (_gph_has_rng<G>)
-        return forward<G>(g);
-      else if constexpr (_gph_has_member<G>)
+      if constexpr (_gph_has_member<G>)
         return forward<G>(g).vertices();
       else if constexpr (_gph_has_ADL<G>)
         return vertices(forward<G>(g));
+      else if constexpr (_gph_has_rng<G>)
+        return g;
     }
 
     template <typename G, typename VI>

@@ -42,7 +42,7 @@ TEST_CASE("vol accessors", "[vol][accessors]") {
   // non-const
   {
     using G = vol_graph;
-    G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.0}}};
+    G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.1}}};
     REQUIRE(graph_value(g) == 7);
 
     auto& vv = vertices(g);
