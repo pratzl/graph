@@ -10,7 +10,7 @@
 #ifndef GRAPH_TOPO_SORT_HPP
 #  define GRAPH_TOPO_SORT_HPP
 
-namespace std {
+namespace std::graph {
 
 #  ifdef CPO
 // clang-format off
@@ -36,6 +36,6 @@ private:
 
 #  endif // CPO
 
-} // namespace std
+} // namespace std::graph
 
 #endif // GRAPH_TOPO_SORT_HPP

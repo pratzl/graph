@@ -5,7 +5,7 @@
 // This file contains default implementations that will work in most/all cases
 // Individual graph structures can override if needed.
 
-namespace std {
+namespace std::graph {
 
 //
 // vertex Functions
@@ -16,6 +16,6 @@ constexpr bool contains_vertex(G const& g, vertex_key_t<G> ukey) noexcept {
 }
 
 
-} // namespace std
+} // namespace std::graph
 
 #endif // GRAPH_FWD_IMPL_HPP

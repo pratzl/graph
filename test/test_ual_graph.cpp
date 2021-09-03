@@ -52,11 +52,11 @@ using std::is_same;
 using std::ranges::size;
 
 #ifdef CPO
-using std::breadth_first_search_vertex_range;
-using std::breadth_first_search_edge_range;
-using std::depth_first_search_vertex_range;
-using std::depth_first_search_edge_range;
-using std::shortest_distance;
+using std::graph::breadth_first_search_vertex_range;
+using std::graph::breadth_first_search_edge_range;
+using std::graph::depth_first_search_vertex_range;
+using std::graph::depth_first_search_edge_range;
+using std::graph::shortest_distance;
 
 using Graph      = std::undirected_adjacency_list<name_value, weight_value>;
 using vtx_iter_t = std::vertex_iterator_t<Graph>;
@@ -970,10 +970,10 @@ TEST_CASE("ual bfs edge", "[ual][bfs][edge]") {
 }
 
 TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
-  using std::dijkstra_shortest_distances;
-  using std::dijkstra_shortest_paths;
-  using std::shortest_distance;
-  using std::shortest_path;
+  using std::graph::dijkstra_shortest_distances;
+  using std::graph::dijkstra_shortest_paths;
+  using std::graph::shortest_distance;
+  using std::graph::shortest_path;
 
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
@@ -1075,8 +1075,8 @@ TEST_CASE("ual dikjstra distance", "[ual][dikjstra][distance]") {
 }
 
 TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
-  using std::bellman_ford_shortest_distances;
-  using std::shortest_distance;
+  using std::graph::bellman_ford_shortest_distances;
+  using std::graph::shortest_distance;
 
   using short_dist_t  = shortest_distance<vertex_iterator_t<Graph>, int>;
   using short_dists_t = vector<short_dist_t>;
@@ -1180,8 +1180,8 @@ TEST_CASE("ual bellman-ford distance", "[ual][bellman-ford][distance]") {
 
 
 TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
-  using std::dijkstra_shortest_paths;
-  using std::shortest_path;
+  using std::graph::dijkstra_shortest_paths;
+  using std::graph::shortest_path;
 
   using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
   using short_paths_t = vector<short_path_t>;
@@ -1359,8 +1359,8 @@ TEST_CASE("ual dikjstra path", "[ual][dikjstra][path]") {
 }
 
 TEST_CASE("ual bellman-ford path", "[ual][bellman-ford][path]") {
-  using std::bellman_ford_shortest_paths;
-  using std::shortest_path;
+  using std::graph::bellman_ford_shortest_paths;
+  using std::graph::shortest_path;
 
   using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
   using short_paths_t = vector<short_path_t>;

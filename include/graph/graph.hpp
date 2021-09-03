@@ -55,7 +55,7 @@
 #ifndef GRAPH_FWD_HPP
 #  define GRAPH_FWD_HPP
 
-namespace std {
+namespace std::graph {
 
 
 // Vertex range & iterator types
@@ -351,14 +351,14 @@ concept edge_cycle =
           edge_iterator<G,ranges::range_value_t<Path>>;
 
 // clang-format on
-} // namespace std
+} // namespace std::graph
 
 
 // value concepts are easy, but algorithms have been designed to take a
 // function and don't have to rely on values. Typically they would, but
 // they can also look up values external to the graph. It's not clear
 // these are really needed.
-namespace std {
+namespace std::graph {
 
 template <typename G>
 concept has_graph_value = requires(G&& g) {
@@ -375,10 +375,10 @@ concept has_edge_value = requires(G&& g, EI uv) {
   semiregular<edge_value_t<G, EI>>;
 };
 
-} // namespace std
+} // namespace std::graph
 
 // Mutable concepts (future proposal)
-namespace std {
+namespace std::graph {
 // clang-format off
 
 // Requirements for extracting vertex values from external sources for graph construction
@@ -482,7 +482,7 @@ template <typename G, typename ER>
 concept static_graph = static_vertex_graph<G> && static_edge_graph<G, ER>;
 
 // clang-format on
-} // namespace std
+} // namespace std::graph
 
 
 #endif // GRAPH_FWD_HPP

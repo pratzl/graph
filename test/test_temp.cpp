@@ -55,8 +55,8 @@ TEST_CASE("test is_floating_point", "[test][temp][is_floating_point]") {
 
 
 TEST_CASE("[conversion]", "[conversion]") {
-  using std::is_convertible_v;
-  using std::is_same_v;
+  using std::graph::is_convertible_v;
+  using std::graph::is_same_v;
   using V = std::vector<int>;
   REQUIRE(is_convertible_v<V::iterator, V::const_iterator>);
   REQUIRE(!is_convertible_v<V::const_iterator, V::iterator>);

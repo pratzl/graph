@@ -13,7 +13,7 @@
 #ifndef GRAPH_TRANSITIVE_CLOSURE_HPP
 #  define GRAPH_TRANSITIVE_CLOSURE_HPP
 
-namespace std {
+namespace std::graph {
 
 #  ifdef CPO
 
@@ -108,6 +108,6 @@ constexpr void warshall_transitive_closure(G& g, OutIter result_iter, A alloc = 
 
 #  endif // CPO
 
-} // namespace std
+} // namespace std::graph
 
 #endif //GRAPH_TRANSITIVE_CLOSURE_HPP

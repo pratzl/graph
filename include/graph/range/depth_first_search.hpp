@@ -56,7 +56,7 @@
 #ifndef GRAPH_DFS_HPP
 #  define GRAPH_DFS_HPP
 
-namespace std {
+namespace std::graph {
 
 #  ifdef CPO
 
@@ -484,6 +484,6 @@ private:
 
 #  endif // CPO
 
-} // namespace std
+} // namespace std::graph
 
 #endif // GRAPH_DFS_HPP

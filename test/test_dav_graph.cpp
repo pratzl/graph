@@ -34,14 +34,14 @@ using std::is_same;
 using std::ranges::size;
 
 #ifdef CPO
-using std::breadth_first_search_vertex_range;
-using std::breadth_first_search_edge_range;
-using std::depth_first_search_vertex_range;
-using std::depth_first_search_edge_range;
-using std::shortest_distance;
+using std::graph::breadth_first_search_vertex_range;
+using std::graph::breadth_first_search_edge_range;
+using std::graph::depth_first_search_vertex_range;
+using std::graph::depth_first_search_edge_range;
+using std::graph::shortest_distance;
 #endif // CPO
 
-using Graph = std::directed_adjacency_vector<name_value, weight_value>;
+using Graph = std::graph::directed_adjacency_vector<name_value, weight_value>;
 #ifdef CPO
 using vtx_iter_t = std::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::vertex_key_t<Graph>;
@@ -89,17 +89,17 @@ constexpr bool is_constant(T&) {
 TEST_CASE("dav accessors", "[dav][accessors]") {
   // non-const
   {
-    using G = std::directed_adjacency_vector<>;
+    using G = std::graph::directed_adjacency_vector<>;
     G     g;
-    auto& vv = std::vertices(g);
+    auto& vv = std::graph::vertices(g);
     REQUIRE(!is_constant(vv));
   }
 
   // const
   {
-    using G = const std::directed_adjacency_vector<>;
+    using G = const std::graph::directed_adjacency_vector<>;
     G     g;
-    auto& vv = std::vertices(g);
+    auto& vv = std::graph::vertices(g);
     REQUIRE(is_constant(vv));
   }
 }
@@ -128,8 +128,8 @@ TEST_CASE("dav initializer list", "[dav][init][initializer list]") {
 }
 
 TEST_CASE("dav example 1", "[dav][example][1]") {
-  using std::directed_adjacency_vector;
-  using std::ranges::end;
+  using std::graph::directed_adjacency_vector;
+  using std::graph::ranges::end;
   struct route_mi {
     string from;
     string to;
@@ -153,7 +153,7 @@ TEST_CASE("dav example 1", "[dav][example][1]") {
 }
 
 TEST_CASE("dav example 2", "[dav][example][2]") {
-  using std::directed_adjacency_vector;
+  using std::graph::directed_adjacency_vector;
   using G = directed_adjacency_vector<empty_value, weight_value>;
 
   G g{{0, 1, 5}, {0, 2, 10}};
@@ -1181,8 +1181,8 @@ TEST_CASE("dav bellman-ford distance", "[dav][bellman-ford][distance]") {
 }
 
 TEST_CASE("dav dijkstra shortest path", "[dav][dikjstra][path]") {
-  using std::dijkstra_shortest_paths;
-  using std::shortest_path;
+  using std::graph::dijkstra_shortest_paths;
+  using std::graph::shortest_path;
 
   using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
   using short_paths_t = vector<short_path_t>;
@@ -1359,8 +1359,8 @@ TEST_CASE("dav dijkstra shortest path", "[dav][dikjstra][path]") {
 }
 
 TEST_CASE("dav bellman-fort shortest path", "[dav][bellman-ford][path]") {
-  using std::bellman_ford_shortest_paths;
-  using std::shortest_path;
+  using std::graph::bellman_ford_shortest_paths;
+  using std::graph::shortest_path;
 
   using short_path_t  = shortest_path<vertex_iterator_t<Graph>, int>;
   using short_paths_t = vector<short_path_t>;
@@ -1541,8 +1541,8 @@ TEST_CASE("dav bellman-fort shortest path", "[dav][bellman-ford][path]") {
 
 
 TEST_CASE("dav dfs transitive closure", "[dav][dfs][transitive closure]") {
-  using std::dfs_transitive_closure;
-  using std::reaches;
+  using std::graph::dfs_transitive_closure;
+  using std::graph::reaches;
 
   using reachs_t      = reaches<Graph>;
   using reaches_vec_t = vector<reachs_t>;
@@ -1672,8 +1672,8 @@ TEST_CASE("dav dfs transitive closure", "[dav][dfs][transitive closure]") {
 
 
 TEST_CASE("dav warshall transitive closure", "[dav][warshall][transitive closure]") {
-  using std::warshall_transitive_closure;
-  using std::reaches;
+  using std::graph::warshall_transitive_closure;
+  using std::graph::reaches;
 
   using reachs_t      = reaches<Graph>;
   using reaches_vec_t = vector<reachs_t>;

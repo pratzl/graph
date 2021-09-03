@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-namespace std {
+namespace std::graph {
 
 ///-------------------------------------------------------------------------------------
 /// ual_vertex_edge_list
@@ -2009,6 +2009,6 @@ constexpr bool ual_vertex_vertex_iterator<VV, EV, GV, KeyT, VContainer, Alloc>::
   return base_t::operator!=(rhs);
 }
 
-} // namespace std
+} // namespace std::graph
 
 #endif // UNDIRECTED_ADJ_LIST_IMPL_HPP

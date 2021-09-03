@@ -28,25 +28,27 @@ constexpr bool is_constant(T&) {
   return false;
 }
 
+// create functions in std for ADL, to match location of vector
+namespace std {
 auto graph_value(vol_graph& g) { return 7; }                                  // a bogus value only for validation
 auto vertex_value(vol_graph& g, vertex_iterator_t<vol_graph> u) { return 8; } // a bogus value only for validation
 //auto edge_value(vol_graph&, list<vol_edge_type>::iterator uv) { return uv->second; }
-
+} // namespace std
 
 TEST_CASE("vol accessors", "[vol][accessors]") {
-  using std::vertices;
-  using std::edges;
+  using std::graph::vertices;
+  using std::graph::edges;
 
-  using std::graph_value;
-  using std::vertex_key;
-  using std::vertex_value;
+  using std::graph::graph_value;
+  using std::graph::vertex_key;
+  using std::graph::vertex_value;
 
   // non-const
   {
     using G = vol_graph;
     G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.1}}};
-    //static_assert(std::_graph_value_::_gph_has_ADL<G>);
-    //REQUIRE(graph_value(g) == 7);
+    static_assert(std::graph::_graph_value_::_gph_has_ADL<G>);
+    REQUIRE(graph_value(g) == 7);
 
     auto& vv = vertices(g);
     REQUIRE(!is_constant(vv));
@@ -89,8 +91,8 @@ TEST_CASE("cpo accessor", "[cpo][trace]") {
 
   tbegin tb;
   it         = std::ranges::begin(tb);
-  auto value = std::graph_value(tb);
-  static_assert(std::_graph_value_::_gph_has_ADL<tbegin>);
+  auto value = std::graph::graph_value(tb);
+  static_assert(std::graph::_graph_value_::_gph_has_ADL<tbegin>);
 
   int x = 0;
 }

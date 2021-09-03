@@ -53,7 +53,7 @@
 #if !defined(GRAPH_BFS_HPP)
 #  define GRAPH_BFS_HPP
 
-namespace std {
+namespace std::graph {
 
 #  ifdef CPO
 
@@ -459,6 +459,6 @@ private:
 
 #  endif // CPO
 
-} // namespace std
+} // namespace std::graph
 
 #endif // GRAPH_BFS_HPP

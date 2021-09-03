@@ -54,7 +54,7 @@
 #ifndef GRAPH_SHORTEST_PATHS_HPP
 #  define GRAPH_SHORTEST_PATHS_HPP
 
-namespace std {
+namespace std::graph {
 
 #  ifdef CPO
 
@@ -610,6 +610,6 @@ bool bellman_ford_shortest_paths(
 
 #  endif // CPO
 
-} // namespace std
+} // namespace std::graph
 
 #endif //GRAPH_SHORTEST_PATHS_HPP

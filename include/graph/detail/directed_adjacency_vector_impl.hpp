@@ -7,7 +7,7 @@
 #ifndef DIRECTED_ADJ_ARRAY_IMPL_HPP
 #  define DIRECTED_ADJ_ARRAY_IMPL_HPP
 
-namespace std {
+namespace std::graph {
 
 ///-------------------------------------------------------------------------------------
 /// dav_edge
@@ -1485,6 +1485,6 @@ void directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>:
 }
 
 
-} // namespace std
+} // namespace std::graph
 
 #endif // DIRECTED_ADJ_ARRAY_IMPL_HPP

@@ -5,7 +5,7 @@
 #ifndef GRAPH_UTILITY_HPP
 #  define GRAPH_UTILITY_HPP
 
-namespace std {
+namespace std::graph {
 
 //
 // Default implementations
@@ -106,9 +106,9 @@ namespace detail {
   }
 
   template <typename I, typename S>
-  requires input_or_output_iterator<I> && sentinel_for<S, I>     //
-  constexpr ranges::subrange<I, S, ranges::subrange_kind::sized> //
-  make_subrange(I i, S s, detail::iter_size_t<I> n) {
+  requires input_or_output_iterator<I>&& sentinel_for<S, I>            //
+        constexpr ranges::subrange<I, S, ranges::subrange_kind::sized> //
+        make_subrange(I i, S s, detail::iter_size_t<I> n) {
     return {i, s, n};
   }
 
@@ -125,6 +125,6 @@ namespace detail {
 
 } // namespace detail
 
-} // namespace std
+} // namespace std::graph
 
 #endif // GRAPH_UTILITY_HPP

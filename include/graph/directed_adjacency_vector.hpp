@@ -8,7 +8,7 @@
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
-namespace std {
+namespace std::graph {
 
 
 ///-------------------------------------------------------------------------------------
@@ -737,7 +737,7 @@ struct graph_traits<
 };
 #  endif
 
-} // namespace std
+} // namespace std::graph
 
 #endif // DIRECTED_ADJ_ARRAY_HPP
 

@@ -17,9 +17,9 @@
 #define TEST_OPTION_TEST (3)
 #define TEST_OPTION TEST_OPTION_TEST
 
-using std::string;
-using std::cout;
-using std::endl;
+using std::graph::string;
+using std::graph::cout;
+using std::graph::endl;
 
 
 #ifdef CPO
@@ -105,7 +105,7 @@ TEST_CASE("vov graph", "[vov]") {
 
 TEST_CASE("vov dfs vertex", "[vov][dfs][vertex]") {
   using namespace graph::adaptor;
-  using std::depth_first_search_vertex_range;
+  using std::graph::depth_first_search_vertex_range;
   using Graph = vov_germany_t;
 
   vov_germany_t                   g = get_germany_routes();

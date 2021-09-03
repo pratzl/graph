@@ -3,7 +3,7 @@
 #ifndef GRAPH_ACCESS_HPP
 #  define GRAPH_ACCESS_HPP
 
-namespace std {
+namespace std::graph {
 namespace _detail {
   //template <typename T>
   //inline constexpr bool _borrowed_range = enable_borrowed_range<uncvref_t<T>>;
@@ -326,6 +326,6 @@ inline namespace _cpo_ {
 }
 
 
-} // namespace std
+} // namespace std::graph
 
 #endif //GRAPH_ACCESS_HPP

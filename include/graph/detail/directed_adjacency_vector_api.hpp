@@ -7,7 +7,7 @@
 #ifndef DIRECTED_ADJ_ARRAY_API_HPP
 #  define DIRECTED_ADJ_ARRAY_API_HPP
 
-namespace std {
+namespace std::graph {
 
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector graph API
@@ -977,6 +977,6 @@ find_vertex_edge(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, E
 //
 #  endif // CPO
 
-} // namespace std
+} // namespace std::graph
 
 #endif // DIRECTED_ADJ_ARRAY_API_HPP

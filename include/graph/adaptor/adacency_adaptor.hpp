@@ -1,7 +1,7 @@
 #pragma once
 #include "../graph.hpp"
 
-namespace std {
+namespace std::graph {
 
 template <typename G>
 class adjacency_range_adaptor {
@@ -11,4 +11,4 @@ class adjacency_range_adaptor {
   using vertex_edge_iterator = ranges::iterator_t<vertex_edge_range>;
 };
 
-} // namespace std
+} // namespace std::graph
