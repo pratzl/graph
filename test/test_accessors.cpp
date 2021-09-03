@@ -45,7 +45,7 @@ TEST_CASE("vol accessors", "[vol][accessors]") {
   {
     using G = vol_graph;
     G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.1}}};
-    static_assert(std::_graph_value_::_gph_has_ADL<G>);
+    //static_assert(std::_graph_value_::_gph_has_ADL<G>);
     //REQUIRE(graph_value(g) == 7);
 
     auto& vv = vertices(g);
@@ -55,9 +55,9 @@ TEST_CASE("vol accessors", "[vol][accessors]") {
     auto u = begin(vertices(g));
     REQUIRE(u == g.begin());
     REQUIRE(u->size() == 2);
-    REQUIRE(size(edges(g, u)) == 2);
+    //REQUIRE(size(edges(g, u)) == 2);
     REQUIRE(vertex_key(g, u) == 0);
-    //static_assert(std::_vertex_value_::_gph_has_ADL<G>);
+    //static_assert(std::_vertex_value_::_vtx_has_ADL<G, decltype(u)>);
     //REQUIRE(vertex_value(g, u) == 8);
   }
 
@@ -68,4 +68,29 @@ TEST_CASE("vol accessors", "[vol][accessors]") {
     auto& vv = vertices(g);
     REQUIRE(is_constant(vv));
   }
+}
+
+using IntVec = std::vector<int>;
+
+auto begin(IntVec& v) { return v.begin(); }
+
+struct tbegin {
+  IntVec iv    = {1, 2, 3};
+  int    value = 0;
+};
+auto begin(tbegin& v) { return v.iv.begin(); }
+auto graph_value(tbegin& v) {
+  return v.value; // no fmt
+}
+
+TEST_CASE("cpo accessor", "[cpo][trace]") {
+  IntVec iv{1, 2, 3};
+  auto   it = std::ranges::begin(iv);
+
+  tbegin tb;
+  it         = std::ranges::begin(tb);
+  auto value = std::graph_value(tb);
+  static_assert(std::_graph_value_::_gph_has_ADL<tbegin>);
+
+  int x = 0;
 }
