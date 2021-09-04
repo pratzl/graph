@@ -10,9 +10,9 @@ macro(run_conan)
 
   conan_add_remote(
     NAME
-    conan-center
+    conancenter
     URL
-    https://api.bintray.com/conan/conan/conan-center)
+    https://center.conan.io)
 
   conan_add_remote(
     NAME
@@ -28,12 +28,12 @@ macro(run_conan)
 conan_cmake_run(
   REQUIRES
   ${CONAN_EXTRA_REQUIRES}
-  catch2/2.13.2
+  catch2/2.13.7
   docopt.cpp/0.6.2
-  fmt/7.0.3
-  spdlog/1.8.0
+  fmt/8.0.1
+  spdlog/1.9.2
   range-v3/0.11.0
-  tbb/2020.1
+  tbb/2020.3
   OPTIONS
   ${CONAN_EXTRA_OPTIONS}
   SETTINGS compiler.cppstd=20 
