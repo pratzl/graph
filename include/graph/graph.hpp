@@ -123,7 +123,7 @@ using edge_value_t = decltype(edge_value(declval<G&&>(), declval<EI>()));
 template <typename G, typename ER>
 using is_ordered = false_type;
 template <typename G, typename ER>
-inline constexpr bool is_ordered_v = ordered<G, ER>::value;
+inline constexpr bool is_ordered_v = is_ordered<G, ER>::value;
 
 template <typename G, typename ER>
 using is_unordered = false_type;

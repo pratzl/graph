@@ -23,13 +23,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
   option(ENABLE_BUILD_WITH_TIME_TRACE "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
-  if (ENABLE_BUILD_WITH_TIME_TRACE)
-    add_compile_definitions(project_options INTERFACE -ftime-trace)
+  if(ENABLE_BUILD_WITH_TIME_TRACE)
+    target_compile_options(project_options INTERFACE -ftime-trace)
   endif()
 endif()
  
 # Link this 'library' to use the warnings specified in CompilerWarnings.cmake
 add_library(project_warnings INTERFACE)
+
+# enable cache system
+include(cmake/Cache.cmake)
+
+# Add linker configuration
+include(cmake/Linker.cmake)
+configure_linker(project_options)
 
 # standard compiler warnings
 include(cmake/CompilerWarnings.cmake)
@@ -48,23 +55,28 @@ include(cmake/StaticAnalyzers.cmake)
 
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
+option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
 # Very basic PCH example
 option(ENABLE_PCH "Enable Precompiled Headers" OFF)
 if (ENABLE_PCH)
-  # This sets a global PCH parameter, each project will build its own PCH, which
-  # is a good idea if any #define's change
+  # This sets a global PCH parameter, each project will build its own PCH, which is a good idea if any #define's change
   # 
   # consider breaking this out per project as necessary 
-  target_precompile_headers(project_options INTERFACE <vector> <string> <map> <utility>)
+  target_precompile_headers(
+    project_options
+    INTERFACE
+    <vector>
+    <string>
+    <map>
+    <utility>)
 endif()
 
 option(ENABLE_BGL17 "Enable Better Graph Library 17" OFF)
 if(ENABLE_BGL17)
 endif()
 
-# Set up some extra Conan dependencies based on our needs
-# before loading Conan
+# Set up some extra Conan dependencies based on our needs before loading Conan
 set(CONAN_EXTRA_REQUIRES "")
 set(CONAN_EXTRA_OPTIONS "")
 
@@ -74,16 +86,12 @@ run_conan()
 
 if(ENABLE_TESTING)
   enable_testing()
-  message(
-    "Building Tests. Be sure to check out test/constexpr_tests for constexpr testing"
-  )
+  message("Building Tests. Be sure to check out test/constexpr_tests for constexpr testing")
   add_subdirectory(test)
 endif()
 
 if(ENABLE_FUZZING)
-  message(
-    "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html"
-  )
+  message("Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
   add_subdirectory(fuzz_test)
 endif()
 
