@@ -62,7 +62,7 @@ namespace std::graph {
 template <typename G>
 using vertex_range_t = decltype(vertices(declval<G&&>()));
 template <typename G>
-using vertex_iterator_t = ranges::iterator_t<vertex_range_t<G>>;
+using vertex_iterator_t = ranges::iterator_t<vertex_range_t<G&&>>;
 
 // edge range & iterator types
 template <typename G>
@@ -119,6 +119,22 @@ template <typename G, typename EI>
 using edge_value_t = decltype(edge_value(declval<G&&>(), declval<EI>()));
 
 
+// overridable per graph to direct algorithm
+template <typename G, typename ER>
+using is_ordered = false_type;
+template <typename G, typename ER>
+inline constexpr bool is_ordered_v = ordered<G, ER>::value;
+
+template <typename G, typename ER>
+using is_unordered = false_type;
+template <typename G, typename ER>
+inline constexpr bool is_unordered_v = is_unordered<G, ER>::value;
+
+template <typename G, typename ER>
+using is_undefined_order = bool_constant<!is_ordered_v<G, ER> && !is_unordered_v<G, ER>>;
+template <typename G, typename ER>
+inline constexpr bool is_undefined_order_v = is_undefined_order_v<G, ER>;
+
 // clang-format off
 
 // vertex & edge range concepts
@@ -170,6 +186,7 @@ concept edge_range = ranges::forward_range<ER> &&
 template<typename G, typename ER>
 concept sourced_edge_range = ranges::forward_range<ER> && 
                              sourced_edge_iterator<G, ranges::iterator_t<ER>>;
+
 
 // graph concepts
 
