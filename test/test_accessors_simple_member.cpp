@@ -11,7 +11,7 @@ using std::pair;
 
 // A new namespace and graph type is defined for each set of member/adl tests
 // to assure there is no carry-over definitions from other tests.
-namespace simple2 {
+namespace member {
 
 //
 // The Graph
@@ -60,7 +60,7 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   auto graph_value() const { return the_value; }
 };
 
-TEMPLATE_TEST_CASE("smple graph member", "[simple][accessors][member]", (simple_graph), (const simple_graph)) {
+TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple_graph), (const simple_graph)) {
   static_assert(std::is_same_v<TestType, simple_graph> || std::is_same_v<TestType, const simple_graph>);
   using G = TestType;
   G g;
@@ -101,4 +101,4 @@ TEMPLATE_TEST_CASE("smple graph member", "[simple][accessors][member]", (simple_
   }
 }
 
-} // namespace simple2
+} // namespace member

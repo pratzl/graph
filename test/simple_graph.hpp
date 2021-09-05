@@ -1,11 +1,13 @@
 #include <vector>
 #include <list>
 
+// do both parameters have non-const, or both const, values?
 template <typename T1, typename T2>
 constexpr bool is_same_const(T1&& t1, T2&& t2) {
   return std::is_const_v<T1> == std::is_const_v<T2>;
 }
 
+// Define base classes for a simple graph used for testing.
 namespace simple_ns {
 struct simple_edge_base {
   using edge_key_type   = std::pair<size_t, size_t>;
