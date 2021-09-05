@@ -1,5 +1,6 @@
 #include <vector>
 #include <list>
+#include <type_traits>
 
 // do both parameters have non-const, or both const, values?
 template <typename T1, typename T2>
@@ -30,9 +31,9 @@ struct simple_vertex_base {
   using vertex_value_type = double;
   using edge_range        = std::list<E>;
 
-  vertex_key_type   the_key   = {};
-  vertex_value_type the_value = {};
-  edge_range        the_edges;
+  vertex_key_type   the_key   = {}; // this vertex's key (should be same as it's index in the_vertices)
+  vertex_value_type the_value = {}; // this vertex's value
+  edge_range        the_edges;      // incidence edges
 
   simple_vertex_base(vertex_key_type key, vertex_value_type val, const edge_range& init)
         : the_key(key), the_value(val), the_edges(init) {}

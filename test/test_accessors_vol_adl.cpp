@@ -11,47 +11,52 @@ using std::endl;
 using std::pair;
 using std::vector;
 using std::list;
-using std::forward_list;
-
-//
-// vol - vector of list - graph
-//
-using vol_key         = size_t;
-using vol_edge_val    = double;
-using vol_edge_type   = pair<vol_key, vol_edge_val>;
-using vol_graph       = vector<list<vol_edge_type>>;
-using vol_vertex_type = vol_graph::value_type;
 
 template <typename T1, typename T2>
 constexpr bool is_same_const(T1&& t1, T2&& t2) {
   return std::is_const_v<T1> == std::is_const_v<T2>;
 }
 
+//
+// vol - vector of list - graph
+//
+namespace vol_adl {
+using vol_key          = size_t;
+using vol_edge_val     = double;
+using vol_edge_type    = pair<vol_key, vol_edge_val>;
+using vol_edge_range   = list<vol_edge_type>;
+using vol_vertex_range = vector<vol_edge_range>;
+using vol_graph        = vol_vertex_range;
+} // namespace vol_adl
+
 // create free functions for ADL
 // they're created in std:: to match namespace of vector, a requirement for ADL
 namespace std {
-auto& graph_value(vol_graph& g) {
+auto& graph_value(vol_adl::vol_graph& g) {
   static int val = 7; // a bogus value only for validation
   return val;
 }
-const auto& graph_value(const vol_graph& g) {
+const auto& graph_value(const vol_adl::vol_graph& g) {
   static const int val = 7;
   return val; // a bogus value only for validation
 }
-auto& vertex_value(vol_graph& g, vertex_iterator_t<vol_graph> u) {
+auto& vertex_value(vol_adl::vol_graph& g, vertex_iterator_t<vol_adl::vol_graph> u) {
   static int val = 8; // a bogus value only for validation
   return val;
 }
-const auto& vertex_value(const vol_graph& g, vertex_iterator_t<const vol_graph> u) {
+const auto& vertex_value(const vol_adl::vol_graph& g, vertex_iterator_t<const vol_adl::vol_graph> u) {
   static int val = 8; // a bogus value only for validation
   return val;
 }
 
-auto&       edge_value(vol_graph&, list<vol_edge_type>::iterator uv) { return uv->second; }
-const auto& edge_value(vol_graph const&, list<vol_edge_type>::const_iterator uv) { return uv->second; }
+auto&       edge_value(vol_adl::vol_graph&, list<vol_adl::vol_edge_type>::iterator uv) { return uv->second; }
+const auto& edge_value(const vol_adl::vol_graph&, list<vol_adl::vol_edge_type>::const_iterator uv) {
+  return uv->second;
+}
 } // namespace std
 
 
+namespace vol_adl {
 TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_graph)) {
   static_assert(std::is_same_v<TestType, vol_graph> || std::is_same_v<TestType, const vol_graph>);
   using G = TestType;
@@ -101,3 +106,4 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
   //edge_key
   //edge_value
 }
+} // namespace vol_adl
