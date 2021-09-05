@@ -117,8 +117,6 @@ namespace _edges_ {
   };
 
   template <typename G, typename VI>
-  concept _vtx_has_rng = ranges::forward_range<decltype(*declval<VI>())>;
-  template <typename G, typename VI>
   concept _vtx_has_member = requires(G&& g, VI u) {
     forward_iterator<VI>;
     { u->edges(forward<G>(g)) }
@@ -126,11 +124,12 @@ namespace _edges_ {
   };
   template <typename G, typename VI>
   concept _vtx_has_ADL = requires(G&& g, VI u) {
-    is_reference_v<G>;
     forward_iterator<VI>;
     { edges(forward<G>(g), u) }
     ->ranges::forward_range;
   };
+  template <typename G, typename VI>
+  concept _vtx_has_rng = ranges::forward_range<decltype(*declval<VI>())>;
 
   struct fn {
   private:
@@ -143,11 +142,14 @@ namespace _edges_ {
     }
 
     template <typename G, typename VI>
-          requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> static consteval bool _vtx_fnc_except() {
+          requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> ||
+          _vtx_has_rng<G, VI> static consteval bool _vtx_fnc_except() {
       if constexpr (_vtx_has_member<G, VI>)
         return noexcept(_detail::_decay_copy(declval<VI>()->edges(declval<G&>())));
       else if constexpr (_vtx_has_ADL<G, VI>)
         return noexcept(_detail::_decay_copy(edges(declval<G&>(), declval<VI>())));
+      else if constexpr (_vtx_has_rng<G, VI>)
+        return *declval<VI>();
     }
 
   public:
@@ -169,6 +171,8 @@ namespace _edges_ {
         return u->edges(forward<G>(g));
       else if constexpr (_vtx_has_ADL<G, VI>)
         return edges(forward<G>(g), u);
+      else if constexpr (_vtx_has_rng<G, VI>)
+        return *u;
     }
   };
 } // namespace _edges_
@@ -267,7 +271,7 @@ namespace _vertex_key_ {
       else if constexpr (_vtx_has_ADL<G, VI>)
         return vertex_key(forward<G>(g), u);
       else if constexpr (_vtx_is_rng<G, VI>)
-        return u - begin(vertices(g)); // default impl if not defined
+        return u - ranges::begin(vertices(g)); // default impl if not defined
     }
   };
 } // namespace _vertex_key_
