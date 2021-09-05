@@ -9,18 +9,8 @@
 
 namespace std::graph {
 
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-                          vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) {
-  using key_t = < vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>;
-  return static_cast<key_t>(u - g.vertices().begin());
-}
+// vertex_key(g,u): CPO evaluates the key for random-access iterators, so we don't need to define it here
+
 
 #ifdef CPO
 ///-------------------------------------------------------------------------------------

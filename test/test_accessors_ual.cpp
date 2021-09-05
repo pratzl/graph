@@ -1,4 +1,4 @@
-#include "graph/directed_adjacency_vector.hpp"
+#include "graph/undirected_adjacency_list.hpp"
 #include "graph/graph_utility.hpp"
 //#include "data_routes.hpp"
 #include <iostream>
@@ -25,7 +25,7 @@ using std::is_same;
 
 using namespace std::graph;
 
-using Graph = directed_adjacency_vector<name_value, weight_value, double>;
+using Graph = undirected_adjacency_list<name_value, weight_value>;
 
 // do both parameters have non-const, or both const, values?
 template <typename T1, typename T2>
@@ -33,7 +33,7 @@ constexpr bool is_same_const(T1&& t1, T2&& t2) {
   return std::is_const_v<T1> == std::is_const_v<T2>;
 }
 
-TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) {
+TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) {
   static_assert(std::is_same_v<TestType, Graph> || std::is_same_v<TestType, const Graph>);
   using G = TestType;
   G g;

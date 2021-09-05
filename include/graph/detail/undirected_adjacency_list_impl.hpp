@@ -976,7 +976,7 @@ ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::edges(const graph_type& g, vert
 template <typename VV, typename EV, typename GV, integral KeyT, template <typename V, typename A> class VContainer, typename Alloc>
 typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_key_type
 ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_key(const graph_type& g) const noexcept {
-  return static_cast<vertex_key_type>(this - g.vertices().data());
+  return static_cast<vertex_key_type>(this - g.vertices().data()); // doesn't work on non-contiguous containers, like deque
 }
 #endif
 

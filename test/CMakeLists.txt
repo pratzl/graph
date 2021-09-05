@@ -15,7 +15,7 @@ target_link_libraries(catch_main PRIVATE project_options)
 add_executable(tests tests.cpp 
                test_accessors_vol_adl.cpp  
                test_accessors_simple_adl.cpp test_accessors_simple_member.cpp test_accessors_simple_rng.cpp
-               test_accessors_dav.cpp
+               test_accessors_dav.cpp test_accessors_ual.cpp
                test_dav_graph.cpp  )
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 target_link_libraries(tests PRIVATE CONAN_PKG::fmt)
