@@ -10,7 +10,8 @@ add_library(catch_main STATIC catch_main.cpp)
 target_link_libraries(catch_main PUBLIC CONAN_PKG::catch2)
 target_link_libraries(catch_main PRIVATE project_options)
 
-add_executable(tests tests.cpp test_accessors.cpp test_dav_graph.cpp data_routes.cpp test_ual_graph.cpp test_concomp.cpp test_rl.cpp test_temp.cpp)
+add_executable(tests tests.cpp test_accessors_vol_adl.cpp  test_accessors_simple_adl.cpp
+               test_dav_graph.cpp data_routes.cpp test_ual_graph.cpp test_concomp.cpp test_rl.cpp test_temp.cpp)
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 target_link_libraries(tests PRIVATE CONAN_PKG::fmt)
 target_link_libraries(tests PRIVATE graph)
