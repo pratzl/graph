@@ -557,6 +557,7 @@ public:
   edge_type&       edge_back(graph_type&) noexcept;
   const edge_type& edge_back(const graph_type&) const noexcept;
 
+#  if 0
   vertex_vertex_iterator       vertices_begin(graph_type&, vertex_key_type ukey);
   const_vertex_vertex_iterator vertices_begin(const graph_type&, vertex_key_type ukey) const;
   const_vertex_vertex_iterator vertices_cbegin(const graph_type&, vertex_key_type ukey) const;
@@ -564,6 +565,7 @@ public:
   vertex_vertex_iterator       vertices_end(graph_type&, vertex_key_type ukey);
   const_vertex_vertex_iterator vertices_end(const graph_type&, vertex_key_type ukey) const;
   const_vertex_vertex_iterator vertices_cend(const graph_type&, vertex_key_type ukey) const;
+#  endif
 
   vertex_vertex_range       vertices(graph_type&, vertex_key_type ukey);
   const_vertex_vertex_range vertices(const graph_type&, vertex_key_type ukey) const;

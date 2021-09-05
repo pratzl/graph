@@ -234,6 +234,34 @@ dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_begin_index() 
   return first_edge_;
 }
 
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value_type&
+dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(graph_type&) {
+  return user_value(*this);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+const typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value_type&
+dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(const graph_type&) const {
+  return user_value(*this);
+}
+
 ///-------------------------------------------------------------------------------------
 /// dav_const_vertex_vertex_iterator
 ///
@@ -1022,6 +1050,34 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
+constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value_type&
+directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value() {
+  return user_value(*this);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+constexpr const typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value_type&
+directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value() const {
+  return user_value(*this);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_set&
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertices() {
   return vertices_;
@@ -1263,115 +1319,6 @@ constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, ECont
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::allocator() const {
   return alloc_;
 }
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::begin() {
-  return vertices_.begin();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::begin() const {
-  return vertices_.begin();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::cbegin() const {
-  return vertices_.cbegin();
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::end() {
-  return vertices_.end();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::end() const {
-  return vertices_.end();
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::cend() const {
-  return vertices_.cend();
-}
-
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_set&
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edges() {
-  return edges_;
-}
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr const typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_set&
-directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edges() const {
-  return edges_;
-}
-
 
 template <typename VV,
           typename EV,

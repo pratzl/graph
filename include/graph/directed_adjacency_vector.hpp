@@ -216,6 +216,9 @@ public:
   void            set_edge_begin(edge_index_type);
   edge_index_type edge_begin_index() const;
 
+  vertex_value_type&       vertex_value(graph_type&);
+  const vertex_value_type& vertex_value(graph_type const&) const;
+
 private:
   edge_index_type first_edge_ = numeric_limits<edge_index_type>::max();
 };
@@ -630,16 +633,11 @@ public:
   directed_adjacency_vector& operator=(directed_adjacency_vector&&) = default;
 
 public:
+  constexpr graph_value_type&       graph_value();
+  constexpr const graph_value_type& graph_value() const;
+
   constexpr vertex_set&       vertices();
   constexpr const vertex_set& vertices() const;
-
-  constexpr vertex_iterator       begin();
-  constexpr const_vertex_iterator begin() const;
-  constexpr const_vertex_iterator cbegin() const;
-
-  constexpr vertex_iterator       end();
-  constexpr const_vertex_iterator end() const;
-  constexpr const_vertex_iterator cend() const;
 
   constexpr edge_set&       edges();
   constexpr const edge_set& edges() const;
