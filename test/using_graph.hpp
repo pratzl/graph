@@ -33,6 +33,6 @@ using std::graph::vertex_inward_edge_iterator_t;
 using std::graph::vertex_inward_vertex_range_t;
 using std::graph::vertex_inward_vertex_iterator_t;
 
-using std::graph::empty_value;
-using std::graph::name_value;
-using std::graph::weight_value;
+using std::graph::containers::empty_value;
+using std::graph::containers::name_value;
+using std::graph::containers::weight_value;

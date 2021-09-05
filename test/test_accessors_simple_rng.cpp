@@ -45,6 +45,7 @@ struct simple_vertex : public simple_ns::simple_vertex_base<simple_edge> {
   auto begin() const { return the_edges.begin(); }
   auto end() { return the_edges.end(); }
   auto end() const { return the_edges.end(); }
+  auto size() const { return the_edges.size(); }
 };
 
 struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_edge> {
@@ -68,7 +69,7 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   auto begin() const { return the_vertices.begin(); }
   auto end() { return the_vertices.end(); }
   auto end() const { return the_vertices.end(); }
-  //auto size() const { return the_vertices.size(); }
+  //auto size() const { return the_vertices.size(); } // CPO will calc size of random_access_range
 };
 
 // TEST_CASE("cpo accessor", "[cpo][trace]") {
@@ -85,12 +86,7 @@ TEMPLATE_TEST_CASE("simple graph rng", "[simple][accessors][rng]", (simple_graph
   using G = TestType;
   G g;
 
-  using std::graph::vertices;
-  using std::graph::edges;
-
-  using std::graph::graph_value;
-  using std::graph::vertex_key;
-  using std::graph::vertex_value;
+  using namespace std::graph;
 
   //
   // vertex range
@@ -100,10 +96,19 @@ TEMPLATE_TEST_CASE("simple graph rng", "[simple][accessors][rng]", (simple_graph
     auto& vv = vertices(g);
     REQUIRE(is_same_const(g, vv));
     REQUIRE(std::ranges::size(vertices(g)) == 3);
-    //auto u = begin(vv);
-    //REQUIRE(u == g.begin());
-    //REQUIRE(u->size() == 2);
-    //REQUIRE(size(edges(g, u)) == 2);
+
+    auto u = ++std::ranges::begin(vv);
+    REQUIRE(vertex_key(g, u) == 1);
+    //REQUIRE(vertex_value(g, u) == 11);
+
+    static_assert(std::graph::_edges_::_vtx_has_rng<simple_graph, vertex_iterator_t<simple_graph>>);
+    REQUIRE(std::ranges::forward_range<decltype(*u)>);
+    auto& ee = edges(g, u);
+    REQUIRE(std::ranges::size(ee) == 1);
+    auto uv = std::ranges::begin(ee);
+    //REQUIRE(edge_key(g, uv).first == 1);
+    //REQUIRE(edge_key(g, uv).second == 2);
+    //REQUIRE(edge_value(g, uv) == 2.2);
   }
 
   //

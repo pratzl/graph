@@ -62,7 +62,8 @@ struct route {
 };
 
 struct daa_routes_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, std::graph::weight_value>;
+  using target_graph_t      = std::graph::containers::directed_adjacency_vector<std::graph::containers::name_value,
+                                                                           std::graph::containers::weight_value>;
   using source_edge_range_t = routes_t;
   using source_edge_t       = source_edge_range_t::value_type;
 
@@ -120,7 +121,8 @@ using data_edges_t    = std::vector<data_edge>;
 using vertex_labels_t = std::vector<std::string>;
 
 struct daa_data_edge_mapper {
-  using target_graph_t      = std::graph::directed_adjacency_vector<std::graph::name_value, dbl_weight_value>;
+  using target_graph_t =
+        std::graph::containers::directed_adjacency_vector<std::graph::containers::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;
 
@@ -134,7 +136,7 @@ struct daa_data_edge_mapper {
 
 #ifdef CPO
 struct ual_data_edge_mapper {
-  using target_graph_t      = std::graph::undirected_adjacency_list<std::graph::name_value, dbl_weight_value>;
+  using target_graph_t = std::graph::containers::undirected_adjacency_list<std::graph::name_value, dbl_weight_value>;
   using source_edge_range_t = data_edges_t;
   using source_edge_t       = data_edges_t::value_type;
 

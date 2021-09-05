@@ -10,7 +10,7 @@
 #ifndef UNDIRECTED_ADJ_LIST_HPP
 #  define UNDIRECTED_ADJ_LIST_HPP
 
-namespace std::graph {
+namespace std::graph::containers {
 
 ///-------------------------------------------------------------------------------------
 /// undirected_adjacency_list forward declarations
@@ -1141,7 +1141,7 @@ struct graph_traits<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Allo
 };
 #  endif
 
-} // namespace std::graph
+} // namespace std::graph::containers
 
 #endif // UNDIRECTED_ADJ_LIST_HPP
 

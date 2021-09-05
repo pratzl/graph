@@ -7,13 +7,28 @@
 #ifndef DIRECTED_ADJ_ARRAY_API_HPP
 #  define DIRECTED_ADJ_ARRAY_API_HPP
 
-namespace std::graph {
+namespace std::graph::containers {
 
 ///-------------------------------------------------------------------------------------
 /// directed_adjacency_vector graph API
 ///
 
 // vertex_key(g,u): CPO evaluates the key for random-access iterators, so we don't need to define it here
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+constexpr auto edges(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&& g,
+                     vertex_iterator_t<decltype(g)>                                               u) {
+  return g.outward_edges(u);
+}
+
 
 // Helper Functions
 
@@ -980,6 +995,6 @@ find_vertex_edge(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, E
 //
 #  endif // CPO
 
-} // namespace std::graph
+} // namespace std::graph::containers
 
 #endif // DIRECTED_ADJ_ARRAY_API_HPP

@@ -72,12 +72,7 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
   using G = TestType;
   G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.1}}};
 
-  using std::graph::vertices;
-  using std::graph::edges;
-
-  using std::graph::graph_value;
-  using std::graph::vertex_key;
-  using std::graph::vertex_value;
+  using namespace std::graph;
 
   //
   // vertex range
@@ -88,10 +83,16 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
     REQUIRE(is_same_const(g, vv));
     REQUIRE(size(vertices(g)) == 3);
 
-    auto u = begin(vv);
-    REQUIRE(u == g.begin());
-    REQUIRE(u->size() == 2);
-    //REQUIRE(size(edges(g, u)) == 2);
+    auto u = ++begin(vv);
+    REQUIRE(vertex_key(g, u) == 1); // eval'd by CPO for random_access_range
+    REQUIRE(vertex_value(g, u) == 8);
+
+    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+    REQUIRE(std::ranges::size(ee) == 1);
+
+    auto uv = begin(ee);
+    // REQUIRE(target_key(g,uv) == 2);
+    REQUIRE(edge_value(g, uv) == 2.2);
   }
 
   //

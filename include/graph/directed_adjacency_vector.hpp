@@ -8,7 +8,7 @@
 #ifndef DIRECTED_ADJ_ARRAY_HPP
 #  define DIRECTED_ADJ_ARRAY_HPP
 
-namespace std::graph {
+namespace std::graph::containers {
 
 
 ///-------------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ public:
   const_vertex_iterator target_vertex(const graph_type&) const;
   vertex_key_type       target_vertex_key() const noexcept;
 
-  edge_key_type edge_key() const noexcept;
+  edge_key_type edge_key(const graph_type&) const noexcept;
 
 private:
   vertex_key_type source_vertex_;
@@ -200,6 +200,9 @@ public:
   using edge_size_type       = ranges::range_size_t<edge_range>;
   using edge_difference_type = ranges::range_difference_t<edge_range>;
 
+  using vertex_edge_range_type       = ranges::subrange<edge_iterator, edge_iterator, ranges::subrange_kind::sized>;
+  using const_vertex_edge_range_type = ranges::subrange<edge_iterator, edge_iterator, ranges::subrange_kind::sized>;
+
 public:
   dav_vertex() noexcept             = default;
   dav_vertex(const dav_vertex&)     = default;
@@ -216,6 +219,8 @@ public:
   void            set_edge_begin(edge_index_type);
   edge_index_type edge_begin_index() const;
 
+public:
+  // CPO member functions
   vertex_value_type&       vertex_value(graph_type&);
   const vertex_value_type& vertex_value(graph_type const&) const;
 
@@ -735,7 +740,7 @@ struct graph_traits<
 };
 #  endif
 
-} // namespace std::graph
+} // namespace std::graph::containers
 
 #endif // DIRECTED_ADJ_ARRAY_HPP
 

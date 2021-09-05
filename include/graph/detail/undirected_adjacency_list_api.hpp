@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-namespace std::graph {
+namespace std::graph::containers {
 
 // vertex_key(g,u): CPO evaluates the key for random-access iterators, so we don't need to define it here
 
@@ -939,6 +939,6 @@ void clear(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>& g) {
 
 #endif // CPO
 
-} // namespace std::graph
+} // namespace std::graph::containers
 
 #endif // UNDIRECTED_ADJ_LIST_API_HPP

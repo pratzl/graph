@@ -5,7 +5,7 @@
 #ifndef GRAPH_UTILITY_HPP
 #  define GRAPH_UTILITY_HPP
 
-namespace std::graph {
+namespace std::graph::containers {
 
 //
 // Default implementations
@@ -125,6 +125,6 @@ namespace detail {
 
 } // namespace detail
 
-} // namespace std::graph
+} // namespace std::graph::containers
 
 #endif // GRAPH_UTILITY_HPP

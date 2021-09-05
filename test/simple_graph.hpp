@@ -10,6 +10,7 @@ constexpr bool is_same_const(T1&& t1, T2&& t2) {
 
 // Define base classes for a simple graph used for testing.
 namespace simple_ns {
+
 struct simple_edge_base {
   using edge_key_type   = std::pair<size_t, size_t>;
   using edge_value_type = double;

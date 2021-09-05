@@ -7,7 +7,7 @@
 #ifndef DIRECTED_ADJ_ARRAY_IMPL_HPP
 #  define DIRECTED_ADJ_ARRAY_IMPL_HPP
 
-namespace std::graph {
+namespace std::graph::containers {
 
 ///-------------------------------------------------------------------------------------
 /// dav_edge
@@ -148,7 +148,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_key_type
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_key() const noexcept {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_key(const graph_type&) const noexcept {
   return edge_key_type(source_vertex_, target_vertex_);
 }
 
@@ -261,6 +261,18 @@ const typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vert
 dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(const graph_type&) const {
   return user_value(*this);
 }
+
+// template <typename VV,
+//           typename EV,
+//           typename GV,
+//           integral KeyT,
+//           template <typename V, typename A>
+//           class VContainer,
+//           template <typename E, typename A>
+//           class EContainer,
+//           typename Alloc>
+// typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range_type&
+// dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edges(graph_type& g) {}
 
 ///-------------------------------------------------------------------------------------
 /// dav_const_vertex_vertex_iterator
@@ -1432,6 +1444,6 @@ void directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>:
 }
 
 
-} // namespace std::graph
+} // namespace std::graph::containers
 
 #endif // DIRECTED_ADJ_ARRAY_IMPL_HPP

@@ -41,7 +41,8 @@ using std::graph::depth_first_search_edge_range;
 using std::graph::shortest_distance;
 #endif // CPO
 
-using Graph = std::graph::directed_adjacency_vector<name_value, weight_value>;
+using Graph = std::graph::containers::directed_adjacency_vector<std::graph::containers::name_value,
+                                                                std::graph::containers::weight_value>;
 #ifdef CPO
 using vtx_iter_t = std::vertex_iterator_t<Graph>;
 using vtx_key_t  = std::vertex_key_t<Graph>;
@@ -89,7 +90,7 @@ constexpr bool is_constant(T&) {
 TEST_CASE("dav accessors", "[dav][accessors]") {
   // non-const
   {
-    using G = std::graph::directed_adjacency_vector<>;
+    using G = std::graph::containers::directed_adjacency_vector<>;
     G     g;
     auto& vv = std::graph::vertices(g);
     REQUIRE(!is_constant(vv));
@@ -97,7 +98,7 @@ TEST_CASE("dav accessors", "[dav][accessors]") {
 
   // const
   {
-    using G = const std::graph::directed_adjacency_vector<>;
+    using G = const std::graph::containers::directed_adjacency_vector<>;
     G     g;
     auto& vv = std::graph::vertices(g);
     REQUIRE(is_constant(vv));

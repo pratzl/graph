@@ -28,6 +28,11 @@ struct simple_edge : public simple_ns::simple_edge_base {
   simple_edge(simple_edge const&) = default;
   ~simple_edge()                  = default;
   simple_edge& operator=(simple_edge const&) = default;
+
+  auto edge_key(const simple_graph&) const { return the_key; }
+
+  auto& edge_value(simple_graph&) { return the_value; }
+  auto& edge_value(const simple_graph&) const { return the_value; }
 };
 
 struct simple_vertex : public simple_ns::simple_vertex_base<simple_edge> {
@@ -41,8 +46,11 @@ struct simple_vertex : public simple_ns::simple_vertex_base<simple_edge> {
 
   auto vertex_key(const simple_graph&) const { return the_key; }
 
-  auto vertex_value(simple_graph& g) { return the_value; }
-  auto vertex_value(const simple_graph& g) const { return the_value; }
+  auto& vertex_value(simple_graph& g) { return the_value; }
+  auto& vertex_value(const simple_graph& g) const { return the_value; }
+
+  auto& edges(simple_graph&) { return the_edges; }
+  auto& edges(const simple_graph&) const { return the_edges; }
 };
 
 struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_edge> {
@@ -65,12 +73,7 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
   using G = TestType;
   G g;
 
-  using std::graph::vertices;
-  using std::graph::edges;
-
-  using std::graph::graph_value;
-  using std::graph::vertex_key;
-  using std::graph::vertex_value;
+  using namespace std::graph;
 
   //
   // vertex range
@@ -81,10 +84,16 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
     REQUIRE(is_same_const(g, vv));
     REQUIRE(std::ranges::random_access_range<decltype(vv)>);
     REQUIRE(size(vertices(g)) == 3);
-    //auto u = begin(vv);
-    //REQUIRE(u == g.begin());
-    //REQUIRE(u->size() == 2);
-    //REQUIRE(size(edges(g, u)) == 2);
+    auto u = ++begin(vv);
+    REQUIRE(vertex_key(g, u) == 1);
+    REQUIRE(vertex_value(g, u) == 11);
+
+    auto& ee = edges(g, u);
+    REQUIRE(size(ee) == 1);
+    auto uv = begin(ee);
+    REQUIRE(edge_key(g, uv).first == 1);
+    REQUIRE(edge_key(g, uv).second == 2);
+    REQUIRE(edge_value(g, uv) == 2.2);
   }
 
   //

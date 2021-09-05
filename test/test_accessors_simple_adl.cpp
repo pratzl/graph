@@ -53,6 +53,9 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
 auto& vertices(simple_graph& g) { return g.the_vertices; }
 auto& vertices(const simple_graph& g) { return g.the_vertices; }
 
+auto& edges(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_edges; }
+auto& edges(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_edges; }
+
 auto graph_value(simple_graph& g) { return g.the_value; }
 auto graph_value(const simple_graph& g) { return g.the_value; }
 
@@ -60,6 +63,11 @@ auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) 
 
 auto& vertex_value(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_value; }
 auto& vertex_value(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_value; }
+
+auto edge_key(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key; }
+
+auto&       edge_value(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return uv->the_value; }
+const auto& edge_value(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_value; }
 
 // TEST_CASE("cpo accessor", "[cpo][trace]") {
 //   simple_graph g;
@@ -89,11 +97,19 @@ TEMPLATE_TEST_CASE("simple graph adl", "[simple][accessors][adl]", (simple_graph
     //static_assert(std::graph::_vertices_::_gph_has_ADL<G>);
     auto& vv = vertices(g);
     REQUIRE(is_same_const(g, vv));
+    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
     REQUIRE(size(vertices(g)) == 3);
-    //auto u = begin(vv);
-    //REQUIRE(u == g.begin());
-    //REQUIRE(u->size() == 2);
-    //REQUIRE(size(edges(g, u)) == 2);
+
+    auto u = ++begin(vv);
+    REQUIRE(vertex_key(g, u) == 1);
+    REQUIRE(vertex_value(g, u) == 11);
+
+    auto& ee = edges(g, u);
+    REQUIRE(size(ee) == 1);
+    auto uv = begin(ee);
+    REQUIRE(edge_key(g, uv).first == 1);
+    REQUIRE(edge_key(g, uv).second == 2);
+    REQUIRE(edge_value(g, uv) == 2.2);
   }
 
   //

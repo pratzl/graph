@@ -106,7 +106,7 @@ namespace _edges_ {
 
   template <typename G>
   concept _gph_has_member = requires(G&& g) {
-    { forward<G>(g).edges() }
+    { g.edges() }
     ->ranges::forward_range;
   };
   template <typename G>
@@ -149,7 +149,7 @@ namespace _edges_ {
       else if constexpr (_vtx_has_ADL<G, VI>)
         return noexcept(_detail::_decay_copy(edges(declval<G&>(), declval<VI>())));
       else if constexpr (_vtx_has_rng<G, VI>)
-        return *declval<VI>();
+        return noexcept(_detail::_decay_copy(*declval<VI>()));
     }
 
   public:
@@ -165,8 +165,8 @@ namespace _edges_ {
 
     // edges(g,u), u->edges(g), *u
     template <typename G, typename VI>
-          requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> constexpr auto& operator()(G&& g, VI u) const
-          noexcept(_vtx_fnc_except<G, VI>()) {
+          requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> ||
+          _vtx_has_rng<G, VI> constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
       if constexpr (_vtx_has_member<G, VI>)
         return u->edges(forward<G>(g));
       else if constexpr (_vtx_has_ADL<G, VI>)
