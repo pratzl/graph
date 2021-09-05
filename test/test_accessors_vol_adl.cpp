@@ -25,13 +25,20 @@ using vol_key          = size_t;
 using vol_edge_val     = double;
 using vol_edge_type    = pair<vol_key, vol_edge_val>;
 using vol_edge_range   = list<vol_edge_type>;
-using vol_vertex_range = vector<vol_edge_range>;
+using vol_vertex_type  = vol_edge_range; // no vertex value for this graph; vertex only has the edges
+using vol_vertex_range = vector<vol_vertex_type>;
 using vol_graph        = vol_vertex_range;
 } // namespace vol_adl
 
 // create free functions for ADL
 // they're created in std:: to match namespace of vector, a requirement for ADL
 namespace std {
+// vertices(g) -> vol_vertex_range (uses graph as the range)
+// edges(g,u) -> vold_edge_range (used vertex as the range)
+
+//
+// value accessors
+//
 auto& graph_value(vol_adl::vol_graph& g) {
   static int val = 7; // a bogus value only for validation
   return val;
@@ -40,11 +47,14 @@ const auto& graph_value(const vol_adl::vol_graph& g) {
   static const int val = 7;
   return val; // a bogus value only for validation
 }
+
+// vertex_key(g,u) is eval'd by CPO for random-access iterators
+
 auto& vertex_value(vol_adl::vol_graph& g, vertex_iterator_t<vol_adl::vol_graph> u) {
   static int val = 8; // a bogus value only for validation
   return val;
 }
-const auto& vertex_value(const vol_adl::vol_graph& g, vertex_iterator_t<const vol_adl::vol_graph> u) {
+auto& vertex_value(const vol_adl::vol_graph& g, vertex_iterator_t<const vol_adl::vol_graph> u) {
   static int val = 8; // a bogus value only for validation
   return val;
 }
@@ -98,8 +108,8 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
 
   // vertex values
   SECTION("vertex_key(g,u)") {
-    REQUIRE(vertex_key(g, ++begin(g)) == 1); // no fmt
-    //REQUIRE(vertex_value(g, begin(g)) == 8); // no fmt
+    REQUIRE(vertex_key(g, ++begin(g)) == 1);
+    //REQUIRE(vertex_value(g, begin(g)) == 8); // DOESN'T COMPILE?!
   }
 
   // edge_values
