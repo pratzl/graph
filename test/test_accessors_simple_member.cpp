@@ -7,17 +7,19 @@
 using std::cout;
 using std::endl;
 using std::pair;
-using std::vector;
-using std::list;
 
 
 // A new namespace and graph type is defined for each set of member/adl tests
 // to assure there is no carry-over definitions from other tests.
-namespace simple1 {
+namespace simple2 {
 
 //
 // The Graph
 //
+struct simple_edge;
+struct simple_vertex;
+struct simple_graph;
+
 struct simple_edge : public simple_ns::simple_edge_base {
   using base_t = simple_ns::simple_edge_base;
 
@@ -36,6 +38,11 @@ struct simple_vertex : public simple_ns::simple_vertex_base<simple_edge> {
   simple_vertex(simple_vertex const&) = default;
   ~simple_vertex()                    = default;
   simple_vertex& operator=(simple_vertex const&) = default;
+
+  auto vertex_key(const simple_graph&) const { return the_key; }
+
+  auto vertex_value(simple_graph& g) { return the_value; }
+  auto vertex_value(const simple_graph& g) const { return the_value; }
 };
 
 struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_edge> {
@@ -45,32 +52,15 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   simple_graph(simple_graph const&) = default;
   ~simple_graph()                   = default;
   simple_graph& operator=(simple_graph const&) = default;
+
+  auto& vertices() { return the_vertices; }
+  auto& vertices() const { return the_vertices; }
+
+  auto graph_value() { return the_value; }
+  auto graph_value() const { return the_value; }
 };
 
-//
-// free functions to test ADL (argument-dependent lookup)
-//
-auto& vertices(simple_graph& g) { return g.the_vertices; }
-auto& vertices(const simple_graph& g) { return g.the_vertices; }
-
-auto graph_value(simple_graph& g) { return g.the_value; }
-auto graph_value(const simple_graph& g) { return g.the_value; }
-
-auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u - g.the_vertices.begin(); }
-
-auto& vertex_value(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_value; }
-auto& vertex_value(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_value; }
-
-// TEST_CASE("cpo accessor", "[cpo][trace]") {
-//   simple_graph g;
-//   auto         it    = std::ranges::begin(g);
-//   auto         value = std::graph::graph_value(g);
-//   static_assert(std::graph::_graph_value_::_gph_has_ADL<simple_graph>);
-//
-//   int x = 0;
-// }
-
-TEMPLATE_TEST_CASE("smple graph adl", "[simple][accessors][adl]", (simple_graph), (const simple_graph)) {
+TEMPLATE_TEST_CASE("smple graph member", "[simple][accessors][member]", (simple_graph), (const simple_graph)) {
   static_assert(std::is_same_v<TestType, simple_graph> || std::is_same_v<TestType, const simple_graph>);
   using G = TestType;
   G g;
@@ -111,4 +101,4 @@ TEMPLATE_TEST_CASE("smple graph adl", "[simple][accessors][adl]", (simple_graph)
   }
 }
 
-} // namespace simple1
+} // namespace simple2

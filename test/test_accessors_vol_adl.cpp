@@ -27,7 +27,8 @@ constexpr bool is_same_const(T1&& t1, T2&& t2) {
   return std::is_const_v<T1> == std::is_const_v<T2>;
 }
 
-// create functions in std for ADL, to match location of vector
+// create free functions for ADL
+// they're created in std:: to match namespace of vector, a requirement for ADL
 namespace std {
 auto& graph_value(vol_graph& g) {
   static int val = 7; // a bogus value only for validation
@@ -48,8 +49,8 @@ const auto& vertex_value(const vol_graph& g, vertex_iterator_t<const vol_graph> 
 
 auto&       edge_value(vol_graph&, list<vol_edge_type>::iterator uv) { return uv->second; }
 const auto& edge_value(vol_graph const&, list<vol_edge_type>::const_iterator uv) { return uv->second; }
-
 } // namespace std
+
 
 TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_graph)) {
   static_assert(std::is_same_v<TestType, vol_graph> || std::is_same_v<TestType, const vol_graph>);
