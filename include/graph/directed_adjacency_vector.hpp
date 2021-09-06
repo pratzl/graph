@@ -650,8 +650,8 @@ public:
   vertex_iterator       find_vertex(vertex_key_type);
   const_vertex_iterator find_vertex(vertex_key_type) const;
 
-  constexpr vertex_edge_range       outward_edges(vertex_iterator u);
-  constexpr const_vertex_edge_range outward_edges(const_vertex_iterator u) const;
+  constexpr vertex_edge_range&       outward_edges(vertex_iterator u);
+  constexpr const_vertex_edge_range& outward_edges(const_vertex_iterator u) const;
 
   constexpr vertex_outward_vertex_range       outward_vertices(vertex_iterator u);
   constexpr const_vertex_outward_vertex_range outward_vertices(const_vertex_iterator u) const;
