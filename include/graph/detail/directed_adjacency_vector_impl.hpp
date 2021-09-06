@@ -1235,22 +1235,16 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range&
+constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_edges(vertex_iterator u) {
-  // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
-  // This will work in a single-threaded environment, and if only one edge range is used at a time.
-  static vertex_edge_range rng{};
-
   if (u == vertices_.end())
-    rng = {edges_.end(), edges_.end(), 0};
+    return {edges_.end(), edges_.end(), 0};
   else if (u != --vertices_.end()) {
     auto v = u + 1;
-    rng    = {edges_.begin() + u->edge_begin_index(), edges_.begin() + v->edge_begin_index(),
-           v->edge_begin_index() - u->edge_begin_index()};
+    return {edges_.begin() + u->edge_begin_index(), edges_.begin() + v->edge_begin_index(),
+            v->edge_begin_index() - u->edge_begin_index()};
   } else
-    rng = {edges_.begin() + u->edge_begin_index(), edges_.end(), edges_.size() - u->edge_begin_index()};
-
-  return rng;
+    return {edges_.begin() + u->edge_begin_index(), edges_.end(), edges_.size() - u->edge_begin_index()};
 }
 
 template <typename VV,
@@ -1262,23 +1256,17 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_edge_range&
+constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_edge_range
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::outward_edges(
       const_vertex_iterator u) const {
-
-  // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
-  // This will work in a single-threaded environment, and if only one edge range is used at a time.
-  static const_vertex_edge_range rng{};
-
   if (u == vertices_.end())
-    rng = {edges_.end(), edges_.end(), 0};
+    return {edges_.end(), edges_.end(), 0};
   else if (u != --vertices_.end()) {
     auto v = u + 1;
-    rng    = {edges_.begin() + u->edge_begin_index(), edges_.begin() + v->edge_begin_index(),
-           v->edge_begin_index() - u->edge_begin_index()};
+    return {edges_.begin() + u->edge_begin_index(), edges_.begin() + v->edge_begin_index(),
+            v->edge_begin_index() - u->edge_begin_index()};
   } else
-    rng = {edges_.begin() + u->edge_begin_index(), edges_.end(), edges_.size() - u->edge_begin_index()};
-  return rng;
+    return {edges_.begin() + u->edge_begin_index(), edges_.end(), edges_.size() - u->edge_begin_index()};
 }
 
 template <typename VV,

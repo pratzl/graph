@@ -24,11 +24,17 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-constexpr auto
-edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-      vertex_iterator_t<const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
+auto edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
+           vertex_iterator_t<const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
       typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_edge_range& {
-  return g.outward_edges(u);
+
+  // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
+  // This will work in a single-threaded environment, and if only one edge range is used at a time.
+  using const_vertex_edge_range =
+        typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_edge_range;
+  static const_vertex_edge_range rng;
+  rng = g.outward_edges(u);
+  return rng;
 }
 
 template <typename VV,
@@ -40,10 +46,17 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-constexpr auto edges(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-                     vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
+auto edges(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
+           vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
       typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range& {
-  return g.outward_edges(u);
+
+  // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
+  // This will work in a single-threaded environment, and if only one edge range is used at a time.
+  using vertex_edge_range =
+        typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range;
+  static vertex_edge_range rng;
+  rng = g.outward_edges(u);
+  return rng;
 }
 
 

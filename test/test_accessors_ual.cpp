@@ -64,7 +64,7 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
 
   // vertex values
   SECTION("vertex_key(g,u)") {
-    //REQUIRE(vertex_key(g, ++begin(vertices(g))) == 1); // no fmt
+    REQUIRE(vertex_key(g, ++begin(vertices(g))) == 1); // no fmt
     //REQUIRE(vertex_value(g, begin(vertices(g))) == 8); // no fmt
   }
 }

@@ -11,6 +11,44 @@ namespace std::graph::containers {
 
 // vertex_key(g,u): CPO evaluates the key for random-access iterators, so we don't need to define it here
 
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
+           vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
+      typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_edge_range& {
+
+  // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
+  // This will work in a single-threaded environment, and if only one edge range is used at a time.
+  using vertex_edge_range = typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_edge_range;
+  static vertex_edge_range rng;
+  rng = u->edges(g, vertex_key(g, u));
+  return rng;
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
+           vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
+      typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_edge_range {
+
+  // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
+  // This will work in a single-threaded environment, and if only one edge range is used at a time.
+  using const_vertex_edge_range = typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_edge_range;
+  static const_vertex_edge_range rng;
+  rng = u->edges(g, vertex_key(g, u));
+  return rng;
+}
+
 
 #ifdef CPO
 ///-------------------------------------------------------------------------------------
@@ -518,32 +556,6 @@ edge_value(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&
            const_vertex_edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv)
       -> const edge_value_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>& {
   return user_value(*uv);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-                     vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u)
-      -> vertex_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return u->edges(g, vertex_key(g, u));
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          typename Alloc>
-constexpr auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-                     const_vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u)
-      -> const_vertex_edge_range_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
-  return u->edges(g, vertex_key(g, u));
 }
 
 
