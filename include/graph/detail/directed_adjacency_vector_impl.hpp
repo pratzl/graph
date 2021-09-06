@@ -245,7 +245,10 @@ template <typename VV,
           typename Alloc>
 typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value_type&
 dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(graph_type&) {
-  return user_value(*this);
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<VV*>(*this);
 }
 
 template <typename VV,
@@ -259,7 +262,10 @@ template <typename VV,
           typename Alloc>
 const typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value_type&
 dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(const graph_type&) const {
-  return user_value(*this);
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<VV*>(*this);
 }
 
 // template <typename VV,

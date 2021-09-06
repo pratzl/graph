@@ -534,6 +534,10 @@ public:
 #  if 0
   vertex_key_type       vertex_key(const graph_type&) const noexcept;
 #  endif
+
+  vertex_value_type&       vertex_value(graph_type&) noexcept;
+  const vertex_value_type& vertex_value(const graph_type&) const noexcept;
+
   vertex_edge_size_type edges_size() const;
 
   vertex_edge_iterator erase_edge(graph_type&, vertex_edge_iterator);

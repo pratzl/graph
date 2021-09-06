@@ -19,7 +19,7 @@ using std::list;
 
   vertices(g)                               x   x   x   x   x
     vertex_key(g,u)                         x   x   x   x   x
-    vertex_value(g,u)                       x   x   x
+    vertex_value(g,u)                       x   x   x   x   x
     find_vertex(g,ukey)
 
   edges(g,u)                                x   x   x   x   x
@@ -30,8 +30,8 @@ using std::list;
 
     source(g,uv);
     source_key(g,uv)
-    vertex(g,uv,u)
-    vertex_key(g,uv,ukey)
+    vertex(g,uv,src)
+    vertex_key(g,uv,src_key)
 
     find_vertex_edge(g, u, v)
     find_vertex_edge(g, ukey, vkey)

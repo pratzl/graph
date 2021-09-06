@@ -980,6 +980,35 @@ ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_key(const graph_type& g)
 }
 #endif
 
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_value_type&
+ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_value(graph_type& g) noexcept {
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<VV*>(*this);
+}
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+const typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_value_type&
+ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_value(const graph_type& g) const noexcept {
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<VV*>(*this);
+}
+
 
 template <typename VV,
           typename EV,

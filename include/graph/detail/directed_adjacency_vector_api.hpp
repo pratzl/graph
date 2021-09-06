@@ -188,38 +188,6 @@ vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContai
         u - g.vertices().begin());
 }
 
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-vertex_value(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-             vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
-      -> vertex_value_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>& {
-  return user_value(*u);
-}
-
-template <typename VV,
-          typename EV,
-          typename GV,
-          integral KeyT,
-          template <typename V, typename A>
-          class VContainer,
-          template <typename E, typename A>
-          class EContainer,
-          typename Alloc>
-constexpr auto
-vertex_value(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-             const_vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
-      -> const vertex_value_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>& {
-  return user_value(*u);
-}
-
 // (clear, create_vertex, erase_vertex not supported because the graph is immutable)
 
 //
