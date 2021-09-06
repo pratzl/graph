@@ -1023,6 +1023,9 @@ public:
 public:
   constexpr edge_allocator_type edge_allocator() const noexcept;
 
+  constexpr graph_value_type&       graph_value();
+  constexpr const graph_value_type& graph_value() const;
+
   constexpr vertex_set&       vertices();
   constexpr const vertex_set& vertices() const;
 

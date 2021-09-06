@@ -49,7 +49,7 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
   auto ekey_fnc = [](const edge_data_type& data) -> edge_key_type { return edge_key_type(get<0>(data), get<1>(data)); };
   auto eval_fnc = [](const edge_data_type& data) -> double { return get<2>(data); };
   auto vval_fnc = [](const double& vtxval) -> double { return vtxval; };
-  G    g(the_edg_vals, the_vtx_vals, ekey_fnc, eval_fnc, vval_fnc);
+  G    g(the_edg_vals, the_vtx_vals, ekey_fnc, eval_fnc, vval_fnc, 7.0);
 
   //
   // vertex range
@@ -71,7 +71,7 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
 
   // graph values
   SECTION("graph_value(g)") {
-    //REQUIRE(graph_value(g) == 7);
+    REQUIRE(graph_value(g) == 7); // no fmt
   }
 
   // vertex values

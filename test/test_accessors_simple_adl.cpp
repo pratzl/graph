@@ -56,8 +56,8 @@ auto& vertices(const simple_graph& g) { return g.the_vertices; }
 auto& edges(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_edges; }
 auto& edges(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_edges; }
 
-auto graph_value(simple_graph& g) { return g.the_value; }
-auto graph_value(const simple_graph& g) { return g.the_value; }
+auto& graph_value(simple_graph& g) { return g.the_value; }
+auto& graph_value(const simple_graph& g) { return g.the_value; }
 
 auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u - g.the_vertices.begin(); }
 

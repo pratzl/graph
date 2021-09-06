@@ -190,7 +190,7 @@ namespace _graph_value_ {
 
   template <typename G>
   concept _gph_has_member = requires(G& g) {
-    {forward<G>(g).graph_value()};
+    {g.graph_value()};
   };
   template <typename G>
   concept _gph_has_ADL = requires(G& g) {
@@ -216,7 +216,7 @@ namespace _graph_value_ {
     // g.graph_value(), graph_value(g)
     template <typename G>
     requires _gph_has_member<G> || _gph_has_ADL<G>
-    constexpr auto operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
+    constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
       if constexpr (_gph_has_member<G>)
         return g.graph_value();
       else if constexpr (_gph_has_ADL<G>)

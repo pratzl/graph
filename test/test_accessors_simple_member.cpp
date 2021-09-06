@@ -64,8 +64,8 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   auto& vertices() { return the_vertices; }
   auto& vertices() const { return the_vertices; }
 
-  auto graph_value() { return the_value; }
-  auto graph_value() const { return the_value; }
+  auto& graph_value() { return the_value; }
+  auto& graph_value() const { return the_value; }
 };
 
 TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple_graph), (const simple_graph)) {

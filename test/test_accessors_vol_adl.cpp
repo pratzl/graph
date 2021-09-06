@@ -12,6 +12,55 @@ using std::pair;
 using std::vector;
 using std::list;
 
+/*
+                                                adl mem
+                                            vol smp smp dav ual
+  vertices(g)                               x   x   x   x   x
+  edges(g,u)                                x   x   x   x   x
+  edges(g)                                  
+  vertices(g,u)                             
+
+  graph_value(g)                            x   x   x   x   x
+  vertex_key(g,u)
+  vertex_value(g,u)
+  edge_key(g,uv)
+  edge_value(g,uv)
+
+  target(g,uv)
+  target_key(g,uv)
+  source(g,uv);
+  source_key(g,uv)
+  vertex(g,uv,u)
+  vertex_key(g,uv,ukey)
+
+  find_vertex(g,ukey)
+  contains_edge(g, u, v)
+  contains_edge(g, ukey, vkey)
+
+  outward_edges(g,u)  
+  outward_vertices(g,u)
+  inward_edges(g,u)                         na  na  na  na  na
+  inward_vertices(g,u)                      na  na  na  na  na
+
+  find_vertex_edge(g, u, v)
+  find_vertex_edge(g, ukey, vkey)
+  find_vertex_vertex(g, u, v)
+  find_vertex_vertex(g, ukey, vkey)
+  find_edge(g, u, v)
+  find_edge(g, ukey, vkey)
+  find_vertex_outward_edge(g, u, v)         na  na  na  na  na
+  find_vertex_outward_edge(g, ukey, vkey)   na  na  na  na  na
+  find_vertex_inward_edge(g, u, v)          na  na  na  na  na
+  find_vertex_inward_edge(g, ukey, vkey)    na  na  na  na  na
+
+  Notes
+  vol requires accessors in std::
+  CPO
+    1.  default impl: vertices(g), edges(g,u), vertex_key(g,u)
+    2.  returning subrange values (views), not range reference
+*/
+
+
 template <typename T1, typename T2>
 constexpr bool is_same_const(T1&& t1, T2&& t2) {
   return std::is_const_v<T1> == std::is_const_v<T2>;
@@ -38,6 +87,7 @@ namespace std {
 
 //
 // value accessors
+// in the same namespace as their containers (std::)
 //
 auto& graph_value(vol_adl::vol_graph& g) {
   static int val = 7; // a bogus value only for validation

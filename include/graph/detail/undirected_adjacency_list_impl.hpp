@@ -1365,6 +1365,36 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
+constexpr typename undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::graph_value_type&
+undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::graph_value() {
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<GV*>(this);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr const typename undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::graph_value_type&
+undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::graph_value() const {
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<GV*>(this);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
 constexpr typename undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_set&
 undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>::vertices() {
   return vertices_;

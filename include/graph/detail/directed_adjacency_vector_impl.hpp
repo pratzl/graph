@@ -1064,7 +1064,10 @@ template <typename VV,
           typename Alloc>
 constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value_type&
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value() {
-  return user_value(*this);
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<GV*>(this);
 }
 
 template <typename VV,
@@ -1078,7 +1081,10 @@ template <typename VV,
           typename Alloc>
 constexpr const typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value_type&
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::graph_value() const {
-  return user_value(*this);
+  if constexpr (graph_value_needs_wrap<GV>::value)
+    return this->value;
+  else
+    return *static_cast<GV*>(this);
 }
 
 template <typename VV,
