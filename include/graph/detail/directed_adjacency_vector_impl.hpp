@@ -1118,6 +1118,34 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
+constexpr typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_set&
+directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edges() {
+  return edges_;
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+constexpr const typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_set&
+directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edges() const {
+  return edges_;
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
 void directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::reserve_vertices(vertex_size_type n) {
   detail::reserve(vertices_, n);
 }
@@ -1159,7 +1187,7 @@ template <typename VV,
           typename Alloc>
 typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::create_vertex() {
-  vertices_.push_back(vertex_type(vertices_, vertices_.size()));
+  vertices_.push_back(vertex_type(vertices_, static_cast<vertex_key_type>(vertices_.size())));
   return vertices_.begin() + (vertices_.size() - 1);
 }
 template <typename VV,
@@ -1173,8 +1201,8 @@ template <typename VV,
           typename Alloc>
 typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
 directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::create_vertex(vertex_value_type&& val) {
-  vertices_.push_back(vertex_type(vertices_, vertices_.size(), move(val)));
-  return vertices_.begin() + (vertices_.size() - 1);
+  vertices_.push_back(vertex_type(vertices_, static_cast<vertex_key_type>(vertices_.size()), move(val)));
+  return vertices_.begin() + (ranges::ssize(vertices_) - 1);
 }
 template <typename VV,
           typename EV,

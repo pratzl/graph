@@ -565,7 +565,7 @@ public:
             typename VRng, 
             typename VValueFnc>
     requires edge_value_extractor<ERng, EKeyFnc, EValueFnc> 
-          &&  vertex_value_extractor<VRng, VValueFnc>
+          && vertex_value_extractor<VRng, VValueFnc>
   directed_adjacency_vector(const ERng&      erng,
                             const VRng&      vrng,
                             const EKeyFnc&   ekey_fnc,
