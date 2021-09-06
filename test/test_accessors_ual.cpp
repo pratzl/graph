@@ -26,6 +26,7 @@ using std::is_same;
 
 
 using namespace std::graph;
+using namespace std::ranges;
 
 using Graph = std::graph::containers::undirected_adjacency_list<double, double, double, uint32_t>;
 
@@ -51,32 +52,37 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
   G    g(the_edg_vals, the_vtx_vals, ekey_fnc, eval_fnc, vval_fnc, 7.0);
 
   //
-  // vertex range
-  //
-  SECTION("vertices(g)") {
-    //static_assert(_vertices_::_gph_has_ADL<G>);
-    auto& vv = vertices(g);
-    REQUIRE(is_same_const(g, vv));
-    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
-    REQUIRE(size(vertices(g)) == 3);
-    auto u = begin(vv);
-    //REQUIRE(u == g.begin());
-    //REQUIRE(u->size() == 2);
-    //REQUIRE(size(edges(g, u)) == 2);
-  }
-
-  //
-  // value types
-  //
-
   // graph values
+  //
   SECTION("graph_value(g)") {
     REQUIRE(graph_value(g) == 7); // no fmt
   }
 
-  // vertex values
-  SECTION("vertex_key(g,u)") {
-    REQUIRE(vertex_key(g, ++begin(vertices(g))) == 1); // no fmt
-    //REQUIRE(vertex_value(g, begin(vertices(g))) == 8); // no fmt
+  //
+  // vertex range & vertex values
+  //
+  SECTION("vertices(g)") {
+    auto& vv = vertices(g);
+    REQUIRE(is_same_const(g, vv));
+    REQUIRE(size(vertices(g)) == 3);
+    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
+
+    auto u = ++begin(vv);
+    REQUIRE(vertex_key(g, u) == 1);
+    //REQUIRE(vertex_value(g, u) == 11);
+  }
+
+  //
+  // vertex-edge range & edge values
+  //
+  SECTION("edges(g,u)") {
+    auto u = ++begin(vertices(g));
+
+    auto& ee = edges(g, u);
+    REQUIRE(size(ee) == 2);
+    auto uv = begin(ee);
+    REQUIRE(edge_key(g, uv).first == 0);
+    REQUIRE(edge_key(g, uv).second == 1);
+    //REQUIRE(edge_value(g, uv) == 2.2);
   }
 }

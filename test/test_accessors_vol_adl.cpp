@@ -15,25 +15,54 @@ using std::list;
 /*
                                                 adl mem
                                             vol smp smp dav ual
-  vertices(g)                               x   x   x   x   x
-  edges(g,u)                                x   x   x   x   x
-  edges(g)                                  
-  vertices(g,u)                             
-
   graph_value(g)                            x   x   x   x   x
-  vertex_key(g,u)
-  vertex_value(g,u)
-  edge_key(g,uv)
-  edge_value(g,uv)
 
-  target(g,uv)
-  target_key(g,uv)
-  source(g,uv);
-  source_key(g,uv)
-  vertex(g,uv,u)
-  vertex_key(g,uv,ukey)
+  vertices(g)                               x   x   x   x   x
+    vertex_key(g,u)                         x   x   x   x   x
+    vertex_value(g,u)                       x   x   x
+    find_vertex(g,ukey)
 
-  find_vertex(g,ukey)
+  edges(g,u)                                x   x   x   x   x
+    edge_key(g,uv)                          na  x   x   x   x
+    target(g,uv)
+    target_key(g,uv)
+    edge_value(g,uv)
+
+    source(g,uv);
+    source_key(g,uv)
+    vertex(g,uv,u)
+    vertex_key(g,uv,ukey)
+
+    find_vertex_edge(g, u, v)
+    find_vertex_edge(g, ukey, vkey)
+
+  vertices(g,u)                             
+    edge_key(g,uv)
+    target(g,uv)
+    target_key(g,uv)
+
+    source(g,uv);
+    source_key(g,uv)
+    vertex(g,uv,u)
+    vertex_key(g,uv,ukey)
+
+    find_vertex_vertex(g, u, v)
+    find_vertex_vertex(g, ukey, vkey)
+  
+  edges(g)                                  
+    edge_key(g,uv)
+    target(g,uv)
+    target_key(g,uv)
+    edge_value(g,uv)
+
+    source(g,uv);
+    source_key(g,uv)
+    vertex(g,uv,u)
+    vertex_key(g,uv,ukey)
+
+    find_edge(g, u, v)
+    find_edge(g, ukey, vkey)
+
   contains_edge(g, u, v)
   contains_edge(g, ukey, vkey)
 
@@ -42,12 +71,6 @@ using std::list;
   inward_edges(g,u)                         na  na  na  na  na
   inward_vertices(g,u)                      na  na  na  na  na
 
-  find_vertex_edge(g, u, v)
-  find_vertex_edge(g, ukey, vkey)
-  find_vertex_vertex(g, u, v)
-  find_vertex_vertex(g, ukey, vkey)
-  find_edge(g, u, v)
-  find_edge(g, ukey, vkey)
   find_vertex_outward_edge(g, u, v)         na  na  na  na  na
   find_vertex_outward_edge(g, ukey, vkey)   na  na  na  na  na
   find_vertex_inward_edge(g, u, v)          na  na  na  na  na
@@ -120,51 +143,44 @@ namespace vol_adl {
 TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_graph)) {
   static_assert(std::is_same_v<TestType, vol_graph> || std::is_same_v<TestType, const vol_graph>);
   using G = TestType;
+
   G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.1}}};
 
   using namespace std::graph;
 
   //
-  // vertex range
+  // graph values
+  //
+  SECTION("graph_value(g)") {
+    REQUIRE(graph_value(g) == 7); // no fmt
+  }
+
+  //
+  // vertex range & vertex values
   //
   SECTION("vertices(g)") {
-    //static_assert(std::graph::_vertices_::_gph_has_ADL<G>);
     auto& vv = vertices(g);
     REQUIRE(is_same_const(g, vv));
     REQUIRE(size(vertices(g)) == 3);
+    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
 
     auto u = ++begin(vv);
     REQUIRE(vertex_key(g, u) == 1); // eval'd by CPO for random_access_range
     REQUIRE(vertex_value(g, u) == 8);
+  }
+
+  //
+  // vertex-edge range & edge values
+  //
+  SECTION("edges(g,u)") {
+    auto u = ++begin(vertices(g));
 
     auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
-    REQUIRE(std::ranges::size(ee) == 1);
-
+    REQUIRE(size(ee) == 1);
     auto uv = begin(ee);
-    // REQUIRE(target_key(g,uv) == 2);
+    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has target key on it
+    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has target key on it
     REQUIRE(edge_value(g, uv) == 2.2);
   }
-
-  //
-  // value types
-  //
-
-  // graph values
-  SECTION("graph_value(g)") {
-    //static_assert(std::graph::_graph_value_::_gph_has_ADL<G>);
-    REQUIRE(graph_value(g) == 7);
-    //static_assert(std::_vertex_value_::_vtx_has_ADL<G, decltype(u)>);
-    //REQUIRE(vertex_value(g, u) == 8);
-  }
-
-  // vertex values
-  SECTION("vertex_key(g,u)") {
-    REQUIRE(vertex_key(g, ++begin(g)) == 1);
-    //REQUIRE(vertex_value(g, begin(g)) == 8); // DOESN'T COMPILE?!
-  }
-
-  // edge_values
-  //edge_key
-  //edge_value
-}
+} // TEMPLATE_TEST_CASE
 } // namespace vol_adl

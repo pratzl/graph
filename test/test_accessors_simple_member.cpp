@@ -76,17 +76,31 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
   using namespace std::graph;
 
   //
-  // vertex range
+  // graph values
+  //
+  SECTION("graph_value(g)") {
+    REQUIRE(graph_value(g) == 7); // no fmt
+  }
+
+  //
+  // vertex range & vertex values
   //
   SECTION("vertices(g)") {
-    //static_assert(std::graph::_vertices_::_gph_has_ADL<G>);
     auto& vv = vertices(g);
     REQUIRE(is_same_const(g, vv));
-    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
     REQUIRE(size(vertices(g)) == 3);
+    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
+
     auto u = ++begin(vv);
     REQUIRE(vertex_key(g, u) == 1);
     REQUIRE(vertex_value(g, u) == 11);
+  }
+
+  //
+  // vertex-edge range & edge values
+  //
+  SECTION("edges(g,u)") {
+    auto u = ++begin(vertices(g));
 
     auto& ee = edges(g, u);
     REQUIRE(size(ee) == 1);
@@ -94,19 +108,6 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
-  }
-
-  //
-  // value types
-  //
-
-  // graph values
-  SECTION("graph_value(g)") { REQUIRE(graph_value(g) == 7); }
-
-  // vertex values
-  SECTION("vertex_key(g,u)") {
-    REQUIRE(vertex_key(g, ++begin(vertices(g))) == 1); // no fmt
-    //REQUIRE(vertex_value(g, begin(vertices(g))) == 8); // no fmt
   }
 }
 

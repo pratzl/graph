@@ -61,9 +61,9 @@ struct simple_graph_base {
 
   void init() {
     the_value = 7;
-    the_vertices.push_back(vertex_type({0, 10, edge_range{{{0, 1}, 1.1}, {{0, 2}, 2.1}}}));
-    the_vertices.push_back(vertex_type({1, 11, edge_range{{{1, 2}, 2.2}}}));
-    the_vertices.push_back(vertex_type({2, 12, edge_range{{{2, 0}, 0.1}}}));
+    the_vertices.push_back(vertex_type({0, 10.0, edge_range{{{0, 1}, 1.1}, {{0, 2}, 2.1}}}));
+    the_vertices.push_back(vertex_type({1, 11.0, edge_range{{{1, 2}, 2.2}}}));
+    the_vertices.push_back(vertex_type({2, 12.0, edge_range{{{2, 0}, 0.1}}}));
   }
 };
 } // namespace simple_ns
