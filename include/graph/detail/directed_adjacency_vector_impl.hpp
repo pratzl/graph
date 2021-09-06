@@ -152,6 +152,39 @@ dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_key(const graph_
   return edge_key_type(source_vertex_, target_vertex_);
 }
 
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_value_type&
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_value(graph_type&) noexcept {
+  if constexpr (graph_value_needs_wrap<EV>::value)
+    return this->value;
+  else
+    return *static_cast<EV*>(this);
+}
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+const typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_value_type&
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::edge_value(const graph_type&) const noexcept {
+  if constexpr (graph_value_needs_wrap<EV>::value)
+    return this->value;
+  else
+    return *static_cast<EV*>(this);
+}
+
 
 ///-------------------------------------------------------------------------------------
 /// dav_vertex
@@ -245,10 +278,10 @@ template <typename VV,
           typename Alloc>
 typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value_type&
 dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(graph_type&) {
-  if constexpr (graph_value_needs_wrap<GV>::value)
+  if constexpr (graph_value_needs_wrap<VV>::value)
     return this->value;
   else
-    return *static_cast<VV*>(*this);
+    return *static_cast<VV*>(this);
 }
 
 template <typename VV,
@@ -262,10 +295,10 @@ template <typename VV,
           typename Alloc>
 const typename dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value_type&
 dav_vertex<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_value(const graph_type&) const {
-  if constexpr (graph_value_needs_wrap<GV>::value)
+  if constexpr (graph_value_needs_wrap<VV>::value)
     return this->value;
   else
-    return *static_cast<VV*>(*this);
+    return *static_cast<VV*>(this);
 }
 
 // template <typename VV,

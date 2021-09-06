@@ -26,7 +26,7 @@ using std::list;
     edge_key(g,uv)                          na  x   x   x   x
     target(g,uv)
     target_key(g,uv)
-    edge_value(g,uv)
+    edge_value(g,uv)                        x   x   x   x   x
 
     source(g,uv);
     source_key(g,uv)

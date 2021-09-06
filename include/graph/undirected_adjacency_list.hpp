@@ -455,6 +455,9 @@ public:
 
   edge_key_type edge_key(const graph_type& g) const noexcept;
 
+  edge_value_type&       edge_value(graph_type&) noexcept;
+  const edge_value_type& edge_value(const graph_type&) const noexcept;
+
   friend graph_type;     // the graph is the one to create & destroy edges because it owns the allocator
   friend vertex_type;    // vertex can also destroy its own edges
   friend edge_list_type; // for delete, when clearing the list

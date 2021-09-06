@@ -83,6 +83,6 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
     auto uv = begin(ee);
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
-    //REQUIRE(edge_value(g, uv) == 2.2);
+    REQUIRE(edge_value(g, uv) == 2.2);
   }
 }

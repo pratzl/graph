@@ -83,6 +83,6 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
     auto uv = begin(ee);
     REQUIRE(edge_key(g, uv).first == 0);
     REQUIRE(edge_key(g, uv).second == 1);
-    //REQUIRE(edge_value(g, uv) == 2.2);
+    REQUIRE(edge_value(g, uv) == 1.1);
   }
 }

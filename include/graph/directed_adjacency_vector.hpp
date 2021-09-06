@@ -146,6 +146,9 @@ public:
 
   edge_key_type edge_key(const graph_type&) const noexcept;
 
+  edge_value_type&       edge_value(graph_type&) noexcept;
+  const edge_value_type& edge_value(const graph_type&) const noexcept;
+
 private:
   vertex_key_type source_vertex_;
   vertex_key_type target_vertex_;
