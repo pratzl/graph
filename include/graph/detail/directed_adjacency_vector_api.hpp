@@ -13,7 +13,22 @@ namespace std::graph::containers {
 /// directed_adjacency_vector graph API
 ///
 
-// vertex_key(g,u): CPO evaluates the key for random-access iterators, so we don't need to define it here
+// vertex_key(g,u): CPO evaluates the key for random-access iterators but it returns size_t, so it's overridden here
+// to assure KeyT is returned to avoid warnings.
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+auto vertex_key(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
+                vertex_iterator_t<const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
+      -> KeyT {
+  return static_cast<KeyT>(u - begin(vertices(g)));
+}
 
 template <typename VV,
           typename EV,

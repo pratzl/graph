@@ -1,6 +1,7 @@
 #include "graph/undirected_adjacency_list.hpp"
 #include "graph/graph_utility.hpp"
 //#include "data_routes.hpp"
+#include <tuple>
 #include <iostream>
 #include <catch2/catch.hpp>
 //#include <range/v3/action/sort.hpp>
@@ -18,6 +19,7 @@ using std::string;
 using std::string_view;
 using std::numeric_limits;
 using std::pair;
+using std::tuple;
 using std::cout;
 using std::endl;
 using std::is_same;
@@ -25,7 +27,7 @@ using std::is_same;
 
 using namespace std::graph;
 
-using Graph = std::graph::containers::undirected_adjacency_list<name_value, weight_value>;
+using Graph = std::graph::containers::undirected_adjacency_list<double, double, double, uint32_t>;
 
 // do both parameters have non-const, or both const, values?
 template <typename T1, typename T2>
@@ -36,7 +38,17 @@ constexpr bool is_same_const(T1&& t1, T2&& t2) {
 TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) {
   static_assert(std::is_same_v<TestType, Graph> || std::is_same_v<TestType, const Graph>);
   using G = TestType;
-  G g;
+
+  vector<double> the_vtx_vals = {10.0, 11.0, 12.0};
+
+  using edge_data_type                = tuple<size_t, size_t, double>;
+  using edge_key_type                 = edge_key_t<G, vertex_edge_iterator_t<G>>;
+  vector<edge_data_type> the_edg_vals = {{0, 1, 1.1}, {0, 2, 2.1}, {1, 2, 2.2}, {2, 0, 0.1}}; // {ukey, vkey, val}
+
+  auto ekey_fnc = [](const edge_data_type& data) -> edge_key_type { return edge_key_type(get<0>(data), get<1>(data)); };
+  auto eval_fnc = [](const edge_data_type& data) -> double { return get<2>(data); };
+  auto vval_fnc = [](const double& vtxval) -> double { return vtxval; };
+  G    g(the_edg_vals, the_vtx_vals, ekey_fnc, eval_fnc, vval_fnc);
 
   //
   // vertex range
@@ -46,8 +58,8 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
     auto& vv = vertices(g);
     REQUIRE(is_same_const(g, vv));
     REQUIRE(std::ranges::random_access_range<decltype(vv)>);
-    //REQUIRE(size(vertices(g)) == 3);
-    //auto u = begin(vv);
+    REQUIRE(size(vertices(g)) == 3);
+    auto u = begin(vv);
     //REQUIRE(u == g.begin());
     //REQUIRE(u->size() == 2);
     //REQUIRE(size(edges(g, u)) == 2);

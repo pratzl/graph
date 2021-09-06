@@ -9,7 +9,20 @@
 
 namespace std::graph::containers {
 
-// vertex_key(g,u): CPO evaluates the key for random-access iterators, so we don't need to define it here
+// vertex_key(g,u): CPO evaluates the key for random-access iterators but it returns size_t, so it's overridden here
+// to assure KeyT is returned to avoid warnings.
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
+                vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) -> KeyT {
+  return static_cast<KeyT>(u - begin(vertices(g)));
+}
+
 
 template <typename VV,
           typename EV,
@@ -39,7 +52,7 @@ template <typename VV,
           typename Alloc>
 auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
            vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
-      typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_edge_range {
+      typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_edge_range& {
 
   // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
   // This will work in a single-threaded environment, and if only one edge range is used at a time.

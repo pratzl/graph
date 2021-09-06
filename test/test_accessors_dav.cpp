@@ -28,17 +28,7 @@ using std::is_same;
 
 using namespace std::graph;
 
-struct dbl_value {
-  double value = 0.0;
-
-  constexpr dbl_value()       = default;
-  dbl_value(const dbl_value&) = default;
-  dbl_value& operator=(const dbl_value&) = default;
-  dbl_value(const double& w) : value(w) {}
-};
-
-
-using Graph = std::graph::containers::directed_adjacency_vector<dbl_value, dbl_value, dbl_value, uint32_t>;
+using Graph = std::graph::containers::directed_adjacency_vector<double, double, double, uint32_t>;
 
 // do both parameters have non-const, or both const, values?
 template <typename T1, typename T2>
@@ -57,10 +47,9 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
   vector<edge_data_type> the_edg_vals = {{0, 1, 1.1}, {0, 2, 2.1}, {1, 2, 2.2}, {2, 0, 0.1}}; // {ukey, vkey, val}
 
   auto ekey_fnc = [](const edge_data_type& data) -> edge_key_type { return edge_key_type(get<0>(data), get<1>(data)); };
-  auto eval_fnc = [](const edge_data_type& data) -> dbl_value { return dbl_value(get<2>(data)); };
-  auto vval_fnc = [](const double& vtxval) -> dbl_value { return dbl_value(vtxval); };
-
-  G g(the_edg_vals, the_vtx_vals, ekey_fnc, eval_fnc, vval_fnc);
+  auto eval_fnc = [](const edge_data_type& data) -> double { return get<2>(data); };
+  auto vval_fnc = [](const double& vtxval) -> double { return vtxval; };
+  G    g(the_edg_vals, the_vtx_vals, ekey_fnc, eval_fnc, vval_fnc);
 
   //
   // vertex range
