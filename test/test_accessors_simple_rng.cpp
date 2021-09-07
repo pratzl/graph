@@ -69,17 +69,8 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   auto begin() const { return the_vertices.begin(); }
   auto end() { return the_vertices.end(); }
   auto end() const { return the_vertices.end(); }
-  //auto size() const { return the_vertices.size(); } // CPO will calc size of random_access_range
+  //auto size() const { return the_vertices.size(); } // ranges::size will calc size of random_access_range
 };
-
-// TEST_CASE("cpo accessor", "[cpo][trace]") {
-//   simple_graph g;
-//   auto         it    = std::ranges::begin(g);
-//   auto         value = std::graph::graph_value(g);
-//   static_assert(std::graph::_graph_value_::_gph_has_ADL<simple_graph>);
-//
-//   int x = 0;
-// }
 
 TEMPLATE_TEST_CASE("simple graph rng", "[simple][accessors][rng]", (simple_graph), (const simple_graph)) {
   static_assert(std::is_same_v<TestType, simple_graph> || std::is_same_v<TestType, const simple_graph>);
@@ -87,41 +78,40 @@ TEMPLATE_TEST_CASE("simple graph rng", "[simple][accessors][rng]", (simple_graph
   G g;
 
   using namespace std::graph;
+  using namespace std::ranges;
 
-  //
-  // vertex range
-  //
-  SECTION("vertices(g)") {
-    //static_assert(std::graph::_vertices_::_gph_has_ADL<G>);
-    auto& vv = vertices(g);
-    REQUIRE(is_same_const(g, vv));
-    REQUIRE(std::ranges::size(vertices(g)) == 3);
-
-    auto u = ++std::ranges::begin(vv);
-    REQUIRE(vertex_key(g, u) == 1);
-    //REQUIRE(vertex_value(g, u) == 11);
-
-    static_assert(std::graph::_edges_::_vtx_has_rng<simple_graph, vertex_iterator_t<simple_graph>>);
-    REQUIRE(std::ranges::forward_range<decltype(*u)>);
-    auto& ee = edges(g, u);
-    REQUIRE(std::ranges::size(ee) == 1);
-    auto uv = std::ranges::begin(ee);
-    //REQUIRE(edge_key(g, uv).first == 1);
-    //REQUIRE(edge_key(g, uv).second == 2);
-    //REQUIRE(edge_value(g, uv) == 2.2);
+  // graph values
+  SECTION("graph_value(g)") {
+    //REQUIRE(graph_value(g) == 7); // graph_value(g) isn't defined for this graph
   }
 
   //
-  // value types
+  // vertex range & vertex values
   //
+  SECTION("vertices(g)") {
+    auto& vv = vertices(g);
+    REQUIRE(is_same_const(g, vv));
+    REQUIRE(size(vertices(g)) == 3);
+    REQUIRE(std::ranges::random_access_range<decltype(vv)>);
 
-  // graph values
-  //SECTION("graph_value(g)") { REQUIRE(graph_value(g) == 7); }
+    auto u = ++begin(vv);
+    REQUIRE(vertex_key(g, u) == 1);
+    //REQUIRE(vertex_value(g, u) == 11); // vertex_value(g,u) isn't defined for this graph
+    REQUIRE(find_vertex(g, 1) == u);
+  }
 
-  // vertex values
-  SECTION("vertex_key(g,u)") {
-    //REQUIRE(vertex_key(g, ++begin(vertices(g))) == 1); // no fmt
-    //REQUIRE(vertex_value(g, begin(vertices(g))) == 8); // no fmt
+  //
+  // vertex-edge range & edge values
+  //
+  SECTION("edges(g,u)") {
+    auto u = ++begin(vertices(g));
+
+    auto& ee = edges(g, u);
+    REQUIRE(size(ee) == 1);
+    auto uv = begin(ee);
+    //REQUIRE(edge_key(g, uv).first == 1);
+    //REQUIRE(edge_key(g, uv).second == 2);
+    //REQUIRE(edge_value(g, uv) == 2.2); // edge_value(g,uv) isn't defined for this graph
   }
 }
 

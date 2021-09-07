@@ -50,19 +50,22 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
 //
 // free functions to test ADL (argument-dependent lookup)
 //
-auto& vertices(simple_graph& g) { return g.the_vertices; }
-auto& vertices(const simple_graph& g) { return g.the_vertices; }
-
-auto& edges(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_edges; }
-auto& edges(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_edges; }
-
 auto& graph_value(simple_graph& g) { return g.the_value; }
 auto& graph_value(const simple_graph& g) { return g.the_value; }
 
-auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u - g.the_vertices.begin(); }
+auto& vertices(simple_graph& g) { return g.the_vertices; }
+auto& vertices(const simple_graph& g) { return g.the_vertices; }
 
 auto& vertex_value(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_value; }
 auto& vertex_value(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_value; }
+
+auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u - g.the_vertices.begin(); }
+
+auto find_vertex(simple_graph& g, vertex_key_t<simple_graph> ukey) { return begin(vertices(g)) + ukey; }
+auto find_vertex(const simple_graph& g, vertex_key_t<simple_graph> ukey) { return begin(vertices(g)) + ukey; }
+
+auto& edges(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_edges; }
+auto& edges(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_edges; }
 
 auto edge_key(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key; }
 
@@ -102,6 +105,7 @@ TEMPLATE_TEST_CASE("simple graph adl", "[simple][accessors][adl]", (simple_graph
     auto u = ++begin(vv);
     REQUIRE(vertex_key(g, u) == 1);
     REQUIRE(vertex_value(g, u) == 11);
+    REQUIRE(find_vertex(g, 1) == u);
   }
 
   //

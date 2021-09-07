@@ -202,11 +202,7 @@ namespace _graph_value_ {
   };
   template <typename G>
   concept _gph_has_ADL = requires(G& g) {
-    //is_reference_v<G>;
-    //convertible<G, ::vol_graph>;
-    //same<G, ::vol_graph>;
     {graph_value(g)};
-    true;
   };
 
   struct fn {
@@ -413,6 +409,56 @@ namespace _vertex_value_ {
 
 inline namespace _cpo_ {
   inline constexpr _vertex_value_::fn vertex_value{};
+}
+
+namespace _find_vertex_ {
+  template <typename T>
+  void find_vertex(std::initializer_list<T>) = delete;
+
+  template <typename G, typename VK>
+  concept _vtx_has_member = requires(G&& g, VK ukey) {
+    { g.find_vertex(ukey) } -> forward_iterator;
+  };
+  template <typename G, typename VK>
+  concept _vtx_has_ADL = requires(G&& g, VK ukey) {
+    { find_vertex(forward<G>(g), ukey) } -> forward_iterator;
+  };
+  template <typename G, typename VK>
+  concept _vtx_has_rng = true; //integral<VK> && ranges::random_access_range<vertex_range_t<G>>;
+
+  struct fn {
+  private:
+    template <typename G, typename VK>
+    requires _vtx_has_member<G, VK> || _vtx_has_ADL<G, VK> || _vtx_has_rng<G, VK>
+    static consteval bool _vtx_fnc_except() {
+      if constexpr (_vtx_has_member<G, VK>)
+        return noexcept(_detail::_decay_copy(declval<G&>().find_vertex(declval<VK>())));
+      else if constexpr (_vtx_has_ADL<G, VK>)
+        return noexcept(_detail::_decay_copy(find_vertex(declval<G&>(), declval<VK>())));
+      else if constexpr (_vtx_has_rng<G, VK>)
+        return noexcept(ranges::begin(vertices(declval<G&>())) + declval<VK>());
+    }
+
+  public:
+    // u->find_vertex(g), find_vertex(g,u)
+    template <typename G, typename VK>
+    requires _vtx_has_member<G, VK> || _vtx_has_ADL<G, VK> || _vtx_has_rng<G, VK>
+    constexpr auto operator()(G&& g, VK ukey) const noexcept(_vtx_fnc_except<G, VK>()) {
+      if constexpr (_vtx_has_member<G, VK>)
+        return g.find_vertex(ukey);
+      else if constexpr (_vtx_has_ADL<G, VK>)
+        return find_vertex(forward<G>(g), ukey);
+      else if constexpr (_vtx_has_rng<G, VK>)
+        if (static_cast<ranges::range_size_t>(ukey) < ranges::size(vertices(g)))
+          return ranges::begin(vertices(g)) + static_cast<ranges::range_difference_t<vertex_range_t<G>>>(ukey);
+        else
+          return ranges::end(vertices(g));
+    }
+  };
+} // namespace _find_vertex_
+
+inline namespace _cpo_ {
+  inline constexpr _find_vertex_::fn find_vertex{};
 }
 
 

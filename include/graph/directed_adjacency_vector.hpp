@@ -698,51 +698,6 @@ private:
 };
 
 
-#  ifdef CPO
-// clang-format off
-template <typename                                VV,
-          typename                                EV,
-          typename                                GV,
-          integral                                KeyT,
-          template <typename V, typename A> class VContainer,
-          template <typename E, typename A> class EContainer,
-          typename                                Alloc>
-struct graph_traits<
-        directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>>
-// clang-format on
-{
-  using graph_type       = directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>;
-  using graph_value_type = typename graph_type::graph_value_type;
-  using allocator_type   = typename graph_type::allocator_type;
-
-  using vertex_type       = typename graph_type::vertex_type;
-  using vertex_key_type   = typename graph_type::vertex_key_type;
-  using vertex_value_type = typename graph_type::vertex_value_type;
-
-  using edge_type       = typename graph_type::edge_type;
-  using edge_key_type   = pair<vertex_key_type, vertex_key_type>;
-  using edge_value_type = typename graph_type::edge_value_type;
-
-  using vertex_range       = typename graph_type::vertex_range;
-  using const_vertex_range = typename graph_type::const_vertex_range;
-
-  using edge_range       = typename graph_type::edge_range;
-  using const_edge_range = typename graph_type::const_edge_range;
-
-  using vertex_outward_edge_range       = typename graph_type::vertex_outward_edge_range;
-  using const_vertex_outward_edge_range = typename graph_type::const_vertex_outward_edge_range;
-
-  using vertex_outward_vertex_range       = typename graph_type::vertex_outward_vertex_range;
-  using const_vertex_outward_vertex_range = typename graph_type::const_vertex_outward_vertex_range;
-
-  using vertex_edge_range       = vertex_outward_edge_range;
-  using const_vertex_edge_range = const_vertex_outward_edge_range;
-
-  using vertex_vertex_range       = vertex_outward_vertex_range;
-  using const_vertex_vertex_range = const_vertex_outward_vertex_range;
-};
-#  endif
-
 } // namespace std::graph::containers
 
 #endif // DIRECTED_ADJ_ARRAY_HPP

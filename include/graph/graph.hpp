@@ -142,7 +142,7 @@ inline constexpr bool is_undefined_order_v = is_undefined_order_v<G, ER>;
 template<typename G, typename VI>
 concept vertex_iterator = forward_iterator<VI> &&
   requires(G&& g, VI u) {
-    { vertex_key(g,u) };
+    { vertex_key(g,u) }; // CPO default = u - begin(vertices(g)), for random_access_range<G>
   };
 
 template<typename G>
@@ -150,28 +150,20 @@ concept vertex_range = ranges::forward_range<vertex_range_t<G>> &&
                        ranges::sized_range<vertex_range_t<G>> &&
                        vertex_iterator<G, ranges::iterator_t<vertex_range_t<G>>> &&
   requires(G&& g, ranges::iterator_t<vertex_range_t<G>> u, vertex_key_t<G> ukey) {
-  { vertices(g) } -> ranges::forward_range;
-  { find_vertex(g,ukey) } -> forward_iterator;
+  { vertices(g) } -> ranges::forward_range;    // CPO default = g
+  { find_vertex(g,ukey) } -> forward_iterator; // CPO default = begin(vertices(g)) + ukey, for random_access_range<G>
 };
 
 template<typename G, typename EI>
 concept edge_iterator = forward_iterator<EI> && 
-  requires(G&&                  g, 
-           EI                   uv, 
-           vertex_iterator_t<G> u, 
-           vertex_iterator_t<G> src, 
-           vertex_key_t<G>      src_key) {
+  requires(G&& g, EI uv) {
     { target(g, uv) } -> forward_iterator;
     { target_key(g, uv) };
   };
 
 template<typename G, typename EI>
 concept sourced_edge_iterator = edge_iterator<G, EI> &&
-  requires(G&&                  g, 
-           EI                   uv, 
-           vertex_iterator_t<G> u, 
-           vertex_iterator_t<G> src, 
-           vertex_key_t<G>      src_key) {
+  requires(G&& g, EI uv, vertex_iterator_t<G> src, vertex_key_t<G> src_key) {
     { source(g, uv) } -> forward_iterator;
     { source_key(g, uv) };
     { vertex(g, uv, src) } -> forward_iterator;
@@ -194,43 +186,43 @@ template<typename G>
 concept vertex_list_graph = vertex_range<G>;
 
 template <typename G>
-concept incidence_graph = edge_range<G, vertex_edge_range_t<G>> &&
+concept incidence_graph = vertex_range<G> && edge_range<G, vertex_edge_range_t<G>> &&
   requires(G&& g, vertex_iterator_t<G> u) {
     { edges(g,u) } -> ranges::forward_range;
   };
 
 template <typename G>
-concept adjacency_graph = edge_range<G, vertex_vertex_range_t<G>> &&
+concept adjacency_graph = vertex_range<G> && edge_range<G, vertex_vertex_range_t<G>> &&
   requires(G&& g, vertex_iterator_t<G> u) {
     { vertices(g,u) } -> ranges::forward_range;
   };
 
 template <typename G>
-concept edge_list_graph = edge_range<G, edge_range_t<G>> &&
+concept edge_list_graph = vertex_range<G> && edge_range<G, edge_range_t<G>> &&
   requires(G&& g) {
     { edges(g) } -> ranges::forward_range;
   };
 
 template<typename G>
-concept outward_incidence_graph = edge_range<G, vertex_outward_edge_range_t<G>> &&
+concept outward_incidence_graph = vertex_range<G> && edge_range<G, vertex_outward_edge_range_t<G>> &&
   requires(G&& g, vertex_iterator_t<G> u) {
     { outward_edges(g,u) } -> ranges::forward_range;
   };
 
 template <typename G>
-concept outward_adjacency_graph = edge_range<G, vertex_outward_vertex_range_t<G>> &&
+concept outward_adjacency_graph = vertex_range<G> && edge_range<G, vertex_outward_vertex_range_t<G>> &&
   requires(G&& g, vertex_iterator_t<G> u) {
     { outward_vertices(g,u) } -> ranges::forward_range;
   };
 
 template<typename G>
-concept inward_incidence_graph = edge_range<G, vertex_inward_edge_range_t<G>> &&
+concept inward_incidence_graph = vertex_range<G> && edge_range<G, vertex_inward_edge_range_t<G>> &&
   requires(G&& g, vertex_iterator_t<G> u) {
     { inward_edges(g,u) } -> ranges::forward_range;
   };
 
 template <typename G>
-concept inward_adjacency_graph = edge_range<G, vertex_inward_vertex_range_t<G>> &&
+concept inward_adjacency_graph = vertex_range<G> && edge_range<G, vertex_inward_vertex_range_t<G>> &&
   requires(G&& g, vertex_iterator_t<G> u) {
     { inward_vertices(g,u) } -> ranges::forward_range;
   };

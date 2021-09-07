@@ -48,6 +48,7 @@ template <typename V, typename E>
 struct simple_graph_base {
   using edge_range       = typename simple_vertex_base<E>::edge_range;
   using vertex_type      = V;
+  using vertex_key_type  = typename V::vertex_key_type;
   using vertex_range     = std::vector<V>;
   using graph_value_type = int;
 

@@ -13,20 +13,20 @@ using std::vector;
 using std::list;
 
 /*
-                                                adl mem
-                                            vol smp smp dav ual
-  graph_value(g)                            x   x   x   x   x
+                                                adl mem rng
+                                            vol smp smp smp dav ual
+  graph_value(g)                            x   x   x   na  x   x
 
-  vertices(g)                               x   x   x   x   x
-    vertex_key(g,u)                         x   x   x   x   x
-    vertex_value(g,u)                       x   x   x   x   x
-    find_vertex(g,ukey)
+  vertices(g)                               x   x   x   x   x   x
+    vertex_key(g,u)                         x   x   x   x   x   x
+    vertex_value(g,u)                       x   x   x   na  x   x
+    find_vertex(g,ukey)                     x   x   x   x   x   x
 
-  edges(g,u)                                x   x   x   x   x
-    edge_key(g,uv)                          na  x   x   x   x
+  edges(g,u)                                x   x   x   x   x   x
+    edge_key(g,uv)                          na  x   x   x   x   x
     target(g,uv)
     target_key(g,uv)
-    edge_value(g,uv)                        x   x   x   x   x
+    edge_value(g,uv)                        x   x   x   na  x   x
 
     source(g,uv);
     source_key(g,uv)
@@ -167,6 +167,7 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
     auto u = ++begin(vv);
     REQUIRE(vertex_key(g, u) == 1); // eval'd by CPO for random_access_range
     REQUIRE(vertex_value(g, u) == 8);
+    REQUIRE(find_vertex(g, 1) == u);
   }
 
   //

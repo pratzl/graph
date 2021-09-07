@@ -61,11 +61,14 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   ~simple_graph()                   = default;
   simple_graph& operator=(simple_graph const&) = default;
 
+  auto& graph_value() { return the_value; }
+  auto& graph_value() const { return the_value; }
+
   auto& vertices() { return the_vertices; }
   auto& vertices() const { return the_vertices; }
 
-  auto& graph_value() { return the_value; }
-  auto& graph_value() const { return the_value; }
+  auto find_vertex(vertex_key_type ukey) { return the_vertices.begin() + ukey; }
+  auto find_vertex(vertex_key_type ukey) const { return the_vertices.begin() + ukey; }
 };
 
 TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple_graph), (const simple_graph)) {
@@ -94,6 +97,7 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
     auto u = ++begin(vv);
     REQUIRE(vertex_key(g, u) == 1);
     REQUIRE(vertex_value(g, u) == 11);
+    REQUIRE(find_vertex(g, 1) == u);
   }
 
   //

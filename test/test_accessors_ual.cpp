@@ -70,6 +70,7 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
     auto u = ++begin(vv);
     REQUIRE(vertex_key(g, u) == 1);
     REQUIRE(vertex_value(g, u) == 11);
+    REQUIRE(find_vertex(g, 1) == u);
   }
 
   //
