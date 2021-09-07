@@ -158,7 +158,7 @@ template<typename G, typename EI>
 concept edge_iterator = forward_iterator<EI> && 
   requires(G&& g, EI uv) {
     { target(g, uv) } -> forward_iterator;
-    { target_key(g, uv) };
+    { target_key(g, uv) }; // CPO default = vertex_key(g, target(g,uv))
   };
 
 template<typename G, typename EI>

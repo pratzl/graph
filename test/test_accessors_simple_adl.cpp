@@ -69,8 +69,17 @@ auto& edges(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { re
 
 auto edge_key(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key; }
 
-auto&       edge_value(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return uv->the_value; }
-const auto& edge_value(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_value; }
+auto& edge_value(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return uv->the_value; }
+auto& edge_value(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_value; }
+
+auto target(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) {
+  return begin(vertices(g)) + uv->the_key.second;
+}
+auto target(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+  return begin(vertices(g)) + uv->the_key.second;
+}
+
+auto target_key(simple_graph const& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key.second; }
 
 // TEST_CASE("cpo accessor", "[cpo][trace]") {
 //   simple_graph g;
@@ -120,6 +129,8 @@ TEMPLATE_TEST_CASE("simple graph adl", "[simple][accessors][adl]", (simple_graph
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
+    REQUIRE(target(g, uv) == find_vertex(g, 2));
+    REQUIRE(target_key(g, uv) == 2);
   }
 }
 

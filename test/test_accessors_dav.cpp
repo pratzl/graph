@@ -85,5 +85,7 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
+    REQUIRE(target(g, uv) == find_vertex(g, 2));
+    REQUIRE(target_key(g, uv) == 2);
   }
 }

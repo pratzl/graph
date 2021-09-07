@@ -441,9 +441,9 @@ public:
   const_vertex_iterator source_vertex(const graph_type&) const noexcept;
   vertex_key_type       source_vertex_key(const graph_type&) const noexcept;
 
-  vertex_iterator       target_vertex(graph_type&) noexcept;
-  const_vertex_iterator target_vertex(const graph_type&) const noexcept;
-  vertex_key_type       target_vertex_key(const graph_type&) const noexcept;
+  vertex_iterator       target(graph_type&) noexcept;
+  const_vertex_iterator target(const graph_type&) const noexcept;
+  vertex_key_type       target_key(const graph_type&) const noexcept;
 
   vertex_iterator       other_vertex(graph_type&, const_vertex_iterator other) noexcept;
   const_vertex_iterator other_vertex(const graph_type&, const_vertex_iterator other) const noexcept;

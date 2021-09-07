@@ -696,8 +696,8 @@ template <typename VV,
           class VContainer,
           typename Alloc>
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_iterator
-ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target_vertex(graph_type& g) noexcept {
-  return g.vertices().begin() + target_vertex_key(g);
+ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target(graph_type& g) noexcept {
+  return g.vertices().begin() + target_key(g);
 }
 
 template <typename VV,
@@ -708,7 +708,7 @@ template <typename VV,
           class VContainer,
           typename Alloc>
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_iterator
-ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target_vertex(const graph_type& g) const noexcept {
+ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target(const graph_type& g) const noexcept {
   return static_cast<vertex_edge_list_outward_link_type const*>(this)->vertex(g);
 }
 
@@ -720,7 +720,7 @@ template <typename VV,
           class VContainer,
           typename Alloc>
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_key_type
-ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target_vertex_key(const graph_type& g) const noexcept {
+ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target_key(const graph_type& g) const noexcept {
   return static_cast<vertex_edge_list_outward_link_type const*>(this)->vertex_key();
 }
 
@@ -811,7 +811,7 @@ template <typename VV,
           typename Alloc>
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::edge_key_type
 ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::edge_key(const graph_type& g) const noexcept {
-  return pair(source_vertex_key(g), target_vertex_key(g));
+  return pair(source_vertex_key(g), target_key(g));
 }
 
 template <typename VV,
@@ -1109,7 +1109,7 @@ template <typename VV,
           typename Alloc>
 void ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::erase_edge(graph_type& g, edge_type* uv) {
   vertex_type& u = g.vertices()[uv->source_vertex_key(g)];
-  vertex_type& v = g.vertices()[uv->target_vertex_key(g)];
+  vertex_type& v = g.vertices()[uv->target_key(g)];
   uv->unlink(u, v);
 
   uv->~edge_type();

@@ -106,7 +106,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex(graph_type& g) {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target(graph_type& g) {
   return g.vertices().begin() + target_vertex_;
 }
 
@@ -120,7 +120,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex(const graph_type& g) const {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target(const graph_type& g) const {
   return g.vertices().begin() + target_vertex_;
 }
 
@@ -134,7 +134,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_vertex_key() const noexcept {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_key(const graph_type&) const noexcept {
   return target_vertex_;
 }
 
