@@ -63,7 +63,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_vertex(graph_type& g) {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source(graph_type& g) {
   return g.vertices().begin() + source_vertex_;
 }
 
@@ -77,7 +77,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_vertex(const graph_type& g) const {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source(const graph_type& g) const {
   return g.vertices().begin() + source_vertex_;
 }
 
@@ -91,7 +91,7 @@ template <typename VV,
           class EContainer,
           typename Alloc>
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
-dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_vertex_key() const noexcept {
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::source_key(const graph_type&) const noexcept {
   return source_vertex_;
 }
 
@@ -136,6 +136,50 @@ template <typename VV,
 typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
 dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::target_key(const graph_type&) const noexcept {
   return target_vertex_;
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_iterator
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex(graph_type& g, const_vertex_iterator other) noexcept {
+  return other != source_vertex(g) ? source_vertex(g) : target_vertex(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_iterator
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex(const graph_type&     g,
+                                                                  const_vertex_iterator other) const noexcept {
+  return other != source_vertex(g) ? source_vertex(g) : target_vertex(g);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          template <typename E, typename A>
+          class EContainer,
+          typename Alloc>
+typename dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key_type
+dav_edge<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_key(const graph_type&,
+                                                                      vertex_key_type other_key) const noexcept {
+  return other_key == target_vertex_ ? source_vertex_ : target_vertex_;
 }
 
 template <typename VV,

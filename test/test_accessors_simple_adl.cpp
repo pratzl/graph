@@ -59,7 +59,9 @@ auto& vertices(const simple_graph& g) { return g.the_vertices; }
 auto& vertex_value(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_value; }
 auto& vertex_value(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_value; }
 
-auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u - g.the_vertices.begin(); }
+auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) {
+  return static_cast<simple_graph::vertex_key_type>(u - g.the_vertices.begin());
+}
 
 auto find_vertex(simple_graph& g, vertex_key_t<simple_graph> ukey) { return begin(vertices(g)) + ukey; }
 auto find_vertex(const simple_graph& g, vertex_key_t<simple_graph> ukey) { return begin(vertices(g)) + ukey; }
@@ -72,13 +74,19 @@ auto edge_key(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> 
 auto& edge_value(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return uv->the_value; }
 auto& edge_value(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_value; }
 
+auto source(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return begin(vertices(g)) + uv->the_key.first; }
+auto source(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+  return begin(vertices(g)) + uv->the_key.first;
+}
+auto source_key(simple_graph const& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key.first; }
+
+
 auto target(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) {
   return begin(vertices(g)) + uv->the_key.second;
 }
 auto target(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
   return begin(vertices(g)) + uv->the_key.second;
 }
-
 auto target_key(simple_graph const& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key.second; }
 
 // TEST_CASE("cpo accessor", "[cpo][trace]") {
@@ -121,16 +129,28 @@ TEMPLATE_TEST_CASE("simple graph adl", "[simple][accessors][adl]", (simple_graph
   // vertex-edge range & edge values
   //
   SECTION("edges(g,u)") {
-    auto u = ++begin(vertices(g));
-
+    auto  u  = ++begin(vertices(g));
     auto& ee = edges(g, u);
     REQUIRE(size(ee) == 1);
+
     auto uv = begin(ee);
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
     REQUIRE(target(g, uv) == find_vertex(g, 2));
     REQUIRE(target_key(g, uv) == 2);
+  }
+
+  SECTION("sourced_edges(g,u)") {
+    auto  u  = ++begin(vertices(g));
+    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+
+    auto uv = begin(ee);
+    REQUIRE(source(g, uv) == u);
+    REQUIRE(source_key(g, uv) == 1);
+    REQUIRE(source_key(g, uv) == vertex_key(g, u));
+    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
+    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }
 }
 

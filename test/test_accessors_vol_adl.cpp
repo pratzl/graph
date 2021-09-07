@@ -28,8 +28,8 @@ using std::list;
     target_key(g,uv)                        x   x   x   na  x   x
     edge_value(g,uv)                        x   x   x   na  x   x
 
-    source(g,uv);
-    source_key(g,uv)
+    source(g,uv);                           na  x   x   na  x   x
+    source_key(g,uv)                        na  x   x   na  x   x
     vertex(g,uv,src)
     vertex_key(g,uv,src_key)
 
@@ -177,18 +177,29 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
   // vertex-edge range & edge values
   //
   SECTION("edges(g,u)") {
-    auto u = ++begin(vertices(g));
-
+    auto  u  = ++begin(vertices(g));
     auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
     REQUIRE(size(ee) == 1);
+
     auto uv = begin(ee);
-    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has target key on it
-    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has target key on it
     REQUIRE(edge_value(g, uv) == 2.2);
     REQUIRE(target(g, uv) == find_vertex(g, 2));
     REQUIRE(target_key(g, uv) == 2);
     //static_assert(std::is_unsigned_v<decltype(target_key(g, uv))>);
     REQUIRE(target_key(g, uv) == vertex_key(g, target(g, uv)));
+  }
+
+  SECTION("sourced_edges(g,u)") {
+    auto  u  = ++begin(vertices(g));
+    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+
+    auto uv = begin(ee);
+    //REQUIRE(source(g, uv) == find_vertex(g, 1));
+    //REQUIRE(source_key(g, uv) == 0);
+    //static_assert(std::is_unsigned_v<decltype(source_key(g, uv))>);
+    //REQUIRE(source_key(g, uv) == vertex_key(g, source(g, uv)));
+    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
+    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }
 } // TEMPLATE_TEST_CASE
 } // namespace vol_adl

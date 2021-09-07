@@ -437,9 +437,9 @@ protected:
   void unlink(vertex_type&, vertex_type&) noexcept;
 
 public:
-  vertex_iterator       source_vertex(graph_type&) noexcept;
-  const_vertex_iterator source_vertex(const graph_type&) const noexcept;
-  vertex_key_type       source_vertex_key(const graph_type&) const noexcept;
+  vertex_iterator       source(graph_type&) noexcept;
+  const_vertex_iterator source(const graph_type&) const noexcept;
+  vertex_key_type       source_key(const graph_type&) const noexcept;
 
   vertex_iterator       target(graph_type&) noexcept;
   const_vertex_iterator target(const graph_type&) const noexcept;
@@ -447,11 +447,7 @@ public:
 
   vertex_iterator       other_vertex(graph_type&, const_vertex_iterator other) noexcept;
   const_vertex_iterator other_vertex(const graph_type&, const_vertex_iterator other) const noexcept;
-  vertex_iterator       other_vertex(graph_type&, vertex_key_type other_key) noexcept;
-  const_vertex_iterator other_vertex(const graph_type&, vertex_key_type other_key) const noexcept;
-
-  vertex_key_type other_vertex_key(const graph_type&, const_vertex_iterator other) const noexcept;
-  vertex_key_type other_vertex_key(const graph_type&, vertex_key_type other_key) const noexcept;
+  vertex_key_type       other_vertex_key(const graph_type&, vertex_key_type other_key) const noexcept;
 
   edge_key_type edge_key(const graph_type& g) const noexcept;
 

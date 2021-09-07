@@ -62,6 +62,52 @@ auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&
   return rng;
 }
 
+//
+// vertex(g,uv,src) & vertex_key(g,uv,src_key) implemented here to avoid ambiguity when changing
+// uv->other_vertex(...) to uv->vertex(...)
+//
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto vertex(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                         g,
+                      edge_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>         uv,
+                      vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> source)
+      -> vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->other_vertex(g, source);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto vertex(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
+                      edge_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>>   uv,
+                      vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> source)
+      -> vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->other_vertex(g, source);
+}
+
+template <typename VV,
+          typename EV,
+          typename GV,
+          integral KeyT,
+          template <typename V, typename A>
+          class VContainer,
+          typename Alloc>
+constexpr auto vertex_key(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                 g,
+                          edge_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> uv,
+                          vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> source_key)
+      -> vertex_key_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> {
+  return uv->other_vertex_key(g, source_key);
+}
+
 
 #ifdef CPO
 ///-------------------------------------------------------------------------------------

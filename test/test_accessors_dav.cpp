@@ -77,15 +77,27 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
   // vertex-edge range & edge values
   //
   SECTION("edges(g,u)") {
-    auto u = ++begin(vertices(g));
-
+    auto  u  = ++begin(vertices(g));
     auto& ee = edges(g, u);
     REQUIRE(size(ee) == 1);
+
     auto uv = begin(ee);
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
     REQUIRE(target(g, uv) == find_vertex(g, 2));
     REQUIRE(target_key(g, uv) == 2);
+  }
+
+  SECTION("sourced_edges(g,u)") {
+    auto  u  = ++begin(vertices(g));
+    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+
+    auto uv = begin(ee);
+    REQUIRE(source(g, uv) == u);
+    REQUIRE(source_key(g, uv) == 1);
+    REQUIRE(source_key(g, uv) == vertex_key(g, u));
+    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
+    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }
 }

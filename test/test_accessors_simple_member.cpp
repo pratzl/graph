@@ -34,10 +34,13 @@ struct simple_edge : public simple_ns::simple_edge_base {
   auto& edge_value(simple_graph&) { return the_value; }
   auto& edge_value(const simple_graph&) const { return the_value; }
 
+  auto source(simple_graph& g);
+  auto source(simple_graph const& g) const;
+
   auto target(simple_graph& g);
   auto target(simple_graph const& g) const;
 
-  auto target_key(simple_graph const& g) const { return the_key.second; }
+  auto target_key(simple_graph const& g) const noexcept { return the_key.second; }
 };
 
 struct simple_vertex : public simple_ns::simple_vertex_base<simple_edge> {
@@ -77,6 +80,9 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
 };
 
 
+auto simple_edge::source(simple_graph& g) { return g.the_vertices.begin() + the_key.first; }
+auto simple_edge::source(simple_graph const& g) const { return g.the_vertices.begin() + the_key.first; }
+
 auto simple_edge::target(simple_graph& g) { return g.the_vertices.begin() + the_key.second; }
 auto simple_edge::target(simple_graph const& g) const { return g.the_vertices.begin() + the_key.second; }
 
@@ -114,16 +120,28 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
   // vertex-edge range & edge values
   //
   SECTION("edges(g,u)") {
-    auto u = ++begin(vertices(g));
-
+    auto  u  = ++begin(vertices(g));
     auto& ee = edges(g, u);
     REQUIRE(size(ee) == 1);
+
     auto uv = begin(ee);
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
     REQUIRE(target(g, uv) == find_vertex(g, 2));
     REQUIRE(target_key(g, uv) == 2);
+  }
+
+  SECTION("sourced_edges(g,u)") {
+    auto  u  = ++begin(vertices(g));
+    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+
+    auto uv = begin(ee);
+    REQUIRE(source(g, uv) == u);
+    REQUIRE(source_key(g, uv) == 1);
+    REQUIRE(source_key(g, uv) == vertex_key(g, u));
+    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
+    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }
 }
 

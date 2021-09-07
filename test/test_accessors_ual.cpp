@@ -77,15 +77,27 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
   // vertex-edge range & edge values
   //
   SECTION("edges(g,u)") {
-    auto u = ++begin(vertices(g));
-
+    auto  u  = ++begin(vertices(g));
     auto& ee = edges(g, u);
     REQUIRE(size(ee) == 2);
+
     auto uv = begin(ee);
     REQUIRE(edge_key(g, uv).first == 0);
     REQUIRE(edge_key(g, uv).second == 1);
     REQUIRE(edge_value(g, uv) == 1.1);
     REQUIRE(target(g, uv) == find_vertex(g, 1));
     REQUIRE(target_key(g, uv) == 1);
+  }
+
+  SECTION("sourced_edges(g,u)") {
+    auto  u  = ++begin(vertices(g));
+    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+
+    auto uv = begin(ee);
+    REQUIRE(source(g, uv) != u); // != because it's undirected and vertex(g,0) linked to this first
+    REQUIRE(source_key(g, uv) == 0);
+    REQUIRE(source_key(g, uv) != vertex_key(g, u));
+    //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
+    //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }
 } //TEMPLATE_TEST_CASE("ual accessors"
