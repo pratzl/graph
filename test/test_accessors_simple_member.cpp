@@ -40,6 +40,7 @@ struct simple_edge : public simple_ns::simple_edge_base {
   auto target(simple_graph& g);
   auto target(simple_graph const& g) const;
 
+  auto source_key(simple_graph const& g) const noexcept { return the_key.first; }
   auto target_key(simple_graph const& g) const noexcept { return the_key.second; }
 };
 

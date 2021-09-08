@@ -21,6 +21,7 @@ using std::list;
     vertex_key(g,u)                         x   x   x   x   x   x
     vertex_value(g,u)                       x   x   x   na  x   x
     find_vertex(g,ukey)                     x   x   x   x   x   x
+    degree(g,u)
 
   edges(g,u)                                x   x   x   x   x   x
     edge_key(g,uv)                          na  x   x   x   x   x

@@ -418,6 +418,48 @@ inline namespace _cpo_ {
 }
 
 
+namespace _source_key_ {
+  template <typename T>
+  void source_key(std::initializer_list<T>) = delete;
+
+  template <typename G, typename EI>
+  concept _edg_has_member = forward_iterator<EI> && requires(G&& g, EI uv) {
+    {uv->source_key(forward<G>(g))};
+  };
+  template <typename G, typename EI>
+  concept _edg_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv) {
+    {source_key(forward<G>(g), uv)};
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    static consteval bool _edg_fnc_except() {
+      if constexpr (_edg_has_member<G, EI>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->source_key(declval<G&>())));
+      else if constexpr (_edg_has_ADL<G, EI>)
+        return noexcept(_detail::_decay_copy(source_key(declval<G&>(), declval<EI>())));
+    }
+
+  public:
+    // uv->source_key(g), source_key(g,uv)
+    template <typename G, typename EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
+      if constexpr (_edg_has_member<G, EI>)
+        return uv->source_key(forward<G>(g));
+      else if constexpr (_edg_has_ADL<G, EI>)
+        return source_key(forward<G>(g), uv);
+    }
+  };
+} // namespace _source_key_
+
+inline namespace _cpo_ {
+  inline constexpr _source_key_::fn source_key{};
+}
+
+
 namespace _source_ {
   template <typename T>
   void source(std::initializer_list<T>) = delete;
@@ -432,27 +474,37 @@ namespace _source_ {
     forward_iterator<EI>;
     {source(forward<G>(g), uv)};
   };
+  template <typename G, typename EI>
+  concept _edg_has_skey = requires(G&& g, EI uv) {
+    forward_iterator<EI>;
+    {source_key(forward<G>(g), uv)};
+  };
 
   struct fn {
   private:
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_skey<G, EI>
     static consteval bool _edg_fnc_except() {
       if constexpr (_edg_has_member<G, EI>)
         return noexcept(_detail::_decay_copy(declval<EI>()->source(declval<G&>())));
       else if constexpr (_edg_has_ADL<G, EI>)
         return noexcept(_detail::_decay_copy(source(declval<G&>(), declval<EI>())));
+      else if constexpr (_edg_has_skey<G, EI>)
+        return noexcept(
+              _detail::_decay_copy(begin(vertices(declval<G&>())) + source_key(declval<G&>(), declval<EI>())));
     }
 
   public:
     // uv->source(g), source(g,uv)
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_skey<G, EI>
     constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
       if constexpr (_edg_has_member<G, EI>)
         return uv->source(forward<G>(g));
       else if constexpr (_edg_has_ADL<G, EI>)
         return source(forward<G>(g), uv);
+      else if constexpr (_edg_has_skey<G, EI>)
+        return begin(vertices(g)) + source_key(g, uv);
     }
   };
 } // namespace _source_
@@ -462,54 +514,45 @@ inline namespace _cpo_ {
 }
 
 
-namespace _source_key_ {
+namespace _target_key_ {
   template <typename T>
-  void source_key(std::initializer_list<T>) = delete;
+  void target_key(std::initializer_list<T>) = delete;
 
   template <typename G, typename EI>
   concept _edg_has_member = forward_iterator<EI> && requires(G&& g, EI uv) {
-    {uv->source_key(forward<G>(g))};
+    {uv->target_key(forward<G>(g))};
   };
   template <typename G, typename EI>
   concept _edg_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv) {
-    {source_key(forward<G>(g), uv)};
-  };
-  template <typename G, typename EI>
-  concept _edg_has_tgt = requires(G&& g, EI uv) {
-    { source(g, uv) } -> random_access_iterator;
-    // also requires vertex_iterator<G> -> vertex_key(g,u)
+    {target_key(forward<G>(g), uv)};
   };
 
   struct fn {
   private:
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_tgt<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
     static consteval bool _edg_fnc_except() {
       if constexpr (_edg_has_member<G, EI>)
-        return noexcept(_detail::_decay_copy(declval<EI>()->source_key(declval<G&>())));
+        return noexcept(_detail::_decay_copy(declval<EI>()->target_key(declval<G&>())));
       else if constexpr (_edg_has_ADL<G, EI>)
-        return noexcept(_detail::_decay_copy(source_key(declval<G&>(), declval<EI>())));
-      else if constexpr (_edg_has_tgt<G, EI>)
-        return noexcept(_detail::_decay_copy(vertex_key(declval<G&>(), source(declval<G&>(), declval<EI>()))));
+        return noexcept(_detail::_decay_copy(target_key(declval<G&>(), declval<EI>())));
     }
 
   public:
-    // uv->source_key(g), source_key(g,uv)
+    // uv->target_key(g), target_key(g,uv)
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_tgt<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
     constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
       if constexpr (_edg_has_member<G, EI>)
-        return uv->source_key(forward<G>(g));
+        return uv->target_key(forward<G>(g));
       else if constexpr (_edg_has_ADL<G, EI>)
-        return source_key(forward<G>(g), uv);
-      else if constexpr (_edg_has_tgt<G, EI>)
-        return vertex_key(g, source(g, uv));
+        return target_key(forward<G>(g), uv);
     }
   };
-} // namespace _source_key_
+} // namespace _target_key_
 
 inline namespace _cpo_ {
-  inline constexpr _source_key_::fn source_key{};
+  inline constexpr _target_key_::fn target_key{};
 }
 
 
@@ -564,48 +607,6 @@ namespace _target_ {
 
 inline namespace _cpo_ {
   inline constexpr _target_::fn target{};
-}
-
-
-namespace _target_key_ {
-  template <typename T>
-  void target_key(std::initializer_list<T>) = delete;
-
-  template <typename G, typename EI>
-  concept _edg_has_member = forward_iterator<EI> && requires(G&& g, EI uv) {
-    {uv->target_key(forward<G>(g))};
-  };
-  template <typename G, typename EI>
-  concept _edg_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv) {
-    {target_key(forward<G>(g), uv)};
-  };
-
-  struct fn {
-  private:
-    template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
-    static consteval bool _edg_fnc_except() {
-      if constexpr (_edg_has_member<G, EI>)
-        return noexcept(_detail::_decay_copy(declval<EI>()->target_key(declval<G&>())));
-      else if constexpr (_edg_has_ADL<G, EI>)
-        return noexcept(_detail::_decay_copy(target_key(declval<G&>(), declval<EI>())));
-    }
-
-  public:
-    // uv->target_key(g), target_key(g,uv)
-    template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
-    constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
-      if constexpr (_edg_has_member<G, EI>)
-        return uv->target_key(forward<G>(g));
-      else if constexpr (_edg_has_ADL<G, EI>)
-        return target_key(forward<G>(g), uv);
-    }
-  };
-} // namespace _target_key_
-
-inline namespace _cpo_ {
-  inline constexpr _target_key_::fn target_key{};
 }
 
 
