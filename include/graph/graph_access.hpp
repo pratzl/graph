@@ -133,7 +133,6 @@ namespace _vertex_key_ {
     }
 
   public:
-    // u->vertex_key(g), vertex_key(g,u), (u - begin(vertices(g)))
     template <typename G, typename VI>
     requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rng<G, VI>
     constexpr auto operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
@@ -142,7 +141,7 @@ namespace _vertex_key_ {
       else if constexpr (_vtx_has_ADL<G, VI>)
         return vertex_key(forward<G>(g), u);
       else if constexpr (_vtx_is_rng<G, VI>)
-        return u - ranges::begin(vertices(g)); // default impl if not defined
+        return static_cast<size_t>(u - ranges::begin(vertices(g))); // default impl if not defined
     }
   };
 } // namespace _vertex_key_
@@ -528,27 +527,37 @@ namespace _target_ {
     forward_iterator<EI>;
     {target(forward<G>(g), uv)};
   };
+  template <typename G, typename EI>
+  concept _edg_has_tkey = requires(G&& g, EI uv) {
+    forward_iterator<EI>;
+    {target_key(g, uv)};
+  };
 
   struct fn {
   private:
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_tkey<G, EI>
     static consteval bool _edg_fnc_except() {
       if constexpr (_edg_has_member<G, EI>)
         return noexcept(_detail::_decay_copy(declval<EI>()->target(declval<G&>())));
       else if constexpr (_edg_has_ADL<G, EI>)
         return noexcept(_detail::_decay_copy(target(declval<G&>(), declval<EI>())));
+      else if constexpr (_edg_has_tkey<G, EI>)
+        return noexcept(
+              _detail::_decay_copy(begin(vertices(declval<G&>())) + target_key(declval<G&>(), declval<EI>())));
     }
 
   public:
     // uv->target(g), target(g,uv)
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_tkey<G, EI>
     constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
       if constexpr (_edg_has_member<G, EI>)
         return uv->target(forward<G>(g));
       else if constexpr (_edg_has_ADL<G, EI>)
         return target(forward<G>(g), uv);
+      else if constexpr (_edg_has_tkey<G, EI>)
+        return begin(vertices(g)) + target_key(g, uv);
     }
   };
 } // namespace _target_
@@ -570,36 +579,27 @@ namespace _target_key_ {
   concept _edg_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv) {
     {target_key(forward<G>(g), uv)};
   };
-  template <typename G, typename EI>
-  concept _edg_has_tgt = requires(G&& g, EI uv) {
-    { target(g, uv) } -> random_access_iterator;
-    // also requires vertex_iterator<G> -> vertex_key(g,u)
-  };
 
   struct fn {
   private:
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_tgt<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
     static consteval bool _edg_fnc_except() {
       if constexpr (_edg_has_member<G, EI>)
         return noexcept(_detail::_decay_copy(declval<EI>()->target_key(declval<G&>())));
       else if constexpr (_edg_has_ADL<G, EI>)
         return noexcept(_detail::_decay_copy(target_key(declval<G&>(), declval<EI>())));
-      else if constexpr (_edg_has_tgt<G, EI>)
-        return noexcept(_detail::_decay_copy(vertex_key(declval<G&>(), target(declval<G&>(), declval<EI>()))));
     }
 
   public:
     // uv->target_key(g), target_key(g,uv)
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_tgt<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
     constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
       if constexpr (_edg_has_member<G, EI>)
         return uv->target_key(forward<G>(g));
       else if constexpr (_edg_has_ADL<G, EI>)
         return target_key(forward<G>(g), uv);
-      else if constexpr (_edg_has_tgt<G, EI>)
-        return vertex_key(g, target(g, uv));
     }
   };
 } // namespace _target_key_

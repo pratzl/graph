@@ -135,8 +135,8 @@ auto& vertex_value(const vol_adl::vol_graph& g, vertex_iterator_t<const vol_adl:
 auto&       edge_value(vol_adl::vol_graph&, vol_adl::vol_edge_range::iterator uv) { return uv->second; }
 const auto& edge_value(const vol_adl::vol_graph&, vol_adl::vol_edge_range::const_iterator uv) { return uv->second; }
 
-auto target(vol_adl::vol_graph& g, vol_adl::vol_edge_range::iterator uv) { return g.begin() + uv->first; }
-auto target(const vol_adl::vol_graph& g, vol_adl::vol_edge_range::const_iterator uv) { return g.begin() + uv->first; }
+auto target_key(vol_adl::vol_graph& g, vol_adl::vol_edge_range::iterator uv) { return uv->first; }
+auto target_key(const vol_adl::vol_graph& g, vol_adl::vol_edge_range::const_iterator uv) { return uv->first; }
 
 } // namespace std
 
@@ -170,7 +170,7 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
     REQUIRE(vertex_key(g, u) == 1); // eval'd by CPO for random_access_range
     REQUIRE(vertex_value(g, u) == 8);
     REQUIRE(find_vertex(g, 1) == u);
-    static_assert(std::is_signed_v<decltype(vertex_key(g, u))>);
+    //static_assert(std::is_signed_v<decltype(vertex_key(g, u))>);
   }
 
   //
@@ -185,7 +185,8 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
     REQUIRE(edge_value(g, uv) == 2.2);
     REQUIRE(target(g, uv) == find_vertex(g, 2));
     REQUIRE(target_key(g, uv) == 2);
-    //static_assert(std::is_unsigned_v<decltype(target_key(g, uv))>);
+    static_assert(std::is_unsigned_v<decltype(target_key(g, uv))>);
+    static_assert(std::is_unsigned_v<decltype(vertex_key(g, target(g, uv)))>);
     REQUIRE(target_key(g, uv) == vertex_key(g, target(g, uv)));
   }
 
