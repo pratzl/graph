@@ -32,7 +32,7 @@ using std::list;
 
     source(g,uv);                           na  x   x   na  x   x
     source_key(g,uv)                        na  x   x   na  x   x
-    edge_key(g,uv)                          na  x   x   x   x   x // default not defined
+    edge_key(g,uv)                          na  x   x   x   x   x
 
     find_vertex_edge(g, u, v)
     find_vertex_edge(g, ukey, vkey)

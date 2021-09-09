@@ -328,36 +328,44 @@ namespace _edge_key_ {
   void edge_key(std::initializer_list<T>) = delete;
 
   template <typename G, typename EI>
-  concept _edg_has_member = requires(G&& g, EI uv) {
-    forward_iterator<EI>;
+  concept _edg_has_member = forward_iterator<EI> && requires(G&& g, EI uv) {
     {uv->edge_key(forward<G>(g))};
   };
   template <typename G, typename EI>
-  concept _edg_has_ADL = requires(G&& g, EI uv) {
-    forward_iterator<EI>;
+  concept _edg_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv) {
     {edge_key(forward<G>(g), uv)};
+  };
+  template <typename G, typename EI>
+  concept _edg_has_src = forward_iterator<EI> && requires(G&& g, EI uv) {
+    {source_key(g, uv)};
+    {target_key(g, uv)};
   };
 
   struct fn {
   private:
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_src<G, EI>
     static consteval bool _edg_fnc_except() {
       if constexpr (_edg_has_member<G, EI>)
         return noexcept(_detail::_decay_copy(declval<EI>()->edge_key(declval<G&>())));
       else if constexpr (_edg_has_ADL<G, EI>)
         return noexcept(_detail::_decay_copy(edge_key(declval<G&>(), declval<EI>())));
+      else if constexpr (_edg_has_ADL<G, EI>)
+        return noexcept(_detail::_decay_copy(
+              pair(source_key(declval<G&>(), declval<EI>()), target_key(declval<G&>(), declval<EI>()))));
     }
 
   public:
     // uv->edge_key(g), edge_key(g,uv), (uv - begin(vertices(g)))
     template <typename G, typename EI>
-    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI>
+    requires _edg_has_member<G, EI> || _edg_has_ADL<G, EI> || _edg_has_src<G, EI>
     constexpr auto operator()(G&& g, EI uv) const noexcept(_edg_fnc_except<G, EI>()) {
       if constexpr (_edg_has_member<G, EI>)
         return uv->edge_key(forward<G>(g));
       else if constexpr (_edg_has_ADL<G, EI>)
         return edge_key(forward<G>(g), uv);
+      else if constexpr (_edg_has_src<G, EI>)
+        return pair(source_key(g, uv), target_key(g, uv));
     }
   };
 } // namespace _edge_key_
