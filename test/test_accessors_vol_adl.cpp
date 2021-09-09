@@ -27,8 +27,8 @@ using std::list;
     target(g,uv)                            x   x   x   na  x   x
     target_key(g,uv)                        x   x   x   na  x   x
     edge_value(g,uv)                        x   x   x   na  x   x
-    vertex(g,uv,src)
-    vertex_key(g,uv,src_key)
+    vertex(g,uv,src)                        na  x   x   na  x   x
+    vertex_key(g,uv,src_key)                na  x   x   na  x   x
 
     source(g,uv);                           na  x   x   na  x   x
     source_key(g,uv)                        na  x   x   na  x   x
