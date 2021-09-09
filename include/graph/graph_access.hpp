@@ -103,20 +103,42 @@ namespace _vertex_key_ {
   void vertex_key(std::initializer_list<T>) = delete;
 
   template <typename G, typename VI>
-  concept _vtx_has_member = requires(G&& g, VI u) {
-    forward_iterator<VI>;
+  concept _vtx_has_member = forward_iterator<VI> && requires(G&& g, VI u) {
     {u->vertex_key(forward<G>(g))};
   };
   template <typename G, typename VI>
-  concept _vtx_has_ADL = requires(G&& g, VI u) {
-    forward_iterator<VI>;
+  concept _vtx_has_ADL = forward_iterator<VI> && requires(G&& g, VI u) {
     {vertex_key(forward<G>(g), u)};
   };
   template <typename G, typename VI>
-  concept _vtx_is_rng = requires(G&& g, VI u) {
-    is_reference_v<G>;
-    random_access_iterator<VI>;
-    //convertible_to<VI, decltype(vertices(begin(g)))>;
+  concept _vtx_is_rng = random_access_iterator<VI>;
+
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_member = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {uv->vertex_key(forward<G>(g), src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_ADL = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {vertex_key(forward<G>(g), uv, src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {source(g, uv)};
+    {target(g, uv)};
+  };
+
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_member = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {uv->vertex_key(forward<G>(g), src_key)};
+  };
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {vertex_key(forward<G>(g), uv, src_key)};
+  };
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_tgt = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {source_key(g, uv)};
+    {target_key(g, uv)};
   };
 
   struct fn {
@@ -132,6 +154,32 @@ namespace _vertex_key_ {
         return noexcept(declval<VI>() - declval<VI>());
     }
 
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    static consteval bool _edg_vtx_fnc_except() {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->vertex_key(declval<G&>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(vertex_key(declval<G&>(), declval<EI>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>() != target(declval<G&>(), declval<EI>())
+                                                   ? target(declval<G&>(), declval<EI>())
+                                                   : declval<VI>()));
+    }
+
+    template <typename G, typename EI, typename VK>
+    requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
+    static consteval bool _edg_vkey_fnc_except() {
+      if constexpr (_edg_vkey_has_member<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->vertex_key(declval<G&>(), declval<VK>())));
+      else if constexpr (_edg_vkey_has_ADL<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(vertex_key(declval<G&>(), declval<EI>(), declval<VK>())));
+      else if (_edg_vkey_has_tgt<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(declval<VK>() != target_key(declval<G&>(), declval<EI>())
+                                                   ? target_key(declval<G&>(), declval<EI>())
+                                                   : declval<VK>()));
+    }
+
   public:
     template <typename G, typename VI>
     requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rng<G, VI>
@@ -143,6 +191,28 @@ namespace _vertex_key_ {
       else if constexpr (_vtx_is_rng<G, VI>)
         return static_cast<size_t>(u - ranges::begin(vertices(g))); // default impl if not defined
     }
+
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    constexpr auto operator()(G&& g, EI uv, VI src) const noexcept(_edg_vtx_fnc_except<G, EI, VI>()) {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return uv->vertex_key(forward<G>(g), src);
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return vertex_key(forward<G>(g), uv, src);
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return src == source(g, uv) ? target(g, uv) : source(g, uv);
+    }
+
+    template <typename G, typename EI, typename VK>
+    requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
+    constexpr auto operator()(G&& g, EI uv, VK src_key) const noexcept(_edg_vkey_fnc_except<G, EI, VK>()) {
+      if constexpr (_edg_vkey_has_member<G, EI, VK>)
+        return uv->vertex_key(forward<G>(g), src_key);
+      else if constexpr (_edg_vkey_has_ADL<G, EI, VK>)
+        return vertex_key(forward<G>(g), uv, src_key);
+      else if constexpr (_edg_vkey_has_tgt<G, EI, VK>)
+        return src_key == source_key(g, uv) ? target_key(g, uv) : source_key(g, uv);
+    }
   };
 } // namespace _vertex_key_
 
@@ -150,6 +220,149 @@ inline namespace _cpo_ {
   inline constexpr _vertex_key_::fn vertex_key{};
 }
 
+
+#  if 0
+namespace _other_vertex_key_ {
+  template <typename T>
+  void other_vertex_key(std::initializer_list<T>) = delete;
+
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_member = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {uv->other_vertex_key(forward<G>(g), src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_ADL = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {other_vertex_key(forward<G>(g), uv, src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {source(g, uv)};
+    {target(g, uv)};
+  };
+
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_member = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {uv->other_vertex_key(forward<G>(g), src_key)};
+  };
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {other_vertex_key(forward<G>(g), uv, src_key)};
+  };
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_tgt = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {source_key(g, uv)};
+    {target_key(g, uv)};
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    static consteval bool _edg_vtx_fnc_except() {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex_key(declval<G&>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(other_vertex_key(declval<G&>(), declval<EI>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>() != target(declval<G&>(), declval<EI>())
+                                                   ? target(declval<G&>(), declval<EI>())
+                                                   : declval<VI>()));
+    }
+
+    template <typename G, typename EI, typename VK>
+    requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
+    static consteval bool _edg_vkey_fnc_except() {
+      if constexpr (_edg_vkey_has_member<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex_key(declval<G&>(), declval<VK>())));
+      else if constexpr (_edg_vkey_has_ADL<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(other_vertex_key(declval<G&>(), declval<EI>(), declval<VK>())));
+      else if (_edg_vkey_has_tgt<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(declval<VK>() != target_key(declval<G&>(), declval<EI>())
+                                                   ? target_key(declval<G&>(), declval<EI>())
+                                                   : declval<VK>()));
+    }
+
+  public:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    constexpr auto operator()(G&& g, EI uv, VI src) const noexcept(_edg_vtx_fnc_except<G, EI, VI>()) {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return uv->other_vertex_key(forward<G>(g), src);
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return other_vertex_key(forward<G>(g), uv, src);
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return src == source(g, uv) ? target(g, uv) : source(g, uv);
+    }
+
+    template <typename G, typename EI, typename VK>
+    requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
+    constexpr auto operator()(G&& g, EI uv, VK src_key) const noexcept(_edg_vkey_fnc_except<G, EI, VK>()) {
+      if constexpr (_edg_vkey_has_member<G, EI, VK>)
+        return uv->other_vertex_key(forward<G>(g), src_key);
+      else if constexpr (_edg_vkey_has_ADL<G, EI, VK>)
+        return other_vertex_key(forward<G>(g), uv, src_key);
+      else if constexpr (_edg_vkey_has_tgt<G, EI, VK>)
+        return src_key == source_key(g, uv) ? target_key(g, uv) : source_key(g, uv);
+    }
+  };
+} // namespace _other_vertex_key_
+
+inline namespace _cpo_ {
+  inline constexpr _other_vertex_key_::fn other_vertex_key{};
+}
+
+namespace _other_vertex_ {
+  template <typename T>
+  void other_vertex(std::initializer_list<T>) = delete;
+
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_member = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {uv->other_vertex(forward<G>(g), src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_ADL = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {other_vertex(forward<G>(g), uv, src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    true;
+    //{source(g, uv)};
+    //{target(g, uv)};
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    static consteval bool _edg_vtx_fnc_except() {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex(declval<G&>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(other_vertex(declval<G&>(), declval<EI>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>() != target(declval<G&>(), declval<EI>())
+                                                   ? target(declval<G&>(), declval<EI>())
+                                                   : declval<VI>()));
+    }
+
+  public:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    constexpr auto operator()(G&& g, EI uv, VI src) const noexcept(_edg_vtx_fnc_except<G, EI, VI>()) {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return uv->other_vertex(forward<G>(g), src);
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return other_vertex(forward<G>(g), uv, src);
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return src == source(g, uv) ? target(g, uv) : source(g, uv);
+    }
+  };
+} // namespace _other_vertex_
+
+inline namespace _cpo_ {
+  inline constexpr _other_vertex_::fn other_vertex{};
+}
+#  endif
 
 namespace _vertex_value_ {
   template <typename T>
@@ -651,6 +864,147 @@ inline namespace _cpo_ {
   inline constexpr _graph_value_::fn graph_value{};
 }
 
+
+namespace _other_vertex_key_ {
+  template <typename T>
+  void other_vertex_key(std::initializer_list<T>) = delete;
+
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_member = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {uv->other_vertex_key(forward<G>(g), src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_ADL = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {other_vertex_key(forward<G>(g), uv, src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {source(g, uv)};
+    {target(g, uv)};
+  };
+
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_member = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {uv->other_vertex_key(forward<G>(g), src_key)};
+  };
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_ADL = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {other_vertex_key(forward<G>(g), uv, src_key)};
+  };
+  template <typename G, typename EI, typename VK>
+  concept _edg_vkey_has_tgt = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
+    {source_key(g, uv)};
+    {target_key(g, uv)};
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    static consteval bool _edg_vtx_fnc_except() {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex_key(declval<G&>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(other_vertex_key(declval<G&>(), declval<EI>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>() != target(declval<G&>(), declval<EI>())
+                                                   ? target(declval<G&>(), declval<EI>())
+                                                   : declval<VI>()));
+    }
+
+    template <typename G, typename EI, typename VK>
+    requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
+    static consteval bool _edg_vkey_fnc_except() {
+      if constexpr (_edg_vkey_has_member<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex_key(declval<G&>(), declval<VK>())));
+      else if constexpr (_edg_vkey_has_ADL<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(other_vertex_key(declval<G&>(), declval<EI>(), declval<VK>())));
+      else if (_edg_vkey_has_tgt<G, EI, VK>)
+        return noexcept(_detail::_decay_copy(declval<VK>() != target_key(declval<G&>(), declval<EI>())
+                                                   ? target_key(declval<G&>(), declval<EI>())
+                                                   : declval<VK>()));
+    }
+
+  public:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    constexpr auto operator()(G&& g, EI uv, VI src) const noexcept(_edg_vtx_fnc_except<G, EI, VI>()) {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return uv->other_vertex_key(forward<G>(g), src);
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return other_vertex_key(forward<G>(g), uv, src);
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return src == source(g, uv) ? target(g, uv) : source(g, uv);
+    }
+
+    template <typename G, typename EI, typename VK>
+    requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
+    constexpr auto operator()(G&& g, EI uv, VK src_key) const noexcept(_edg_vkey_fnc_except<G, EI, VK>()) {
+      if constexpr (_edg_vkey_has_member<G, EI, VK>)
+        return uv->other_vertex_key(forward<G>(g), src_key);
+      else if constexpr (_edg_vkey_has_ADL<G, EI, VK>)
+        return other_vertex_key(forward<G>(g), uv, src_key);
+      else if constexpr (_edg_vkey_has_tgt<G, EI, VK>)
+        return src_key == source_key(g, uv) ? target_key(g, uv) : source_key(g, uv);
+    }
+  };
+} // namespace _other_vertex_key_
+
+inline namespace _cpo_ {
+  inline constexpr _other_vertex_key_::fn other_vertex_key{};
+}
+
+namespace _other_vertex_ {
+  template <typename T>
+  void other_vertex(std::initializer_list<T>) = delete;
+
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_member = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {uv->other_vertex(forward<G>(g), src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_ADL = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    {other_vertex(forward<G>(g), uv, src)};
+  };
+  template <typename G, typename EI, typename VI>
+  concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
+    true;
+    //{source(g, uv)};
+    //{target(g, uv)};
+  };
+
+  struct fn {
+  private:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    static consteval bool _edg_vtx_fnc_except() {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex(declval<G&>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(other_vertex(declval<G&>(), declval<EI>(), declval<VI>())));
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>() != target(declval<G&>(), declval<EI>())
+                                                   ? target(declval<G&>(), declval<EI>())
+                                                   : declval<VI>()));
+    }
+
+  public:
+    template <typename G, typename EI, typename VI>
+    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
+    constexpr auto operator()(G&& g, EI uv, VI src) const noexcept(_edg_vtx_fnc_except<G, EI, VI>()) {
+      if constexpr (_edg_vtx_has_member<G, EI, VI>)
+        return uv->other_vertex(forward<G>(g), src);
+      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
+        return other_vertex(forward<G>(g), uv, src);
+      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
+        return src == source(g, uv) ? target(g, uv) : source(g, uv);
+    }
+  };
+} // namespace _other_vertex_
+
+inline namespace _cpo_ {
+  inline constexpr _other_vertex_::fn other_vertex{};
+}
 
 } // namespace std::graph
 

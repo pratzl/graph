@@ -24,15 +24,15 @@ using std::list;
     degree(g,u)
 
   edges(g,u)                                x   x   x   x   x   x
-    edge_key(g,uv)                          na  x   x   x   x   x
     target(g,uv)                            x   x   x   na  x   x
     target_key(g,uv)                        x   x   x   na  x   x
     edge_value(g,uv)                        x   x   x   na  x   x
+    vertex(g,uv,src)
+    vertex_key(g,uv,src_key)
 
     source(g,uv);                           na  x   x   na  x   x
     source_key(g,uv)                        na  x   x   na  x   x
-    vertex(g,uv,src)
-    vertex_key(g,uv,src_key)
+    edge_key(g,uv)                          na  x   x   x   x   x // default not defined
 
     find_vertex_edge(g, u, v)
     find_vertex_edge(g, ukey, vkey)
@@ -136,8 +136,8 @@ auto& vertex_value(const vol_adl::vol_graph& g, vertex_iterator_t<const vol_adl:
 auto&       edge_value(vol_adl::vol_graph&, vol_adl::vol_edge_range::iterator uv) { return uv->second; }
 const auto& edge_value(const vol_adl::vol_graph&, vol_adl::vol_edge_range::const_iterator uv) { return uv->second; }
 
-auto target_key(vol_adl::vol_graph& g, vol_adl::vol_edge_range::iterator uv) { return uv->first; }
 auto target_key(const vol_adl::vol_graph& g, vol_adl::vol_edge_range::const_iterator uv) { return uv->first; }
+//   source_key n/a because it isn't stored on edge
 
 } // namespace std
 
@@ -147,7 +147,11 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
   static_assert(std::is_same_v<TestType, vol_graph> || std::is_same_v<TestType, const vol_graph>);
   using G = TestType;
 
-  G g{{{1, 1.1}, {2, 2.1}}, {{2, 2.2}}, {{0, 0.1}}};
+  G g{
+        {{1, 1.1}, {2, 2.1}}, // [0]
+        {{2, 2.2}},           // [1]
+        {{0, 0.1}}            // [2]
+  };
 
   using namespace std::graph;
 
@@ -195,7 +199,13 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
     auto  u  = ++begin(vertices(g));
     auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
 
-    auto uv = begin(ee);
+    auto uv   = begin(ee);
+    auto v    = target(g, uv);
+    auto ukey = vertex_key(g, u);
+    auto vkey = target_key(g, uv);
+
+    //REQUIRE(vertex_key(g, uv, ukey) == vkey);
+    //REQUIRE(vertex_key(g, uv, vkey) == ukey);
     //REQUIRE(source(g, uv) == find_vertex(g, 1));
     //REQUIRE(source_key(g, uv) == 0);
     //static_assert(std::is_unsigned_v<decltype(source_key(g, uv))>);

@@ -87,16 +87,27 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
     REQUIRE(edge_value(g, uv) == 1.1);
     REQUIRE(target(g, uv) == find_vertex(g, 1));
     REQUIRE(target_key(g, uv) == 1);
+    REQUIRE(target(g, uv) == u); // b/c vertices are unordered on the edge
   }
 
   SECTION("sourced_edges(g,u)") {
-    auto  u  = ++begin(vertices(g));
-    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+    auto  x    = ++begin(vertices(g));
+    auto  xkey = vertex_key(g, x);
+    auto& ee   = edges(g, x); // eval'd by CPO for vertex_iterator that points to a forward_range object
 
-    auto uv = begin(ee);
-    REQUIRE(source(g, uv) != u); // != because it's undirected and vertex(g,0) linked to this first
+    auto uv   = begin(ee);
+    auto u    = source(g, uv);
+    auto ukey = source_key(g, uv);
+    auto v    = target(g, uv);
+    auto vkey = target_key(g, uv);
+
+    REQUIRE(target(g, uv) == x);
     REQUIRE(source_key(g, uv) == 0);
-    REQUIRE(source_key(g, uv) != vertex_key(g, u));
+    REQUIRE(source_key(g, uv) == vertex_key(g, u));
+    REQUIRE(other_vertex(g, uv, u) == v);
+    REQUIRE(other_vertex(g, uv, v) == u);
+    REQUIRE(other_vertex_key(g, uv, ukey) == vkey);
+    REQUIRE(other_vertex_key(g, uv, vkey) == ukey);
     //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
     //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }

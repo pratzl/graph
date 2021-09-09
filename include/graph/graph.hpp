@@ -156,19 +156,21 @@ concept vertex_range = ranges::forward_range<vertex_range_t<G>> &&
 
 template<typename G, typename EI>
 concept edge_iterator = forward_iterator<EI> && 
-  requires(G&& g, EI uv) {
-    { target(g, uv) } -> forward_iterator;
-    { target_key(g, uv) }; // CPO default = vertex_key(g, target(g,uv))
+  requires(G&& g, EI uv, vertex_iterator_t<G> src, vertex_key_t<G> src_key) {
+    { target(g, uv) } -> forward_iterator; // CPO default = begin(vertices(g)) + target_key(g,uv)
+    { target_key(g, uv) };                 // CPO default = (user override required)
   };
 
 template<typename G, typename EI>
 concept sourced_edge_iterator = edge_iterator<G, EI> &&
   requires(G&& g, EI uv, vertex_iterator_t<G> src, vertex_key_t<G> src_key) {
-    { source(g, uv) } -> forward_iterator;
-    { source_key(g, uv) };
-    { vertex(g, uv, src) } -> forward_iterator;
-    { vertex_key(g, uv, src_key) };
-    { edge_key(g, uv) }; // e.g. pair<ukey,vkey>
+    { source(g, uv) } -> forward_iterator;  // CPO default = begin(vertices(g))+source_key(g,uv)
+    { source_key(g, uv) };                  // CPO default = (user override required)
+    { other_vertex(g, uv, src) } -> forward_iterator;
+                   // CPO default = src==source(g,uv) ? target(g,uv) : source(g,uv)
+    { other_vertex_key(g, uv, src_key) };
+                   // CPO default = src==source_key(g,uv) ? target_key(g,uv) : source_key(g,uv)
+    { edge_key(g, uv) }; // CPO default = pair(source_key(g,uv),target_key(g,uv))
   };
 
 template<typename G, typename ER>

@@ -12,7 +12,7 @@ constexpr bool is_same_const(T1&& t1, T2&& t2) {
 namespace simple_ns {
 
 struct simple_edge_base {
-  using edge_key_type   = std::pair<size_t, size_t>;
+  using edge_key_type   = std::pair<size_t, size_t>; // src_key,tgt_key
   using edge_value_type = double;
 
   edge_key_type   the_key   = {};

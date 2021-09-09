@@ -724,7 +724,7 @@ ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::target_key(const graph_type& g) c
   return static_cast<vertex_edge_list_outward_link_type const*>(this)->vertex_key();
 }
 
-
+#if 0
 template <typename VV,
           typename EV,
           typename GV,
@@ -734,7 +734,7 @@ template <typename VV,
           typename Alloc>
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_iterator
 ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::other_vertex(graph_type& g, const_vertex_iterator other) noexcept {
-  return other != source_vertex(g) ? source_vertex(g) : target_vertex(g);
+  return other != source(g) ? source(g) : target(g);
 }
 
 template <typename VV,
@@ -747,7 +747,7 @@ template <typename VV,
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_iterator
 ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::other_vertex(const graph_type&     g,
                                                             const_vertex_iterator other) const noexcept {
-  return other != source_vertex(g) ? source_vertex(g) : target_vertex(g);
+  return other != source(g) ? source(g) : target(g);
 }
 
 template <typename VV,
@@ -760,8 +760,9 @@ template <typename VV,
 typename ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_key_type
 ual_edge<VV, EV, GV, KeyT, VContainer, Alloc>::other_vertex_key(const graph_type& g,
                                                                 vertex_key_type   other_key) const noexcept {
-  return other_key != source_vertex_key(g) ? source_vertex_key(g) : target_vertex_key(g);
+  return other_key != source_key(g) ? source_key(g) : target_key(g);
 }
+#endif
 
 template <typename VV,
           typename EV,

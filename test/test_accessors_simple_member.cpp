@@ -42,6 +42,10 @@ struct simple_edge : public simple_ns::simple_edge_base {
 
   auto source_key(simple_graph const& g) const noexcept { return the_key.first; }
   auto target_key(simple_graph const& g) const noexcept { return the_key.second; }
+
+  auto other_vertex(simple_graph& g, std::vector<simple_vertex>::const_iterator src) const;
+  auto other_vertex(const simple_graph& g, std::vector<simple_vertex>::const_iterator src) const;
+  auto other_vertex_key(const simple_graph& g, size_t src_key) const;
 };
 
 struct simple_vertex : public simple_ns::simple_vertex_base<simple_edge> {
@@ -87,6 +91,15 @@ auto simple_edge::source(simple_graph const& g) const { return g.the_vertices.be
 auto simple_edge::target(simple_graph& g) { return g.the_vertices.begin() + the_key.second; }
 auto simple_edge::target(simple_graph const& g) const { return g.the_vertices.begin() + the_key.second; }
 
+auto simple_edge::other_vertex(simple_graph& g, std::vector<simple_vertex>::const_iterator src) const {
+  return src == source(g) ? target(g) : source(g);
+}
+auto simple_edge::other_vertex(const simple_graph& g, std::vector<simple_vertex>::const_iterator src) const {
+  return src == source(g) ? target(g) : source(g);
+}
+auto simple_edge::other_vertex_key(const simple_graph& g, size_t src_key) const {
+  return src_key == the_key.first ? the_key.second : the_key.first;
+}
 
 TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple_graph), (const simple_graph)) {
   static_assert(std::is_same_v<TestType, simple_graph> || std::is_same_v<TestType, const simple_graph>);
@@ -126,21 +139,32 @@ TEMPLATE_TEST_CASE("simple graph member", "[simple][accessors][member]", (simple
     REQUIRE(size(ee) == 1);
 
     auto uv = begin(ee);
+    auto v  = target(g, uv);
     REQUIRE(edge_key(g, uv).first == 1);
     REQUIRE(edge_key(g, uv).second == 2);
     REQUIRE(edge_value(g, uv) == 2.2);
-    REQUIRE(target(g, uv) == find_vertex(g, 2));
+    REQUIRE(v == find_vertex(g, 2));
     REQUIRE(target_key(g, uv) == 2);
+    //REQUIRE(vertex(g, uv, u) == target(g, uv));
+    //REQUIRE(vertex_key(g, u, vertex_key(u)) == target_key(g, uv));
   }
 
   SECTION("sourced_edges(g,u)") {
-    auto  u  = ++begin(vertices(g));
-    auto& ee = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
+    auto  u    = ++begin(vertices(g));
+    auto  ukey = vertex_key(g, u);
+    auto& ee   = edges(g, u); // eval'd by CPO for vertex_iterator that points to a forward_range object
 
-    auto uv = begin(ee);
+    auto uv   = begin(ee);
+    auto v    = target(g, uv);
+    auto vkey = vertex_key(g, v);
+
     REQUIRE(source(g, uv) == u);
     REQUIRE(source_key(g, uv) == 1);
     REQUIRE(source_key(g, uv) == vertex_key(g, u));
+    REQUIRE(other_vertex(g, uv, u) == v);
+    REQUIRE(other_vertex(g, uv, v) == u);
+    REQUIRE(other_vertex_key(g, uv, ukey) == vkey);
+    REQUIRE(other_vertex_key(g, uv, vkey) == ukey);
     //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
     //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
   }

@@ -445,9 +445,11 @@ public:
   const_vertex_iterator target(const graph_type&) const noexcept;
   vertex_key_type       target_key(const graph_type&) const noexcept;
 
+#  if 0
   vertex_iterator       other_vertex(graph_type&, const_vertex_iterator other) noexcept;
   const_vertex_iterator other_vertex(const graph_type&, const_vertex_iterator other) const noexcept;
   vertex_key_type       other_vertex_key(const graph_type&, vertex_key_type other_key) const noexcept;
+#  endif
 
   edge_key_type edge_key(const graph_type& g) const noexcept;
 
