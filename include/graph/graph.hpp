@@ -1,3 +1,4 @@
+
 #include <concepts>
 #include <ranges>
 #include <type_traits>
@@ -54,6 +55,22 @@
 
 #ifndef GRAPH_FWD_HPP
 #  define GRAPH_FWD_HPP
+
+namespace std::graphalt {
+
+template <typename G>
+concept vertex_range = ranges::random_access_range<G>;
+
+template <typename G>
+concept incidence_range = vertex_range<G> && ranges::forward_range<typename G::value_type>;
+
+template <typename G, typename AR>
+concept adjacency_range = ranges::forward_range<AR>;
+
+template <typename G, typename ER>
+concept edge_list_range = ranges::forward_range<ER>;
+
+} // namespace std::graphalt
 
 namespace std::graph {
 

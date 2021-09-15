@@ -657,20 +657,6 @@ namespace _other_vertex_key_ {
   template <typename T>
   void other_vertex_key(std::initializer_list<T>) = delete;
 
-  template <typename G, typename EI, typename VI>
-  concept _edg_vtx_has_member = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
-    {uv->other_vertex_key(forward<G>(g), src)};
-  };
-  template <typename G, typename EI, typename VI>
-  concept _edg_vtx_has_ADL = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
-    {other_vertex_key(forward<G>(g), uv, src)};
-  };
-  template <typename G, typename EI, typename VI>
-  concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
-    {source(g, uv)};
-    {target(g, uv)};
-  };
-
   template <typename G, typename EI, typename VK>
   concept _edg_vkey_has_member = forward_iterator<EI> && requires(G&& g, EI uv, VK src_key) {
     {uv->other_vertex_key(forward<G>(g), src_key)};
@@ -687,19 +673,6 @@ namespace _other_vertex_key_ {
 
   struct fn {
   private:
-    template <typename G, typename EI, typename VI>
-    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
-    static consteval bool _edg_vtx_fnc_except() {
-      if constexpr (_edg_vtx_has_member<G, EI, VI>)
-        return noexcept(_detail::_decay_copy(declval<EI>()->other_vertex_key(declval<G&>(), declval<VI>())));
-      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
-        return noexcept(_detail::_decay_copy(other_vertex_key(declval<G&>(), declval<EI>(), declval<VI>())));
-      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
-        return noexcept(_detail::_decay_copy(declval<VI>() != target(declval<G&>(), declval<EI>())
-                                                   ? target(declval<G&>(), declval<EI>())
-                                                   : declval<VI>()));
-    }
-
     template <typename G, typename EI, typename VK>
     requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
     static consteval bool _edg_vkey_fnc_except() {
@@ -714,17 +687,6 @@ namespace _other_vertex_key_ {
     }
 
   public:
-    template <typename G, typename EI, typename VI>
-    requires _edg_vtx_has_member<G, EI, VI> || _edg_vtx_has_ADL<G, EI, VI> || _edg_vtx_has_tgt<G, EI, VI>
-    constexpr auto operator()(G&& g, EI uv, VI src) const noexcept(_edg_vtx_fnc_except<G, EI, VI>()) {
-      if constexpr (_edg_vtx_has_member<G, EI, VI>)
-        return uv->other_vertex_key(forward<G>(g), src);
-      else if constexpr (_edg_vtx_has_ADL<G, EI, VI>)
-        return other_vertex_key(forward<G>(g), uv, src);
-      else if constexpr (_edg_vtx_has_tgt<G, EI, VI>)
-        return src == source(g, uv) ? target(g, uv) : source(g, uv);
-    }
-
     template <typename G, typename EI, typename VK>
     requires _edg_vkey_has_member<G, EI, VK> || _edg_vkey_has_ADL<G, EI, VK> || _edg_vkey_has_tgt<G, EI, VK>
     constexpr auto operator()(G&& g, EI uv, VK src_key) const noexcept(_edg_vkey_fnc_except<G, EI, VK>()) {
@@ -742,6 +704,7 @@ inline namespace _cpo_ {
   inline constexpr _other_vertex_key_::fn other_vertex_key{};
 }
 
+#  if 0
 namespace _other_vertex_ {
   template <typename T>
   void other_vertex(std::initializer_list<T>) = delete;
@@ -756,9 +719,8 @@ namespace _other_vertex_ {
   };
   template <typename G, typename EI, typename VI>
   concept _edg_vtx_has_tgt = forward_iterator<EI> && forward_iterator<VI> && requires(G&& g, EI uv, VI src) {
-    true;
-    //{source(g, uv)};
-    //{target(g, uv)};
+    {source(g, uv)};
+    {target(g, uv)};
   };
 
   struct fn {
@@ -793,6 +755,171 @@ namespace _other_vertex_ {
 inline namespace _cpo_ {
   inline constexpr _other_vertex_::fn other_vertex{};
 }
+#  endif
+
+
+#  if 0
+namespace _find_vertex_edge_ {
+  template <typename T>
+  void find_vertex_edge(std::initializer_list<T>) = delete;
+
+  template <typename G, typename VI>
+  concept _vtx_has_member = forward_iterator<VI> && requires(G&& g, VI u, VI v) {
+    {u->find_vertex_edge(forward<G>(g), v)};
+  };
+  template <typename G, typename VI>
+  concept _vtx_has_ADL = forward_iterator<VI> && requires(G&& g, VI u, VI v) {
+    {find_vertex_edge(forward<G>(g), u, v)};
+  };
+  template <typename G, typename VI>
+  concept _vtx_vi_default = forward_iterator<VI> && requires(G&& g, VI u, VI v) {
+    true;
+  };
+
+  template <typename G, typename VI, typename VK>
+  concept _vtx_key_has_member = forward_iterator<VI> && !forward_iterator<VK> && requires(G && g, VI u, VK vk) {
+    {u->find_vertex_edge(forward<G>(g), vk)};
+  };
+  template <typename G, typename VI, typename VK>
+  concept _vtx_key_has_ADL = forward_iterator<VI> && !forward_iterator<VK> && requires(G && g, VI u, VK vk) {
+    {find_vertex_edge(forward<G>(g), u, vk)};
+  };
+  template <typename G, typename VI, typename VK>
+  concept _vtx_key_default = forward_iterator<VI> && !forward_iterator<VK> && requires(G && g, VI u, VK vk) {
+    true;
+  };
+
+
+  struct fn {
+  private:
+    template <typename G, typename VI>
+    static constexpr auto find_other_vertex(G&& g, VI u, VI look_for) noexcept {
+      auto src = u;
+      auto uv  = begin(edges(g, u));
+      for (; uv != end(edges(g, uv)); ++uv) {
+        if (other_vertex(g, uv, src) == look_for)
+          return uv;
+        src = other_vertex(g, uv, src); // advance to target of uv (new src)
+      }
+      return uv; // end
+    }
+
+    template <typename G, typename VI, typename VK>
+    static constexpr auto find_other_key(G&& g, VI u, VK look_for) noexcept {
+      auto src = u;
+      auto uv  = begin(edges(g, u));
+      for (; uv != end(edges(g, uv)); ++uv) {
+        if (other_vertex_key(g, uv, src) == look_for)
+          return uv;
+        src = other_vertex_key(g, uv, src); // advance to target of uv (new src)
+      }
+      return uv; // end
+    }
+
+    template <typename G, typename VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_vi_default<G, VI>
+    static consteval bool _vtx_fnc_except() {
+      if constexpr (_vtx_has_member<G, VI>)
+        return noexcept(_detail::_decay_copy(declval<VI>()->find_vertex_edge(declval<G&>(), declval<VI>())));
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return noexcept(_detail::_decay_copy(find_vertex_edge(declval<G&>(), declval<VI>(), declval<VI>())));
+      else if constexpr (_vtx_vi_default<G, VI>)
+        return noexcept(_detail::_decay_copy(find_other_vertex(
+              begin(edges(declval<G&>(), declval<G&>())), end(edges(declval<G&>(), declval<VI>())), declval<VI>())));
+    }
+
+    template <typename G, typename VI, typename VK>
+    requires _vtx_key_has_member<G, VI, VK> || _vtx_key_has_ADL<G, VI, VK> || _vtx_key_default<G, VI, VK>
+    static consteval bool _vtx_key_fnc_except() {
+      if constexpr (_vtx_has_member<G, VI, VK>)
+        return noexcept(_detail::_decay_copy(declval<VI>()->find_vertex_edge(declval<G&>(), declval<VK>())));
+      else if constexpr (_vtx_key_has_ADL<G, VI, VK>)
+        return noexcept(_detail::_decay_copy(find_vertex_edge(declval<G&>(), declval<VI>(), declval<VK>())));
+      else if constexpr (_vtx_key_default<G, VI, VK>)
+        return noexcept(_detail::_decay_copy(find_other_vertex(
+              begin(edges(declval<G&>(), declval<G&>())), end(edges(declval<G&>(), declval<VI>())), declval<VK>())));
+    }
+
+  public:
+    template <typename G, forward_iterator VI>
+    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_vi_default<G, VI>
+    constexpr auto operator()(G&& g, VI u, VI look_for) const noexcept(_vtx_fnc_except<G, VI>()) {
+      if constexpr (_vtx_has_member<G, VI>)
+        return u->find_vertex_edge(forward<G>(g), look_for);
+      else if constexpr (_vtx_has_ADL<G, VI>)
+        return find_vertex_edge(forward<G>(g), u, look_for);
+      else if constexpr (_vtx_vi_default<G, VI>)
+        return find_other_vertex(begin(edges(g, u)), end(edges(g, u)), look_for);
+    }
+
+    template <typename G, forward_iterator VI, typename VK>
+    requires _vtx_key_has_member<G, VI, VK> || _vtx_key_has_ADL<G, VI, VK> || _vtx_key_default<G, VI, VK>
+    constexpr auto operator()(G&& g, VI u, VK look_for) const noexcept(_vtx_key_fnc_except<G, VI, VK>()) {
+      if constexpr (_vtx_key_has_member<G, VI, VK>)
+        return u->find_vertex_edge(forward<G>(g), look_for);
+      else if constexpr (_vtx_key_has_ADL<G, VI, VK>)
+        return find_vertex_edge(forward<G>(g), u, look_for);
+      else if constexpr (_vtx_key_default<G, VI, VK>)
+        return find_other_key(begin(edges(g, u)), end(edges(g, u)), look_for);
+    }
+  };
+} // namespace _find_vertex_edge_
+
+inline namespace _cpo_ {
+  inline constexpr _other_vertex_::fn find_vertex_edge{};
+}
+#  endif //0
+
+
+namespace _degree_ {
+  template <typename T>
+  void degree(std::initializer_list<T>) = delete;
+
+  template <typename G>
+  concept _gph_has_member = requires(G& g) {
+    {g.degree()};
+  };
+  template <typename G>
+  concept _gph_has_ADL = requires(G& g) {
+    {degree(g)};
+  };
+  template <typename G>
+  concept _gph_has_sz = requires(G& g) {
+    {ranges::size(g)};
+  };
+
+  struct fn {
+  private:
+    template <typename G>
+    requires _gph_has_member<G> || _gph_has_ADL<G> || _gph_has_sz<G>
+    static consteval bool _gph_fnc_except() {
+      if constexpr (_gph_has_member<G>)
+        return noexcept(_detail::_decay_copy(declval<G&>().degree()));
+      else if constexpr (_gph_has_ADL<G>)
+        return noexcept(_detail::_decay_copy(degree(declval<G&>())));
+      else if constexpr (_gph_has_sz<G>)
+        return noexcept(_detail::_decay_copy(ranges::size(declval<G&>())));
+    }
+
+  public:
+    // g.degree(), degree(g)
+    template <typename G>
+    requires _gph_has_member<G> || _gph_has_ADL<G>
+    constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
+      if constexpr (_gph_has_member<G>)
+        return g.degree();
+      else if constexpr (_gph_has_ADL<G>)
+        return degree(g);
+      else if constexpr (_gph_has_sz<G>)
+        return ranges::size(g);
+    }
+  };
+} // namespace _degree_
+
+inline namespace _cpo_ {
+  inline constexpr _degree_::fn degree{};
+}
+
 
 } // namespace std::graph
 

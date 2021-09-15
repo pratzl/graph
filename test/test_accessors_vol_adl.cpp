@@ -34,7 +34,7 @@ using std::list;
     source_key(g,uv)                        na  x   x   na  x   x
     edge_key(g,uv)                          na  x   x   x   x   x
 
-    find_vertex_edge(g, u, v)
+    find_vertex_edge(g, u, v)               
     find_vertex_edge(g, ukey, vkey)
 
   vertices(g,u)                             
@@ -212,6 +212,15 @@ TEMPLATE_TEST_CASE("vol graph", "[vol][accessors]", (vol_graph), (const vol_grap
     //REQUIRE(source_key(g, uv) == vertex_key(g, source(g, uv)));
     //REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
     //REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
+  }
+
+  SECTION("sourced_edges(g,u)") {
+    auto u = find_vertex(g, 0);
+    auto v = find_vertex(g, 1);
+    auto w = find_vertex(g, 2);
+
+    vertex_edge_iterator_t<G> uv;
+    //uv = find_vertex_edge(g, u, v);
   }
 } // TEMPLATE_TEST_CASE
 } // namespace vol_adl
