@@ -197,6 +197,7 @@ namespace _find_vertex_ {
   };
   template <typename G, typename VK>
   concept _vtx_has_ADL = requires(G&& g, VK ukey) {
+    {vertices(g)};
     { find_vertex(forward<G>(g), ukey) } -> forward_iterator;
   };
   template <typename G, typename VK>
@@ -224,11 +225,15 @@ namespace _find_vertex_ {
         return g.find_vertex(ukey);
       else if constexpr (_vtx_has_ADL<G, VK>)
         return find_vertex(forward<G>(g), ukey);
-      else if constexpr (_vtx_has_rng<G, VK>)
+      else if constexpr (_vtx_has_rng<G, VK>) {
+        // ToDo: gcc12 complains vertex_range_t<G> not defined but MSVC is OK
+        // graph.hpp includes this header at top so cpos are available in concepts
+        // it feels like definitions may need to be reordered?
         if (static_cast<ranges::range_size_t<vertex_range_t<G>>>(ukey) < ranges::size(vertices(g)))
           return ranges::begin(vertices(g)) + static_cast<ranges::range_difference_t<vertex_range_t<G>>>(ukey);
         else
           return ranges::end(vertices(g));
+      }
     }
   };
 } // namespace _find_vertex_
