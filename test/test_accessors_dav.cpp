@@ -101,11 +101,11 @@ TEMPLATE_TEST_CASE("dav accessors", "[dav][accessors]", (Graph), (const Graph)) 
     REQUIRE(source(g, uv) == u);
     REQUIRE(source_key(g, uv) == 1);
     REQUIRE(source_key(g, uv) == vertex_key(g, u));
-#if 0
     REQUIRE(other_vertex(g, uv, u) == v);
     REQUIRE(other_vertex(g, uv, v) == u);
     REQUIRE(other_vertex_key(g, uv, ukey) == vkey);
     REQUIRE(other_vertex_key(g, uv, vkey) == ukey);
+#if 0
     REQUIRE(edge_key(g, uv).first == 1);  // n/a because edge only has source key on it
     REQUIRE(edge_key(g, uv).second == 2); // n/a because edge only has source key on it
 #endif

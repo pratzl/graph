@@ -104,11 +104,11 @@ TEMPLATE_TEST_CASE("ual accessors", "[ual][accessors]", (Graph), (const Graph)) 
     REQUIRE(target(g, uv) == x);
     REQUIRE(source_key(g, uv) == 0);
     REQUIRE(source_key(g, uv) == vertex_key(g, u));
-#if 0
     REQUIRE(other_vertex(g, uv, u) == v);
     REQUIRE(other_vertex(g, uv, v) == u);
     REQUIRE(other_vertex_key(g, uv, ukey) == vkey);
     REQUIRE(other_vertex_key(g, uv, vkey) == ukey);
+#if 0
     REQUIRE(edge_key(g, uv).first == 0);  // n/a because edge only has source key on it
     REQUIRE(edge_key(g, uv).second == 1); // n/a because edge only has source key on it
 #endif

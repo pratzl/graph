@@ -709,7 +709,7 @@ inline namespace _cpo_ {
   inline constexpr _other_vertex_key_::fn other_vertex_key{};
 }
 
-#  if 0
+#  if 1
 namespace _other_vertex_ {
   template <typename T>
   void other_vertex(std::initializer_list<T>) = delete;
@@ -760,10 +760,10 @@ namespace _other_vertex_ {
 inline namespace _cpo_ {
   inline constexpr _other_vertex_::fn other_vertex{};
 }
-#  endif
+#  endif //0
 
 
-#  if 0
+#  if 1
 namespace _find_vertex_edge_ {
   template <typename T>
   void find_vertex_edge(std::initializer_list<T>) = delete;
@@ -871,7 +871,7 @@ namespace _find_vertex_edge_ {
 } // namespace _find_vertex_edge_
 
 inline namespace _cpo_ {
-  inline constexpr _other_vertex_::fn find_vertex_edge{};
+  inline constexpr _find_vertex_edge_::fn find_vertex_edge{};
 }
 #  endif //0
 
