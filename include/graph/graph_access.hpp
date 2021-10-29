@@ -6,9 +6,24 @@
 
 namespace std::graph {
 
+// Remove after all old-style CPOs are rewritten to new style
+namespace _detail {
+  //template <typename T>
+  //inline constexpr bool _borrowed_range = enable_borrowed_range<uncvref_t<T>>;
+
+  //template <typename T>
+  //inline constexpr bool _borrowed_range<T&> = true;
+
+  template <typename T>
+  constexpr decay_t<T> _decay_copy(T&& _t) noexcept(is_nothrow_convertible_v<T, decay_t<T>>) {
+    return forward<T>(_t);
+  }
+} // namespace _detail
+
+
 //
-// vertices(g)
-// vertices(g,u)
+// vertices(g)  : default: g->vertices(), g
+// vertices(g,u): default: u->vertices(g)
 //
 TAG_INVOKE_DEF(vertices);
 
@@ -25,7 +40,7 @@ namespace _detail {
 
 template <typename G>
 requires _detail::_gph_vertices_member<G> || ranges::forward_range<G>
-auto& tag_invoke(vertices_fn_t, G&& g) noexcept {
+auto& tag_invoke(vertices_fn_t, G&& g) {
   if constexpr (_detail::_gph_vertices_member<G>)
     return g.vertices();
   else if constexpr (ranges::forward_range<G>)
@@ -37,65 +52,28 @@ requires _detail::_vtx_vertices_member<G, VI>
 auto& tag_invoke(vertices_fn_t, G&& g, VI u) { return u->vertices(g); }
 
 
+//
+// vertex_key(g,u): default: u->vertex_key(g), (u - begin(vertices(g)))
+//
+TAG_INVOKE_DEF(vertex_key);
+
 namespace _detail {
-  //template <typename T>
-  //inline constexpr bool _borrowed_range = enable_borrowed_range<uncvref_t<T>>;
-
-  //template <typename T>
-  //inline constexpr bool _borrowed_range<T&> = true;
-
-  template <typename T>
-  constexpr decay_t<T> _decay_copy(T&& _t) noexcept(is_nothrow_convertible_v<T, decay_t<T>>) {
-    return forward<T>(_t);
-  }
-} // namespace _detail
-
-
-namespace _vertex_key_ {
-  template <typename T>
-  void vertex_key(std::initializer_list<T>) = delete;
-
   template <typename G, typename VI>
-  concept _vtx_has_member = forward_iterator<VI> && requires(G&& g, VI u) {
+  concept _vtx_vtxkey_member = forward_iterator<VI> && requires(G&& g, VI u) {
     {u->vertex_key(forward<G>(g))};
   };
-  template <typename G, typename VI>
-  concept _vtx_has_ADL = forward_iterator<VI> && requires(G&& g, VI u) {
-    {vertex_key(forward<G>(g), u)};
-  };
-  template <typename G, typename VI>
-  concept _vtx_is_rng = random_access_iterator<VI>;
+} // namespace _detail
 
-  struct fn {
-  private:
-    template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rng<G, VI>
-    static consteval bool _vtx_fnc_except() {
-      if constexpr (_vtx_has_member<G, VI>)
-        return noexcept(_detail::_decay_copy(declval<VI>()->vertex_key(declval<G&>())));
-      else if constexpr (_vtx_has_ADL<G, VI>)
-        return noexcept(_detail::_decay_copy(vertex_key(declval<G&>(), declval<VI>())));
-      else if constexpr (_vtx_is_rng<G, VI>)
-        return noexcept(declval<VI>() - declval<VI>());
-    }
-
-  public:
-    template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI> || _vtx_is_rng<G, VI>
-    constexpr auto operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
-      if constexpr (_vtx_has_member<G, VI>)
-        return u->vertex_key(forward<G>(g));
-      else if constexpr (_vtx_has_ADL<G, VI>)
-        return vertex_key(forward<G>(g), u);
-      else if constexpr (_vtx_is_rng<G, VI>)
-        return static_cast<size_t>(u - ranges::begin(vertices(g))); // default impl if not defined
-    }
-  };
-} // namespace _vertex_key_
-
-inline namespace _cpo_ {
-  inline constexpr _vertex_key_::fn vertex_key{};
+template <typename G, typename VI>
+requires _detail::_vtx_vtxkey_member<G, VI> || random_access_iterator<VI>
+auto tag_invoke(vertex_key_fn_t, G&& g, VI u) {
+  if constexpr (_detail::_vtx_vertices_member<G, VI>)
+    return u->vertex_key(g);
+  else if constexpr (random_access_iterator<VI>)
+    return static_cast<ranges::range_size_t<decltype(vertices(g))>>(
+          u - ranges::begin(vertices(g))); // default impl if not defined
 }
+
 
 namespace _vertex_value_ {
   template <typename T>
