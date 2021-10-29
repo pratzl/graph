@@ -313,3 +313,6 @@ Other Useful Tools
 Bob Steagal for his [gcc-builder & clang-builder scripts](https://github.com/BobSteagall)
 
 Jason Turner for his [cpp_starter_project](https://github.com/lefticus/cpp_starter_project)
+
+René FerdinandRivera Morell for his [duck_invoke](https://github.com/bfgroup/duck_invoke), an implementation
+of tag_invoke (P1895) that works for both gcc and msvc.

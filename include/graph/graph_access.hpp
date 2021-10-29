@@ -1,9 +1,29 @@
 #include <concepts>
+#include "tag_invoke.hpp"
 
 #ifndef GRAPH_ACCESS_HPP
 #  define GRAPH_ACCESS_HPP
 
 namespace std::graph {
+
+//
+// vertices2(g)
+// vertices2(g,u)
+//
+TAG_INVOKE_DEF(vertices2);
+
+template <ranges::forward_range G>
+auto tag_invoke(vertices2_fn_t, G&& g) -> G& {
+  return g;
+}
+
+template <typename G, forward_iterator VI>
+requires requires(G&& g, VI u) {
+  { u->vertices(forward<G>(g)) } -> ranges::forward_range;
+}
+auto tag_invoke(vertices2_fn_t, G&& g, VI u) { return u->vertices(g); }
+
+
 namespace _detail {
   //template <typename T>
   //inline constexpr bool _borrowed_range = enable_borrowed_range<uncvref_t<T>>;

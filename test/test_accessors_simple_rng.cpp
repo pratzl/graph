@@ -98,6 +98,11 @@ TEMPLATE_TEST_CASE("simple graph rng", "[simple][accessors][rng]", (simple_graph
     REQUIRE(vertex_key(g, u) == 1);
     //REQUIRE(vertex_value(g, u) == 11); // vertex_value(g,u) isn't defined for this graph
     REQUIRE(find_vertex(g, 1) == u);
+
+    auto&& uu = vertices2(g);
+    REQUIRE(is_same_const(g, uu));
+    REQUIRE(size(vertices2(g)) == 3);
+    REQUIRE(std::ranges::random_access_range<decltype(uu)>);
   }
 
   //
