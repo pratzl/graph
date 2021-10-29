@@ -7,21 +7,34 @@
 namespace std::graph {
 
 //
-// vertices2(g)
-// vertices2(g,u)
+// vertices(g)
+// vertices(g,u)
 //
-TAG_INVOKE_DEF(vertices2);
+TAG_INVOKE_DEF(vertices);
 
-template <ranges::forward_range G>
-auto tag_invoke(vertices2_fn_t, G&& g) -> G& {
-  return g;
+namespace _detail {
+  template <typename G>
+  concept _gph_vertices_member = requires(G&& g) {
+    { g.vertices() } -> ranges::forward_range;
+  };
+  template <typename G, typename VI>
+  concept _vtx_vertices_member = forward_iterator<VI> && requires(G&& g, VI u) {
+    { u->vertices(g) } -> ranges::forward_range;
+  };
+} // namespace _detail
+
+template <typename G>
+requires _detail::_gph_vertices_member<G> || ranges::forward_range<G>
+auto& tag_invoke(vertices_fn_t, G&& g) noexcept {
+  if constexpr (_detail::_gph_vertices_member<G>)
+    return g.vertices();
+  else if constexpr (ranges::forward_range<G>)
+    return g;
 }
 
 template <typename G, forward_iterator VI>
-requires requires(G&& g, VI u) {
-  { u->vertices(forward<G>(g)) } -> ranges::forward_range;
-}
-auto tag_invoke(vertices2_fn_t, G&& g, VI u) { return u->vertices(g); }
+requires _detail::_vtx_vertices_member<G, VI>
+auto& tag_invoke(vertices_fn_t, G&& g, VI u) { return u->vertices(g); }
 
 
 namespace _detail {
@@ -36,86 +49,6 @@ namespace _detail {
     return forward<T>(_t);
   }
 } // namespace _detail
-
-
-namespace _vertices_ {
-  template <typename T>
-  void vertices(std::initializer_list<T>) = delete;
-
-  template <typename G>
-  concept _gph_has_member = requires(G&& g) {
-    { forward<G>(g).vertices() } -> ranges::forward_range;
-  };
-  template <typename G>
-  concept _gph_has_ADL = requires(G&& g) {
-    is_reference_v<G>;
-    { vertices(forward<G>(g)) } -> ranges::forward_range;
-  };
-  template <typename G>
-  concept _gph_has_rng = ranges::forward_range<G>;
-
-  template <typename G, typename VI>
-  concept _vtx_has_member = requires(G&& g, VI u) {
-    forward_iterator<VI>;
-    { u->vertices(forward<G>(g)) } -> ranges::forward_range;
-  };
-  template <typename G, typename VI>
-  concept _vtx_has_ADL = requires(G&& g, VI u) {
-    is_reference_v<G>;
-    forward_iterator<VI>;
-    { vertices(forward<G>(g), u) } -> ranges::forward_range;
-  };
-
-  struct fn {
-  private:
-    template <typename G>
-    requires _gph_has_member<G> || _gph_has_ADL<G> || _gph_has_rng<G>
-    static consteval bool _gph_fnc_except() {
-      if constexpr (_gph_has_member<G>)
-        return noexcept(_detail::_decay_copy(declval<G&>().vertices()));
-      else if constexpr (_gph_has_ADL<G>)
-        return noexcept(_detail::_decay_copy(vertices(declval<G&>())));
-      else if constexpr (_gph_has_rng<G>)
-        return noexcept(_detail::_decay_copy(declval<G&>()));
-    }
-
-    template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
-    static consteval bool _vtx_fnc_except() {
-      if constexpr (_vtx_has_member<G, VI>)
-        return noexcept(_detail::_decay_copy(declval<VI>()->vertices(declval<G&>())));
-      else if constexpr (_vtx_has_ADL<G, VI>)
-        return noexcept(_detail::_decay_copy(vertices(declval<G&>(), declval<VI>())));
-    }
-
-  public:
-    // g.vertices(), vertices(g), g
-    template <typename G>
-    requires _gph_has_member<G> || _gph_has_ADL<G> || _gph_has_rng<G>
-    constexpr auto& operator()(G&& g) const noexcept(_gph_fnc_except<G>()) {
-      if constexpr (_gph_has_member<G>)
-        return forward<G>(g).vertices();
-      else if constexpr (_gph_has_ADL<G>)
-        return vertices(forward<G>(g));
-      else if constexpr (_gph_has_rng<G>)
-        return g;
-    }
-
-    // u->vertices(g), vertices(g,u)
-    template <typename G, typename VI>
-    requires _vtx_has_member<G, VI> || _vtx_has_ADL<G, VI>
-    constexpr auto& operator()(G&& g, VI u) const noexcept(_vtx_fnc_except<G, VI>()) {
-      if constexpr (_vtx_has_member<G, VI>)
-        return u->vertices(forward<G>(g));
-      else if constexpr (_vtx_has_ADL<G, VI>)
-        return vertices(forward<G>(g), u);
-    }
-  };
-} // namespace _vertices_
-
-inline namespace _cpo_ {
-  inline constexpr _vertices_::fn vertices{};
-}
 
 
 namespace _vertex_key_ {

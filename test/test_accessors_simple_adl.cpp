@@ -47,14 +47,15 @@ struct simple_graph : public simple_ns::simple_graph_base<simple_vertex, simple_
   simple_graph& operator=(simple_graph const&) = default;
 };
 
+using std::graph::vertices;
 //
 // free functions to test ADL (argument-dependent lookup)
 //
 auto& graph_value(simple_graph& g) { return g.the_value; }
 auto& graph_value(const simple_graph& g) { return g.the_value; }
 
-auto& vertices(simple_graph& g) { return g.the_vertices; }
-auto& vertices(const simple_graph& g) { return g.the_vertices; }
+auto& tag_invoke(std::graph::vertices_fn_t, simple_graph& g) noexcept { return g.the_vertices; }
+auto& tag_invoke(std::graph::vertices_fn_t, const simple_graph& g) noexcept { return g.the_vertices; }
 
 auto& vertex_value(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_value; }
 auto& vertex_value(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_value; }

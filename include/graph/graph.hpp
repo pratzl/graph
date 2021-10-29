@@ -77,7 +77,7 @@ namespace std::graph {
 
 // Vertex range & iterator types
 template <typename G>
-using vertex_range_t = decltype(vertices(declval<G&&>()));
+using vertex_range_t = decltype(std::graph::vertices(declval<G&&>()));
 template <typename G>
 using vertex_iterator_t = ranges::iterator_t<vertex_range_t<G&&>>;
 
