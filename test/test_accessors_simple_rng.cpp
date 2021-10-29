@@ -109,8 +109,8 @@ TEMPLATE_TEST_CASE("simple graph rng", "[simple][accessors][rng]", (simple_graph
     auto& ee = edges(g, u);
     REQUIRE(size(ee) == 1);
     auto uv = begin(ee);
-    //REQUIRE(edge_key(g, uv).first == 1);
-    //REQUIRE(edge_key(g, uv).second == 2);
+    //REQUIRE(edge_key(g, uv).first == 1);         // n/a because ource_key(g,uv) not defined
+    //REQUIRE(edge_key(g, uv).second == 2);        // n/a because ource_key(g,uv) not defined
     //REQUIRE(edge_value(g, uv) == 2.2);           // edge_value(g,uv) isn't defined for this graph
     //REQUIRE(target(g, uv) == find_vertex(g, 2)); // target(g,uv) isn't defined
     //REQUIRE(target_key(g, uv) == 2);             // target_key(g,uv) isn't defined
