@@ -57,51 +57,65 @@ auto& graph_value(const simple_graph& g) { return g.the_value; }
 auto& tag_invoke(std::graph::vertices_fn_t, simple_graph& g) noexcept { return g.the_vertices; }
 auto& tag_invoke(std::graph::vertices_fn_t, const simple_graph& g) noexcept { return g.the_vertices; }
 
-auto& vertex_value(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_value; }
-auto& vertex_value(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_value; }
+auto& tag_invoke(std::graph::vertex_value_fn_t, simple_graph& g, vertex_iterator_t<simple_graph> u) {
+  return u->the_value;
+}
+auto& tag_invoke(std::graph::vertex_value_fn_t, const simple_graph& g, vertex_iterator_t<const simple_graph> u) {
+  return u->the_value;
+}
 
-auto vertex_key(const simple_graph& g, vertex_iterator_t<const simple_graph> u) {
+auto tag_invoke(std::graph::vertex_key_fn_t, const simple_graph& g, vertex_iterator_t<const simple_graph> u) {
   return static_cast<simple_graph::vertex_key_type>(u - g.the_vertices.begin());
 }
 
 auto find_vertex(simple_graph& g, vertex_key_t<simple_graph> ukey) { return begin(vertices(g)) + ukey; }
 auto find_vertex(const simple_graph& g, vertex_key_t<simple_graph> ukey) { return begin(vertices(g)) + ukey; }
 
-auto& edges(simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_edges; }
-auto& edges(const simple_graph& g, vertex_iterator_t<const simple_graph> u) { return u->the_edges; }
+auto& tag_invoke(std::graph::edges_fn_t, simple_graph& g, vertex_iterator_t<simple_graph> u) { return u->the_edges; }
+auto& tag_invoke(std::graph::edges_fn_t, const simple_graph& g, vertex_iterator_t<const simple_graph> u) {
+  return u->the_edges;
+}
 
-auto edge_key(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key; }
+auto tag_invoke(std::graph::edge_key_fn_t, const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+  return uv->the_key;
+}
 
 auto& edge_value(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return uv->the_value; }
 auto& edge_value(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_value; }
 
-auto source(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) { return begin(vertices(g)) + uv->the_key.first; }
-auto source(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+auto tag_invoke(::std::graph::source_key_fn_t, const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+  return uv->the_key.first;
+}
+auto tag_invoke(::std::graph::source_fn_t, simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) {
   return begin(vertices(g)) + uv->the_key.first;
 }
-auto source_key(simple_graph const& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key.first; }
+auto tag_invoke(::std::graph::source_fn_t, const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+  return begin(vertices(g)) + uv->the_key.first;
+}
 
+auto tag_invoke(::std::graph::target_key_fn_t, const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+  return uv->the_key.second;
+}
 
-auto target(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) {
+auto tag_invoke(::std::graph::target_fn_t, simple_graph& g, vertex_edge_iterator_t<simple_graph> uv) {
   return begin(vertices(g)) + uv->the_key.second;
 }
-auto target(const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
+auto tag_invoke(::std::graph::target_fn_t, const simple_graph& g, vertex_edge_iterator_t<const simple_graph> uv) {
   return begin(vertices(g)) + uv->the_key.second;
 }
-auto target_key(simple_graph const& g, vertex_edge_iterator_t<const simple_graph> uv) { return uv->the_key.second; }
 
 auto other_vertex(simple_graph& g, vertex_edge_iterator_t<simple_graph> uv, vertex_iterator_t<simple_graph> src) {
-  return src == source(g, uv) ? target(g, uv) : source(g, uv);
+  return src == std::graph::source(g, uv) ? std::graph::target(g, uv) : std::graph::source(g, uv);
 }
 auto other_vertex(simple_graph const&                        g,
                   vertex_edge_iterator_t<const simple_graph> uv,
                   vertex_iterator_t<const simple_graph>      src) {
-  return src == source(g, uv) ? target(g, uv) : source(g, uv);
+  return src == std::graph::source(g, uv) ? std::graph::target(g, uv) : std::graph::source(g, uv);
 }
 auto other_vertex_key(simple_graph const&                        g,
                       vertex_edge_iterator_t<const simple_graph> uv,
                       vertex_key_t<const simple_graph>           src_key) {
-  return src_key == source_key(g, uv) ? target_key(g, uv) : source_key(g, uv);
+  return src_key == std::graph::source_key(g, uv) ? std::graph::target_key(g, uv) : std::graph::source_key(g, uv);
 }
 
 // TEST_CASE("cpo accessor", "[cpo][trace]") {

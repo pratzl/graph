@@ -87,17 +87,6 @@ concept nothrow_tag_invocable = requires(_Tag tag, _Args... args) {
   noexcept;
 };
 
-template <typename Tag>
-struct gtag {
-private:
-public:
-  template <typename... Args>
-  constexpr auto operator()(Args&&... args) const noexcept(::std::tag_invoke_is_nothrow<Tag, decltype(args)...>::value)
-        -> ::std::tag_invoke_result_t<Tag, decltype(args)...> {
-    return ::std::tag_invoke(*static_cast<const Tag*>(this), ::std::forward<Args>(args)...);
-  }
-};
-
 /* tag::reference[]
 [#bfg_tag]
 = `std::tag`

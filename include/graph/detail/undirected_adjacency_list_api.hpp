@@ -31,8 +31,9 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-auto edges(undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-           vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
+auto tag_invoke(std::graph::edges_fn_t,
+                undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
+                vertex_iterator_t<undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
       typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::vertex_edge_range& {
 
   // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
@@ -50,8 +51,9 @@ template <typename VV,
           template <typename V, typename A>
           class VContainer,
           typename Alloc>
-auto edges(const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
-           vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
+auto tag_invoke(std::graph::edges_fn_t,
+                const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>&                   g,
+                vertex_iterator_t<const undirected_adjacency_list<VV, EV, GV, KeyT, VContainer, Alloc>> u) ->
       typename ual_vertex<VV, EV, GV, KeyT, VContainer, Alloc>::const_vertex_edge_range& {
 
   // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.

@@ -39,9 +39,10 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-auto edges(const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-           vertex_iterator_t<const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
-      typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_edge_range& {
+auto tag_invoke(std::graph::edges_fn_t,
+                const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
+                vertex_iterator_t<const directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u)
+      -> typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::const_vertex_edge_range& {
 
   // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
   // This will work in a single-threaded environment, and if only one edge range is used at a time.
@@ -61,8 +62,9 @@ template <typename VV,
           template <typename E, typename A>
           class EContainer,
           typename Alloc>
-auto edges(directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
-           vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
+auto tag_invoke(std::graph::edges_fn_t,
+                directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>&                   g,
+                vertex_iterator_t<directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>> u) ->
       typename directed_adjacency_vector<VV, EV, GV, KeyT, VContainer, EContainer, Alloc>::vertex_edge_range& {
 
   // ToDo: this is a hack so a reference can be returned from CPO functions. This MUST be fixed.
