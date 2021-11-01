@@ -107,7 +107,7 @@ namespace _detail {
     { g.find_vertex(ukey) } -> forward_iterator;
   };
   template <typename G, typename VK>
-  concept _vtx_findkey_rng = ranges::random_access_range<vtxrng_t<G>>; // vertices(g) is rnd access?
+  concept _vtx_findkey_rng = ranges::random_access_range<_detail::vtxrng_t<G>>; // vertices(g) is rnd access?
 } // namespace _detail
 
 template <typename G, typename VK>
@@ -136,8 +136,8 @@ namespace _detail {
     {u->edges(g)};
   };
   template <typename G, typename VI>
-  concept _vtx_edges_rng =
-        forward_iterator<VI> && ranges::forward_range<ranges::range_value_t<vtxrng_t<G>>>; // vertex is fwd rng?
+  concept _vtx_edges_rng = forward_iterator<VI> &&
+        ranges::forward_range<ranges::range_value_t<_detail::vtxrng_t<G>>>; // vertex is fwd rng?
 } // namespace _detail
 
 template <typename G>
@@ -316,7 +316,8 @@ namespace _detail {
     { uv->target(g) } -> forward_iterator;
   };
   template <typename G, typename EI>
-  concept _edg_target_rng = forward_iterator<EI> && ranges::random_access_range<vtxrng_t<G>> && requires(G&& g, EI uv) {
+  concept _edg_target_rng = forward_iterator<EI> && ranges::random_access_range<_detail::vtxrng_t<G>> &&
+        requires(G&& g, EI uv) {
     { target_key(g, uv) } -> integral;
   };
 } // namespace _detail
@@ -327,7 +328,7 @@ auto tag_invoke(target_fn_t, G&& g, EI uv) {
   if constexpr (_detail::_edg_target_member<G, EI>)
     return uv->target(g);
   else if constexpr (_detail::_edg_target_rng<G, EI>)
-    return begin(vertices(g)) + static_cast<ranges::range_difference_t<vtxrng_t<G>>>(target_key(g, uv));
+    return begin(vertices(g)) + static_cast<ranges::range_difference_t<_detail::vtxrng_t<G>>>(target_key(g, uv));
 }
 
 #  else
