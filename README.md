@@ -1,5 +1,10 @@
 ![Build with gcc-10](https://github.com/pratzl/graph/workflows/Build%20with%20gcc-10/badge.svg?branch=master)
 
+# Deprecated
+This implementation is deprecated in favor of a newer version with a better design that simplifies
+the interface, provides easier integration from external graph libraries and other good things. Once 
+it's more mature I'll make it available for general review and comment.
+
 # Graph Library Proposal for the C++ Standard
 
 This library is in the alpha stage that may include significant changes to the interface. It is not recommended for general use.
